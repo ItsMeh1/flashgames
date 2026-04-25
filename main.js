@@ -1,64 +1,74 @@
-const grid = document.getElementById('game-grid');
-const libSelect = document.getElementById('lib-select');
-const searchBar = document.getElementById('search-bar');
-const overlay = document.getElementById('game-overlay');
+const grid = document.getElementById('grid');
+const libList = document.getElementById('lib-list');
+const search = document.getElementById('search');
+const overlay = document.getElementById('overlay');
 const frame = document.getElementById('game-frame');
 
+let currentLib = "";
+
 function init() {
-    // Fill Select
-    Object.keys(gameLibraries).forEach(lib => {
-        const opt = document.createElement('option');
-        opt.value = lib;
-        opt.textContent = lib;
-        libSelect.appendChild(opt);
+    const libs = Object.keys(gameLibraries);
+    if (libs.length === 0) {
+        grid.innerHTML = "<p style='color: gray;'>No libraries found. Check your list.js file!</p>";
+        return;
+    }
+
+    // Build Sidebar
+    libs.forEach((lib, index) => {
+        const btn = document.createElement('button');
+        btn.className = `lib-btn ${index === 0 ? 'active' : ''}`;
+        btn.textContent = lib;
+        btn.onclick = () => {
+            document.querySelectorAll('.lib-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentLib = lib;
+            render();
+        };
+        libList.appendChild(btn);
     });
 
-    render(libSelect.value);
+    currentLib = libs[0];
+    render();
 
-    libSelect.onchange = () => render(libSelect.value);
-    searchBar.oninput = () => render(libSelect.value);
+    search.oninput = render;
 }
 
-function render(library) {
+function render() {
     grid.innerHTML = '';
-    const term = searchBar.value.toLowerCase();
-    
-    gameLibraries[library].forEach(game => {
+    const term = search.value.toLowerCase();
+    const games = gameLibraries[currentLib] || [];
+
+    games.forEach(game => {
         if (!game.name.toLowerCase().includes(term)) return;
 
-        const el = document.createElement('div');
-        el.className = 'card';
-        el.innerHTML = `
-            <img src="${game.imageUrl}" alt="${game.name}">
-            <div class="card-info">
-                <p class="card-title">${game.name}</p>
-                <p class="card-desc">${game.description}</p>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <img src="${game.imageUrl}" onerror="this.src='https://via.placeholder.com/300x180/1c1c21/ffffff?text=No+Image'">
+            <div class="card-body">
+                <div class="card-name">${game.name}</div>
+                <div class="card-desc">${game.description}</div>
             </div>
         `;
-        el.onclick = () => openGame(game.gameUrl);
-        grid.appendChild(el);
+        card.onclick = () => openGame(game.gameUrl);
+        grid.appendChild(card);
     });
 }
 
 function openGame(url) {
     overlay.style.display = 'block';
     frame.src = url;
-    
-    // Troubleshooting help: Logs to console if the link is likely blocked
-    console.log("Loading: " + url);
 }
 
 function closeGame() {
     overlay.style.display = 'none';
-    frame.src = '';
+    frame.src = 'about:blank'; // Clears the memory
 }
 
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        overlay.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
+function toggleFS() {
+    if (!document.fullscreenElement) overlay.requestFullscreen();
+    else document.exitFullscreen();
 }
 
+// Start
 init();
