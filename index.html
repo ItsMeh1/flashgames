@@ -3,185 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arc+</title>
+    <title>Arcade Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for consistent theming */
         :root {
-            --bg-base: #0b0f17;
-            --bg-card: #151a28;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(15, 20, 30, 0.75);
+            --bg: #09090b;
+            --surface: #18181b;
+            --border: #27272a;
             --accent: #3b82f6;
+            --text: #fafafa;
+            --text-muted: #a1a1aa;
         }
 
+        * { box-sizing: border-box; }
         body { 
-            margin: 0; 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            background: var(--bg-base); 
-            color: var(--text-main); 
-            overflow-x: hidden; 
+            margin: 0; font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); color: var(--text);
+            overflow-x: hidden;
         }
 
-        /* --- View Transitions --- */
-        .view-container {
-            transition: opacity 0.3s ease-in-out;
-            opacity: 1;
-        }
-        .view-container.hidden {
-            opacity: 0;
-            pointer-events: none;
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
+        /* --- Navigation --- */
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 2rem; background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 50;
         }
 
-        /* --- Navbar (Glassmorphism) --- */
-        .navbar { 
-            position: sticky; 
-            top: 0; 
-            z-index: 100;
-            display: flex; 
-            padding: 16px 40px; 
-            gap: 16px; 
-            align-items: center; 
-            justify-content: center; 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-color); 
+        .search-container { display: flex; gap: 0.75rem; flex: 1; max-width: 600px; }
+
+        .input-style {
+            background: var(--surface); border: 1px solid var(--border);
+            color: white; padding: 0.6rem 1rem; border-radius: 8px;
+            font-size: 0.9rem; outline: none; transition: all 0.2s;
         }
-        
-        .library-dropdown, .search-bar { 
-            padding: 12px 20px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border-color); 
-            background: rgba(0, 0, 0, 0.2); 
-            color: white; 
-            font-size: 15px; 
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+        .input-style:focus { border-color: var(--accent); ring: 2px var(--accent); }
+        .search-bar { flex: 1; }
+
+        /* --- Grid --- */
+        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
         }
 
-        .library-dropdown { cursor: pointer; }
-        .library-dropdown option { background: var(--bg-card); color: white; }
+        .card {
+            position: relative; background: var(--surface); border-radius: 12px;
+            border: 1px solid var(--border); overflow: hidden;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover { transform: translateY(-4px); border-color: #52525b; }
         
-        .search-bar { flex-grow: 1; max-width: 500px; }
-        .search-bar::placeholder { color: var(--text-muted); }
-        .search-bar:focus, .library-dropdown:focus { 
-            border-color: var(--accent); 
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+        .card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+
+        .card-info { padding: 1rem; }
+        .card-title { font-weight: 600; font-size: 1rem; margin: 0; }
+        .card-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        /* --- Overlay View --- */
+        #game-overlay {
+            position: fixed; inset: 0; background: var(--bg);
+            display: none; z-index: 100;
         }
 
-        /* --- Game Grid --- */
-        .game-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-            gap: 24px; 
-            padding: 40px; 
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .game-card { 
-            background: var(--bg-card); 
-            border-radius: 16px; 
-            border: 1px solid var(--border-color);
-            overflow: hidden; 
-            cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        
-        .game-card:hover { 
-            transform: translateY(-8px) scale(1.02); 
-            box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 20px rgba(59, 130, 246, 0.15); 
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        
-        .game-card img { 
-            width: 100%; 
-            aspect-ratio: 1 / 1; 
-            object-fit: cover; 
-            display: block; 
+        .game-nav {
+            position: absolute; left: 0; top: 0; bottom: 0; width: 64px;
+            background: var(--surface); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; align-items: center; padding-top: 1rem; gap: 1rem;
         }
 
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-            font-size: 18px;
+        .nav-btn {
+            width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border);
+            background: transparent; color: white; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-btn:hover { background: var(--border); }
+
+        iframe {
+            position: absolute; left: 64px; top: 0; width: calc(100% - 64px);
+            height: 100%; border: none; background: #000;
         }
 
-        /* --- Game Iframe Page --- */
-        #game-page {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: var(--bg-base);
-            z-index: 1000;
-        }
-        
-        .sidebar { 
-            position: absolute; 
-            left: 0; top: 0; bottom: 0; 
-            width: 70px; 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(16px);
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding-top: 24px; 
-            gap: 16px; 
-            border-right: 1px solid var(--border-color);
-            z-index: 10;
-        }
-        
-        .sidebar button { 
-            background: rgba(255,255,255,0.05); 
-            color: white; 
-            border: 1px solid var(--border-color); 
-            width: 46px; height: 46px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-size: 20px;
-            transition: all 0.2s ease;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .sidebar button:hover { 
-            background: rgba(255,255,255,0.1); 
-            transform: scale(1.05);
-        }
-        
-        #game-iframe { 
-            position: absolute;
-            left: 70px; 
-            width: calc(100vw - 70px); 
-            height: 100vh; 
-            border: none; 
-            background: #000;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="home-page" class="view-container">
-        <div class="navbar">
-            <select id="library-select" class="library-dropdown"></select>
-            <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search games...">
+    <header class="header">
+        <div style="font-weight: 700; font-size: 1.2rem; letter-spacing: -0.5px;">ARCADE</div>
+        <div class="search-container">
+            <select id="lib-select" class="input-style"></select>
+            <input type="text" id="search-bar" class="input-style search-bar" placeholder="Search library...">
         </div>
-        <div id="game-grid" class="game-grid">
-            </div>
-    </div>
+    </header>
 
-    <div id="game-page" class="view-container hidden">
-        <div class="sidebar">
-            <button id="back-btn" title="Back to Home">←</button>
-            <button id="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
-        </div>
-        <iframe id="game-iframe" src=""></iframe>
+    <main class="main-content">
+        <div id="game-grid" class="grid"></div>
+    </main>
+
+    <div id="game-overlay">
+        <nav class="game-nav">
+            <button class="nav-btn" onclick="closeGame()" title="Back">✕</button>
+            <button class="nav-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+        </nav>
+        <iframe id="game-frame" src=""></iframe>
     </div>
 
     <script src="list.js"></script>
