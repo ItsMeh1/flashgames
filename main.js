@@ -1,6 +1,5 @@
 // main.js
 
-// DOM Elements
 const librarySelect = document.getElementById("library-select");
 const searchInput = document.getElementById("search-input");
 const gameGrid = document.getElementById("game-grid");
@@ -14,7 +13,7 @@ const fullscreenBtn = document.getElementById("fullscreen-btn");
 let currentLibrary = "";
 
 function init() {
-    // 1. Populate the Library Dropdown from list.js
+    // Populate Dropdown
     const libraryNames = Object.keys(gameLibraries);
     libraryNames.forEach(lib => {
         const option = document.createElement("option");
@@ -23,70 +22,74 @@ function init() {
         librarySelect.appendChild(option);
     });
 
-    // Set default library
     if (libraryNames.length > 0) {
         currentLibrary = libraryNames[0];
         renderGames();
     }
 
-    // 2. Event Listeners
+    // Listeners
     librarySelect.addEventListener("change", (e) => {
         currentLibrary = e.target.value;
+        // Optional: clear search when switching libraries
+        // searchInput.value = ""; 
         renderGames();
     });
 
     searchInput.addEventListener("input", renderGames);
-
     backBtn.addEventListener("click", closeGame);
     fullscreenBtn.addEventListener("click", toggleFullscreen);
 }
 
 function renderGames() {
-    // Clear current grid
     gameGrid.innerHTML = "";
-    
     const query = searchInput.value.toLowerCase();
     const games = gameLibraries[currentLibrary] || [];
 
-    // Filter by search bar
     const filteredGames = games.filter(game => 
         game.name.toLowerCase().includes(query) || 
         game.description.toLowerCase().includes(query)
     );
 
-    // Create cards dynamically
+    // Empty State Handling
+    if (filteredGames.length === 0) {
+        gameGrid.innerHTML = `<div class="empty-state">No games found matching "${searchInput.value}" in ${currentLibrary}.</div>`;
+        return;
+    }
+
+    // Create Cards
     filteredGames.forEach(game => {
         const card = document.createElement("div");
         card.className = "game-card";
         card.onclick = () => openGame(game.gameUrl);
 
-        card.innerHTML = `
-            <img src="${game.imageUrl}" alt="${game.name}">
-        `;
-        
-        // Note: I left out the text tags inside the card to match your 1st screenshot 
-        // which heavily relies on the image for the game icon. 
-        // If you want text below the image, you can add an h3 here.
-
+        card.innerHTML = `<img src="${game.imageUrl}" alt="${game.name}" loading="lazy">`;
         gameGrid.appendChild(card);
     });
 }
 
 function openGame(url) {
-    homePage.style.display = "none";
-    gamePage.style.display = "block";
-    gameIframe.src = url; // Load the game
+    // Fade out home, fade in game
+    homePage.classList.add("hidden");
+    
+    // Give it a tiny delay to ensure the display property handles the transition
+    setTimeout(() => {
+        gameIframe.src = url;
+        gamePage.classList.remove("hidden");
+    }, 100); 
 }
 
 function closeGame() {
-    homePage.style.display = "block";
-    gamePage.style.display = "none";
-    gameIframe.src = ""; // Clear iframe to stop game audio/processing in background
+    // Fade out game, fade in home
+    gamePage.classList.add("hidden");
+    
+    setTimeout(() => {
+        homePage.classList.remove("hidden");
+        gameIframe.src = ""; 
+    }, 300); // Wait for fade out to finish before wiping iframe
 }
 
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
-        // Request fullscreen on the whole game page so sidebar is included (or just gameIframe if you prefer)
         gamePage.requestFullscreen().catch(err => {
             console.error(`Error enabling fullscreen: ${err.message}`);
         });
@@ -95,5 +98,4 @@ function toggleFullscreen() {
     }
 }
 
-// Boot up the page
 init();
