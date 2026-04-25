@@ -3,109 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Arc+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #09090b;
-            --surface: #18181b;
-            --border: #27272a;
+            --bg: #0d0d0f;
+            --sidebar: #151518;
+            --card: #1c1c21;
+            --border: #2d2d35;
             --accent: #3b82f6;
-            --text: #fafafa;
-            --text-muted: #a1a1aa;
+            --text: #ffffff;
+            --text-dim: #a1a1aa;
         }
 
-        * { box-sizing: border-box; }
-        body { 
-            margin: 0; font-family: 'Inter', sans-serif; 
-            background-color: var(--bg); color: var(--text);
-            overflow-x: hidden;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- Navigation --- */
-        .header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 1rem 2rem; background: rgba(9, 9, 11, 0.8);
-            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 50;
-        }
-
-        .search-container { display: flex; gap: 0.75rem; flex: 1; max-width: 600px; }
-
-        .input-style {
-            background: var(--surface); border: 1px solid var(--border);
-            color: white; padding: 0.6rem 1rem; border-radius: 8px;
-            font-size: 0.9rem; outline: none; transition: all 0.2s;
-        }
-        .input-style:focus { border-color: var(--accent); ring: 2px var(--accent); }
-        .search-bar { flex: 1; }
-
-        /* --- Grid --- */
-        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            position: relative; background: var(--surface); border-radius: 12px;
-            border: 1px solid var(--border); overflow: hidden;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card:hover { transform: translateY(-4px); border-color: #52525b; }
+        /* --- Sidebar --- */
+        aside { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem; }
+        .logo { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.05rem; margin-bottom: 2rem; color: var(--accent); }
         
+        .nav-label { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05rem; margin-bottom: 1rem; }
+        .lib-btn { 
+            background: transparent; border: none; color: var(--text-dim); padding: 0.8rem 1rem; text-align: left; 
+            font-size: 0.9rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 0.5rem;
+        }
+        .lib-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .lib-btn.active { background: var(--accent); color: white; }
+
+        /* --- Main Content --- */
+        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        header { padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: flex-end; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(13,13,15,0.8); backdrop-filter: blur(10px); z-index: 10; }
+        
+        .search-box { background: var(--card); border: 1px solid var(--border); padding: 0.7rem 1.2rem; border-radius: 12px; color: white; outline: none; width: 300px; transition: 0.2s; }
+        .search-box:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; padding: 2rem; }
+
+        /* --- Cards --- */
+        .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card:hover { transform: translateY(-5px); border-color: var(--text-dim); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
         .card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+        .card-body { padding: 1.2rem; }
+        .card-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; }
+        .card-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .card-info { padding: 1rem; }
-        .card-title { font-weight: 600; font-size: 1rem; margin: 0; }
-        .card-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
-
-        /* --- Overlay View --- */
-        #game-overlay {
-            position: fixed; inset: 0; background: var(--bg);
-            display: none; z-index: 100;
-        }
-
-        .game-nav {
-            position: absolute; left: 0; top: 0; bottom: 0; width: 64px;
-            background: var(--surface); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; align-items: center; padding-top: 1rem; gap: 1rem;
-        }
-
-        .nav-btn {
-            width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border);
-            background: transparent; color: white; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .nav-btn:hover { background: var(--border); }
-
-        iframe {
-            position: absolute; left: 64px; top: 0; width: calc(100% - 64px);
-            height: 100%; border: none; background: #000;
-        }
-
-        .hidden { display: none !important; }
+        /* --- Overlay (The Iframe) --- */
+        #overlay { position: fixed; inset: 0; background: black; z-index: 1000; display: none; }
+        .game-nav { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: #111; border-right: 1px solid #222; display: flex; flex-direction: column; align-items: center; padding-top: 1.5rem; gap: 1rem; }
+        .nav-icon { width: 35px; height: 35px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .nav-icon:hover { background: #333; }
+        
+        iframe { position: absolute; left: 60px; width: calc(100% - 60px); height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div style="font-weight: 700; font-size: 1.2rem; letter-spacing: -0.5px;">ARCADE</div>
-        <div class="search-container">
-            <select id="lib-select" class="input-style"></select>
-            <input type="text" id="search-bar" class="input-style search-bar" placeholder="Search library...">
-        </div>
-    </header>
+    <aside>
+        <div class="logo">ARCADE OS</div>
+        <div class="nav-label">Your Libraries</div>
+        <div id="lib-list"></div>
+    </aside>
 
-    <main class="main-content">
-        <div id="game-grid" class="grid"></div>
+    <main>
+        <header>
+            <input type="text" id="search" class="search-box" placeholder="Search games...">
+        </header>
+        <div id="grid" class="grid"></div>
     </main>
 
-    <div id="game-overlay">
-        <nav class="game-nav">
-            <button class="nav-btn" onclick="closeGame()" title="Back">✕</button>
-            <button class="nav-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
-        </nav>
+    <div id="overlay">
+        <div class="game-nav">
+            <button class="nav-icon" onclick="closeGame()">✕</button>
+            <button class="nav-icon" onclick="toggleFS()">⛶</button>
+        </div>
         <iframe id="game-frame" src=""></iframe>
     </div>
 
