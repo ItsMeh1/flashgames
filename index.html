@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc+</title>
+    <style>
+        /* Base Styling */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #12151c; color: white; overflow-x: hidden; }
+        
+        /* Top Navigation */
+        .navbar { display: flex; padding: 20px 40px; gap: 15px; align-items: center; justify-content: center; background: #12151c; }
+        
+        .library-dropdown { 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            border: 1px solid #2a2e38; 
+            background: #1c202a; 
+            color: white; 
+            font-size: 16px; 
+            cursor: pointer; 
+            outline: none;
+        }
+        
+        .search-bar { 
+            flex-grow: 1; 
+            max-width: 500px; 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            border: 1px solid #2a2e38; 
+            background: #1c202a; 
+            color: white; 
+            font-size: 16px; 
+            outline: none;
+        }
+        .search-bar::placeholder { color: #888; }
+
+        /* Game Grid */
+        .game-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 25px; 
+            padding: 30px 60px; 
+        }
+        
+        .game-card { 
+            background: #1c202a; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease; 
+        }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .game-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+        
+        /* Iframe Page View */
+        #game-page { 
+            display: none; /* Hidden by default */
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: #12151c; 
+            z-index: 1000; 
+        }
+        
+        .sidebar { 
+            position: absolute; 
+            left: 0; top: 0; bottom: 0; 
+            width: 70px; 
+            background: #0f1116; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding-top: 20px; 
+            gap: 15px; 
+            border-right: 1px solid #1c202a;
+        }
+        
+        .sidebar button { 
+            background: #2a2e38; 
+            color: white; 
+            border: none; 
+            width: 45px; height: 45px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 18px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .sidebar button:hover { background: #3a3f4c; }
+        
+        #game-iframe { 
+            margin-left: 70px; /* Offset by sidebar width */
+            width: calc(100vw - 70px); 
+            height: 100vh; 
+            border: none; 
+            background: #1e222d;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-page">
+        <div class="navbar">
+            <select id="library-select" class="library-dropdown"></select>
+            <input type="text" id="search-input" class="search-bar" placeholder="🔍 Search games...">
+        </div>
+        <div id="game-grid" class="game-grid">
+            </div>
+    </div>
+
+    <div id="game-page">
+        <div class="sidebar">
+            <button id="back-btn" title="Back to Home">←</button>
+            <button id="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
+        </div>
+        <iframe id="game-iframe" src=""></iframe>
+    </div>
+
+    <script src="list.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
