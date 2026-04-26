@@ -58,17 +58,66 @@ const gameLibraries = {
             gameUrl: "https://stgames.top/unity/stack-ball-bitcoin/?.classroom.google.com"
         },
         {
-            name: "Ages of Conflict",
-            description: "World War Simulator",
+            name: "Hot Wheels: Race Off",
+            description: "Some Hot Wheels game idk",
             imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
-            gameUrl: "https://jokupelle.itch.io/ages-of-conflict/?.classroom.google.com"
+            gameUrl: "https://stgames.top/unity/stack-ball-bitcoin/?.classroom.google.com"
         },
         {
-            name: "Sort the Court",
-            description: "Your Judge.",
+            name: "Hot Wheels: Race Off",
+            description: "Some Hot Wheels game idk",
             imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
-            gameUrl: "https://graebor.itch.io/sort-the-court/?.classroom.google.com"
+            gameUrl: "https://www.madkidgames.com/full/hot-wheels-race-off/?.classroom.google.com"
+        },
+        {
+            name: "Car Driving Simulator",
+            description: "Drive a Car",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/ultimate-car-driving-simulator/?.classroom.google.com"
+        },
+        {
+            name: "Survivor.io",
+            description: "Objective: Survive",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/survivor-io/?.classroom.google.com"
+        },
+        {
+            name: "3D Free Kick Simulator",
+            description: "He Shoots, He Scores!",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/free-kick-football-3d-soccer/?.classroom.google.com"
+        },
+        {
+            name: "Bus Driving Simulator",
+            description: "Drive your bus across town",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/extreme-bus-driver-simulator/?.classroom.google.com"
+        },
+        {
+            name: "Smashy Road: Wanted",
+            description: "The cops are after you...",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/smashy-road-wanted/?.classroom.google.com"
+        },
+        {
+            name: "Color Road",
+            description: "Driving on a road as a.. dot?",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/color-road/?.classroom.google.com"
+        },
+        {
+            name: "POV Car Driving",
+            description: "Realistic Car Driving.",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/pov-car-driving/?.classroom.google.com"
+        },
+        {
+            name: "Driving School 2017",
+            description: "Learn to drive!",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://www.madkidgames.com/full/driving-school-2017/?.classroom.google.com"
         }
+        
     ]
     // Add more libraries (e.g., "Velara", "UGS") here following the same format
 };
