@@ -38,18 +38,36 @@ const gameLibraries = {
             gameUrl: "https://truffled.lol/unityframe.html?url=%2Fgames%2Fminus3%2Findex.html/?.classroom.google.com"
         }
     ],
-    "Seraph": [
+    "Arc+": [
         {
-            name: "Among Us",
-            description: "Find the imposter.",
+            name: "BING Videos",
+            description: "Twitch, Youtube, X, & News.",
             imageUrl: "https://via.placeholder.com/300x300/f44336/fff?text=Among+Us",
-            gameUrl: "https://example.com/amongus"
+            gameUrl: "https://bing.com/videos/search?q="
         },
         {
             name: "2048",
             description: "Slide and merge numbers.",
             imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
-            gameUrl: "https://example.com/2048"
+            gameUrl: "https://play2048.co/?.classroom.google.com"
+        },
+        {
+            name: "Stack Ball",
+            description: "Keep going down",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://stgames.top/unity/stack-ball-bitcoin/?.classroom.google.com"
+        },
+        {
+            name: "Ages of Conflict",
+            description: "World War Simulator",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://jokupelle.itch.io/ages-of-conflict/?.classroom.google.com"
+        },
+        {
+            name: "Sort the Court",
+            description: "Your Judge.",
+            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+            gameUrl: "https://graebor.itch.io/sort-the-court/?.classroom.google.com"
         }
     ]
     // Add more libraries (e.g., "Velara", "UGS") here following the same format
