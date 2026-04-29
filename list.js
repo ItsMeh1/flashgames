@@ -69,7 +69,7 @@ const gameLibraries = {
             "image": "https://www.madkidgames.com/games/mineclicker-idle-minecraft-clicker/thumb_2.jpg",
             "tags": "idle,clicker,minecraft,mineclicker,idle-clicker",
             "description": "Play MineClicker: Idle Minecraft Clicker online for free — unblocked Minecraft-style tapping game in your browser! Dive into the pixel world of MineClicker, the ultimate idle Minecraft clicker game where every tap brings you closer to legendary loot and epic mobs! Tap your way through blocks and monsters to collect XP, cubes, and unlock powerful tools. Upgrade your gear, recruit auto-clicker friends, and take on massive bosses — including the mighty Enderdragon! With over 70 levels, 14 boss battles, 32 unique mobs, and 14 Minecraft-inspired locations, MineClicker delivers endless clicker fun for fans of mining and idle games alike. Smash, tap, and grind to build the ultimate clicker empire — no downloads needed, just pure browser-based gameplay! Play MineClicker: Idle Minecraft Clicker free online in your browser! Tap to destroy blocks, defeat mobs, earn XP, unlock tools, and battle the Enderdragon in this Minecraft-style idle game."
-        }
+        },
         {
             "title": "Truck Simulator Ultimate 3D",
             "embed": "https://www.madkidgames.com/full/truck-simulator-ultimate-3d",
