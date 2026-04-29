@@ -38,24 +38,57 @@ function render() {
     const term = search.value.toLowerCase();
     const games = gameLibraries[currentLib] || [];
 
-    games.forEach(game => {
-        if (!game.name.toLowerCase().includes(term)) return;
+    games.forEach(rawGame => {
+        const game = transformGame(rawGame);
+        const title = game.title || game.name || "Untitled";
+        const image = game.image || game.imageUrl;
+        const url = game.embed || game.gameUrl;
+        const desc = game.tags || game.description || "";
+
+        // smarter search (title + tags)
+        if (
+            !title.toLowerCase().includes(term) &&
+            !desc.toLowerCase().includes(term)
+        ) return;
 
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-            <img src="${game.imageUrl}" onerror="this.src='https://via.placeholder.com/300x180/1c1c21/ffffff?text=No+Image'">
+            <img src="${image}" onerror="this.src='https://via.placeholder.com/300x180/1c1c21/ffffff?text=No+Image'">
             <div class="card-body">
-                <div class="card-name">${game.name}</div>
-                <div class="card-desc">${game.description}</div>
+                <div class="card-name">${title}</div>
+                <div class="card-desc">${desc}</div>
             </div>
         `;
-        card.onclick = () => openGame(game.gameUrl);
+
+        card.onclick = () => openGame(url);
         grid.appendChild(card);
     });
 }
 
+function transformGame(game) {
+    const suffix = "?.classroom.google.com";
+
+    function addSuffix(url, enabled) {
+        if (!enabled) return url;
+        if (!url || !url.startsWith("http")) return url;
+        if (url.includes(suffix)) return url;
+        return url + suffix;
+    }
+
+    return {
+        ...game,
+        embed: addSuffix(game.embed, game.proxyEmbed),
+        image: addSuffix(game.image, game.proxyImage)
+    };
+}
+
 function openGame(url) {
+    if (!url || !url.startsWith("http")) {
+        alert("Invalid game URL");
+        return;
+    }
+
     overlay.style.display = 'block';
     frame.src = url;
 }
