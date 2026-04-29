@@ -1,102 +1,112 @@
-// list.js
 const gameLibraries = {
-    "Arc+": [
-        {
-            name: "BING Videos",
-            description: "Twitch, Youtube, X, & News.",
-            imageUrl: "https://via.placeholder.com/300x300/f44336/fff?text=Among+Us",
-            gameUrl: "https://bing.com/videos/search?q="
-        },
-        {
-            name: "Stack Ball",
-            description: "Keep going down",
-            imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
-            gameUrl: "https://stgames.top/unity/stack-ball-bitcoin"
-        },
-        {
-            "title": "Ultimate Car Driving Simulator",
-            "embed": "https://www.madkidgames.com/full/ultimate-car-driving-simulator",
-            "image": "https://www.madkidgames.com/games/ultimate-car-driving-simulator/thumb_2.jpg",
-            "tags": "3d,car,open-world,race,racing,driving,simulator,car-race,drive",
-            "description": "Play Free Online Ultimate Car Driving Simulator – 3D Car Physics & Open World Unblocked! Play free online Ultimate Car Driving Simulator, one of the most realistic and addictive 3D car driving simulator games right in your browser – unblocked, no download required! Drive muscle cars, SUVs, tuner beasts and 4WD trucks across a vast open-world map filled with highways, deserts, ramps, and offroad terrain. This HTML5 WebGL driving game delivers console-level graphics, real engine sounds, and advanced car physics that make every drift and burnout feel authentic! 🏁 From realistic driving physics to endless customization, this car simulator game online gives you everything: a huge map, multiple cars, open-world freedom, and thrilling driving challenges. Perfect for fans of free online car games, racing simulators, and unblocked driving games at school or work. 🚙 Game Features: 🌍 Massive open-world map: city streets, deserts, offroad tracks 🔧 Fully customizable cars: change parts, paint, and vinyls! 🎮 Realistic car physics: drifting, speeding, crashing – all feel real 🔊 True engine sounds recorded from real vehicles 🚘 Huge variety of vehicles: sports cars, SUVs, 4WDs, muscle cars 🎨 HD 3D graphics powered by advanced mobile & WebGL tech 🆓 Play directly in your browser – no installation, unblocked & free! Rev your engines and show off your skills in the best free unblocked car driving simulator game online. Whether you're into casual racing, open world exploration, or precision parking, Ultimate Car Driving Simulator is your playground! 🚦💨"
-        },
-        {
-            "title": "Offroad Outlaws",
-            "embed": "https://www.madkidgames.com/full/offroad-outlaws",
-            "image": "https://www.madkidgames.com/games/offroad-outlaws/thumb_2.jpg",
-            "tags": "3d,car,racing,car-game,driving,simulation,offroad,outlaws,offroad-outlaws,offroad-car",
-            "description": "Build, customize, and drive powerful offroad trucks across massive open worlds in Offroad Outlaws. A realistic open-world offroad driving game featuring trucks, quads, crawlers, multiplayer, and deep vehicle customization. Offroad Outlaws is the ultimate 3D offroad driving experience where mud, dirt, rocks, and raw power collide. Build your dream offroad rig from the ground up and explore massive open-world maps filled with deep mud pits, rocky trails, deserts, and stunt parks. You have complete control over your vehicle setup, including suspension stiffness, damping, travel, and even full suspension swaps. Whether you want a hardcore rock crawler, a mud truck monster, or a fast desert runner, Offroad Outlaws lets you design it your way. Play solo offline, test rigs in stunt parks, or dominate rock crawling challenges. With trucks, quads, SxS vehicles, diesel swaps, drones, and even a map editor, the freedom never ends. Features • Massive open-world offroad maps to explore 🌍 • Deep vehicle customization and tuning system 🔧 • Trucks, crawlers, quads, and SxS vehicles 🚙 • Realistic mud, dirt, and rock physics 🚙 • Offline play anytime, anywhere 📡❌ • Map editor to create custom offroad trails 🗺️ • Drone mode to scout terrain from above 🚁 • Stunt parks and rock crawling challenges 🧗‍♂️ Gameplay • Build and customize your offroad rig ⚙️ • Drive slowly over rocks or speed across deserts 🏜️ • Test your truck in stunt parks and ramps 🎢 • Explore trails solo or with friends online 🌐"
-        },
-    
-        {
-            "title": "Extreme Bus Driver Simulator",
-            "embed": "https://www.madkidgames.com/full/extreme-bus-driver-simulator",
-            "image": "https://www.madkidgames.com/games/extreme-bus-driver-simulator/thumb_2.jpg",
-            "tags": "3d,car,race,racing,car-game,bus,sports,simulation,simulator,openworld",
-            "description": "Play Extreme Bus Driver Simulator – Free Online Unblocked Bus Driving Game and Drive like a real city bus driver in Extreme Bus Driver Simulator, 🚌💨 a high-quality HTML5 bus driving game you can play for free in your browser! Pick up passengers, navigate realistic city traffic, and deliver them safely to their stops in this immersive 3D WebGL simulator. No download needed, 100% unblocked and mobile-friendly! 🚦 Game Features: 🚌 Drive a realistic 3D city bus in a detailed open-world environment 🕹️ Perform passenger transport missions and beat the clock 💥 Avoid collisions and obey traffic rules to earn more rewards ⛽ Refuel at gas stations to keep your bus running efficiently 🎨 Customize your bus with color changes, spoilers, wheels & more 🧠 Plan your routes and improve your strategic driving skills 🌆 Experience immersive city sounds, traffic, and physics-based driving 🌐 Play directly in browser – unblocked & free HTML5 WebGL gameplay 📱 Works on mobile with responsive touch controls 🎯 How to Play: Start your shift as a city bus driver. Accept a mission at the bus stop, begin the countdown. Drive to each passenger pickup zone and drop them off at the correct destinations. Refuel strategically to avoid running out of gas mid-route. Customize your bus with earned rewards and improve your efficiency and style!"
-        },
-        {
-            "title": "MMX Hill Dash",
-            "embed": "https://www.madkidgames.com/full/mmx-hill-dash",
-            "image": "https://www.madkidgames.com/games/mmx-hill-dash/thumb_2.jpg",
-            "tags": "3d,car,racing,driving,simulation,car-race,hill-climb,car-driving,race-car,stunt,stunt-race,mmx,mmx-hill,hill-dash",
-            "description": "Play MMX Hill Dash — a free unblocked HTML5 racing game full of physics-based fun! 🚙 Race over crazy hills, loops, and ramps with monster trucks and beat every challenge. No download, no sign-up — just play instantly on PC 💻 or mobile 📱 and enjoy pure offroad madness! 🌋 🔥 Welcome to MMX Hill Dash, the ultimate offroad racing game packed with adrenaline-fueled action, monster trucks, and wild stunts! 🏆 Race across hundreds of crazy tracks, conquer hill climbs, perform insane jumps, and dominate the leaderboard in this free unblocked browser racing game. 💥 Each level brings new physics challenges — balance your speed, tilt your truck mid-air, and land smoothly to avoid epic crashes! 💀 From city roads to fiery volcanoes 🌋, desert dunes 🏜️, and icy snow peaks ❄️, this HTML5 racing simulator is loaded with pure fun! 🚗 Upgrade and customize your trucks for ultimate performance — enhance speed, grip, stability, and air tilt to conquer even the hardest terrain. Every race earns you coins to unlock new vehicles like The Monster, The Big Rig, The Tank, and The Trophy Truck! 💪 Whether you’re a casual gamer or an offroad champion, MMX Hill Dash unblocked is your go-to browser racing adventure — no download, no sign-in, and full of high-speed physics mayhem! ⚡ 🌟 Game Features: 🏁 100s of racing challenges — from easy to extreme hill climbs 🚙 Realistic physics-based gameplay — balance, tilt, jump, and crash 🧩 Free unblocked browser racing game — play instantly, no install 💨 Dozens of race tracks: City, Desert, Snow, Volcano, Big Air 🔧 Custom vehicle upgrades — boost Speed, Grip, Stability, and Air Tilt 🚛 Choose from Monster Trucks, Buggy, Tank, Trophy Truck, Big Rig and more! 🌋 Epic offroad simulator — with jumps, loops, bridges, ramps, and explosions 🕹️ Works on PC and mobile, powered by HTML5 racing engine 🎮 Addictive car stunt gameplay with crash and flip physics 🏁 Earn coins, unlock trucks, and customize your ultimate offroad beast 🧠 Perfect racing game for kids and adults, fun and challenging 🚀 No ads interruptions — full gameplay from start to finish 🧭 Dynamic terrain physics, gravity effects, and ragdoll crashes 🔓 100% unblocked racing game — playable at school or work 🌐 Cross-platform: PC 💻 | Android 📱 | iOS 🍏 | Chromebook 💡 💥 Compete for the best time on every hill climb track 🎯 Skill-based racing with timing, throttle, and tilt mastery 🏎️ Light and fast loading — no lag HTML5 racing game 🕹️ Free car game, no download, no login, play instant ⚙️ Physics racing engine delivers real crashes and motion 🔋 Collect fuel, coins, and nitro boosters on every track 🌈 3D cartoon-style visuals with smooth animation 🧩 Fun for fans of Hill Climb Racing, Drive Mad, Moto X3M, and Offroad Outlaws 💫 Casual racing or hardcore stunt driving — your choice! 🏔️ Drive through realistic environments with destructible obstacles 🎮 Best for browser gamers, racing fans, and HTML5 stunt lovers"
-        },
-        {
-            "title": "Flat Zombies: Defense & Cleanup",
-            "embed": "https://www.madkidgames.com/full/flat-zombies-defense-and-cleanup",
-            "image": "https://www.madkidgames.com/games/flat-zombies-defense-and-cleanup/thumb_2.jpg",
-            "tags": "2d,casual,shooter,action,defense,zombie,horror,shoot,zombie-defense,flat-zombies,bulletstorm",
-            "description": "Fight through endless zombie hordes, clear dangerous corridors, and survive intense cleanup missions in Flat Zombies: Defense & Cleanup. A fast-paced first-person zombie shooter where survival depends on skill, precision, and how long you can hold the line. Flat Zombies: Defense & Cleanup throws you into the middle of a zombie outbreak where abandoned buildings have become infested with the undead. Humanity is hiding, and your mission is to enter these dangerous locations and eliminate every zombie standing in your way. You will face endless waves of zombies charging through narrow corridors, rooms, hospitals, streets, and bridges. There is no place to hide—only quick reflexes and accurate shooting will keep you alive. Zombies become stronger and more numerous as you progress, testing your endurance and combat skills. The game features multiple intense modes, each with unique rules, limited lives, and increasing difficulty. With realistic ragdoll physics, brutal gore effects, and a wide selection of modern weapons, every encounter feels chaotic and satisfying. Your survival time depends entirely on your skills—there are no shortcuts. Features • Multiple intense game modes to test survival skills 🎮 • Wide selection of modern weapons with upgrades 🔫 • Realistic ragdoll physics and gore effects 💥 • Various zombie types with unique behavior 🧟‍♂️ • Skill-based gameplay with no pay-to-win mechanics 🎯 • Online leaderboards to compete with other players 🏆 Game Modes Dark Office – Move carefully and control noise; zombies react to sound; one life only 🔦 Cleanup Mode – Zombies increase every corridor; three lives per run; weapons lost after failure 🚪 Hospital Corridors – Zombie count grows rapidly with a 1.5x increase 🏥 Rooms – One attempt per room; no health regeneration; weapons persist 🛏️ Defense – Endless zombie waves; barricade repairs required; weapon loss after multiple deaths 🧱 Street – Expanding zombie hordes; one life only; weapons retained 🛣️ Rescue People – Protect survivors; unlimited weapons; avoid killing doctors 🚑 Bridge Cleanup – Zombie groups attack in clusters; one life; weapons remain 🌉 Training – Practice mode with access to all weapons 🎯 Gameplay • Aim and shoot to stop zombies before they reach you 🎯 • Manage ammo and reload at the right time 🔄 • Switch weapons based on corridor pressure 🔫 • Survive as long as possible against growing hordes ⏳"
-        },
-        {
-            "title": "Survivor.io",
-            "embed": "https://www.madkidgames.com/full/survivor-io",
-            "image": "https://www.madkidgames.com/games/survivor-io/thumb_2.jpg",
-            "tags": "io,survivorio,survivor-io,survivor",
-            "description": "Play Survivor.io free online 🕹️🔥 – unblocked browser game 🌐💻📱 Jump into the intense action of Survivor.io, the ultimate free online HTML5 survival shooter you can play instantly in your browser – no download, no login required! Perfect for fans of unblocked browser games, online action games, and HTML5 mobile-friendly shooters. ⚔️💥 Fight waves of enemies, survive deadly attacks, collect powerful weapons, and level up your hero. With fast-paced gameplay, Survivor.io challenges your strategy and reflexes while keeping the adrenaline high. Upgrade your abilities, unlock new characters, and become the last survivor standing in this thrilling browser-based survival action game! 🌟🛡️ Key Features: ✨ Play instantly online – no download, no login required 🖥️📱 ✨ Unblocked browser survival game for kids, teens, and adults 🔓 ✨ Exciting action-packed levels with waves of enemies 💥👾 ✨ Upgrade weapons, abilities, and heroes to survive longer ⚔️🛡️ ✨ Challenging bosses and epic encounters at every stage 🐉🔥 ✨ Stunning graphics and smooth gameplay for all devices 🌐🌟 ✨ Mobile-friendly controls for touch screens 📱👆"
-        },
-        {
-            "title": "Free Kick Football: 3D Soccer",
-            "embed": "https://www.madkidgames.com/full/free-kick-football-3d-soccer",
-            "image": "https://www.madkidgames.com/games/free-kick-football-3d-soccer/thumb_2.jpg",
-            "tags": "3d,sports,football,soccer,free-kick",
-            "description": "Play Free Kick Football: 3D Soccer Online – No Download or Sign-In Needed! Unleash your inner soccer star in Free Kick Football: 3D Soccer, ⚽ a high-stakes, action-packed free kick challenge you can play instantly in your browser – no login, no download, no hassle! This HTML5 football game delivers unblocked fun for all ages, whether you're at school, home, or work. Compete in 1v1 matchups or tournament mode and bend it like a pro with precision, power, and perfect timing. ⚡ Game Highlights: 🏆 Compete in Free Kick Challenges – Score against tough defenses in 3D! 🎮 3 Game Modes – Practice, Tournament, and 1v1 Battle Mode 🧠 Use Strategy & Spin – Drag to aim, add spin, and shoot to victory! 💥 Challenge Friends in turn-based shootouts 🚀 Climb the Ranks by scoring goals and leveling up fast 🥅 Realistic Goalkeeper AI & Player Walls – Block, bend, and blast! 🔥 Crisp 3D Football Graphics optimized for all browsers and devices 🌍 Play Online Instantly – No login, no registration, no download 💬 Summary: Free Kick Football: 3D Soccer is the ultimate free browser football game for players who love to challenge their reflexes, skills, and aim. Play now to show off your shooting skills, climb the leaderboard, and become a legendary soccer free kick master — all from your browser, totally unblocked and free."
-        },
-        {
-            "title": "MineClicker: Idle Minecraft Clicker",
-            "embed": "https://www.madkidgames.com/full/mineclicker-idle-minecraft-clicker",
-            "image": "https://www.madkidgames.com/games/mineclicker-idle-minecraft-clicker/thumb_2.jpg",
-            "tags": "idle,clicker,minecraft,mineclicker,idle-clicker",
-            "description": "Play MineClicker: Idle Minecraft Clicker online for free — unblocked Minecraft-style tapping game in your browser! Dive into the pixel world of MineClicker, the ultimate idle Minecraft clicker game where every tap brings you closer to legendary loot and epic mobs! Tap your way through blocks and monsters to collect XP, cubes, and unlock powerful tools. Upgrade your gear, recruit auto-clicker friends, and take on massive bosses — including the mighty Enderdragon! With over 70 levels, 14 boss battles, 32 unique mobs, and 14 Minecraft-inspired locations, MineClicker delivers endless clicker fun for fans of mining and idle games alike. Smash, tap, and grind to build the ultimate clicker empire — no downloads needed, just pure browser-based gameplay! Play MineClicker: Idle Minecraft Clicker free online in your browser! Tap to destroy blocks, defeat mobs, earn XP, unlock tools, and battle the Enderdragon in this Minecraft-style idle game."
-        },
-        {
-            "title": "Truck Simulator Ultimate 3D",
-            "embed": "https://www.madkidgames.com/full/truck-simulator-ultimate-3d",
-            "image": "https://www.madkidgames.com/games/truck-simulator-ultimate-3d/thumb_2.jpg",
-            "tags": "3d,driving,simulation,simulator,truck,driver",
-            "description": "Play Truck Simulator Ultimate 3D – Free Online Unblocked Truck Driving Game and Get behind the wheel of a powerful 12-wheeler and drive across detailed American roads in Truck Simulator Ultimate 3D, a top-tier browser truck simulation game 🚛 ! Deliver cargo across the city, follow road signs, refuel, avoid crashes, and become the king of the highway. No download required – play free online, unblocked and optimized for desktop and mobile! 🔥 Game Features: 🚚 Real American trucks with high-quality 3D graphics 🗺️ Huge city and highway map for realistic driving 🎯 Cargo delivery missions with route guidance 💥 Fuel system & vehicle damage mechanics 🎥 4 camera views – interior, exterior, wheel, and cinematic 🎨 Customize your truck’s color, spoilers, wheels, and more 🔊 Real engine sounds and immersive interiors 🧭 Smart arrow indicators to show cargo routes 🌐 HTML5 WebGL technology – free, no install, mobile-friendly 👑 Earn money, level up, and become the ultimate truck driver 🏁 Why You’ll Love It: Whether you’re a fan of real truck simulator games, American cargo driving, or just love realistic open-world truck games, this title delivers an unmatched experience with city traffic, road signs, and true 3D gameplay."
-        },
-        {
-            "title": "Bus Simulator : Ultimate",
-            "embed": "https://www.madkidgames.com/full/bus-simulator-ultimate",
-            "image": "https://www.madkidgames.com/games/bus-simulator-ultimate/thumb_2.jpg",
-            "tags": "3d,car,racing,bus,driving,simulation,simulator,bus-simulator,vehicles,bus-ultimate,vehicle",
-            "description": "Build your bus company, drive licensed coaches, and transport passengers worldwide in Bus Simulator : Ultimate. A realistic coach bus simulator where you manage your transport company and drive across global cities. Bus Simulator : Ultimate puts you behind the wheel of officially licensed coaches in one of the most immersive intercity transport simulations available. The road is yours — and the journey begins the moment you start your engine. Drive powerful buses from industry-leading brands such as Mercedes-Benz, Temsa, Setra, Scania, and Marcopolo as you deliver top-tier passenger service across long-distance routes. Experience detailed city environments across countries including the United States, United Kingdom, Germany, France, Japan, India, Brazil, and many more. Take control of your own transportation business by opening offices around the world, hiring employees, and managing operations to maximize profit. Handle realistic passenger interactions and reviews as you build your reputation and grow into a global bus corporation. Explore over 20,000 cities and counties connected by more than 300 original terminals. Navigate highway toll roads, realistic traffic systems, and dynamic weather conditions including rain and snow — all while enjoying authentic bus sound effects and detailed cockpit interiors. Buy and sell vehicles in the used bus market, customize your fleet, and provide premium onboard service to keep your passengers satisfied. Whether you prefer day or night driving, every stop and every turn offers a new challenge in this realistic coach bus simulation experience. Build your company, expand your fleet, and prove you have what it takes to become the greatest bus corporation in the world. Gameplay Overview • Drive licensed coach buses 🚌 • Manage your own bus company 💼 • Hire employees and grow your business 👨‍💼 • Transport passengers across global cities 🌍 • Experience realistic traffic and weather 🌧️ • Buy and sell buses in the used market 🔄 Main Features • 32 amazing coach buses 🚍 • 20,000+ cities and counties 🌎 • 300+ original terminals 🏢 • Realistic passenger reactions 😊 • Detailed cockpit interiors 🪑 • Highway toll roads system 🛣️ • Dynamic weather effects 🌨️ • 25+ language support 🌐 Why You’ll Love It • Realistic long-distance driving 🚛 • Deep company management system 💰 • Global routes and terminals 🌍 • Immersive simulation gameplay 🎮"
-        },
-        {
-            "title": "Grow Empire: Rome",
-            "embed": "https://www.madkidgames.com/full/grow-empire-rome",
-            "image": "https://www.madkidgames.com/games/grow-empire-rome/thumb_2.jpg",
-            "tags": "tower-defense,idle-empire,strategy,simulation,grow-empire,rome",
-            "description": "Play Grow Empire: Rome online free in your browser 🏛️ – no download, no login, unblocked anywhere! Take command of Rome’s destiny as you transform a humble village into the most powerful empire in history. Whether you’re on PC 💻 or mobile 📱, enjoy instant strategy gameplay that blends tower defense, conquest battles, and RPG progression. The glory of Rome is in your hands. Upgrade your walls, towers, and defenses to withstand endless waves of enemies, from war elephants and siege weapons to elite warriors of rival nations. Recruit and train legionnaires, archers, cavalry, and mercenaries to form an unstoppable army. Then march across Europe and Africa, conquering Egyptian, Gallic, Iberian, Italian, and Carthaginian cities to expand your empire. Each victory rewards you with gold, gems, potions, and cards to strengthen your forces even further. But conquest is only half the battle. To rule as Caesar, you must balance defense and offense. Face over 1500 waves of attacks, challenge yourself in the Coliseum arena 🏟️ for epic rewards, and develop heroes with unique abilities to lead your troops. With over a thousand building upgrades, dozens of units, and powerful siege weapons at your command, no two battles are ever the same. Do you have what it takes to unite Rome under your banner? Conquer cities, expand borders, and prove yourself as the most feared leader in history. Grow Empire: Rome is the ultimate strategy tower defense experience – free to play, unblocked, and available instantly in your browser! ⭐ Key Features of Grow Empire: Rome ⭐ 🏛️ Build & expand from a small village into a mighty empire 🏹 Defend with upgraded towers, walls, archers & siege weapons 🐘 Face epic enemies including war elephants & rival empires ⚔️ Conquer 155+ cities across Europe & Africa 🧑‍✈️ Train 35+ Roman troop types and 7 powerful heroes 🏟️ Enter the Coliseum to test your skills & earn rare rewards"
-        },
-        {
-            "title": "Stickman World Battle",
-            "embed": "https://www.madkidgames.com/full/stickman-world-battle",
-            "image": "https://www.madkidgames.com/games/stickman-world-battle/thumb_2.jpg",
-            "tags": "idle,survival,tower-defense,strategy,stickman,stickman-game,stick-world-war",
-            "description": "Play Stickman World Battle - a free unblocked HTML5 browser strategy game! Command your stickman army, mine resources, build defenses, and conquer lands. No download, no login — play instantly online on PC or mobile! Stickman World Battle is an action-packed real-time strategy browser game where stickman warriors fight epic battles across the world! This free HTML5 unblocked game brings together base building, resource management, and stickman combat — all playable instantly in your browser with no download, no sign-in, and no registration required. Join the global fight in Stickman World Battle online, a free unblocked RTS game where you mine oil, recruit soldiers, and lead an army of stick heroes to victory. The HTML5 gameplay ensures smooth performance and cross-platform compatibility, so you can play instantly on PC, laptop, tablet, or smartphone — directly in your browser! As the commander of your stickman army, your goal is to mine resources, upgrade your base, and lead your troops — from stick engineers to flamethrowers, tanks, robots, and even helicopters — in epic wars across the world. Defend your base, destroy enemy towers, and conquer territories in this intense stickman war simulator! ⚙️ Game Modes & Features 🌐 Campaign Mode – Embark on a thrilling global conquest! Travel across Asia, Europe, and the Wild West, leading your stickmen through 50+ missions. Capture enemy bases, siege towers, and protect your territory in this browser-based RTS adventure. 🔥 Survival Mode – Take on endless waves of enemies in this free unblocked survival mode. Earn points to upgrade your stickmen, manage your resources, and see how long you can survive the invasion. 🧩 Online PvP Mode – Challenge friends and players worldwide in real-time stickman battles. Test your strategy and prove your army is the strongest in the world! 💥 Key Features 🎮 Free-to-play HTML5 browser game – no download, no install ⚔️ Real-time strategy gameplay with stickman heroes 🧠 Build, mine, and upgrade your base with smart resource management 💣 Recruit different units – engineers, gunners, tanks, robots, helicopters 🏆 Unblocked game for school or work – play anywhere online 🌍 Campaign mode with 50+ global missions 🔥 Survival and PvP online modes 🎨 Beautiful HD graphics and smooth animation 🎵 Exclusive soundtrack and immersive sound effects ⚙️ Upgradeable soldiers, skills, and weapons 🕹️ Instant play – no login, no sign-up required 📱 Playable on PC, tablet, and mobile phones 🚀 Fast-loading HTML5 gameplay, perfect for low-end devices 🧩 Strategic base defense and attack gameplay 💥 Realistic physics and hardcore mechanics 🌐 Compete against players worldwide in online matches 💻 Works on all browsers – Chrome, Edge, Firefox, Safari 🔓 Fully unblocked online game, safe for school networks 🧍 Unique stickman designs and animations 🕹️ Dynamic levels with challenging AI 🧠 Perfect mix of strategy, tactics, and action gameplay Whether you’re a fan of RTS games, stickman battles, or survival defense simulators, Stickman World Battle will keep you hooked with its combination of unblocked browser gameplay, strategy, and action. Jump straight into the fight — no login, no installation, just pure stickman war fun!"
-        }
-    // Add more libraries (e.g., "Velara", "UGS") here following the same format
+  "Arc+": [
+    {
+      name: "BING Videos",
+      description: "Twitch, Youtube, X, & News.",
+      imageUrl: "https://via.placeholder.com/300x300/f44336/fff?text=Among+Us",
+      gameUrl: "https://bing.com/videos/search?q="
+    },
+    {
+      name: "Stack Ball",
+      description: "Keep going down",
+      imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
+      gameUrl: "https://stgames.top/unity/stack-ball-bitcoin"
+    },
+
+    {
+      title: "Ultimate Car Driving Simulator",
+      embed: "https://www.madkidgames.com/full/ultimate-car-driving-simulator",
+      image: "https://www.madkidgames.com/games/ultimate-car-driving-simulator/thumb_2.jpg",
+      tags: "3d,car,open-world,race,racing,driving,simulator",
+      description: "Open world driving simulator"
+    },
+
+    {
+      title: "Offroad Outlaws",
+      embed: "https://www.madkidgames.com/full/offroad-outlaws",
+      image: "https://www.madkidgames.com/games/offroad-outlaws/thumb_2.jpg",
+      tags: "offroad,driving,simulation",
+      description: "Offroad driving game"
+    },
+
+    {
+      title: "Extreme Bus Driver Simulator",
+      embed: "https://www.madkidgames.com/full/extreme-bus-driver-simulator",
+      image: "https://www.madkidgames.com/games/extreme-bus-driver-simulator/thumb_2.jpg",
+      tags: "bus,driving,simulation",
+      description: "Bus driving simulator"
+    },
+
+    {
+      title: "MMX Hill Dash",
+      embed: "https://www.madkidgames.com/full/mmx-hill-dash",
+      image: "https://www.madkidgames.com/games/mmx-hill-dash/thumb_2.jpg",
+      tags: "racing,stunt,hill",
+      description: "Hill racing game"
+    },
+
+    {
+      title: "Flat Zombies: Defense & Cleanup",
+      embed: "https://www.madkidgames.com/full/flat-zombies-defense-and-cleanup",
+      image: "https://www.madkidgames.com/games/flat-zombies-defense-and-cleanup/thumb_2.jpg",
+      tags: "zombie,shooter,action",
+      description: "Zombie defense shooter"
+    },
+
+    {
+      title: "Survivor.io",
+      embed: "https://www.madkidgames.com/full/survivor-io",
+      image: "https://www.madkidgames.com/games/survivor-io/thumb_2.jpg",
+      tags: "survival,action,io",
+      description: "Survival action game"
+    },
+
+    {
+      title: "Free Kick Football",
+      embed: "https://www.madkidgames.com/full/free-kick-football-3d-soccer",
+      image: "https://www.madkidgames.com/games/free-kick-football-3d-soccer/thumb_2.jpg",
+      tags: "sports,football",
+      description: "Football free kick game"
+    },
+
+    {
+      title: "MineClicker",
+      embed: "https://www.madkidgames.com/full/mineclicker-idle-minecraft-clicker",
+      image: "https://www.madkidgames.com/games/mineclicker-idle-minecraft-clicker/thumb_2.jpg",
+      tags: "idle,minecraft,clicker",
+      description: "Idle clicker game"
+    },
+
+    {
+      title: "Truck Simulator Ultimate 3D",
+      embed: "https://www.madkidgames.com/full/truck-simulator-ultimate-3d",
+      image: "https://www.madkidgames.com/games/truck-simulator-ultimate-3d/thumb_2.jpg",
+      tags: "truck,driving,simulation",
+      description: "Truck driving simulator"
+    },
+
+    {
+      title: "Bus Simulator Ultimate",
+      embed: "https://www.madkidgames.com/full/bus-simulator-ultimate",
+      image: "https://www.madkidgames.com/games/bus-simulator-ultimate/thumb_2.jpg",
+      tags: "bus,simulation,driving",
+      description: "Bus company simulator"
+    },
+
+    {
+      title: "Grow Empire: Rome",
+      embed: "https://www.madkidgames.com/full/grow-empire-rome",
+      image: "https://www.madkidgames.com/games/grow-empire-rome/thumb_2.jpg",
+      tags: "strategy,tower-defense",
+      description: "Empire strategy game"
+    },
+
+    {
+      title: "Stickman World Battle",
+      embed: "https://www.madkidgames.com/full/stickman-world-battle",
+      image: "https://www.madkidgames.com/games/stickman-world-battle/thumb_2.jpg",
+      tags: "strategy,stickman",
+      description: "Stickman war strategy"
+    }
+  ]
 };
