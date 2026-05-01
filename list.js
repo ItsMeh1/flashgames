@@ -7,6 +7,12 @@ const gameLibraries = {
       gameUrl: "https://bing.com/videos/search?q="
     },
     {
+      name: "Mobify Social",
+      description: "Mobify Social, made by ItsMeh1 on Github.",
+      imageUrl: "https://via.placeholder.com/300x300/f44336/fff?text=Mobify+Social",
+      gameUrl: "https://itsmeh1.github.io/Mobify"
+    },
+    {
       name: "Stack Ball",
       description: "Keep going down",
       imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
