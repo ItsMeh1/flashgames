@@ -12,7 +12,6 @@ const gameLibraries = {
       imageUrl: "https://via.placeholder.com/300x300/ffc107/fff?text=2048",
       gameUrl: "https://stgames.top/unity/stack-ball-bitcoin"
     },
-
     {
       title: "Ultimate Car Driving Simulator",
       embed: "https://www.madkidgames.com/full/ultimate-car-driving-simulator",
@@ -20,7 +19,6 @@ const gameLibraries = {
       tags: "3d,car,open-world,race,racing,driving,simulator",
       description: "Open world driving simulator"
     },
-
     {
       title: "Offroad Outlaws",
       embed: "https://www.madkidgames.com/full/offroad-outlaws",
@@ -28,7 +26,6 @@ const gameLibraries = {
       tags: "offroad,driving,simulation",
       description: "Offroad driving game"
     },
-
     {
       title: "Extreme Bus Driver Simulator",
       embed: "https://www.madkidgames.com/full/extreme-bus-driver-simulator",
@@ -36,7 +33,6 @@ const gameLibraries = {
       tags: "bus,driving,simulation",
       description: "Bus driving simulator"
     },
-
     {
       title: "MMX Hill Dash",
       embed: "https://www.madkidgames.com/full/mmx-hill-dash",
@@ -44,7 +40,6 @@ const gameLibraries = {
       tags: "racing,stunt,hill",
       description: "Hill racing game"
     },
-
     {
       title: "Flat Zombies: Defense & Cleanup",
       embed: "https://www.madkidgames.com/full/flat-zombies-defense-and-cleanup",
@@ -52,7 +47,6 @@ const gameLibraries = {
       tags: "zombie,shooter,action",
       description: "Zombie defense shooter"
     },
-
     {
       title: "Survivor.io",
       embed: "https://www.madkidgames.com/full/survivor-io",
@@ -60,7 +54,6 @@ const gameLibraries = {
       tags: "survival,action,io",
       description: "Survival action game"
     },
-
     {
       title: "Free Kick Football",
       embed: "https://www.madkidgames.com/full/free-kick-football-3d-soccer",
@@ -68,7 +61,6 @@ const gameLibraries = {
       tags: "sports,football",
       description: "Football free kick game"
     },
-
     {
       title: "MineClicker",
       embed: "https://www.madkidgames.com/full/mineclicker-idle-minecraft-clicker",
@@ -76,7 +68,6 @@ const gameLibraries = {
       tags: "idle,minecraft,clicker",
       description: "Idle clicker game"
     },
-
     {
       title: "Truck Simulator Ultimate 3D",
       embed: "https://www.madkidgames.com/full/truck-simulator-ultimate-3d",
@@ -84,7 +75,6 @@ const gameLibraries = {
       tags: "truck,driving,simulation",
       description: "Truck driving simulator"
     },
-
     {
       title: "Bus Simulator Ultimate",
       embed: "https://www.madkidgames.com/full/bus-simulator-ultimate",
@@ -92,7 +82,6 @@ const gameLibraries = {
       tags: "bus,simulation,driving",
       description: "Bus company simulator"
     },
-
     {
       title: "Grow Empire: Rome",
       embed: "https://www.madkidgames.com/full/grow-empire-rome",
@@ -100,7 +89,6 @@ const gameLibraries = {
       tags: "strategy,tower-defense",
       description: "Empire strategy game"
     },
-
     {
       title: "Stickman World Battle",
       embed: "https://www.madkidgames.com/full/stickman-world-battle",
