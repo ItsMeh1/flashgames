@@ -1,5 +1,5 @@
 const gameLibraries = {
-  "Arc+": [
+  "Arc+ Variety": [
     {
       name: "BING Videos",
       description: "Twitch, Youtube, X, & News.",
