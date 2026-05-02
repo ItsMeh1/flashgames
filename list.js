@@ -341,5 +341,23 @@ const gameLibraries = {
       tags: "social,chat,community,first-party",
       description: "Connect with the community! Our official first-party social app.",
     }
+  ],
+  
+  // Arc utils library
+  "Arc+ Utils:" [
+    {
+      title: "Mobify Social",
+      embed: "https://itsmeh1.github.io/Mobify",
+      image: "https://via.placeholder.com/300x180/007bff/ffffff?text=Mobify+Social",
+      tags: "social,chat,community,first-party",
+      description: "Connect with the community! Our official first-party social app.",
+    },
+    {
+      name: "BING Videos",
+      description: "Twitch, Youtube, X, & News.",
+      imageUrl: "https://via.placeholder.com/300x300/f44336/fff?text=Among+Us",
+      gameUrl: "https://bing.com/videos/search?q="
+    }
   ]
+
 };
