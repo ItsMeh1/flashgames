@@ -263,6 +263,83 @@ const gameLibraries = {
       image: "https://www.madkidgames.com/games/farm-simulator-evo/thumb_2.jpg",
       tags: "farm,3d,simulation,farming,simulator",
       description: "Experience modern farming with realistic vehicles and crop management."
+    },
+    {
+      title: "Snake Warz IO: Games Snake Game",
+      embed: "https://www.madkidgames.com/full/snake-warz-io-games-snake-game",
+      image: "https://www.madkidgames.com/games/snake-warz-io-games-snake-game/thumb_2.jpg",
+      tags: "2d,casual,idle,snake,online",
+      description: "Compete globally in this real-time multiplayer snake battlefield."
+    },
+    {
+      title: "Epic Skater 2",
+      embed: "https://www.madkidgames.com/full/epic-skater-2",
+      image: "https://www.madkidgames.com/games/epic-skater-2/thumb_2.jpg",
+      tags: "3d,casual,arcade,skater,skating",
+      description: "Master huge combos and customize your skater in the streets of Epicwood."
+    },
+    {
+      title: "Taxi Sim 2016",
+      embed: "https://www.madkidgames.com/full/taxi-sim-2016",
+      image: "https://www.madkidgames.com/games/taxi-sim-2016/thumb_2.jpg",
+      tags: "3d,car,driving,taxi,simulator",
+      description: "Experience the life of a taxi driver in famous cities around the world."
+    },
+    {
+      title: "Tennis Bits",
+      embed: "https://www.madkidgames.com/full/tennis-bits",
+      image: "https://www.madkidgames.com/games/tennis-bits/thumb_2.jpg",
+      tags: "sports,tennis,arcade",
+      description: "Quirky arcade tennis with over 45 wild characters and thousands of outfits."
+    },
+    {
+      title: "Car Battle Simulator",
+      embed: "https://www.madkidgames.com/full/car-battle-simulator",
+      image: "https://www.madkidgames.com/games/car-battle-simulator/thumb_2.jpg",
+      tags: "car,strategy,battle,simulator",
+      description: "Tactical vehicle warfare: deploy muscle cars and monster trucks for total destruction."
+    },
+    {
+      title: "Bus Stop Jam",
+      embed: "https://www.madkidgames.com/full/bus-stop-jam",
+      image: "https://www.madkidgames.com/games/bus-stop-jam/thumb_2.jpg",
+      tags: "puzzle,bus,traffic-jam",
+      description: "Navigate city traffic and manage your schedule to get passengers home safely."
+    },
+    {
+      title: "Color Bump 3D: ASMR Ball Game",
+      embed: "https://www.madkidgames.com/full/color-bump-3d-asmr-ball-game",
+      image: "https://www.madkidgames.com/games/color-bump-3d-asmr-ball-game/thumb_2.jpg",
+      tags: "3d,casual,asmr,ball",
+      description: "A satisfyingly smooth arcade game where you must avoid the wrong colors."
+    },
+    {
+      title: "Mini Car Race 3D",
+      embed: "https://www.madkidgames.com/full/mini-car-race-3d",
+      image: "https://www.madkidgames.com/games/mini-car-race-3d/thumb_2.jpg",
+      tags: "3d,car,racing,driving",
+      description: "High-speed tiny car racing with drifting, stunts, and mega jumps."
+    },
+    {
+      title: "Veck.io",
+      embed: "https://veck.io/",
+      image: "https://via.placeholder.com/300x180/1a1a1a/ffffff?text=Veck.io",
+      tags: "io,action,multiplayer",
+      description: "Fast-paced, neon-style multiplayer IO combat."
+    },
+    {
+      title: "Growden.io",
+      embed: "https://growden.io/",
+      image: "https://via.placeholder.com/300x180/2b2b2b/ffffff?text=Growden.io",
+      tags: "io,strategy,online",
+      description: "Evolve and expand your territory in this competitive strategy game."
+    },
+    {
+      title: "Mobify Social",
+      embed: "https://itsmeh1.github.io/Mobify",
+      image: "https://via.placeholder.com/300x180/007bff/ffffff?text=Mobify+Social",
+      tags: "social,chat,community,first-party",
+      description: "Connect with the community! Our official first-party social app.",
     }
   ]
 };
