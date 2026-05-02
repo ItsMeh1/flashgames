@@ -344,7 +344,7 @@ const gameLibraries = {
   ],
   
   // Arc utils library
-  "Arc+ Utils:" [
+  "Arc+ Utils": [
     {
       title: "Mobify Social",
       embed: "https://itsmeh1.github.io/Mobify",
