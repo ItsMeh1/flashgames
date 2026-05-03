@@ -34,7 +34,7 @@ async function getGnMathGames() {
       title: `GN-Math Problem ${gameNumber}`,
       name: game.name,
       image: 'https://via.placeholder.com/300x180/1a5490/ffffff?text=GN-Math',
-      embed: `https://cdn.jsdelivr.net/gh/gn-math/html@main${game.name}`,
+      embed: `https://raw.githubusercontent.com/gn-math/html/main${game.name}`, // Changed to GitHub raw URL
       tags: `math, problem, gn-math, #${gameNumber}`,
       description: `Hits: ${game.hits.total} | Bandwidth: ${(game.bandwidth.total / 1024 / 1024).toFixed(2)}MB`,
     };
@@ -46,7 +46,6 @@ async function getGnMathGames() {
   const gnMathGames = await getGnMathGames();
   gameLibraries['GN-Math'] = gnMathGames;
   
-  // Re-initialize if already loaded
   if (typeof init === 'function') {
     init();
   }
