@@ -358,6 +358,10 @@ const gameLibraries = {
       imageUrl: "https://via.placeholder.com/300x300/f44336/fff?text=Among+Us",
       gameUrl: "https://bing.com/videos/search?q="
     }
+  ],
+
+  "GN-Math": [
+    // empty will populate later
   ]
 
 };
