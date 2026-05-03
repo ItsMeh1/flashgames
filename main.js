@@ -44,6 +44,9 @@ function render() {
         const image = game.image || game.imageUrl;
         const url = game.embed || game.gameUrl;
         const desc = game.tags || game.description || "";
+        
+        // Check for the special note field (for first-party apps like Mobify)
+        const noteHtml = game.note ? `<div class="card-note" style="font-size: 0.85em; color: #ffeb3b; margin-top: 5px; font-weight: bold;">⭐ ${game.note}</div>` : "";
 
         // smarter search (title + tags)
         if (
@@ -58,6 +61,7 @@ function render() {
             <div class="card-body">
                 <div class="card-name">${title}</div>
                 <div class="card-desc">${desc}</div>
+                ${noteHtml}
             </div>
         `;
 
@@ -69,8 +73,8 @@ function render() {
 function transformGame(game) {
     const suffix = "?.classroom.google.com";
 
-    function addSuffix(url, enabled) {
-        if (!enabled) return url;
+    // Removed the 'enabled' requirement so it always applies
+    function addSuffix(url) { 
         if (!url || !url.startsWith("http")) return url;
         if (url.includes(suffix)) return url;
         return url + suffix;
@@ -78,8 +82,8 @@ function transformGame(game) {
 
     return {
         ...game,
-        embed: addSuffix(game.embed, game.proxyEmbed),
-        image: addSuffix(game.image, game.proxyImage)
+        embed: addSuffix(game.embed),
+        image: addSuffix(game.image)
     };
 }
 
