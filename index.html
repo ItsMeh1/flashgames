@@ -1,116 +1,672 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-950 text-slate-100 selection:bg-indigo-500/30">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arc+</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Flash Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg: #0d0d0f;
-            --sidebar: #151518;
-            --card: #1c1c21;
-            --border: #2d2d35;
-            --accent: #3b82f6;
-            --text: #ffffff;
-            --text-dim: #a1a1aa;
+        /* Premium Apple-inspired glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-
-        /* --- Sidebar --- */
-        aside { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem; }
-        .logo { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.05rem; margin-bottom: 2rem; color: var(--accent); }
-
-        .small-text { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); letter-spacing: 0.05rem; margin-bottom: 1rem; }
-        .nav-label { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05rem; margin-bottom: 1rem; }
-        .lib-btn { 
-            background: transparent; border: none; color: var(--text-dim); padding: 0.8rem 1rem; text-align: left; 
-            font-size: 0.9rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 0.5rem;
+        .glass-panel-dark {
+            background: rgba(8, 10, 20, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
-        .lib-btn:hover { background: rgba(255,255,255,0.05); color: white; }
-        .lib-btn.active { background: var(--accent); color: white; }
-
-        /* --- Main Content --- */
-        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        header { padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: flex-end; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(13,13,15,0.8); backdrop-filter: blur(10px); z-index: 10; }
-        
-        .search-box { background: var(--card); border: 1px solid var(--border); padding: 0.7rem 1.2rem; border-radius: 12px; color: white; outline: none; width: 300px; transition: 0.2s; }
-        .search-box:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; padding: 2rem; }
-
-        /* --- Cards --- */
-        .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card:hover { transform: translateY(-5px); border-color: var(--text-dim); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
-        .card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
-        .card-body { padding: 1.2rem; }
-        .card-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; }
-        .card-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-        /* --- Overlay (The Iframe) --- */
-        #overlay { position: fixed; inset: 0; background: black; z-index: 1000; display: none; }
-        .game-nav { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: #111; border-right: 1px solid #222; display: flex; flex-direction: column; align-items: center; padding-top: 1.5rem; gap: 1rem; }
-        .nav-icon { width: 35px; height: 35px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .nav-icon:hover { background: #333; }
-        
-        iframe { position: absolute; left: 60px; width: calc(100% - 60px); height: 100%; border: none; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .glass-card:hover, .glass-card:focus-within, .glass-card.gamepad-focused {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px 0 rgba(99, 102, 241, 0.12);
+        }
+        .gamepad-focused {
+            outline: 3px solid #6366f1 !important;
+            outline-offset: 2px;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
-<body>
+<body class="h-full overflow-x-hidden antialiased bg-slate-950">
 
-    <aside>
-        <div class="logo">Arc+</div>
-        <div class="nav-label">Your Libraries</div>
-        <div id="lib-list"></div>
-    </aside>
-
-    <main>
-        <header>
-            <input type="text" id="search" class="search-box" placeholder="Search games...">
-        </header>
-        <div id="grid" class="grid"></div>
-        <h5><b>Extra Info</b></h5>
-        <div class="small-text">If you get the error <b>unexpectedly closed the connection</b> then close & reopen the game.</div>
-        <div class="small-text">Many simulators and 3D games will take a long time to load.</div>
-        
-        <h5><b>Legal Information</b></h5>
-        <div class="small-text">Arc+ Variety offers multiple games from multiple different providers. Unfortunately, games may be created by AI. Please note that Arc+ does not support the use of AI for all human tasks, and that Arc+ does not use AI and tries to limit the amount of AI use. We are extremely sorry for all the AI ahh logos on the games coming from the provider MadKidGames. If you have any games you would like to suggest to be added, please contact the owner on discord.</div>
-        <div class="small-text"> <b>A Note on Privacy:</b> We built this site to be a safe, private space—we don’t track you or sell your data. To use the Mobify social features, you'll need to create an account so we can save your posts and profile. Your info stays within the Mobify app and nowhere else. For any inquires, contact owner on discord.</div>
-        <div class="small-text"><b>Prohibition of Mirroring:</b> Unauthorized "mirroring," cloning, or redistributing the source code of this site to any other domain or server is strictly prohibited.</div>
-    </main>
-
-    <div id="overlay">
-        <div class="game-nav">
-            <button class="nav-icon" onclick="closeGame()">✕</button>
-            <button class="nav-icon" onclick="toggleFS()">⛶</button>
-        </div>
-        <iframe id="game-frame" src=""></iframe>
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[120px]"></div>
+        <div class="absolute top-[30%] -right-[10%] w-[45vw] h-[45vw] rounded-full bg-purple-900/10 blur-[100px]"></div>
     </div>
 
-    <script src="list.js"></script>
-    <script src="gn-math-games.js"></script>
-    <script src="main.js"></script>
+    <div id="app" class="min-h-full flex flex-col pb-12">
+        
+        <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
+                </div>
+                <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
+            </div>
 
-<script>
-  // 1. Disable Right-Click (Context Menu)
-  document.addEventListener('contextmenu', event => event.preventDefault());
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 md:w-64">
+                    <input id="searchInput" type="text" placeholder="Search library..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 pl-10 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all">
+                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                </div>
+                <select id="zoneFilter" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+                    <option value="all" class="bg-slate-900">All Sources</option>
+                </select>
+                <select id="sortOrder" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+                    <option value="az" class="bg-slate-900">Name (A-Z)</option>
+                    <option value="za" class="bg-slate-900">Name (Z-A)</option>
+                </select>
+            </div>
+        </header>
 
-  // 2. Disable Common Shortcuts (Ctrl+C, Ctrl+U, Ctrl+S, F12)
-  document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false; // F12 (Inspect)
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U (View Source)
-    if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Ctrl+S (Save Page)
-    if (e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+C (Copy)
-  };
+        <div class="mx-6 mt-4">
+            <div id="gamepadIndicator" class="p-3.5 rounded-xl glass-panel border border-indigo-500/10 bg-indigo-950/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
+                <div class="flex items-center gap-2.5">
+                    <span class="relative flex h-2 w-2">
+                        <span id="gamepadPulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75"></span>
+                        <span id="gamepadDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-400"></span>
+                    </span>
+                    <span id="gamepadName" class="font-medium text-slate-400">Controller disconnected. Press any button to link.</span>
+                </div>
+                <div id="gamepadHints" class="hidden items-center gap-4 text-xs text-slate-400 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5">
+                    <span><kbd class="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono">D-Pad / Stick</kbd> Navigate</span>
+                    <span><kbd class="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono">A Button</kbd> Play Game</span>
+                    <span><kbd class="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono">B Button</kbd> Close</span>
+                </div>
+            </div>
+        </div>
 
-  // 3. Disable Text Selection via CSS
-  document.documentElement.style.webkitUserSelect = 'none';
-  document.documentElement.style.userSelect = 'none';
-</script>
+        <div id="statusView" class="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[50vh] w-full">
+            <div id="statusContent" class="max-w-md mx-auto flex flex-col items-center justify-center">
+                <div id="statusSpinner" class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+                <h3 id="statusTitle" class="text-xl font-medium text-white tracking-tight">Loading Game Library</h3>
+                <p id="statusDesc" class="text-sm text-slate-400 mt-2 leading-relaxed">Aggregating game nodes and configuring your game shelves...</p>
+                <button id="retryButton" class="hidden mt-6 px-6 py-2.5 bg-white text-slate-900 text-sm font-medium rounded-xl hover:bg-slate-100 transition-all shadow-md">Try Again</button>
+            </div>
+        </div>
+
+        <main id="mainWorkspace" class="px-6 mt-6 space-y-10 hidden flex-1">
+            
+            <section id="heroSection" class="relative rounded-2xl overflow-hidden glass-panel h-[280px] md:h-[360px] flex flex-col justify-end p-6 md:p-10 group transition-all">
+                <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-700 scale-100 group-hover:scale-102 opacity-25" id="heroBg"></div>
+                <div class="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                
+                <div class="max-w-xl">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mb-3 uppercase tracking-wider">Spotlight</span>
+                    <h2 id="heroTitle" class="text-2xl md:text-4xl font-bold tracking-tight text-white mb-2">---</h2>
+                    <p id="heroMeta" class="text-sm text-slate-300 mb-5"></p>
+                    <button id="heroLaunchBtn" class="px-5 py-2.5 bg-white text-slate-950 font-medium rounded-xl shadow-md hover:bg-slate-100 active:scale-98 transition-all text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play Game
+                    </button>
+                </div>
+            </section>
+
+            <div id="collectionsContainer" class="space-y-10"></div>
+        </main>
+    </div>
+
+    <div id="gamePortal" class="fixed inset-0 z-50 glass-panel-dark hidden grid-rows-[auto_1fr] transition-all duration-300 opacity-0">
+        <header class="p-4 flex items-center justify-between border-b border-white/5 bg-slate-900/90 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <button id="closePortalBtn" class="p-2 rounded-xl hover:bg-white/10 transition-colors text-slate-400 hover:text-white" aria-label="Close Play Area">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                </button>
+                <div>
+                    <h3 id="portalTitle" class="font-semibold text-white text-base leading-tight">Game Viewer</h3>
+                    <p id="portalMeta" class="text-xs text-slate-400 mt-0.5"></p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button id="portalFavoriteBtn" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 transition-colors mr-2" title="Toggle Favorite">
+                    <svg class="w-5 h-5 fill-none stroke-current" id="portalHeartIcon" viewBox="0 0 24 24" stroke-width="2"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+                <button id="reportBrokenBtn" class="px-3 py-1.5 text-xs font-medium bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 hover:bg-rose-500/20 transition-all">
+                    Game not loading?
+                </button>
+                <button id="fullscreenBtn" class="px-3 py-1.5 text-xs font-medium bg-white/5 border border-white/10 rounded-lg text-slate-200 hover:bg-white/10 transition-all flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9m5.25 11.25v-4.5m0 4.5h-4.5m4.5 0l-6-6" /></svg>
+                    Full Screen
+                </button>
+                <button id="externalPortalBtn" class="px-3 py-1.5 text-xs font-medium bg-indigo-500/20 border border-indigo-500/30 rounded-lg text-indigo-300 hover:bg-indigo-500/30 transition-all">
+                    Open in New Tab
+                </button>
+            </div>
+        </header>
+
+        <div class="w-full h-full bg-black relative overflow-hidden" id="iframeWrapper">
+            <iframe id="portalFrame" class="w-full h-full border-none" allow="gamepad; autoplay; fullscreen"></iframe>
+            
+            <div id="iframeErrorScreen" class="absolute inset-0 bg-slate-950/95 hidden flex-col items-center justify-center p-6 text-center z-10">
+                <div class="w-12 h-12 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center mb-4 border border-rose-500/20">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                </div>
+                <h4 class="text-lg font-medium text-white">This game could not be embedded</h4>
+                <p class="text-sm text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">Some legacy games use strict origin protections that prevent direct iframe loading. Opening a standalone window will launch the game smoothly.</p>
+                <button id="errorTabLauncherBtn" class="mt-6 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 font-medium text-sm text-white rounded-xl shadow-lg transition-all">
+                    Launch in Standalone Tab
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://ess-education.org';
+        const CONFIG = {
+            endpoints: [
+                '/asset/json/zones/gnmath.json',
+                '/asset/json/zones/truffled.json',
+                '/asset/json/zones/seraph.json',
+                '/asset/json/zones/velara.json',
+                '/asset/json/zones/ugs.json',
+                '/asset/json/zones/tglsc.json',
+                '/asset/json/zones/selenite.json'
+            ],
+            fallbackImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230f172a"/><text x="50" y="55" font-family="sans-serif" font-size="11" fill="%23475569" text-anchor="middle">No Cover</text></svg>'
+        };
+
+        let STATE = {
+            rawGamesList: [],
+            processedGames: [],
+            activeFilters: { search: '', zone: 'all', sort: 'az' },
+            gamepad: { connected: false, index: null, loopId: null, focusRow: 0, focusCol: 0 },
+            navigationMap: [],
+            activeGame: null,
+            favorites: JSON.parse(localStorage.getItem('flash_games_favorites') || '[]'),
+            recent: JSON.parse(localStorage.getItem('flash_games_recent') || '[]')
+        };
+
+        function normalizeUrl(path, base = BASE_URL) {
+            if (!path) return '';
+            if (path.startsWith('http://') || path.startsWith('https://')) return path;
+            return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+        }
+
+        function extractZoneName(endpointPath) {
+            const match = endpointPath.match(/\/([^/]+)\.json$/);
+            return match ? match[1].toUpperCase() : 'UNKNOWN';
+        }
+
+        async function fetchSystemData() {
+            showStatus('loading', 'Loading Game Library', 'Aggregating game nodes from across your databases...');
+            STATE.rawGamesList = [];
+            let successfulFetches = 0;
+            const uniqueEndpoints = [...new Set(CONFIG.endpoints)];
+
+            for (const endpoint of uniqueEndpoints) {
+                const zoneToken = extractZoneName(endpoint);
+                try {
+                    const response = await fetch(normalizeUrl(endpoint));
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const dataset = await response.json();
+                    
+                    if (Array.isArray(dataset)) {
+                        dataset.forEach((record, index) => {
+                            if (!record.name || !record.url) return;
+                            STATE.rawGamesList.push({
+                                id: `${zoneToken}-${index}`,
+                                name: record.name.trim(),
+                                cover: normalizeUrl(record.cover),
+                                url: normalizeUrl(record.url),
+                                zone: zoneToken,
+                                category: record.category || 'Standard'
+                            });
+                        });
+                        successfulFetches++;
+                    }
+                } catch (error) {
+                    console.warn(`Source catalog file structural issue on branch: "${zoneToken}".`);
+                }
+            }
+
+            if (successfulFetches === 0) {
+                showStatus('error', 'Failed to Load Library', 'Could not parse game structures from any database files.', true);
+            } else {
+                processAndRenderView();
+            }
+        }
+
+        function processAndRenderView() {
+            let results = [...STATE.rawGamesList];
+
+            if (STATE.activeFilters.search) {
+                const terms = STATE.activeFilters.search.toLowerCase();
+                results = results.filter(g => g.name.toLowerCase().includes(terms));
+            }
+            if (STATE.activeFilters.zone !== 'all') {
+                results = results.filter(g => g.zone === STATE.activeFilters.zone);
+            }
+
+            if (STATE.activeFilters.sort === 'az') {
+                results.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (STATE.activeFilters.sort === 'za') {
+                results.sort((a, b) => b.name.localeCompare(a.name));
+            }
+
+            STATE.processedGames = results;
+
+            const zoneSelector = document.getElementById('zoneFilter');
+            if (zoneSelector.options.length <= 1) {
+                const domains = [...new Set(STATE.rawGamesList.map(g => g.zone))];
+                domains.sort().forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.className = 'bg-slate-900';
+                    opt.textContent = `Source: ${d}`;
+                    zoneSelector.appendChild(opt);
+                });
+            }
+
+            renderInterfaceDom();
+        }
+
+        function createGameCard(game) {
+            const isFav = STATE.favorites.some(f => f.url === game.url);
+            const card = document.createElement('div');
+            card.className = 'glass-card rounded-xl overflow-hidden flex flex-col cursor-pointer relative group focus:outline-none';
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
+            card.dataset.id = game.id;
+
+            card.innerHTML = `
+                <div class="aspect-[4/3] w-full bg-slate-900 relative overflow-hidden">
+                    <img data-src="${game.cover}" alt="" class="w-full h-full object-cover opacity-0 transition-opacity duration-300" onerror="this.src='${CONFIG.fallbackImage}'">
+                    <button class="fav-toggle absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-black/40 backdrop-blur-md text-white border border-white/5 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all z-20 hover:text-rose-400" data-game-id="${game.id}">
+                        <svg class="w-4 h-4 ${isFav ? 'fill-rose-500 stroke-rose-500' : 'fill-none stroke-current'}" viewBox="0 0 24 24" stroke-width="2.5"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                    </button>
+                </div>
+                <div class="p-3 flex-1 flex flex-col justify-between gap-2">
+                    <h4 class="text-sm font-medium text-slate-200 line-clamp-1 group-hover:text-white">${game.name}</h4>
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 font-normal">
+                        <span>Source: ${game.zone}</span>
+                        <span class="text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 font-medium">PLAY</span>
+                    </div>
+                </div>
+            `;
+
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.fav-toggle')) {
+                    e.stopPropagation();
+                    toggleFavoriteGame(game);
+                    return;
+                }
+                executeGameLauncher(game);
+            });
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    executeGameLauncher(game);
+                }
+            });
+
+            return card;
+        }
+
+        function renderInterfaceDom() {
+            const workspace = document.getElementById('mainWorkspace');
+            const statusView = document.getElementById('statusView');
+            const container = document.getElementById('collectionsContainer');
+            
+            container.innerHTML = '';
+            
+            if (STATE.processedGames.length === 0) {
+                showStatus('empty', 'No Games Match Filters', 'Try refining your keyword query or switching target source catalogs.');
+                workspace.classList.add('hidden');
+                return;
+            }
+
+            statusView.classList.add('hidden');
+            workspace.classList.remove('hidden');
+
+            setupHeroSpotlight();
+
+            if (STATE.recent.length > 0 && STATE.activeFilters.search === '' && STATE.activeFilters.zone === 'all') {
+                const section = document.createElement('section');
+                section.className = 'space-y-4 bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/10';
+                section.innerHTML = `<div class="flex items-center justify-between"><h3 class="text-sm font-semibold uppercase tracking-wider text-indigo-400">Jump Back In</h3><span class="text-xs text-slate-500">Recently Played</span></div>`;
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
+                STATE.recent.forEach(game => grid.appendChild(createGameCard(game)));
+                section.appendChild(grid);
+                container.appendChild(section);
+            }
+
+            if (STATE.favorites.length > 0 && STATE.activeFilters.search === '' && STATE.activeFilters.zone === 'all') {
+                const section = document.createElement('section');
+                section.className = 'space-y-4';
+                section.innerHTML = `<div class="flex items-center justify-between border-b border-white/5 pb-2"><h3 class="text-lg font-medium text-white flex items-center gap-2"><svg class="w-5 h-5 fill-rose-500 text-rose-500" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg> My Favorites</h3></div>`;
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
+                STATE.favorites.forEach(game => grid.appendChild(createGameCard(game)));
+                section.appendChild(grid);
+                container.appendChild(section);
+            }
+
+            const groups = {};
+            STATE.processedGames.forEach(g => {
+                if (!groups[g.zone]) groups[g.zone] = [];
+                groups[g.zone].push(g);
+            });
+
+            Object.keys(groups).sort().forEach((sectionTitle) => {
+                const rowSection = document.createElement('section');
+                rowSection.className = 'space-y-4';
+                rowSection.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <h3 class="text-lg font-medium text-white">${sectionTitle} Collection</h3>
+                        <span class="text-xs text-slate-400">${groups[sectionTitle].length} Games</span>
+                    </div>
+                `;
+
+                const trackGrid = document.createElement('div');
+                trackGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
+                groups[sectionTitle].forEach(game => trackGrid.appendChild(createGameCard(game)));
+                rowSection.appendChild(trackGrid);
+                container.appendChild(rowSection);
+            });
+
+            initializeLazyLoaders();
+            buildGamepadNavigationMap();
+        }
+
+        function setupHeroSpotlight() {
+            if (STATE.processedGames.length === 0) return;
+            const spotlight = STATE.processedGames[Math.floor(STATE.processedGames.length / 2)] || STATE.processedGames[0];
+            
+            document.getElementById('heroBg').style.backgroundImage = `url('${spotlight.cover}')`;
+            document.getElementById('heroTitle').textContent = spotlight.name;
+            document.getElementById('heroMeta').textContent = `Source: ${spotlight.zone}`;
+            
+            const oldBtn = document.getElementById('heroLaunchBtn');
+            const newBtn = oldBtn.cloneNode(true);
+            oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+            newBtn.addEventListener('click', () => executeGameLauncher(spotlight));
+        }
+
+        function toggleFavoriteGame(game) {
+            const index = STATE.favorites.findIndex(f => f.url === game.url);
+            if (index > -1) STATE.favorites.splice(index, 1);
+            else STATE.favorites.push(game);
+            localStorage.setItem('flash_games_favorites', JSON.stringify(STATE.favorites));
+            renderInterfaceDom();
+            updatePortalHeartState();
+        }
+
+        function updatePortalHeartState() {
+            if (!STATE.activeGame) return;
+            const icon = document.getElementById('portalHeartIcon');
+            const isFav = STATE.favorites.some(f => f.url === STATE.activeGame.url);
+            if (isFav) icon.className = "w-5 h-5 fill-rose-500 stroke-rose-500";
+            else icon.className = "w-5 h-5 fill-none stroke-current";
+        }
+
+        function initializeLazyLoaders() {
+            const lazyImages = document.querySelectorAll('#collectionsContainer img[data-src]');
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            img.onload = () => img.classList.remove('opacity-0');
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+                lazyImages.forEach(img => observer.observe(img));
+            } else {
+                lazyImages.forEach(img => {
+                    img.src = img.dataset.src;
+                    img.classList.remove('opacity-0');
+                });
+            }
+        }
+
+        function showStatus(type, title, desc, showRetry = false) {
+            const statusView = document.getElementById('statusView');
+            const spinner = document.getElementById('statusSpinner');
+            const titleEl = document.getElementById('statusTitle');
+            const descEl = document.getElementById('statusDesc');
+            const retryBtn = document.getElementById('retryButton');
+
+            statusView.classList.remove('hidden');
+            titleEl.textContent = title;
+            descEl.textContent = desc;
+
+            if (type === 'loading') spinner.classList.remove('hidden');
+            else spinner.classList.add('hidden');
+
+            if (showRetry) retryBtn.classList.remove('hidden');
+            else retryBtn.classList.add('hidden');
+        }
+
+        function executeGameLauncher(game) {
+            const portal = document.getElementById('gamePortal');
+            const frame = document.getElementById('portalFrame');
+            const errorOverlay = document.getElementById('iframeErrorScreen');
+            
+            STATE.activeGame = game;
+            document.getElementById('portalTitle').textContent = game.name;
+            document.getElementById('portalMeta').textContent = `Source: ${game.zone}`;
+            
+            errorOverlay.classList.add('hidden');
+            
+            // Switch over to CSS Grid display mode safely
+            portal.classList.remove('hidden');
+            portal.classList.add('grid');
+            
+            updatePortalHeartState();
+            
+            setTimeout(() => portal.classList.remove('opacity-0'), 50);
+            frame.src = game.url;
+
+            let recent = STATE.recent.filter(item => item.url !== game.url);
+            recent.unshift(game);
+            if(recent.length > 6) recent.pop();
+            STATE.recent = recent;
+            localStorage.setItem('flash_games_recent', JSON.stringify(recent));
+
+            document.getElementById('reportBrokenBtn').onclick = () => errorOverlay.classList.remove('hidden');
+            document.getElementById('externalPortalBtn').onclick = () => window.open(game.url, '_blank');
+            document.getElementById('errorTabLauncherBtn').onclick = () => window.open(game.url, '_blank');
+            document.getElementById('portalFavoriteBtn').onclick = () => toggleFavoriteGame(game);
+        }
+
+        function closeGamePortal() {
+            const portal = document.getElementById('gamePortal');
+            const frame = document.getElementById('portalFrame');
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+            portal.classList.add('opacity-0');
+            setTimeout(() => {
+                portal.classList.add('hidden');
+                portal.classList.remove('grid');
+                frame.src = '';
+                renderInterfaceDom();
+            }, 300);
+        }
+
+        function toggleFullscreen() {
+            const wrapper = document.getElementById('iframeWrapper');
+            if (!document.fullscreenElement) {
+                wrapper.requestFullscreen().catch(err => alert(`Fullscreen error: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function buildGamepadNavigationMap() {
+            STATE.navigationMap = [];
+            const heroBtn = document.getElementById('heroLaunchBtn');
+            if (heroBtn && !document.getElementById('mainWorkspace').classList.contains('hidden')) {
+                STATE.navigationMap.push([heroBtn]);
+            }
+            const rows = document.querySelectorAll('#collectionsContainer .grid');
+            rows.forEach(row => {
+                const items = Array.from(row.querySelectorAll('.glass-card'));
+                if (items.length > 0) STATE.navigationMap.push(items);
+            });
+        }
+
+        function updateGamepadFocusVisuals() {
+            document.querySelectorAll('.gamepad-focused').forEach(el => el.classList.remove('gamepad-focused'));
+            if (STATE.navigationMap.length === 0) return;
+
+            const currentRow = STATE.navigationMap[STATE.gamepad.focusRow];
+            if (!currentRow) return;
+
+            if (STATE.gamepad.focusCol >= currentRow.length) {
+                STATE.gamepad.focusCol = Math.max(0, currentRow.length - 1);
+            }
+
+            const targetElement = currentRow[STATE.gamepad.focusCol];
+            if (targetElement) {
+                targetElement.classList.add('gamepad-focused');
+                targetElement.focus();
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        let lastInputTime = 0;
+        function processGamepadInputLoop() {
+            if (!STATE.gamepad.connected) return;
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            const gp = gamepads[STATE.gamepad.index];
+            if (!gp) {
+                STATE.gamepad.loopId = requestAnimationFrame(processGamepadInputLoop);
+                return;
+            }
+
+            const now = performance.now();
+            if (now - lastInputTime > 180) {
+                let moved = false;
+                const dpadUp = gp.buttons[12]?.pressed;
+                const dpadDown = gp.buttons[13]?.pressed;
+                const dpadLeft = gp.buttons[14]?.pressed;
+                const dpadRight = gp.buttons[15]?.pressed;
+                const axesX = gp.axes[0];
+                const axesY = gp.axes[1];
+                const threshold = 0.5;
+
+                if (dpadUp || axesY < -threshold) {
+                    if (STATE.gamepad.focusRow > 0) { STATE.gamepad.focusRow--; moved = true; }
+                } else if (dpadDown || axesY > threshold) {
+                    if (STATE.gamepad.focusRow < STATE.navigationMap.length - 1) { STATE.gamepad.focusRow++; moved = true; }
+                }
+
+                if (dpadLeft || axesX < -threshold) {
+                    if (STATE.gamepad.focusCol > 0) { STATE.gamepad.focusCol--; moved = true; }
+                } else if (dpadRight || axesX > threshold) {
+                    const currentRow = STATE.navigationMap[STATE.gamepad.focusRow];
+                    if (currentRow && STATE.gamepad.focusCol < currentRow.length - 1) { STATE.gamepad.focusCol++; moved = true; }
+                }
+
+                if (moved) {
+                    lastInputTime = now;
+                    updateGamepadFocusVisuals();
+                }
+
+                if (gp.buttons[0].pressed) { // Button A
+                    const currentRow = STATE.navigationMap[STATE.gamepad.focusRow];
+                    const element = currentRow ? currentRow[STATE.gamepad.focusCol] : null;
+                    if (element) { lastInputTime = now; element.click(); }
+                }
+
+                if (gp.buttons[1].pressed) { // Button B
+                    const portal = document.getElementById('gamePortal');
+                    if (portal && !portal.classList.contains('hidden')) { lastInputTime = now; closeGamePortal(); }
+                }
+            }
+            STATE.gamepad.loopId = requestAnimationFrame(processGamepadInputLoop);
+        }
+
+        function configureSystemEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                STATE.activeFilters.search = e.target.value;
+                processAndRenderView();
+            });
+            document.getElementById('zoneFilter').addEventListener('change', (e) => {
+                STATE.activeFilters.zone = e.target.value;
+                processAndRenderView();
+            });
+            document.getElementById('sortOrder').addEventListener('change', (e) => {
+                STATE.activeFilters.sort = e.target.value;
+                processAndRenderView();
+            });
+
+            document.getElementById('closePortalBtn').addEventListener('click', closeGamePortal);
+            document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+            document.getElementById('retryButton').addEventListener('click', fetchSystemData);
+
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeGamePortal(); });
+
+            window.addEventListener('gamepadconnected', (e) => {
+                STATE.gamepad.connected = true;
+                STATE.gamepad.index = e.gamepad.index;
+                
+                document.getElementById('gamepadPulse').className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75";
+                document.getElementById('gamepadDot').className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400";
+                document.getElementById('gamepadName').innerHTML = `Linked: <span class="text-white font-medium">${e.gamepad.id.split('(')[0].trim()}</span>`;
+                document.getElementById('gamepadHints').classList.replace('hidden', 'flex');
+                
+                buildGamepadNavigationMap();
+                updateGamepadFocusVisuals();
+                
+                cancelAnimationFrame(STATE.gamepad.loopId);
+                STATE.gamepad.loopId = requestAnimationFrame(processGamepadInputLoop);
+            });
+
+            window.addEventListener('gamepaddisconnected', () => {
+                STATE.gamepad.connected = false;
+                document.getElementById('gamepadPulse').className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75";
+                document.getElementById('gamepadDot').className = "relative inline-flex rounded-full h-2 w-2 bg-slate-400";
+                document.getElementById('gamepadName').textContent = "Controller disconnected. Press any button to link.";
+                document.getElementById('gamepadHints').classList.replace('flex', 'hidden');
+                document.querySelectorAll('.gamepad-focused').forEach(el => el.classList.remove('gamepad-focused'));
+                cancelAnimationFrame(STATE.gamepad.loopId);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            configureSystemEventListeners();
+            fetchSystemData();
+        });
+    </script>
 </body>
 </html>
