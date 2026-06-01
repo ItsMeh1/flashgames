@@ -1,0 +1,16 @@
+{
+  "name": "Flash Games",
+  "short_name": "Flash-G",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#6366f1",
+  "description": "Your centralized, offline-ready game vault.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' fill='%236366f1'><rect width='192' height='192'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
