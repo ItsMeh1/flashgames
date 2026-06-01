@@ -1,16 +1,51 @@
 [
     {
-        "name": "Eaglercraft 1.8.8",
+        "name": "Astra Client 1.8",
         "category": "Standard",
         "zone": "OFFLINE",
-        "url": "./offline/eaglercraft/index.html",
-        "cover": "./offline/eaglercraft/cover.jpg"
+        "url": "./offline/astra18.html",
+        "cover": "./offline/astraclient.jpeg"
     },
     {
-        "name": "2048",
+        "name": "Astra Client 1.12",
         "category": "Standard",
         "zone": "OFFLINE",
-        "url": "./offline/2048/index.html",
-        "cover": "./offline/2048/cover.jpg"
+        "url": "./offline/astra112.html",
+        "cover": "./offline/astraclient.jpeg"
+    },
+    {
+        "name": "Resent Client 5.0",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/eaglercraft.dev_Resent_Client_5.0_WASM.html",
+        "cover": "./offline/astraclient.jpeg"
+    },
+    {
+        "name": "ShadowNet Client",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/eaglercraft.dev_ShadowNetClient_WASM.html",
+        "cover": ""
+    },
+    {
+        "name": "Tuff Client",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/eaglercraft.dev_Tuff_Client_WASM.html",
+        "cover": "./offline/tuffclient.png"
+    },
+    {
+        "name": "Pixel Client 1.8.8",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/PixelClient 1.8.8 WASM.html",
+        "cover": "./offline/pixelclient.svg"
+    },
+    {
+        "name": "PixelClient 1.12.2",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/PixelClient 1.12.2 WASM.html",
+        "cover": "./offline/pixelclient.svg"
     }
 ]
