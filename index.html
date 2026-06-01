@@ -36,7 +36,6 @@
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
                 </div>
                 <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
-                
                 <button onclick="document.getElementById('changelogModal').classList.toggle('hidden')" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.0 Updates</button>
             </div>
 
@@ -129,13 +128,16 @@
     <script>
         const BASE_URL = 'https://ess-education.org';
         const CONFIG = {
-            // Notice the new offline.json endpoint added here
+            // Re-added all 7 original source endpoints + the local offline container
             endpoints: [
                 './offline.json',
                 '/asset/json/zones/gnmath.json',
                 '/asset/json/zones/truffled.json',
                 '/asset/json/zones/seraph.json',
-                '/asset/json/zones/velara.json'
+                '/asset/json/zones/velara.json',
+                '/asset/json/zones/ugs.json',
+                '/asset/json/zones/tglsc.json',
+                '/asset/json/zones/selenite.json'
             ],
             fallbackImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%230f172a"/></svg>'
         };
@@ -153,7 +155,6 @@
             const btn = document.getElementById('syncOfflineBtn');
             btn.textContent = 'Syncing...';
             
-            // Collect all local offline URLs from the catalog
             const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
             const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
             urlsToCache.push('./offline.json', './index.html');
@@ -182,7 +183,6 @@
             if (STATE.isOffline) {
                 dot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]";
                 text.textContent = "Offline Mode Active. Remote sources hidden.";
-                // Force to offline filter
                 zoneFilter.value = 'OFFLINE';
                 STATE.activeFilters.zone = 'OFFLINE';
                 zoneFilter.disabled = true;
@@ -214,13 +214,14 @@
             showStatus('loading', 'Loading Game Library', 'Aggregating game nodes...');
             STATE.rawGamesList = [];
             
-            // If offline, only try to fetch the local offline.json
             const endpointsToFetch = STATE.isOffline ? ['./offline.json'] : CONFIG.endpoints;
 
             for (const endpoint of endpointsToFetch) {
                 const zoneToken = extractZoneName(endpoint);
                 try {
-                    const response = await fetch(normalizeUrl(endpoint, ''));
+                    // FIXED: Correctly resolves remote paths against BASE_URL and local configurations locally
+                    const fetchUrl = endpoint === './offline.json' ? endpoint : `${BASE_URL}${endpoint}`;
+                    const response = await fetch(fetchUrl);
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const dataset = await response.json();
                     
@@ -237,7 +238,7 @@
                         });
                     }
                 } catch (error) {
-                    console.warn(`Could not load: ${endpoint}`);
+                    console.warn(`Could not load source tree endpoint: ${endpoint}`);
                 }
             }
             processAndRenderView();
@@ -249,17 +250,23 @@
             if (STATE.activeFilters.search) results = results.filter(g => g.name.toLowerCase().includes(STATE.activeFilters.search.toLowerCase()));
             if (STATE.activeFilters.zone !== 'all') results = results.filter(g => g.zone === STATE.activeFilters.zone);
 
+            // Sort logic
+            if (STATE.activeFilters.sort === 'az') results.sort((a, b) => a.name.localeCompare(b.name));
+            if (STATE.activeFilters.sort === 'za') results.sort((a, b) => b.name.localeCompare(a.name));
+
             STATE.processedGames = results;
 
             const zoneSelector = document.getElementById('zoneFilter');
+            const currentSelected = STATE.activeFilters.zone;
             zoneSelector.innerHTML = '<option value="all" class="bg-slate-900">All Sources</option>';
+            
             const domains = [...new Set(STATE.rawGamesList.map(g => g.zone))];
             domains.sort().forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d;
                 opt.className = 'bg-slate-900';
                 opt.textContent = `Source: ${d}`;
-                if (STATE.activeFilters.zone === d) opt.selected = true;
+                if (currentSelected === d) opt.selected = true;
                 zoneSelector.appendChild(opt);
             });
 
@@ -271,7 +278,7 @@
             card.className = 'glass-card rounded-xl overflow-hidden flex flex-col cursor-pointer relative group';
             card.innerHTML = `
                 <div class="aspect-[4/3] w-full bg-slate-900 relative">
-                    <img src="${game.cover}" class="w-full h-full object-cover">
+                    <img src="${game.cover}" class="w-full h-full object-cover" loading="lazy">
                 </div>
                 <div class="p-3">
                     <h4 class="text-sm font-medium text-slate-200 line-clamp-1">${game.name}</h4>
@@ -289,7 +296,7 @@
             
             container.innerHTML = '';
             if (STATE.processedGames.length === 0) {
-                showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi.');
+                showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi configurations.');
                 workspace.classList.add('hidden');
                 return;
             }
@@ -313,7 +320,6 @@
                 container.appendChild(rowSection);
             });
 
-            // Set Spotlight
             const hero = STATE.processedGames[0];
             document.getElementById('heroBg').style.backgroundImage = `url('${hero.cover}')`;
             document.getElementById('heroTitle').textContent = hero.name;
@@ -347,9 +353,13 @@
             }, 300);
         });
 
-        // Init
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => { STATE.activeFilters.search = e.target.value; processAndRenderView(); });
         document.getElementById('zoneFilter').addEventListener('change', (e) => { STATE.activeFilters.zone = e.target.value; processAndRenderView(); });
-        handleNetworkChange(); // Initialize network state
+        document.getElementById('sortOrder').addEventListener('change', (e) => { STATE.activeFilters.sort = e.target.value; processAndRenderView(); });
+
+        // Initialize App State Configuration
+        handleNetworkChange();
         fetchSystemData();
     </script>
 </body>
