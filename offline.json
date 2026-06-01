@@ -18,7 +18,7 @@
         "category": "Standard",
         "zone": "OFFLINE",
         "url": "./offline/eaglercraft.dev_Resent_Client_5.0_WASM.html",
-        "cover": "./offline/astraclient.jpeg"
+        "cover": "./offline/resentclient.png"
     },
     {
         "name": "ShadowNet Client",
