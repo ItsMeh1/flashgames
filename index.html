@@ -13,12 +13,15 @@
         .glass-panel { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .glass-panel-dark { background: rgba(8, 10, 20, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.04); }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.04); transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
-        .glass-card:hover, .glass-card:focus-within, .glass-card.gamepad-focused { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.18); transform: translateY(-4px); box-shadow: 0 12px 30px 0 rgba(99, 102, 241, 0.12); }
-        .gamepad-focused { outline: 3px solid #6366f1 !important; outline-offset: 2px; }
+        .glass-card:hover, .glass-card:focus-within { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.18); transform: translateY(-4px); box-shadow: 0 12px 30px 0 rgba(99, 102, 241, 0.12); }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        
+        /* Smooth Info Panel Transitions */
+        .info-btn-enter { width: 28px !important; transform: scale(1) !important; opacity: 1 !important; margin-left: 0.5rem !important; }
+        .panel-enter { opacity: 1 !important; pointer-events: auto !important; transform: scale(1) translateY(0) !important; }
     </style>
 </head>
 <body class="h-full overflow-x-hidden antialiased bg-slate-950">
@@ -29,16 +32,14 @@
     </div>
 
     <div id="app" class="min-h-full flex flex-col pb-12">
-        
         <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
                 </div>
                 <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
-                <button onclick="document.getElementById('changelogModal').classList.toggle('hidden')" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.2 Updates</button>
+                <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.3 Updates</button>
             </div>
-
             <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 <div class="relative flex-1 md:w-64">
                     <input id="searchInput" type="text" placeholder="Search library..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 pl-10 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all">
@@ -59,30 +60,43 @@
                     <span id="networkStatusIcon" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
                     <span id="offlineHUDText" class="font-medium text-slate-300">Connected. Ready to sync local games.</span>
                 </div>
-                <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium">
-                    Sync Offline Folder
-                </button>
-            </div>
-
-            <div id="gamepadIndicator" class="p-3.5 rounded-xl glass-panel border border-indigo-500/10 bg-indigo-950/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
-                <div class="flex items-center gap-2.5">
-                    <span class="relative flex h-2 w-2">
-                        <span id="gamepadPulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75"></span>
-                        <span id="gamepadDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-400"></span>
-                    </span>
-                    <span id="gamepadName" class="font-medium text-slate-400">Controller disconnected.</span>
+                
+                <div id="syncToolbox" class="relative flex items-center transition-all duration-300">
+                    <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium z-10 relative">
+                        Sync Offline Folder
+                    </button>
+                    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
+                        <span class="font-mono text-xs font-bold leading-none">i</span>
+                    </button>
+                    
+                    <div id="syncInfoPanel" class="absolute top-full right-0 mt-3 w-64 glass-panel-dark p-4 rounded-xl shadow-2xl z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95 -translate-y-2 origin-top-right border border-white/10">
+                        <h4 class="text-sm font-semibold text-white mb-3">Background Sync</h4>
+                        <div class="space-y-3 text-xs font-medium text-slate-300">
+                            <div>
+                                <div class="flex justify-between mb-1.5">
+                                    <span>Progress</span>
+                                    <span id="syncProgressText" class="text-indigo-400">0 / 0</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                    <div id="syncProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between pt-1 border-t border-white/5">
+                                <span>Estimated Time:</span>
+                                <span id="syncEtaText" class="text-white">Calculating...</span>
+                            </div>
+                            <div class="flex justify-between text-slate-400">
+                                <span>Failed / Skipped:</span>
+                                <span id="syncSkippedText" class="text-rose-400">0</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="statusView" class="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[50vh] w-full">
-            <div id="statusContent" class="max-w-md mx-auto flex flex-col items-center justify-center">
-                <div id="statusSpinner" class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
-                <h3 id="statusTitle" class="text-xl font-medium text-white tracking-tight">Loading Game Library</h3>
-                <p id="statusDesc" class="text-sm text-slate-400 mt-2 leading-relaxed">Aggregating game nodes...</p>
-            </div>
-        </div>
-
+        <div id="statusView" class="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[50vh] w-full"><div id="statusContent" class="max-w-md mx-auto flex flex-col items-center justify-center"><div id="statusSpinner" class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div><h3 id="statusTitle" class="text-xl font-medium text-white tracking-tight">Loading Game Library</h3><p id="statusDesc" class="text-sm text-slate-400 mt-2 leading-relaxed">Aggregating game nodes...</p></div></div>
+        
         <main id="mainWorkspace" class="px-6 mt-6 space-y-10 hidden flex-1">
             <section id="heroSection" class="relative rounded-2xl overflow-hidden glass-panel h-[280px] md:h-[360px] flex flex-col justify-end p-6 md:p-10 group transition-all">
                 <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-700 scale-100 group-hover:scale-102 opacity-25" id="heroBg"></div>
@@ -94,7 +108,6 @@
                     <button id="heroLaunchBtn" class="px-5 py-2.5 bg-white text-slate-950 font-medium rounded-xl shadow-md hover:bg-slate-100 active:scale-98 transition-all text-sm flex items-center gap-2">Play Game</button>
                 </div>
             </section>
-            
             <div id="userSpaceContainer" class="space-y-10 empty:hidden"></div>
             <div id="collectionsContainer" class="space-y-10"></div>
         </main>
@@ -105,17 +118,12 @@
             <button onclick="closeFolderModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm bg-white/5 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">✕</button>
             <h2 class="text-lg font-bold text-white mb-1">Organize Game</h2>
             <p id="folderModalGameName" class="text-xs text-indigo-400 mb-5 font-medium line-clamp-1">Game Title</p>
-            
             <div class="space-y-4">
-                <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Add to Existing Folder</label>
-                    <div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div>
-                </div>
-                
+                <div><label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Add to Existing Folder</label><div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div></div>
                 <div class="border-t border-white/5 pt-4">
                     <label for="newFolderNameInput" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Or Create A New Folder</label>
                     <div class="flex gap-2">
-                        <input id="newFolderNameInput" type="text" placeholder="Folder name (e.g., RPGs, Action)..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all">
+                        <input id="newFolderNameInput" type="text" placeholder="Folder name..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
                         <button onclick="submitNewFolder()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors shadow-md">Create</button>
                     </div>
                 </div>
@@ -124,67 +132,73 @@
     </div>
 
     <div id="changelogModal" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6">
-        <div class="glass-panel-dark max-w-lg w-full rounded-2xl p-6 shadow-2xl border border-white/10 relative">
-            <button onclick="document.getElementById('changelogModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-            <h2 class="text-xl font-bold text-white mb-4">Version 2.2 Update Log</h2>
-            <ul class="space-y-3 text-sm text-slate-300">
-                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Native UI Engine:</strong> Completely removed JavaScript prompt alerts.</li>
-                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Folder Matrix Modal:</strong> Organize collections directly inside custom interface structures.</li>
-                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Persistent Sandbox:</strong> Saved lists remain cached within hardware environments automatically.</li>
-            </ul>
+        <div class="glass-panel-dark max-w-2xl w-full rounded-2xl shadow-2xl border border-white/10 relative overflow-hidden flex flex-col md:flex-row min-h-[300px]">
+            <button onclick="document.getElementById('changelogModal').classList.add('hidden')" class="absolute top-3 right-3 z-10 text-slate-400 hover:text-white w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-colors">✕</button>
+            
+            <div class="bg-slate-900/50 border-r border-white/5 w-full md:w-1/3 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 hidden md:block">Version History</h3>
+                <button onclick="switchTab('v2.3')" id="tab-v2.3" class="tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap">v2.3 (Current)</button>
+                <button onclick="switchTab('v2.2')" id="tab-v2.2" class="tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent">v2.2 - Folders</button>
+                <button onclick="switchTab('v2.1')" id="tab-v2.1" class="tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent">v2.1 - Favorites</button>
+            </div>
+            
+            <div class="p-6 flex-1 relative">
+                <div id="content-v2.3" class="tab-content animate-fade-in">
+                    <h2 class="text-xl font-bold text-white mb-4">The QoL Update</h2>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Live Download Stats:</strong> Click the new info tool beside the sync button to see ETA, skips, and live download progress.</div></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Fullscreen Engine:</strong> Maximize any game portal instantly with the new immersive button.</div></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Smart Connectivity:</strong> The Sync button automatically vanishes when you lose Wi-Fi.</div></li>
+                    </ul>
+                </div>
+                <div id="content-v2.2" class="tab-content hidden"><h2 class="text-lg font-bold text-white mb-3">Folders & UI</h2><p class="text-sm text-slate-400">Replaced intrusive browser popups with dynamic native UI modals. Introduced customized local playlist organization.</p></div>
+                <div id="content-v2.1" class="tab-content hidden"><h2 class="text-lg font-bold text-white mb-3">The Vault System</h2><p class="text-sm text-slate-400">Introduced persistent caching logic, favorites tagging, and localized JSON database aggregation.</p></div>
+            </div>
         </div>
     </div>
 
     <div id="gamePortal" class="fixed inset-0 z-50 glass-panel-dark hidden grid-rows-[auto_1fr] transition-all duration-300 opacity-0">
         <header class="p-4 flex items-center justify-between border-b border-white/5 bg-slate-900/90 backdrop-blur-md">
-            <div class="flex items-center gap-3">
-                <button id="closePortalBtn" class="p-2 rounded-xl hover:bg-white/10 transition-colors text-slate-400 hover:text-white">✕ Close</button>
-                <div>
-                    <h3 id="portalTitle" class="font-semibold text-white text-base leading-tight">Viewer</h3>
-                </div>
+            <h3 id="portalTitle" class="font-semibold text-white text-base leading-tight">Viewer</h3>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleFullscreen()" class="px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30 transition-colors text-sm font-medium flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                    Fullscreen
+                </button>
+                <button id="closePortalBtn" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-400 transition-colors text-slate-300 text-sm font-medium">✕ Close</button>
             </div>
         </header>
-        <div class="w-full h-full bg-black relative overflow-hidden" id="iframeWrapper">
+        <div class="w-full h-full bg-black relative overflow-hidden flex items-center justify-center" id="iframeWrapper">
             <iframe id="portalFrame" class="w-full h-full border-none" allow="gamepad; autoplay; fullscreen"></iframe>
         </div>
     </div>
 
     <script>
         const BASE_URL = 'https://ess-education.org';
-        const CONFIG = {
-            endpoints: [
-                './offline.json',
-                '/asset/json/zones/gnmath.json',
-                '/asset/json/zones/truffled.json',
-                '/asset/json/zones/seraph.json',
-                '/asset/json/zones/velara.json',
-                '/asset/json/zones/ugs.json',
-                '/asset/json/zones/tglsc.json',
-                '/asset/json/zones/selenite.json'
-            ],
-            fallbackImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%230f172a"/></svg>'
-        };
+        const CONFIG = { endpoints: ['./offline.json', '/asset/json/zones/gnmath.json', '/asset/json/zones/truffled.json', '/asset/json/zones/seraph.json', '/asset/json/zones/velara.json', '/asset/json/zones/ugs.json', '/asset/json/zones/tglsc.json', '/asset/json/zones/selenite.json'], fallbackImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%230f172a"/></svg>' };
 
         let STATE = { 
-            rawGamesList: [], 
-            processedGames: [], 
+            rawGamesList: [], processedGames: [], 
             activeFilters: { search: '', zone: 'all', sort: 'az' }, 
             isOffline: !navigator.onLine,
             favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
             folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
-            activeTargetGameId: null // Tracks current game when folder modal is active
+            activeTargetGameId: null
         };
 
-        // --- PWA MANAGEMENT ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW Registered'));
-            });
-        }
+        // --- NEW LOGIC: Live Sync & Progress ---
+        let syncStartTime = 0;
+        
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
 
         document.getElementById('syncOfflineBtn').addEventListener('click', () => {
             const btn = document.getElementById('syncOfflineBtn');
             btn.textContent = 'Syncing...';
+            btn.disabled = true;
+            syncStartTime = Date.now();
+            
+            // Pop out the info button smoothly
+            document.getElementById('syncInfoBtn').classList.add('info-btn-enter');
             
             const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
             const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
@@ -193,38 +207,70 @@
             if (navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({ type: 'SYNC_GAMES', urls: urlsToCache });
             } else {
-                btn.textContent = 'Requires Reload to Sync';
+                btn.textContent = 'Reload Page First';
             }
         });
 
         navigator.serviceWorker?.addEventListener('message', (event) => {
-    if (event.data.type === 'SYNC_COMPLETE') {
-        const btn = document.getElementById('syncOfflineBtn');
-        // Displays exact download health metrics on your button!
-        btn.textContent = `Sync Complete! (${event.data.synced} saved, ${event.data.failed} skipped)`;
-        
-        setTimeout(() => {
-            btn.textContent = 'Sync Offline Folder';
-        }, 5000);
-    }
-});
+            if (event.data.type === 'SYNC_PROGRESS') {
+                const { current, total, failed } = event.data;
+                document.getElementById('syncProgressText').textContent = `${current} / ${total}`;
+                document.getElementById('syncProgressBar').style.width = `${(current / total) * 100}%`;
+                document.getElementById('syncSkippedText').textContent = failed;
+
+                // Calculate Live ETA
+                if (current > 0) {
+                    const elapsed = Date.now() - syncStartTime;
+                    const timePerItem = elapsed / current;
+                    const remaining = total - current;
+                    const etaSeconds = Math.ceil((timePerItem * remaining) / 1000);
+                    document.getElementById('syncEtaText').textContent = etaSeconds > 0 ? `~${etaSeconds} sec remaining` : 'Almost done...';
+                }
+            }
+            if (event.data.type === 'SYNC_COMPLETE') {
+                const btn = document.getElementById('syncOfflineBtn');
+                btn.textContent = 'Sync Complete!';
+                document.getElementById('syncEtaText').textContent = 'Finished!';
+                document.getElementById('syncProgressBar').classList.add('bg-emerald-400');
+                
+                setTimeout(() => {
+                    btn.textContent = 'Sync Offline Folder';
+                    btn.disabled = false;
+                    document.getElementById('syncInfoPanel').classList.remove('panel-enter');
+                    document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
+                    // Hide the info button again after finishing reading
+                    setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
+                }, 6000);
+            }
+        });
+
+        function toggleSyncPanel() {
+            document.getElementById('syncInfoPanel').classList.toggle('panel-enter');
+        }
 
         function handleNetworkChange() {
             STATE.isOffline = !navigator.onLine;
             const dot = document.getElementById('networkStatusIcon');
             const text = document.getElementById('offlineHUDText');
             const zoneFilter = document.getElementById('zoneFilter');
+            const syncToolbox = document.getElementById('syncToolbox');
 
             if (STATE.isOffline) {
                 dot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]";
-                text.textContent = "Offline Mode Active. Remote sources hidden.";
+                text.textContent = "Offline Mode Active.";
                 zoneFilter.value = 'OFFLINE';
                 STATE.activeFilters.zone = 'OFFLINE';
                 zoneFilter.disabled = true;
+                
+                // Hide Sync Toolbox when offline
+                syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
             } else {
                 dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
                 text.textContent = "Connected. Ready to sync local games.";
                 zoneFilter.disabled = false;
+                
+                // Show Sync Toolbox when online
+                syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
             }
             processAndRenderView();
         }
@@ -232,299 +278,115 @@
         window.addEventListener('online', handleNetworkChange);
         window.addEventListener('offline', handleNetworkChange);
 
-        // --- SANDBOX UI FOLDER STORAGE SYSTEMS ---
-        function toggleFavorite(gameId, event) {
-            event.stopPropagation();
-            const index = STATE.favorites.indexOf(gameId);
-            if (index > -1) {
-                STATE.favorites.splice(index, 1);
-            } else {
-                STATE.favorites.push(gameId);
-            }
-            localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites));
-            processAndRenderView();
-        }
-
-        function openFolderModal(gameId, event) {
-            event.stopPropagation();
-            STATE.activeTargetGameId = gameId;
-            const gameObj = STATE.rawGamesList.find(g => g.id === gameId);
-            if (!gameObj) return;
-
-            document.getElementById('folderModalGameName').textContent = gameObj.name;
-            const existingContainer = document.getElementById('existingFoldersList');
-            existingContainer.innerHTML = '';
-
-            // Render clickable folder badges inside the modal
-            Object.keys(STATE.folders).sort().forEach(folderName => {
-                const btn = document.createElement('button');
-                const alreadyAdded = STATE.folders[folderName].includes(gameId);
-                
-                btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    alreadyAdded 
-                    ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' 
-                    : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                }`;
-                btn.textContent = alreadyAdded ? `${folderName} (Added)` : folderName;
-                btn.onclick = () => {
-                    addGameToFolder(folderName, gameId);
-                    closeFolderModal();
-                };
-                existingContainer.appendChild(btn);
+        // --- NEW LOGIC: Interactive Changelog Tabs ---
+        function openChangelog() { document.getElementById('changelogModal').classList.remove('hidden'); }
+        function switchTab(versionId) {
+            // Reset buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent";
             });
-
-            document.getElementById('newFolderNameInput').value = '';
-            document.getElementById('folderModal').classList.remove('hidden');
+            // Activate clicked button
+            const activeBtn = document.getElementById(`tab-${versionId}`);
+            activeBtn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap";
+            // Swap content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`content-${versionId}`).classList.remove('hidden');
         }
 
-        function closeFolderModal() {
-            document.getElementById('folderModal').classList.add('hidden');
-            STATE.activeTargetGameId = null;
-        }
-
-        function addGameToFolder(folderName, gameId) {
-            if (!STATE.folders[folderName]) {
-                STATE.folders[folderName] = [];
-            }
-            if (!STATE.folders[folderName].includes(gameId)) {
-                STATE.folders[folderName].push(gameId);
-            }
-            localStorage.setItem('vault_folders', JSON.stringify(STATE.folders));
-            processAndRenderView();
-        }
-
-        function submitNewFolder() {
-            const input = document.getElementById('newFolderNameInput');
-            const folderName = input.value.trim();
-            if (!folderName || !STATE.activeTargetGameId) return;
-
-            addGameToFolder(folderName, STATE.activeTargetGameId);
-            closeFolderModal();
-        }
-
-        function removeFromFolder(folderName, gameId, event) {
-            event.stopPropagation();
-            if (STATE.folders[folderName]) {
-                STATE.folders[folderName] = STATE.folders[folderName].filter(id => id !== gameId);
-                if (STATE.folders[folderName].length === 0) {
-                    delete STATE.folders[folderName];
-                }
-                localStorage.setItem('vault_folders', JSON.stringify(STATE.folders));
-                processAndRenderView();
+        // --- NEW LOGIC: Fullscreen Engine ---
+        function toggleFullscreen() {
+            const frameWrapper = document.getElementById('iframeWrapper');
+            if (!document.fullscreenElement) {
+                if (frameWrapper.requestFullscreen) { frameWrapper.requestFullscreen(); } 
+                else if (frameWrapper.webkitRequestFullscreen) { frameWrapper.webkitRequestFullscreen(); } // Safari
+            } else {
+                if (document.exitFullscreen) { document.exitFullscreen(); }
             }
         }
 
-        // --- PATH AND COMPILATION UTILITIES ---
-        function normalizeUrl(path, base = BASE_URL) {
-            if (!path) return '';
-            if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('./')) return path;
-            return `${base}${path.startsWith('/') ? path : `/${path}`}`;
-        }
+        // --- STORAGE & UI FUNCTIONS (UNCHANGED) ---
+        function toggleFavorite(id, e) { e.stopPropagation(); const i = STATE.favorites.indexOf(id); i>-1 ? STATE.favorites.splice(i,1) : STATE.favorites.push(id); localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites)); processAndRenderView(); }
+        function openFolderModal(id, e) { e.stopPropagation(); STATE.activeTargetGameId = id; const g = STATE.rawGamesList.find(x=>x.id===id); if(!g)return; document.getElementById('folderModalGameName').textContent = g.name; const c = document.getElementById('existingFoldersList'); c.innerHTML=''; Object.keys(STATE.folders).sort().forEach(f => { const b = document.createElement('button'); const a = STATE.folders[f].includes(id); b.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${a ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'}`; b.textContent = a ? `${f} (Added)` : f; b.onclick = () => { addGameToFolder(f, id); closeFolderModal(); }; c.appendChild(b); }); document.getElementById('newFolderNameInput').value = ''; document.getElementById('folderModal').classList.remove('hidden'); }
+        function closeFolderModal() { document.getElementById('folderModal').classList.add('hidden'); STATE.activeTargetGameId = null; }
+        function addGameToFolder(f, id) { if(!STATE.folders[f]) STATE.folders[f]=[]; if(!STATE.folders[f].includes(id)) STATE.folders[f].push(id); localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); }
+        function submitNewFolder() { const i = document.getElementById('newFolderNameInput'); const f = i.value.trim(); if(!f || !STATE.activeTargetGameId)return; addGameToFolder(f, STATE.activeTargetGameId); closeFolderModal(); }
+        function removeFromFolder(f, id, e) { e.stopPropagation(); if(STATE.folders[f]) { STATE.folders[f] = STATE.folders[f].filter(x=>x!==id); if(STATE.folders[f].length===0) delete STATE.folders[f]; localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); } }
 
-        function extractZoneName(endpointPath) {
-            if (endpointPath === './offline.json') return 'OFFLINE';
-            const match = endpointPath.match(/\/([^/]+)\.json$/);
-            return match ? match[1].toUpperCase() : 'UNKNOWN';
-        }
+        function normalizeUrl(p, b = BASE_URL) { if(!p)return ''; if(p.startsWith('http') || p.startsWith('./')) return p; return `${b}${p.startsWith('/')?p:`/${p}`}`; }
+        function extractZoneName(p) { if(p==='./offline.json') return 'OFFLINE'; const m=p.match(/\/([^/]+)\.json$/); return m?m[1].toUpperCase():'UNKNOWN'; }
 
         async function fetchSystemData() {
             showStatus('loading', 'Loading Game Library', 'Aggregating game nodes...');
             STATE.rawGamesList = [];
-            
-            const endpointsToFetch = STATE.isOffline ? ['./offline.json'] : CONFIG.endpoints;
-
-            for (const endpoint of endpointsToFetch) {
-                const zoneToken = extractZoneName(endpoint);
+            const endpoints = STATE.isOffline ? ['./offline.json'] : CONFIG.endpoints;
+            for (const ep of endpoints) {
+                const z = extractZoneName(ep);
                 try {
-                    const fetchUrl = endpoint === './offline.json' ? endpoint : `${BASE_URL}${endpoint}`;
-                    const response = await fetch(fetchUrl);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    const dataset = await response.json();
-                    
-                    if (Array.isArray(dataset)) {
-                        dataset.forEach((record, index) => {
-                            if (!record.name || !record.url) return;
-                            STATE.rawGamesList.push({
-                                id: `${zoneToken}-${index}`,
-                                name: record.name.trim(),
-                                cover: record.cover ? normalizeUrl(record.cover, endpoint === './offline.json' ? '' : BASE_URL) : CONFIG.fallbackImage,
-                                url: normalizeUrl(record.url, endpoint === './offline.json' ? '' : BASE_URL),
-                                zone: zoneToken
-                            });
-                        });
-                    }
-                } catch (error) {
-                    console.warn(`Could not load source tree endpoint: ${endpoint}`);
-                }
+                    const u = ep==='./offline.json'?ep:`${BASE_URL}${ep}`;
+                    const r = await fetch(u); if(!r.ok) throw new Error();
+                    const d = await r.json();
+                    if(Array.isArray(d)) { d.forEach((record, idx) => { if(record.name && record.url) STATE.rawGamesList.push({ id:`${z}-${idx}`, name:record.name.trim(), cover:record.cover?normalizeUrl(record.cover, ep==='./offline.json'?'':BASE_URL):CONFIG.fallbackImage, url:normalizeUrl(record.url, ep==='./offline.json'?'':BASE_URL), zone:z }); }); }
+                } catch (err) {}
             }
             processAndRenderView();
         }
 
         function processAndRenderView() {
-            let results = [...STATE.rawGamesList];
+            let r = [...STATE.rawGamesList];
+            if(STATE.activeFilters.search) r = r.filter(g=>g.name.toLowerCase().includes(STATE.activeFilters.search.toLowerCase()));
+            if(STATE.activeFilters.zone!=='all') r = r.filter(g=>g.zone===STATE.activeFilters.zone);
+            if(STATE.activeFilters.sort==='az') r.sort((a,b)=>a.name.localeCompare(b.name));
+            if(STATE.activeFilters.sort==='za') r.sort((a,b)=>b.name.localeCompare(a.name));
+            STATE.processedGames = r;
 
-            if (STATE.activeFilters.search) results = results.filter(g => g.name.toLowerCase().includes(STATE.activeFilters.search.toLowerCase()));
-            if (STATE.activeFilters.zone !== 'all') results = results.filter(g => g.zone === STATE.activeFilters.zone);
-
-            if (STATE.activeFilters.sort === 'az') results.sort((a, b) => a.name.localeCompare(b.name));
-            if (STATE.activeFilters.sort === 'za') results.sort((a, b) => b.name.localeCompare(a.name));
-
-            STATE.processedGames = results;
-
-            const zoneSelector = document.getElementById('zoneFilter');
-            const currentSelected = STATE.activeFilters.zone;
-            zoneSelector.innerHTML = '<option value="all" class="bg-slate-900">All Sources</option>';
-            
-            const domains = [...new Set(STATE.rawGamesList.map(g => g.zone))];
-            domains.sort().forEach(d => {
-                const opt = document.createElement('option');
-                opt.value = d;
-                opt.className = 'bg-slate-900';
-                opt.textContent = `Source: ${d}`;
-                if (currentSelected === d) opt.selected = true;
-                zoneSelector.appendChild(opt);
-            });
-
+            const zs = document.getElementById('zoneFilter'); const c = STATE.activeFilters.zone; zs.innerHTML='<option value="all" class="bg-slate-900">All Sources</option>';
+            [...new Set(STATE.rawGamesList.map(g=>g.zone))].sort().forEach(d=>{ const o=document.createElement('option'); o.value=d; o.className='bg-slate-900'; o.textContent=`Source: ${d}`; if(c===d) o.selected=true; zs.appendChild(o); });
             renderInterfaceDom();
         }
 
-        function createGameCard(game, contextFolder = null) {
-            const card = document.createElement('div');
-            card.className = 'glass-card rounded-xl overflow-hidden flex flex-col cursor-pointer relative group';
-            
-            const isFav = STATE.favorites.includes(game.id);
-            
-            card.innerHTML = `
-                <div class="aspect-[4/3] w-full bg-slate-900 relative overflow-hidden">
-                    <img src="${game.cover}" class="w-full h-full object-cover" loading="lazy">
-                    
-                    <div class="absolute top-2 right-2 flex gap-1.5 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                        <button onclick="toggleFavorite('${game.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs shadow-md transition-transform hover:scale-110 active:scale-95" title="Favorite">
-                            ${isFav ? '❤️' : '🤍'}
-                        </button>
-                        <button onclick="openFolderModal('${game.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs text-indigo-400 shadow-md font-bold transition-transform hover:scale-110 active:scale-95" title="Add to Folder">
-                            📁+
-                        </button>
-                    </div>
-
-                    ${contextFolder ? `
-                        <button onclick="removeFromFolder('${contextFolder}', '${game.id}', event)" class="absolute bottom-2 left-2 px-2 py-1 text-[10px] font-medium bg-rose-950/80 border border-rose-500/30 text-rose-300 rounded-md backdrop-blur-sm opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-200" title="Remove from this folder">
-                            Remove
-                        </button>
-                    ` : ''}
-                </div>
-                <div class="p-3">
-                    <h4 class="text-sm font-medium text-slate-200 line-clamp-1">${game.name}</h4>
-                    <span class="text-[11px] text-slate-400">Source: ${game.zone}</span>
-                </div>
-            `;
-            card.onclick = () => executeGameLauncher(game);
-            return card;
+        function createGameCard(g, folder=null) {
+            const d = document.createElement('div'); d.className='glass-card rounded-xl overflow-hidden flex flex-col cursor-pointer relative group';
+            const fv = STATE.favorites.includes(g.id);
+            d.innerHTML = `
+                <div class="aspect-[4/3] w-full bg-slate-900 relative overflow-hidden"><img src="${g.cover}" class="w-full h-full object-cover" loading="lazy">
+                <div class="absolute top-2 right-2 flex gap-1.5 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10"><button onclick="toggleFavorite('${g.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs shadow-md transition-transform hover:scale-110 active:scale-95">${fv?'❤️':'🤍'}</button><button onclick="openFolderModal('${g.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs text-indigo-400 shadow-md font-bold transition-transform hover:scale-110 active:scale-95">📁+</button></div>
+                ${folder ? `<button onclick="removeFromFolder('${folder}', '${g.id}', event)" class="absolute bottom-2 left-2 px-2 py-1 text-[10px] font-medium bg-rose-950/80 border border-rose-500/30 text-rose-300 rounded-md backdrop-blur-sm opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>`:''}</div>
+                <div class="p-3"><h4 class="text-sm font-medium text-slate-200 line-clamp-1">${g.name}</h4><span class="text-[11px] text-slate-400">Source: ${g.zone}</span></div>`;
+            d.onclick = () => executeGameLauncher(g); return d;
         }
 
         function renderInterfaceDom() {
-            const workspace = document.getElementById('mainWorkspace');
-            const statusView = document.getElementById('statusView');
-            const userSpace = document.getElementById('userSpaceContainer');
-            const container = document.getElementById('collectionsContainer');
-            
-            userSpace.innerHTML = '';
-            container.innerHTML = '';
-            
-            if (STATE.processedGames.length === 0) {
-                showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi configurations.');
-                workspace.classList.add('hidden');
-                return;
-            }
+            const ws = document.getElementById('mainWorkspace'); const sv = document.getElementById('statusView'); const us = document.getElementById('userSpaceContainer'); const cc = document.getElementById('collectionsContainer');
+            us.innerHTML=''; cc.innerHTML='';
+            if(STATE.processedGames.length===0) { showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi configurations.'); ws.classList.add('hidden'); return; }
+            sv.classList.add('hidden'); ws.classList.remove('hidden');
 
-            statusView.classList.add('hidden');
-            workspace.classList.remove('hidden');
+            const ff = STATE.processedGames.filter(g=>STATE.favorites.includes(g.id));
+            if(ff.length>0) { const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-rose-500/20 pb-2 mb-4"><h3 class="text-lg font-semibold text-rose-400">❤️ Favorites</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'; ff.forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); us.appendChild(s); }
 
-            // --- BUILD USER SPACE (FAVORITES & CUSTOM PLAYLIST SHELVES) ---
-            const filteredFavs = STATE.processedGames.filter(g => STATE.favorites.includes(g.id));
-            if (filteredFavs.length > 0) {
-                const favSection = document.createElement('section');
-                favSection.innerHTML = `<div class="border-b border-rose-500/20 pb-2 mb-4 flex items-center gap-2"><h3 class="text-lg font-semibold text-rose-400">❤️ Favorites</h3></div>`;
-                const trackGrid = document.createElement('div');
-                trackGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
-                filteredFavs.forEach(game => trackGrid.appendChild(createGameCard(game)));
-                favSection.appendChild(trackGrid);
-                userSpace.appendChild(favSection);
-            }
+            Object.keys(STATE.folders).sort().forEach(f=>{ const ids=STATE.folders[f]; const gs=STATE.processedGames.filter(g=>ids.includes(g.id)); if(gs.length>0){ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-indigo-500/20 pb-2 mb-4"><h3 class="text-lg font-semibold text-indigo-400">📁 Folder: ${f}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'; gs.forEach(x=>t.appendChild(createGameCard(x, f))); s.appendChild(t); us.appendChild(s); } });
 
-            Object.keys(STATE.folders).sort().forEach(folderName => {
-                const folderGameIds = STATE.folders[folderName];
-                const folderGames = STATE.processedGames.filter(g => folderGameIds.includes(g.id));
-                
-                if (folderGames.length > 0) {
-                    const folderSection = document.createElement('section');
-                    folderSection.innerHTML = `<div class="border-b border-indigo-500/20 pb-2 mb-4"><h3 class="text-lg font-semibold text-indigo-400">📁 Folder: ${folderName}</h3></div>`;
-                    const trackGrid = document.createElement('div');
-                    trackGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
-                    folderGames.forEach(game => trackGrid.appendChild(createGameCard(game, folderName)));
-                    folderSection.appendChild(trackGrid);
-                    userSpace.appendChild(folderSection);
-                }
-            });
+            const grp={}; STATE.processedGames.forEach(g=>{if(!grp[g.zone])grp[g.zone]=[]; grp[g.zone].push(g);});
+            Object.keys(grp).sort().forEach(k=>{ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-white/5 pb-2 mb-4"><h3 class="text-lg font-medium text-white">${k}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'; grp[k].forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); cc.appendChild(s); });
 
-            // --- BUILD MAIN SYSTEM FEED ---
-            const groups = {};
-            STATE.processedGames.forEach(g => {
-                if (!groups[g.zone]) groups[g.zone] = [];
-                groups[g.zone].push(g);
-            });
-
-            Object.keys(groups).sort().forEach((sectionTitle) => {
-                const rowSection = document.createElement('section');
-                rowSection.innerHTML = `<div class="border-b border-white/5 pb-2 mb-4"><h3 class="text-lg font-medium text-white">${sectionTitle}</h3></div>`;
-                const trackGrid = document.createElement('div');
-                trackGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
-                groups[sectionTitle].forEach(game => trackGrid.appendChild(createGameCard(game)));
-                rowSection.appendChild(trackGrid);
-                container.appendChild(rowSection);
-            });
-
-            const hero = STATE.processedGames[0];
-            document.getElementById('heroBg').style.backgroundImage = `url('${hero.cover}')`;
-            document.getElementById('heroTitle').textContent = hero.name;
-            document.getElementById('heroMeta').textContent = `Source: ${hero.zone}`;
-            document.getElementById('heroLaunchBtn').onclick = () => executeGameLauncher(hero);
+            const h = STATE.processedGames[0]; document.getElementById('heroBg').style.backgroundImage=`url('${h.cover}')`; document.getElementById('heroTitle').textContent=h.name; document.getElementById('heroMeta').textContent=`Source: ${h.zone}`; document.getElementById('heroLaunchBtn').onclick=()=>executeGameLauncher(h);
         }
 
-        function showStatus(type, title, desc) {
-            document.getElementById('statusView').classList.remove('hidden');
-            document.getElementById('statusTitle').textContent = title;
-            document.getElementById('statusDesc').textContent = desc;
-            document.getElementById('statusSpinner').style.display = type === 'loading' ? 'block' : 'none';
-        }
-
-        function executeGameLauncher(game) {
-            const portal = document.getElementById('gamePortal');
-            document.getElementById('portalTitle').textContent = game.name;
-            portal.classList.remove('hidden');
-            portal.classList.add('grid');
-            setTimeout(() => portal.classList.remove('opacity-0'), 50);
-            document.getElementById('portalFrame').src = game.url;
+        function showStatus(t, l, d) { document.getElementById('statusView').classList.remove('hidden'); document.getElementById('statusTitle').textContent=l; document.getElementById('statusDesc').textContent=d; document.getElementById('statusSpinner').style.display=t==='loading'?'block':'none'; }
+        
+        function executeGameLauncher(g) {
+            const p = document.getElementById('gamePortal'); document.getElementById('portalTitle').textContent=g.name; p.classList.remove('hidden'); p.classList.add('grid'); setTimeout(()=>p.classList.remove('opacity-0'),50); document.getElementById('portalFrame').src=g.url;
         }
 
         document.getElementById('closePortalBtn').addEventListener('click', () => {
-            const portal = document.getElementById('gamePortal');
-            portal.classList.add('opacity-0');
-            setTimeout(() => {
-                portal.classList.add('hidden');
-                portal.classList.remove('grid');
-                document.getElementById('portalFrame').src = '';
-            }, 300);
+            const p = document.getElementById('gamePortal'); p.classList.add('opacity-0');
+            if (document.fullscreenElement) { document.exitFullscreen(); } // Exit fullscreen if active
+            setTimeout(()=>{ p.classList.add('hidden'); p.classList.remove('grid'); document.getElementById('portalFrame').src=''; },300);
         });
 
-        // Event Hook Channels
-        document.getElementById('searchInput').addEventListener('input', (e) => { STATE.activeFilters.search = e.target.value; processAndRenderView(); });
-        document.getElementById('zoneFilter').addEventListener('change', (e) => { STATE.activeFilters.zone = e.target.value; processAndRenderView(); });
-        document.getElementById('sortOrder').addEventListener('change', (e) => { STATE.activeFilters.sort = e.target.value; processAndRenderView(); });
+        document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
 
-        // Initialize Systems Setup
-        handleNetworkChange();
-        fetchSystemData();
+        handleNetworkChange(); fetchSystemData();
     </script>
 </body>
 </html>
