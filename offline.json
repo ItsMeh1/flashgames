@@ -54,5 +54,12 @@
         "zone": "OFFLINE",
         "url": "./offline/2048.html",
         "cover": "./offline/2048.png"
+    },
+    {
+        "name": "Flash Exclusive: Infinity RNG",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/infinityrng.html",
+        "cover": "./offline/rng.png"
     }
 ]
