@@ -36,7 +36,7 @@
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
                 </div>
                 <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
-                <button onclick="document.getElementById('changelogModal').classList.toggle('hidden')" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.1 Updates</button>
+                <button onclick="document.getElementById('changelogModal').classList.toggle('hidden')" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.2 Updates</button>
             </div>
 
             <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
@@ -96,19 +96,41 @@
             </section>
             
             <div id="userSpaceContainer" class="space-y-10 empty:hidden"></div>
-
             <div id="collectionsContainer" class="space-y-10"></div>
         </main>
+    </div>
+
+    <div id="folderModal" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6">
+        <div class="glass-panel-dark max-w-md w-full rounded-2xl p-6 shadow-2xl border border-white/10 relative">
+            <button onclick="closeFolderModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm bg-white/5 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">✕</button>
+            <h2 class="text-lg font-bold text-white mb-1">Organize Game</h2>
+            <p id="folderModalGameName" class="text-xs text-indigo-400 mb-5 font-medium line-clamp-1">Game Title</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Add to Existing Folder</label>
+                    <div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div>
+                </div>
+                
+                <div class="border-t border-white/5 pt-4">
+                    <label for="newFolderNameInput" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Or Create A New Folder</label>
+                    <div class="flex gap-2">
+                        <input id="newFolderNameInput" type="text" placeholder="Folder name (e.g., RPGs, Action)..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all">
+                        <button onclick="submitNewFolder()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors shadow-md">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="changelogModal" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6">
         <div class="glass-panel-dark max-w-lg w-full rounded-2xl p-6 shadow-2xl border border-white/10 relative">
             <button onclick="document.getElementById('changelogModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-            <h2 class="text-xl font-bold text-white mb-4">Version 2.1 Update Log</h2>
+            <h2 class="text-xl font-bold text-white mb-4">Version 2.2 Update Log</h2>
             <ul class="space-y-3 text-sm text-slate-300">
-                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Favorites Engine:</strong> Toggle heart badges on cards to pin collections to the top tier.</li>
-                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Custom Folders:</strong> Dynamically generate local categorization playlists via localized database indexes.</li>
-                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Persistent Storage:</strong> All folders and favorites are remembered across browser sessions via sandbox virtualization.</li>
+                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Native UI Engine:</strong> Completely removed JavaScript prompt alerts.</li>
+                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Folder Matrix Modal:</strong> Organize collections directly inside custom interface structures.</li>
+                <li class="flex gap-2"><span class="text-indigo-400">★</span> <strong>Persistent Sandbox:</strong> Saved lists remain cached within hardware environments automatically.</li>
             </ul>
         </div>
     </div>
@@ -143,17 +165,17 @@
             fallbackImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%230f172a"/></svg>'
         };
 
-        // Added favorites and folders to system infrastructure state management
         let STATE = { 
             rawGamesList: [], 
             processedGames: [], 
             activeFilters: { search: '', zone: 'all', sort: 'az' }, 
             isOffline: !navigator.onLine,
             favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
-            folders: JSON.parse(localStorage.getItem('vault_folders')) || {} 
+            folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
+            activeTargetGameId: null // Tracks current game when folder modal is active
         };
 
-        // --- PWA LOGIC ---
+        // --- PWA MANAGEMENT ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW Registered'));
@@ -206,7 +228,7 @@
         window.addEventListener('online', handleNetworkChange);
         window.addEventListener('offline', handleNetworkChange);
 
-        // --- USER STORAGE SYSTEMS ---
+        // --- SANDBOX UI FOLDER STORAGE SYSTEMS ---
         function toggleFavorite(gameId, event) {
             event.stopPropagation();
             const index = STATE.favorites.indexOf(gameId);
@@ -219,21 +241,44 @@
             processAndRenderView();
         }
 
-        function manageGameFolder(gameId, event) {
+        function openFolderModal(gameId, event) {
             event.stopPropagation();
-            const currentFolders = Object.keys(STATE.folders);
-            let promptMsg = "Enter folder name to add this game to.\n";
-            if (currentFolders.length > 0) {
-                promptMsg += `Existing Groups: ${currentFolders.join(', ')}`;
-            } else {
-                promptMsg += "No folders found. Type a name to create your first folder shelf!";
-            }
+            STATE.activeTargetGameId = gameId;
+            const gameObj = STATE.rawGamesList.find(g => g.id === gameId);
+            if (!gameObj) return;
 
-            const targetFolder = prompt(promptMsg);
-            if (!targetFolder) return;
-            const folderName = targetFolder.trim();
-            if (!folderName) return;
+            document.getElementById('folderModalGameName').textContent = gameObj.name;
+            const existingContainer = document.getElementById('existingFoldersList');
+            existingContainer.innerHTML = '';
 
+            // Render clickable folder badges inside the modal
+            Object.keys(STATE.folders).sort().forEach(folderName => {
+                const btn = document.createElement('button');
+                const alreadyAdded = STATE.folders[folderName].includes(gameId);
+                
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    alreadyAdded 
+                    ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' 
+                    : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                }`;
+                btn.textContent = alreadyAdded ? `${folderName} (Added)` : folderName;
+                btn.onclick = () => {
+                    addGameToFolder(folderName, gameId);
+                    closeFolderModal();
+                };
+                existingContainer.appendChild(btn);
+            });
+
+            document.getElementById('newFolderNameInput').value = '';
+            document.getElementById('folderModal').classList.remove('hidden');
+        }
+
+        function closeFolderModal() {
+            document.getElementById('folderModal').classList.add('hidden');
+            STATE.activeTargetGameId = null;
+        }
+
+        function addGameToFolder(folderName, gameId) {
             if (!STATE.folders[folderName]) {
                 STATE.folders[folderName] = [];
             }
@@ -242,6 +287,15 @@
             }
             localStorage.setItem('vault_folders', JSON.stringify(STATE.folders));
             processAndRenderView();
+        }
+
+        function submitNewFolder() {
+            const input = document.getElementById('newFolderNameInput');
+            const folderName = input.value.trim();
+            if (!folderName || !STATE.activeTargetGameId) return;
+
+            addGameToFolder(folderName, STATE.activeTargetGameId);
+            closeFolderModal();
         }
 
         function removeFromFolder(folderName, gameId, event) {
@@ -256,7 +310,7 @@
             }
         }
 
-        // --- DATA PROCESSING AND CORE RECOVERY ENGINE ---
+        // --- PATH AND COMPILATION UTILITIES ---
         function normalizeUrl(path, base = BASE_URL) {
             if (!path) return '';
             if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('./')) return path;
@@ -330,7 +384,6 @@
             renderInterfaceDom();
         }
 
-        // Expanded card node generator to embed utility parameters 
         function createGameCard(game, contextFolder = null) {
             const card = document.createElement('div');
             card.className = 'glass-card rounded-xl overflow-hidden flex flex-col cursor-pointer relative group';
@@ -345,7 +398,7 @@
                         <button onclick="toggleFavorite('${game.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs shadow-md transition-transform hover:scale-110 active:scale-95" title="Favorite">
                             ${isFav ? '❤️' : '🤍'}
                         </button>
-                        <button onclick="manageGameFolder('${game.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs text-indigo-400 shadow-md font-bold transition-transform hover:scale-110 active:scale-95" title="Add to Folder">
+                        <button onclick="openFolderModal('${game.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs text-indigo-400 shadow-md font-bold transition-transform hover:scale-110 active:scale-95" title="Add to Folder">
                             📁+
                         </button>
                     </div>
@@ -383,9 +436,7 @@
             statusView.classList.add('hidden');
             workspace.classList.remove('hidden');
 
-            // --- BUILD USER SPACE (FAVORITES & CUSTOM PLAYLISTS) ---
-            // Render Favorites Row if any currently accessible/filtered games match
-            const activeFavs = STATE.processedGames.filter(g => STATE.favorites.includes(gameId => g.id === gameId || g.id === gameId));
+            // --- BUILD USER SPACE (FAVORITES & CUSTOM PLAYLIST SHELVES) ---
             const filteredFavs = STATE.processedGames.filter(g => STATE.favorites.includes(g.id));
             if (filteredFavs.length > 0) {
                 const favSection = document.createElement('section');
@@ -397,7 +448,6 @@
                 userSpace.appendChild(favSection);
             }
 
-            // Render Custom Folder Shelves
             Object.keys(STATE.folders).sort().forEach(folderName => {
                 const folderGameIds = STATE.folders[folderName];
                 const folderGames = STATE.processedGames.filter(g => folderGameIds.includes(g.id));
@@ -413,7 +463,7 @@
                 }
             });
 
-            // --- BUILD CORE HARDWARE DOMAINS FEED ---
+            // --- BUILD MAIN SYSTEM FEED ---
             const groups = {};
             STATE.processedGames.forEach(g => {
                 if (!groups[g.zone]) groups[g.zone] = [];
@@ -430,7 +480,6 @@
                 container.appendChild(rowSection);
             });
 
-            // Anchor the Spotlight showcase item
             const hero = STATE.processedGames[0];
             document.getElementById('heroBg').style.backgroundImage = `url('${hero.cover}')`;
             document.getElementById('heroTitle').textContent = hero.name;
@@ -464,12 +513,12 @@
             }, 300);
         });
 
-        // Event Handling Channels
+        // Event Hook Channels
         document.getElementById('searchInput').addEventListener('input', (e) => { STATE.activeFilters.search = e.target.value; processAndRenderView(); });
         document.getElementById('zoneFilter').addEventListener('change', (e) => { STATE.activeFilters.zone = e.target.value; processAndRenderView(); });
         document.getElementById('sortOrder').addEventListener('change', (e) => { STATE.activeFilters.sort = e.target.value; processAndRenderView(); });
 
-        // Bootstrap App Pipeline
+        // Initialize Systems Setup
         handleNetworkChange();
         fetchSystemData();
     </script>
