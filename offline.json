@@ -47,5 +47,12 @@
         "zone": "OFFLINE",
         "url": "./offline/PixelClient 1.12.2 WASM.html",
         "cover": "./offline/pixelclient.svg"
+    },
+    {
+        "name": "2048 port by Flash Games",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/2048.html",
+        "cover": "./offline/2048.png"
     }
 ]
