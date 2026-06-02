@@ -198,12 +198,16 @@
         });
 
         navigator.serviceWorker?.addEventListener('message', (event) => {
-            if (event.data.type === 'SYNC_COMPLETE') {
-                const btn = document.getElementById('syncOfflineBtn');
-                btn.textContent = 'Sync Complete!';
-                setTimeout(() => btn.textContent = 'Sync Offline Folder', 3000);
-            }
-        });
+    if (event.data.type === 'SYNC_COMPLETE') {
+        const btn = document.getElementById('syncOfflineBtn');
+        // Displays exact download health metrics on your button!
+        btn.textContent = `Sync Complete! (${event.data.synced} saved, ${event.data.failed} skipped)`;
+        
+        setTimeout(() => {
+            btn.textContent = 'Sync Offline Folder';
+        }, 5000);
+    }
+});
 
         function handleNetworkChange() {
             STATE.isOffline = !navigator.onLine;
