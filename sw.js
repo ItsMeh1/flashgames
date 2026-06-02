@@ -1,63 +1,64 @@
-const CACHE_NAME = 'flash-portal-v2';
+const CACHE_NAME = 'flash-vault-v2.3'; // Bumped version
 
-// The core shell of your app
-const APP_SHELL = [
-    './',
-    './index.html',
-    './offline.json',
-    './manifest.json'
-];
+self.addEventListener('install', (e) => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
 
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
-        .then(() => self.skipWaiting())
-    );
-});
+self.addEventListener('message', async (event) => {
+    if (event.data.type === 'SYNC_GAMES') {
+        const urls = event.data.urls;
+        const cache = await caches.open(CACHE_NAME);
+        
+        let syncedCount = 0;
+        let failedCount = 0;
+        let totalCount = urls.length;
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then(keys => Promise.all(
-            keys.map(key => {
-                if (key !== CACHE_NAME) return caches.delete(key);
-            })
-        )).then(() => self.clients.claim())
-    );
-});
+        // Broadcast initial start
+        const clientsList = await clients.matchAll();
+        
+        for (let i = 0; i < totalCount; i++) {
+            const url = urls[i];
+            try {
+                const isExternal = url.startsWith('http') && !url.includes(location.hostname);
+                const requestOptions = isExternal ? { mode: 'no-cors' } : { mode: 'cors' };
+                const response = await fetch(url, requestOptions);
+                
+                if (response.ok || response.type === 'opaque') {
+                    await cache.put(url, response);
+                    syncedCount++;
+                } else {
+                    failedCount++;
+                }
+            } catch (err) {
+                failedCount++;
+            }
 
-// Cache-First Strategy for local assets, Network-First for remote endpoints
-self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
-    
-    // Only cache requests from our own origin (the offline folder & app shell)
-    if (url.origin === location.origin) {
-        event.respondWith(
-            caches.match(event.request).then((cachedResponse) => {
-                if (cachedResponse) return cachedResponse;
-
-                // If not in cache, fetch it, and store it for next time (crucial for heavy game assets)
-                return fetch(event.request).then((networkResponse) => {
-                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                        return networkResponse;
-                    }
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-                    return networkResponse;
+            // Stream live progress back to index.html
+            clientsList.forEach(client => {
+                client.postMessage({ 
+                    type: 'SYNC_PROGRESS', 
+                    current: syncedCount + failedCount, 
+                    total: totalCount, 
+                    synced: syncedCount, 
+                    failed: failedCount 
                 });
-            })
-        );
-    }
-});
+            });
+        }
 
-// Listen for explicit caching commands from the UI button
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SYNC_GAMES') {
-        caches.open(CACHE_NAME).then((cache) => {
-            cache.addAll(event.data.urls)
-                .then(() => event.source.postMessage({ type: 'SYNC_COMPLETE' }))
-                .catch((err) => console.error("Sync failed:", err));
+        // Final completion message
+        clientsList.forEach(client => {
+            client.postMessage({ type: 'SYNC_COMPLETE', synced: syncedCount, failed: failedCount });
         });
     }
+});
+
+self.addEventListener('fetch', (event) => {
+    if (!event.request.url.startsWith('http')) return;
+    event.respondWith(
+        caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || fetch(event.request).catch(() => new Response(
+                '<h1>Offline Content Unavailable</h1><p>This game hasn\'t been successfully synced.</p>', 
+                { status: 503, headers: { 'Content-Type': 'text/html' } }
+            ));
+        })
+    );
 });
