@@ -36,8 +36,11 @@
                 <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg>
                 </div>
-                <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
-                <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.3</button>
+                <div class="flex items-baseline gap-2">
+                    <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
+                    <span id="totalGamesCounter" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400">0 games</span>
+                </div>
+                <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.3 Updates</button>
             </div>
             
             <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
@@ -182,7 +185,7 @@
             favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
             folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
             activeTargetGameId: null,
-            currentActiveBlobUrl: null // Keep track of active runtime objects to prevent memory leaks
+            currentActiveBlobUrl: null
         };
 
         let syncStartTime = 0;
@@ -290,7 +293,6 @@
             }
         }
 
-        // --- DYNAMIC CODE COMPILER ENGINE ---
         async function executeGameLauncher(game) {
             const portal = document.getElementById('gamePortal');
             const frame = document.getElementById('portalFrame');
@@ -300,28 +302,23 @@
             portal.classList.add('grid');
             setTimeout(() => portal.classList.remove('opacity-0'), 50);
 
-            // Clean up old virtual memory pointers
             if (STATE.currentActiveBlobUrl) {
                 URL.revokeObjectURL(STATE.currentActiveBlobUrl);
                 STATE.currentActiveBlobUrl = null;
             }
 
             try {
-                // Fetch the game data to inspect its payload signature
                 const response = await fetch(game.url);
                 const originalText = await response.text();
                 const trimmedText = originalText.trim();
 
-                // Check if content looks like raw code or a full page HTML document
                 const hasHtmlTags = /<html|<head|<body|<script/i.test(trimmedText);
                 const hasRawJsLogic = trimmedText.includes('function') || trimmedText.includes('var ') || trimmedText.includes('const ') || (trimmedText.startsWith('{') && trimmedText.endsWith('}'));
 
                 if (hasHtmlTags || hasRawJsLogic) {
                     console.log(`Executing code injection pipeline for: ${game.name}`);
-                    
                     let executablePayload = originalText;
                     
-                    // If it is pure JS logic without HTML tags, wrap it nicely so the browser reads it
                     if (hasRawJsLogic && !hasHtmlTags) {
                         executablePayload = `
                             <!DOCTYPE html>
@@ -334,12 +331,10 @@
                         `;
                     }
 
-                    // Compile into an isolated hardware blob link
                     const blob = new Blob([executablePayload], { type: 'text/html;charset=utf-8' });
                     STATE.currentActiveBlobUrl = URL.createObjectURL(blob);
                     frame.src = STATE.currentActiveBlobUrl;
                 } else {
-                    // Standard URL configuration bypasses compiled rendering
                     frame.src = game.url;
                 }
             } catch (err) {
@@ -371,6 +366,10 @@
                     if(Array.isArray(d)) { d.forEach((record, idx) => { if(record.name && record.url) STATE.rawGamesList.push({ id:`${z}-${idx}`, name:record.name.trim(), cover:record.cover?normalizeUrl(record.cover, ep==='./offline.json'?'':BASE_URL):CONFIG.fallbackImage, url:normalizeUrl(record.url, ep==='./offline.json'?'':BASE_URL), zone:z }); }); }
                 } catch (err) {}
             }
+            
+            // NEW LOGIC: Update total games counter badge with total count of raw items found
+            document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+            
             processAndRenderView();
         }
 
