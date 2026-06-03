@@ -61,5 +61,12 @@
         "zone": "OFFLINE",
         "url": "./offline/infinityrng.html",
         "cover": "./offline/rng.png"
+    },
+    {
+        "name": "Flash Exclusive: Orbital",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/orbital.html",
+        "cover": ""
     }
 ]
