@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ORBITAL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;800&display=swap');
+
+        :root {
+            --bg: #0a0a12;
+            --core: #ffffff;
+            --player: #00ffd2;
+            --enemy: #ff0055;
+            --text: #ffffff;
+            --ui-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-touch-callout: none;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameCanvas {
+            display: block;
+        }
+
+        /* UI Overlay */
+        #ui {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            padding: 30px;
+        }
+
+        /* HUD */
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .hud.playing { opacity: 1; }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: 200;
+            letter-spacing: 2px;
+        }
+        .score-num { font-weight: 800; color: var(--player); }
+
+        /* Screens (Menu/Game Over) */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto; /* Re-enable clicks for buttons */
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            z-index: 10;
+        }
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--text), var(--player));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 200;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 50px;
+        }
+
+        .final-score {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+        .final-score strong { font-weight: 800; color: var(--enemy); font-size: 2rem;}
+
+        .btn {
+            background: none;
+            border: 1px solid var(--text);
+            color: var(--text);
+            padding: 15px 40px;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background-color: var(--text);
+            color: var(--bg);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="ui">
+        <div class="hud" id="hud">
+            <div class="score-display">DISTANCE: <span class="score-num" id="scoreNum">0</span>m</div>
+        </div>
+
+        <div class="screen" id="startScreen">
+            <h1>ORBITAL</h1>
+            <p class="subtitle">TAP TO CHANGE DIRECTION</p>
+            <button class="btn" onclick="startGame()">START</button>
+        </div>
+
+        <div class="screen hidden" id="gameOverScreen">
+            <h1>COLLISION</h1>
+            <p class="final-score">You survived <strong id="finalScore">0</strong> meters</p>
+            <button class="btn" onclick="startGame()">RETRY</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration & Elements ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiHUD = document.getElementById('hud');
+        const uiScore = document.getElementById('scoreNum');
+        const scrStart = document.getElementById('startScreen');
+        const scrGameOver = document.getElementById('gameOverScreen');
+        const uiFinalScore = document.getElementById('finalScore');
+
+        // Aesthetic Colors derived from CSS
+        const colors = {
+            bg: '#0a0a12',
+            core: '#ffffff',
+            player: '#00ffd2',
+            enemy: '#ff0055',
+            trail: 'rgba(0, 255, 210, 0.3)'
+        };
+
+        // Game State Engine
+        let gameState = 'menu'; // menu, playing, over
+        let score = 0;
+        let animationPos = 0; // for pulse animations
+        let viewW, viewH, centerX, centerY;
+        let particles = [];
+
+        // Orbital Mechanics Variables
+        let player = {
+            angle: 0,
+            orbitRadius: 0, // dynamic based on screen size
+            size: 8,
+            direction: 1, // 1 = clockwise, -1 = counter
+            speed: 0.03, // Rad per frame
+            trail: [] // Array of past positions
+        };
+
+        let core = {
+            baseSize: 30,
+            size: 30
+        };
+
+        // Obstacle System
+        let obstacles = [];
+        let obstacleSpawnTimer = 0;
+        let difficultyLevel = 1;
+
+        // --- Core Setup & Initialization ---
+        function initDimensions() {
+            viewW = window.innerWidth;
+            viewH = window.innerHeight;
+            canvas.viewW = viewW; // Set context variable for internal redraw access
+            canvas.viewH = viewH;
+            canvas.width = viewW;
+            canvas.height = viewH;
+            centerX = viewW / 2;
+            centerY = viewH / 2;
+            
+            // Adapt mechanics to screen size (responsive game design)
+            player.orbitRadius = Math.min(viewW, viewH) * 0.3;
+            core.baseSize = Math.min(viewW, viewH) * 0.06;
+        }
+
+        // Global Resize Handler
+        window.addEventListener('resize', initDimensions);
+        
+        // Input Handler (Pointerdown covers mouse and touch)
+        window.addEventListener('pointerdown', (e) => {
+            // Prevent input on UI elements, only on canvas/playing area
+            if (e.target.tagName === 'BUTTON') return;
+            
+            if (gameState === 'playing') {
+                player.direction *= -1; // REVERSE ORBIT
+            }
+        });
+
+        initDimensions();
+
+        // --- Game Logic Loops ---
+
+        function startGame() {
+            // Reset state matrices
+            score = 0;
+            difficultyLevel = 1;
+            player.angle = Math.random() * Math.PI * 2;
+            player.direction = Math.random() > 0.5 ? 1 : -1;
+            player.trail = [];
+            obstacles = [];
+            particles = [];
+            obstacleSpawnTimer = 0;
+            
+            // Change UI states
+            scrStart.classList.add('hidden');
+            scrGameOver.classList.add('hidden');
+            uiHUD.classList.add('playing');
+            gameState = 'playing';
+        }
+
+        function triggerGameOver() {
+            gameState = 'over';
+            uiHUD.classList.remove('playing');
+            uiFinalScore.innerText = Math.floor(score);
+            scrGameOver.classList.remove('hidden');
+            
+            // Spawn explosion particles aesthetic
+            for(let i=0; i<30; i++) {
+                spawnParticle(player.x, player.y, colors.player);
+                if(i%3 === 0) spawnParticle(player.x, player.y, colors.enemy);
+            }
+        }
+
+        // Main Draw Call
+        function draw() {
+            // Clear screen (semi-transparent clear for faint trail effect over time)
+            ctx.fillStyle = 'rgba(10, 10, 18, 0.3)';
+            ctx.fillRect(0, 0, viewW, viewH);
+
+            animationPos += 0.02;
+
+            if (gameState === 'playing' || gameState === 'over') {
+                drawOrbitRing();
+                drawTrail();
+                drawObstacles();
+                drawCore();
+                drawPlayer();
+                drawParticles();
+            } else if (gameState === 'menu') {
+                // Background demo loop aesthetic
+                player.angle += player.speed * 0.2;
+                drawOrbitRing();
+                drawCore();
+                drawPlayer();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        // --- Mechanics & Simulation ---
+
+        // Secondary update loop for physics/logic (prevents animation speed variance)
+        setInterval(() => {
+            if (gameState !== 'playing') return;
+
+            // 1. Update Score
+            score += 0.1;
+            uiScore.innerText = Math.floor(score);
+
+            // 2. Update Difficulty curve based on distance
+            difficultyLevel = 1 + (score / 100);
+            player.speed = 0.03 + (score / 5000); // Slight speed up over time
+
+            // 3. Update Player Mechanics
+            player.angle += player.speed * player.direction;
+            
+            // Calculate actual Cartesian coordinates
+            player.x = centerX + Math.cos(player.angle) * player.orbitRadius;
+            player.y = centerY + Math.sin(player.angle) * player.orbitRadius;
+
+            // Handle Trail logging matrix
+            player.trail.push({x: player.x, y: player.y});
+            if (player.trail.length > 20) player.trail.shift();
+
+            // 4. Update Obstacles logic matrix
+            obstacles.forEach((obs, index) => {
+                obs.distance -= obs.speed;
+                
+                // Obstacle movement vector (towards center)
+                obs.x = centerX + Math.cos(obs.angle) * obs.distance;
+                obs.y = centerY + Math.sin(obs.angle) * obs.distance;
+
+                // Collision Detection (Classic Circle vs Circle)
+                const dx = obs.x - player.x;
+                const dy = obs.y - player.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                // If collision distance threshold reached, finalize game state
+                if (dist < obs.size + player.size - 2) {
+                    triggerGameOver();
+                }
+
+                // Recycle obstacles that pass core safe zone
+                if (obs.distance < core.size - obs.size) {
+                    obstacles.splice(index, 1);
+                    // Aesthetic feedback (core pulse on absorbing enemy)
+                    core.pulse = 10; 
+                }
+            });
+
+            // 5. Update Particles matrix
+            particles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.02;
+                p.vx *= 0.98; p.vy *= 0.98; // Friction easing logic
+                if(p.life <= 0) particles.splice(index, 1);
+            });
+
+            // 6. Spawn Logic Matrix
+            obstacleSpawnTimer -= 1 * difficultyLevel;
+            if (obstacleSpawnTimer <= 0) {
+                spawnObstacle();
+                // Spawn rate increases subtly over time via scaling factor inverse logic
+                obstacleSpawnTimer = 60 + (Math.random() * 60) - (difficultyLevel * 2);
+                if (obstacleSpawnTimer < 15) obstacleSpawnTimer = 15; // Hard cap on maximum spawn rate density
+            }
+
+        }, 1000/60); // Target 60Hz logic loop processing pass
+
+        // --- Aesthetics & Rendering Functions ---
+
+        function drawCore() {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Dynamic breathing/pulsing aesthetic based on interaction parameters
+            const pulse = gameState === 'playing' ? Math.sin(animationPos * 2) * 2 : 0;
+            const extraPulse = core.pulse || 0;
+            if(core.pulse > 0) core.pulse *= 0.9; // Decay easing step
+
+            const currentSize = core.baseSize + pulse + extraPulse;
+
+            // Draw shadow depth layers first
+            ctx.shadowColor = colors.core;
+            ctx.shadowBlur = 20 + extraPulse * 2;
+            
+            ctx.fillStyle = colors.core;
+            ctx.beginPath();
+            ctx.arc(0, 0, currentSize, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function drawOrbitRing() {
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'; // Deep background contrast
+            ctx.arc(centerX, centerY, player.orbitRadius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        function drawPlayer() {
+            // Draw player position aesthetic signifiers first
+            if(gameState === 'playing') {
+                ctx.save();
+                ctx.shadowColor = colors.player;
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = colors.player;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            } else if (gameState === 'menu') {
+                // Menu demo fallback coordinates calculations loop pass
+                const menuX = centerX + Math.cos(player.angle) * player.orbitRadius;
+                const menuY = centerY + Math.sin(player.angle) * player.orbitRadius;
+                ctx.fillStyle = colors.player;
+                ctx.beginPath();
+                ctx.arc(menuX, menuY, player.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawTrail() {
+            if(player.trail.length < 2) return;
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = colors.trail;
+            
+            // Coordinate points plotting matrix
+            ctx.moveTo(player.trail[0].x, player.trail[0].y);
+            for(let i=1; i<player.trail.length; i++) {
+                ctx.lineTo(player.trail[i].x, player.trail[i].y);
+            }
+            ctx.stroke();
+        }
+
+        function drawObstacles() {
+            ctx.fillStyle = colors.enemy;
+            obstacles.forEach(obs => {
+                ctx.beginPath();
+                
+                // Obstacles appear as minimalist geometric triangles pointed at center core
+                ctx.save();
+                ctx.translate(obs.x, obs.y);
+                ctx.rotate(obs.angle + Math.PI / 2); // Point point end toward center destination coordinates
+                
+                ctx.moveTo(0, -obs.size * 1.3);
+                ctx.lineTo(-obs.size, obs.size);
+                ctx.lineTo(obs.size, obs.size);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Subtly visible core glow overlay on dangerous objects
+                ctx.shadowColor = colors.enemy;
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.restore();
+            });
+        }
+
+        function drawParticles() {
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(${hexToRgb(p.color)}, ${p.life})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // --- Structural Utility Matrices ---
+
+        function spawnObstacle() {
+            // Adapt scaling mechanics for progressive difficulty steps curve pass logic intercepts
+            const baseSpeed = Math.min(viewW, viewH) * 0.001;
+            const speedVar = baseSpeed * 0.2;
+
+            const baseSize = player.size + (Math.random() * 8);
+            const sizeScalingFactor = Math.min(1.5, difficultyLevel); // Cap max size factor inverse logic scaling
+
+            // Logic variable definitions matrix
+            let obs = {
+                angle: Math.random() * Math.PI * 2, // Spawn on random angle
+                // Distance established outside immediate viewport perimeter boundaries
+                distance: Math.max(viewW, viewH) * 0.8, 
+                size: baseSize * sizeScalingFactor,
+                speed: baseSpeed + (Math.random() * speedVar) + (difficultyLevel * 0.1) // Speed scaling difficulty pass scaling
+            };
+            
+            obstacles.push(obs);
+        }
+
+        function spawnParticle(x, y, color) {
+            let p = {
+                x: x,
+                y: y,
+                color: color,
+                size: 2 + Math.random() * 4,
+                life: 1.0, // Alpha fading state variable tracker
+                // Random vector deployment calculations pass
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10
+            };
+            particles.push(p);
+        }
+
+        // Color data parsing utility methods (Hex -> RGB conversion matrix)
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 
+              parseInt(result[1], 16) + ',' + parseInt(result[2], 16) + ',' + parseInt(result[3], 16)
+              : null;
+        }
+
+        // Primary application execution initiation boot loop pass
+        initDimensions();
+        requestAnimationFrame(draw);
+
+    </script>
+</body>
+</html>
