@@ -65,36 +65,42 @@
                 </div>
                 
                 <div id="syncToolbox" class="relative flex items-center transition-all duration-300">
-                    <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium z-10 relative">
-                        Sync Offline Folder
-                    </button>
-                    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
-                        <span class="font-mono text-xs font-bold leading-none">i</span>
-                    </button>
-                    
-                    <div id="syncInfoPanel" class="fixed top-[125px] right-[24px] w-64 glass-panel-dark p-4 rounded-xl shadow-2xl z-[60] transition-all duration-300 opacity-0 pointer-events-none scale-95 -translate-y-2 origin-top-right border border-white/10">
-                        <h4 class="text-sm font-semibold text-white mb-3">Background Sync</h4>
-                        <div class="space-y-3 text-xs font-medium text-slate-300">
-                            <div>
-                                <div class="flex justify-between mb-1.5">
-                                    <span>Progress</span>
-                                    <span id="syncProgressText" class="text-indigo-400">0 / 0</span>
-                                </div>
-                                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                    <div id="syncProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between pt-1 border-t border-white/5">
-                                <span>Estimated Time:</span>
-                                <span id="syncEtaText" class="text-white">Calculating...</span>
-                            </div>
-                            <div class="flex justify-between text-slate-400">
-                                <span>Failed / Skipped:</span>
-                                <span id="syncSkippedText" class="text-rose-400">0</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium z-10 relative">
+        Sync Offline Folder
+    </button>
+    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
+        <span class="font-mono text-xs font-bold leading-none">i</span>
+    </button>
+</div>
+
+<div id="syncInfoPanel" class="fixed top-[140px] right-[24px] w-80 glass-panel-dark p-4 rounded-xl shadow-2xl z-[9999] transition-all duration-300 opacity-0 pointer-events-none scale-95 origin-top-right border border-white/10">
+    <h4 class="text-sm font-semibold text-white mb-3 flex justify-between items-center">
+        <span>Background Sync</span>
+        <button onclick="toggleSyncPanel()" class="text-slate-400 hover:text-white text-xs bg-white/5 rounded px-2 py-0.5">Close</button>
+    </h4>
+    <div class="space-y-3 text-xs font-medium text-slate-300">
+        <div>
+            <div class="flex justify-between mb-1.5">
+                <span>Progress</span>
+                <span id="syncProgressText" class="text-indigo-400">0 / 0</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="syncProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
+            </div>
+        </div>
+        
+        <div class="border-t border-white/10 pt-3 mt-3">
+            <h5 class="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Detailed Logs</h5>
+            <div id="syncLogsContainer" class="h-32 overflow-y-auto bg-black/50 border border-white/5 rounded-lg p-2 font-mono text-[10px] space-y-1">
+                <div class="text-slate-500 italic">Waiting to sync...</div>
+            </div>
+            <button id="retrySyncBtn" class="w-full mt-2 hidden px-3 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/40 rounded-lg transition-colors">
+                Retry Failed Items
+            </button>
+        </div>
+    </div>
+</div>
+                
             </div>
         </div>
 
@@ -192,55 +198,95 @@
         
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
 
-        document.getElementById('syncOfflineBtn').addEventListener('click', () => {
-            const btn = document.getElementById('syncOfflineBtn');
-            btn.textContent = 'Syncing...';
-            btn.disabled = true;
-            syncStartTime = Date.now();
-            
-            document.getElementById('syncInfoBtn').classList.add('info-btn-enter');
-            
-            const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
-            const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
-            urlsToCache.push('./offline.json', './index.html');
 
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'SYNC_GAMES', urls: urlsToCache });
-            } else {
-                btn.textContent = 'Reload Page First';
-            }
-        });
+let failedSyncUrls = [];
+let isSyncing = false;
 
-        navigator.serviceWorker?.addEventListener('message', (event) => {
-            if (event.data.type === 'SYNC_PROGRESS') {
-                const { current, total, failed } = event.data;
-                document.getElementById('syncProgressText').textContent = `${current} / ${total}`;
-                document.getElementById('syncProgressBar').style.width = `${(current / total) * 100}%`;
-                document.getElementById('syncSkippedText').textContent = failed;
+async function executeSync(urls) {
+    if (isSyncing) return;
+    isSyncing = true;
+    
+    const btn = document.getElementById('syncOfflineBtn');
+    const logContainer = document.getElementById('syncLogsContainer');
+    const retryBtn = document.getElementById('retrySyncBtn');
+    
+    btn.textContent = 'Syncing...';
+    btn.disabled = true;
+    document.getElementById('syncInfoBtn').classList.add('info-btn-enter');
+    retryBtn.classList.add('hidden');
+    
+    if (logContainer.innerHTML.includes('Waiting')) logContainer.innerHTML = '';
+    
+    let current = 0;
+    let failed = 0;
+    const total = urls.length;
+    failedSyncUrls = []; // Reset failures for this run
 
-                if (current > 0) {
-                    const elapsed = Date.now() - syncStartTime;
-                    const timePerItem = elapsed / current;
-                    const remaining = total - current;
-                    const etaSeconds = Math.ceil((timePerItem * remaining) / 1000);
-                    document.getElementById('syncEtaText').textContent = etaSeconds > 0 ? `~${etaSeconds} sec remaining` : 'Almost done...';
-                }
-            }
-            if (event.data.type === 'SYNC_COMPLETE') {
-                const btn = document.getElementById('syncOfflineBtn');
-                btn.textContent = 'Sync Complete!';
-                document.getElementById('syncEtaText').textContent = 'Finished!';
-                document.getElementById('syncProgressBar').classList.add('bg-emerald-400');
+    try {
+        // Open the cache your Service Worker normally reads from
+        const cache = await caches.open('flashgames-cache-v1'); 
+        
+        for (const url of urls) {
+            try {
+                // Fetch directly to verify it works, then put in cache
+                const response = await fetch(url, { cache: 'reload' });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                setTimeout(() => {
-                    btn.textContent = 'Sync Offline Folder';
-                    btn.disabled = false;
-                    document.getElementById('syncInfoPanel').classList.remove('panel-enter');
-                    document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
-                    setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
-                }, 6000);
+                await cache.put(url, response.clone());
+                current++;
+                logContainer.innerHTML += `<div class="text-emerald-400 truncate">✓ Cached: ${url.split('/').pop()}</div>`;
+            } catch (err) {
+                failed++;
+                failedSyncUrls.push(url);
+                logContainer.innerHTML += `<div class="text-rose-400 truncate">✗ Failed: ${url.split('/').pop()}</div>`;
+                console.error('Failed to sync:', url, err);
             }
-        });
+            
+            // Update UI dynamically
+            document.getElementById('syncProgressText').textContent = `${current + failed} / ${total}`;
+            document.getElementById('syncProgressBar').style.width = `${((current + failed) / total) * 100}%`;
+            logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll logs
+        }
+    } catch (err) {
+        logContainer.innerHTML += `<div class="text-rose-500">Critical Error accessing Cache API.</div>`;
+    }
+
+    // Finish up UI
+    isSyncing = false;
+    if (failed > 0) {
+        btn.textContent = `Done (${failed} failed)`;
+        btn.classList.add('text-rose-300', 'border-rose-500/30', 'bg-rose-500/20');
+        retryBtn.classList.remove('hidden');
+    } else {
+        btn.textContent = 'Sync Complete!';
+        document.getElementById('syncProgressBar').classList.add('bg-emerald-400');
+        setTimeout(() => {
+            btn.textContent = 'Sync Offline Folder';
+            btn.disabled = false;
+            document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
+            setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
+        }, 5000);
+    }
+}
+
+// Initial Sync Trigger
+document.getElementById('syncOfflineBtn').addEventListener('click', () => {
+    // Collect all URLs for offline games
+    const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
+    const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
+    urlsToCache.push('./offline.json', './index.html');
+    
+    document.getElementById('syncInfoPanel').classList.add('panel-enter');
+    executeSync(urlsToCache);
+});
+
+// Retry Trigger
+document.getElementById('retrySyncBtn').addEventListener('click', () => {
+    if (failedSyncUrls.length > 0) {
+        document.getElementById('syncLogsContainer').innerHTML += `<div class="text-indigo-400 italic mt-2">--- Retrying ${failedSyncUrls.length} items ---</div>`;
+        executeSync([...failedSyncUrls]);
+    }
+});
 
         function toggleSyncPanel() {
             document.getElementById('syncInfoPanel').classList.toggle('panel-enter');
