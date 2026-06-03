@@ -19,7 +19,6 @@
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         
-        /* Smooth Info Panel Transitions */
         .info-btn-enter { width: 28px !important; transform: scale(1) !important; opacity: 1 !important; margin-left: 0.5rem !important; }
         .panel-enter { opacity: 1 !important; pointer-events: auto !important; transform: scale(1) translateY(0) !important; }
     </style>
@@ -40,6 +39,7 @@
                 <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
                 <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v2.3 Updates</button>
             </div>
+            
             <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 <div class="relative flex-1 md:w-64">
                     <input id="searchInput" type="text" placeholder="Search library..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 pl-10 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all">
@@ -134,25 +134,23 @@
     <div id="changelogModal" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6">
         <div class="glass-panel-dark max-w-2xl w-full rounded-2xl shadow-2xl border border-white/10 relative overflow-hidden flex flex-col md:flex-row min-h-[300px]">
             <button onclick="document.getElementById('changelogModal').classList.add('hidden')" class="absolute top-3 right-3 z-10 text-slate-400 hover:text-white w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-colors">✕</button>
-            
             <div class="bg-slate-900/50 border-r border-white/5 w-full md:w-1/3 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 hidden md:block">Version History</h3>
                 <button onclick="switchTab('v2.3')" id="tab-v2.3" class="tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap">v2.3 (Current)</button>
                 <button onclick="switchTab('v2.2')" id="tab-v2.2" class="tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent">v2.2 - Folders</button>
                 <button onclick="switchTab('v2.1')" id="tab-v2.1" class="tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent">v2.1 - Favorites</button>
             </div>
-            
             <div class="p-6 flex-1 relative">
-                <div id="content-v2.3" class="tab-content animate-fade-in">
-                    <h2 class="text-xl font-bold text-white mb-4">The QoL Update</h2>
+                <div id="content-v2.3" class="tab-content">
+                    <h2 class="text-xl font-bold text-white mb-4">The QoL & Code Compiler Update</h2>
                     <ul class="space-y-3 text-sm text-slate-300">
-                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Live Download Stats:</strong> Click the new info tool beside the sync button to see ETA, skips, and live download progress.</div></li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Fullscreen Engine:</strong> Maximize any game portal instantly with the new immersive button.</div></li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Smart Connectivity:</strong> The Sync button automatically vanishes when you lose Wi-Fi.</div></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Inline Code Engine:</strong> Dynamically executes targets that send full text HTML fragments or embedded script strings inside standard sandbox boundaries.</div></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Live Download Stats:</strong> View ETA, skips, and live download progress.</div></li>
+                        <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✔</span> <div><strong>Fullscreen Engine:</strong> Maximize any game portal instantly.</div></li>
                     </ul>
                 </div>
-                <div id="content-v2.2" class="tab-content hidden"><h2 class="text-lg font-bold text-white mb-3">Folders & UI</h2><p class="text-sm text-slate-400">Replaced intrusive browser popups with dynamic native UI modals. Introduced customized local playlist organization.</p></div>
-                <div id="content-v2.1" class="tab-content hidden"><h2 class="text-lg font-bold text-white mb-3">The Vault System</h2><p class="text-sm text-slate-400">Introduced persistent caching logic, favorites tagging, and localized JSON database aggregation.</p></div>
+                <div id="content-v2.2" class="tab-content hidden"><h2 class="text-lg font-bold text-white mb-3">Folders & UI</h2><p class="text-sm text-slate-400">Replaced intrusive browser popups with dynamic native UI modals.</p></div>
+                <div id="content-v2.1" class="tab-content hidden"><h2 class="text-lg font-bold text-white mb-3">The Vault System</h2><p class="text-sm text-slate-400">Introduced persistent caching logic and localized JSON database aggregation.</p></div>
             </div>
         </div>
     </div>
@@ -183,10 +181,10 @@
             isOffline: !navigator.onLine,
             favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
             folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
-            activeTargetGameId: null
+            activeTargetGameId: null,
+            currentActiveBlobUrl: null // Keep track of active runtime objects to prevent memory leaks
         };
 
-        // --- NEW LOGIC: Live Sync & Progress ---
         let syncStartTime = 0;
         
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
@@ -197,7 +195,6 @@
             btn.disabled = true;
             syncStartTime = Date.now();
             
-            // Pop out the info button smoothly
             document.getElementById('syncInfoBtn').classList.add('info-btn-enter');
             
             const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
@@ -218,7 +215,6 @@
                 document.getElementById('syncProgressBar').style.width = `${(current / total) * 100}%`;
                 document.getElementById('syncSkippedText').textContent = failed;
 
-                // Calculate Live ETA
                 if (current > 0) {
                     const elapsed = Date.now() - syncStartTime;
                     const timePerItem = elapsed / current;
@@ -238,7 +234,6 @@
                     btn.disabled = false;
                     document.getElementById('syncInfoPanel').classList.remove('panel-enter');
                     document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
-                    // Hide the info button again after finishing reading
                     setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
                 }, 6000);
             }
@@ -261,15 +256,11 @@
                 zoneFilter.value = 'OFFLINE';
                 STATE.activeFilters.zone = 'OFFLINE';
                 zoneFilter.disabled = true;
-                
-                // Hide Sync Toolbox when offline
                 syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
             } else {
                 dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
                 text.textContent = "Connected. Ready to sync local games.";
                 zoneFilter.disabled = false;
-                
-                // Show Sync Toolbox when online
                 syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
             }
             processAndRenderView();
@@ -278,33 +269,85 @@
         window.addEventListener('online', handleNetworkChange);
         window.addEventListener('offline', handleNetworkChange);
 
-        // --- NEW LOGIC: Interactive Changelog Tabs ---
         function openChangelog() { document.getElementById('changelogModal').classList.remove('hidden'); }
         function switchTab(versionId) {
-            // Reset buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent";
             });
-            // Activate clicked button
             const activeBtn = document.getElementById(`tab-${versionId}`);
             activeBtn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap";
-            // Swap content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(`content-${versionId}`).classList.remove('hidden');
         }
 
-        // --- NEW LOGIC: Fullscreen Engine ---
         function toggleFullscreen() {
             const frameWrapper = document.getElementById('iframeWrapper');
             if (!document.fullscreenElement) {
                 if (frameWrapper.requestFullscreen) { frameWrapper.requestFullscreen(); } 
-                else if (frameWrapper.webkitRequestFullscreen) { frameWrapper.webkitRequestFullscreen(); } // Safari
+                else if (frameWrapper.webkitRequestFullscreen) { frameWrapper.webkitRequestFullscreen(); }
             } else {
                 if (document.exitFullscreen) { document.exitFullscreen(); }
             }
         }
 
-        // --- STORAGE & UI FUNCTIONS (UNCHANGED) ---
+        // --- DYNAMIC CODE COMPILER ENGINE ---
+        async function executeGameLauncher(game) {
+            const portal = document.getElementById('gamePortal');
+            const frame = document.getElementById('portalFrame');
+            document.getElementById('portalTitle').textContent = game.name;
+            
+            portal.classList.remove('hidden');
+            portal.classList.add('grid');
+            setTimeout(() => portal.classList.remove('opacity-0'), 50);
+
+            // Clean up old virtual memory pointers
+            if (STATE.currentActiveBlobUrl) {
+                URL.revokeObjectURL(STATE.currentActiveBlobUrl);
+                STATE.currentActiveBlobUrl = null;
+            }
+
+            try {
+                // Fetch the game data to inspect its payload signature
+                const response = await fetch(game.url);
+                const originalText = await response.text();
+                const trimmedText = originalText.trim();
+
+                // Check if content looks like raw code or a full page HTML document
+                const hasHtmlTags = /<html|<head|<body|<script/i.test(trimmedText);
+                const hasRawJsLogic = trimmedText.includes('function') || trimmedText.includes('var ') || trimmedText.includes('const ') || (trimmedText.startsWith('{') && trimmedText.endsWith('}'));
+
+                if (hasHtmlTags || hasRawJsLogic) {
+                    console.log(`Executing code injection pipeline for: ${game.name}`);
+                    
+                    let executablePayload = originalText;
+                    
+                    // If it is pure JS logic without HTML tags, wrap it nicely so the browser reads it
+                    if (hasRawJsLogic && !hasHtmlTags) {
+                        executablePayload = `
+                            <!DOCTYPE html>
+                            <html>
+                            <head><meta charset="utf-8"></head>
+                            <body style="margin:0; background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh;">
+                                <script>${originalText}<\/script>
+                            </body>
+                            </html>
+                        `;
+                    }
+
+                    // Compile into an isolated hardware blob link
+                    const blob = new Blob([executablePayload], { type: 'text/html;charset=utf-8' });
+                    STATE.currentActiveBlobUrl = URL.createObjectURL(blob);
+                    frame.src = STATE.currentActiveBlobUrl;
+                } else {
+                    // Standard URL configuration bypasses compiled rendering
+                    frame.src = game.url;
+                }
+            } catch (err) {
+                console.warn("Direct fetch check blocked or restricted. Cascading to standard frame source allocation route.", err);
+                frame.src = game.url;
+            }
+        }
+
         function toggleFavorite(id, e) { e.stopPropagation(); const i = STATE.favorites.indexOf(id); i>-1 ? STATE.favorites.splice(i,1) : STATE.favorites.push(id); localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites)); processAndRenderView(); }
         function openFolderModal(id, e) { e.stopPropagation(); STATE.activeTargetGameId = id; const g = STATE.rawGamesList.find(x=>x.id===id); if(!g)return; document.getElementById('folderModalGameName').textContent = g.name; const c = document.getElementById('existingFoldersList'); c.innerHTML=''; Object.keys(STATE.folders).sort().forEach(f => { const b = document.createElement('button'); const a = STATE.folders[f].includes(id); b.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${a ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'}`; b.textContent = a ? `${f} (Added)` : f; b.onclick = () => { addGameToFolder(f, id); closeFolderModal(); }; c.appendChild(b); }); document.getElementById('newFolderNameInput').value = ''; document.getElementById('folderModal').classList.remove('hidden'); }
         function closeFolderModal() { document.getElementById('folderModal').classList.add('hidden'); STATE.activeTargetGameId = null; }
@@ -373,15 +416,19 @@
         }
 
         function showStatus(t, l, d) { document.getElementById('statusView').classList.remove('hidden'); document.getElementById('statusTitle').textContent=l; document.getElementById('statusDesc').textContent=d; document.getElementById('statusSpinner').style.display=t==='loading'?'block':'none'; }
-        
-        function executeGameLauncher(g) {
-            const p = document.getElementById('gamePortal'); document.getElementById('portalTitle').textContent=g.name; p.classList.remove('hidden'); p.classList.add('grid'); setTimeout(()=>p.classList.remove('opacity-0'),50); document.getElementById('portalFrame').src=g.url;
-        }
 
         document.getElementById('closePortalBtn').addEventListener('click', () => {
             const p = document.getElementById('gamePortal'); p.classList.add('opacity-0');
-            if (document.fullscreenElement) { document.exitFullscreen(); } // Exit fullscreen if active
-            setTimeout(()=>{ p.classList.add('hidden'); p.classList.remove('grid'); document.getElementById('portalFrame').src=''; },300);
+            if (document.fullscreenElement) { document.exitFullscreen(); }
+            setTimeout(()=>{ 
+                p.classList.add('hidden'); 
+                p.classList.remove('grid'); 
+                document.getElementById('portalFrame').src=''; 
+                if (STATE.currentActiveBlobUrl) {
+                    URL.revokeObjectURL(STATE.currentActiveBlobUrl);
+                    STATE.currentActiveBlobUrl = null;
+                }
+            },300);
         });
 
         document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
