@@ -20,7 +20,7 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         
         .info-btn-enter { width: 28px !important; transform: scale(1) !important; opacity: 1 !important; margin-left: 0.5rem !important; }
-        .panel-enter { opacity: 1 !important; pointer-events: auto !important; transform: scale(1) translateY(0) !important; }
+        .panel-enter { opacity: 1 !important; pointer-events: auto !important; transform: scale(1) translateY(0) !important; z-index: 90 !important; }
     </style>
 </head>
 <body class="h-full overflow-x-hidden antialiased bg-slate-950">
@@ -72,7 +72,7 @@
                         <span class="font-mono text-xs font-bold leading-none">i</span>
                     </button>
                     
-                    <div id="syncInfoPanel" class="absolute top-full right-0 mt-3 w-64 glass-panel-dark p-4 rounded-xl shadow-2xl z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95 -translate-y-2 origin-top-right border border-white/10">
+                    <div id="syncInfoPanel" class="fixed top-[125px] right-[24px] w-64 glass-panel-dark p-4 rounded-xl shadow-2xl z-[60] transition-all duration-300 opacity-0 pointer-events-none scale-95 -translate-y-2 origin-top-right border border-white/10">
                         <h4 class="text-sm font-semibold text-white mb-3">Background Sync</h4>
                         <div class="space-y-3 text-xs font-medium text-slate-300">
                             <div>
