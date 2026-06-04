@@ -71,36 +71,7 @@
     <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
         <span class="font-mono text-xs font-bold leading-none">i</span>
     </button>
-</div>
-
-<div id="syncInfoPanel" class="fixed top-[140px] right-[24px] w-80 glass-panel-dark p-4 rounded-xl shadow-2xl z-[9999] transition-all duration-300 opacity-0 pointer-events-none scale-95 origin-top-right border border-white/10">
-    <h4 class="text-sm font-semibold text-white mb-3 flex justify-between items-center">
-        <span>Background Sync</span>
-        <button onclick="toggleSyncPanel()" class="text-slate-400 hover:text-white text-xs bg-white/5 rounded px-2 py-0.5">Close</button>
-    </h4>
-    <div class="space-y-3 text-xs font-medium text-slate-300">
-        <div>
-            <div class="flex justify-between mb-1.5">
-                <span>Progress</span>
-                <span id="syncProgressText" class="text-indigo-400">0 / 0</span>
-            </div>
-            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                <div id="syncProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
-            </div>
-        </div>
-        
-        <div class="border-t border-white/10 pt-3 mt-3">
-            <h5 class="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Detailed Logs</h5>
-            <div id="syncLogsContainer" class="h-32 overflow-y-auto bg-black/50 border border-white/5 rounded-lg p-2 font-mono text-[10px] space-y-1">
-                <div class="text-slate-500 italic">Waiting to sync...</div>
-            </div>
-            <button id="retrySyncBtn" class="w-full mt-2 hidden px-3 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/40 rounded-lg transition-colors">
-                Retry Failed Items
-            </button>
-        </div>
-    </div>
-</div>
-                
+</div>                
             </div>
         </div>
 
@@ -179,6 +150,34 @@
             <iframe id="portalFrame" class="w-full h-full border-none" allow="gamepad; autoplay; fullscreen"></iframe>
         </div>
     </div>
+
+    <div id="syncInfoPanel" class="fixed top-[140px] right-[24px] w-80 glass-panel-dark p-4 rounded-xl shadow-2xl z-[9999] transition-all duration-300 opacity-0 pointer-events-none scale-95 origin-top-right border border-white/10">
+    <h4 class="text-sm font-semibold text-white mb-3 flex justify-between items-center">
+        <span>Background Sync</span>
+        <button onclick="toggleSyncPanel()" class="text-slate-400 hover:text-white text-xs bg-white/5 rounded px-2 py-0.5">Close</button>
+    </h4>
+    <div class="space-y-3 text-xs font-medium text-slate-300">
+        <div>
+            <div class="flex justify-between mb-1.5">
+                <span>Progress</span>
+                <span id="syncProgressText" class="text-indigo-400">0 / 0</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="syncProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
+            </div>
+        </div>
+        
+        <div class="border-t border-white/10 pt-3 mt-3">
+            <h5 class="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Detailed Logs</h5>
+            <div id="syncLogsContainer" class="h-32 overflow-y-auto bg-black/50 border border-white/5 rounded-lg p-2 font-mono text-[10px] space-y-1">
+                <div class="text-slate-500 italic">Waiting to sync...</div>
+            </div>
+            <button id="retrySyncBtn" class="w-full mt-2 hidden px-3 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/40 rounded-lg transition-colors">
+                Retry Failed Items
+            </button>
+        </div>
+    </div>
+</div>
 
     <script>
         const BASE_URL = 'https://ess-education.org';
