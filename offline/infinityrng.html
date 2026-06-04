@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infinity Luck RNG - Save System Edition</title>
+    <title>Infinity Luck RNG - Dynamic Upgrades</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Outfit:wght@400;600;800&display=swap');
 
@@ -212,6 +212,11 @@
             font-size: 14px;
             background: #2d6a4f;
             box-shadow: 0 4px 10px rgba(45, 106, 79, 0.3);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         .btn-buy:hover {
             background: #40916c;
@@ -222,7 +227,6 @@
             color: #555566;
             box-shadow: none;
             cursor: not-allowed;
-            transform: none;
             border: 1px solid #2d2d3d;
         }
 
@@ -235,14 +239,8 @@
             padding-right: 5px;
         }
 
-        /* Custom Scrollbar */
-        .inventory-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .inventory-list::-webkit-scrollbar-thumb {
-            background: #2d2d3d;
-            border-radius: 4px;
-        }
+        .inventory-list::-webkit-scrollbar { width: 6px; }
+        .inventory-list::-webkit-scrollbar-thumb { background: #2d2d3d; border-radius: 4px; }
 
         .inv-item {
             display: flex;
@@ -252,7 +250,6 @@
             border-radius: 6px;
             font-size: 14px;
         }
-
         .inv-count {
             font-family: 'Courier Prime', monospace;
             color: var(--text-muted);
@@ -262,7 +259,6 @@
 <body>
 
     <div class="game-container">
-        
         <div class="panel full-width">
             <h1>INFINITY LUCK RNG</h1>
             <div class="stats-bar">
@@ -288,28 +284,11 @@
 
         <div class="panel">
             <h2>Upgrades</h2>
-            
-            <div class="upgrade-card">
-                <div class="upgrade-info">
-                    <p>Lucky Clover</p>
-                    <span id="up1-desc">+0.2x Multiplier per level</span>
-                </div>
-                <button class="btn btn-buy" id="btn-up1" onclick="buyUpgrade(1)">Cost: 10 LP</button>
-            </div>
-
-            <div class="upgrade-card">
-                <div class="upgrade-info">
-                    <p>Cosmic Alignment</p>
-                    <span id="up2-desc">+1.5x Multiplier per level</span>
-                </div>
-                <button class="btn btn-buy" id="btn-up2" onclick="buyUpgrade(2)">Cost: 150 LP</button>
-            </div>
+            <div id="upgrades-box"></div>
 
             <h2 style="margin-top: 15px;">Collection Storage</h2>
-            <div class="inventory-list" id="inventory-box">
-                </div>
+            <div class="inventory-list" id="inventory-box"></div>
         </div>
-
     </div>
 
     <script>
@@ -320,72 +299,85 @@
         let autoRolling = false;
         let autoInterval = null;
 
-        let up1_level = 0;
-        let up2_level = 0;
+        // ==========================================
+        // DYNAMIC UPGRADE POOL
+        // Easily add new upgrades here!
+        // costScaling determines how fast the price goes up (1.10 is slow, 1.50 is fast)
+        // ==========================================
+        const upgradePool = [
+            { id: "clover", name: "Lucky Clover", desc: "+0.2x Multiplier", baseCost: 10, costScaling: 1.15, multGain: 0.2 },
+            { id: "alignment", name: "Cosmic Alignment", desc: "+1.5x Multiplier", baseCost: 150, costScaling: 1.18, multGain: 1.5 },
+            { id: "matrix", name: "Probability Matrix", desc: "+8.0x Multiplier", baseCost: 1200, costScaling: 1.20, multGain: 8.0 },
+            { id: "singularity", name: "Luck Singularity", desc: "+50.0x Multiplier", baseCost: 15000, costScaling: 1.25, multGain: 50.0 }
+        ];
 
-        // Expanded Database containing your custom updates + 10 fresh, progressive additions
+        // Structural storage maps for upgrades
+        let upgradeLevels = {};
+        upgradePool.forEach(up => upgradeLevels[up.id] = 0);
+
+        // Expanded Item Database
         const itemPool = [
             { name: "Dirt", rarity: 2, color: "#94a3b8", points: 1 },
-            { name: "Pebble", rarity: 3, color: "#78716c", points: 2 }, // Added
+            { name: "Pebble", rarity: 3, color: "#78716c", points: 2 }, 
             { name: "Grass", rarity: 4, color: "#04483bff", points: 3 },
             { name: "Copper Ring", rarity: 5, color: "#cd7f32", points: 5 },
-            { name: "Wooden Stick", rarity: 8, color: "#854d0e", points: 7 }, // Added
+            { name: "Wooden Stick", rarity: 8, color: "#854d0e", points: 7 }, 
             { name: "Iron Greatsword", rarity: 15, color: "#a5a5a5", points: 10 },
-            { name: "Steel Dagger", rarity: 22, color: "#cbd5e1", points: 12 }, // Added
+            { name: "Steel Dagger", rarity: 22, color: "#cbd5e1", points: 12 }, 
             { name: "Emerald", rarity: 30, color: "#2ef4b8ff", points: 15 },
             { name: "Silver Chalice", rarity: 50, color: "#00b4d8", points: 25 },
-            { name: "Golden Crown", rarity: 100, color: "#fbbf24", points: 45 }, // Added
+            { name: "Golden Crown", rarity: 100, color: "#fbbf24", points: 45 }, 
             { name: "Light Amethyst", rarity: 200, color: "#9d4edd", points: 80 },
             { name: "Dark Amethyst", rarity: 200, color: "#8c00ffff", points: 80 },
-            { name: "Sapphire Crystal", rarity: 500, color: "#2563eb", points: 180 }, // Added
+            { name: "Sapphire Crystal", rarity: 500, color: "#2563eb", points: 180 }, 
             { name: "Flawless Ruby", rarity: 1000, color: "#ff0055", points: 350 },
-            { name: "Meteorite Shard", rarity: 3000, color: "#ec4899", points: 800 }, // Added
+            { name: "Meteorite Shard", rarity: 3000, color: "#ec4899", points: 800 }, 
             { name: "Cyber Matrix", rarity: 7500, color: "#00f0ff", points: 1500 },
             { name: "Data Core", rarity: 20000, color: "#729dfbff", points: 6000 },
             { name: "Plasma Core", rarity: 40000, color: "#ffb703", points: 8000 },
-            { name: "Antimatter Droplet", rarity: 100000, color: "#a855f7", points: 22000 }, // Added
+            { name: "Antimatter Droplet", rarity: 100000, color: "#a855f7", points: 22000 }, 
             { name: "Singularity", rarity: 250000, color: "#ff007f", points: 50000 },
             { name: "Infinity Void", rarity: 500000, color: "#ffaa00", points: 250000 },
-            { name: "Nothingness", rarity: 750000, color: "#64748b", points: 500000 }, // Shifted color hex visibly clear of pure dark background layers
+            { name: "Nothingness", rarity: 750000, color: "#64748b", points: 500000 }, 
             { name: "Flash", rarity: 750000, color: "#fff709ff", points: 750000 },
             { name: "Owner", rarity: 750000, color: "#369ce0ff", points: 1000000 },
-            { name: "Chronos Warp", rarity: 1500000, color: "#10b981", points: 2000000 }, // Added
-            { name: "Multiverse Core", rarity: 5000000, color: "#f43f5e", points: 6500000 }, // Added
-            { name: "Beyond Absolute", rarity: 10000000, color: "#ffffff", points: 15000000 } // Added
+            { name: "Chronos Warp", rarity: 1500000, color: "#10b981", points: 2000000 }, 
+            { name: "Multiverse Core", rarity: 5000000, color: "#f43f5e", points: 6500000 }, 
+            { name: "Beyond Absolute", rarity: 10000000, color: "#ffffff", points: 15000000 } 
         ];
 
-        // Structural storage maps
         let inventory = {};
         itemPool.forEach(item => inventory[item.name] = 0);
 
-        // PERSISTENCE: Save Game State Serialization Logic 
+        // PERSISTENCE: Save Game (Updated to v3 for the new array structure)
         function saveGame() {
             const saveState = {
                 rolls: rolls,
                 luckPoints: luckPoints,
-                up1_level: up1_level,
-                up2_level: up2_level,
+                upgradeLevels: upgradeLevels,
                 inventory: inventory
             };
-            localStorage.setItem('infinity_rng_save_v2', JSON.stringify(saveState));
+            localStorage.setItem('infinity_rng_save_v3', JSON.stringify(saveState));
         }
 
-        // PERSISTENCE: Load Game State Initialization Logic
+        // PERSISTENCE: Load Game
         function loadGame() {
-            const structuralData = localStorage.getItem('infinity_rng_save_v2');
+            const structuralData = localStorage.getItem('infinity_rng_save_v3');
             if (!structuralData) return;
 
             try {
                 const parsed = JSON.parse(structuralData);
                 rolls = parsed.rolls || 0;
                 luckPoints = parsed.luckPoints || 0;
-                up1_level = parsed.up1_level || 0;
-                up2_level = parsed.up2_level || 0;
                 
-                // Recalculate Multiplier based on verified tracking levels loaded
-                luckMultiplier = 1.0 + (up1_level * 0.2) + (up2_level * 1.5);
+                if (parsed.upgradeLevels) {
+                    for (const key in parsed.upgradeLevels) {
+                        if (upgradeLevels.hasOwnProperty(key)) {
+                            upgradeLevels[key] = parsed.upgradeLevels[key];
+                        }
+                    }
+                }
 
-                // Deep copy data across matching structural indices safely 
                 if (parsed.inventory) {
                     for (const key in parsed.inventory) {
                         if (inventory.hasOwnProperty(key)) {
@@ -393,24 +385,23 @@
                         }
                     }
                 }
+                
+                recalculateMultiplier();
             } catch (e) {
-                console.error("Critical fault detected attempting to parse local save state data:", e);
+                console.error("Save parse error:", e);
             }
         }
 
-        // PERSISTENCE: Wipe Storage Mechanics 
         function wipeSave() {
-            if (confirm("Are you absolutely sure you want to completely erase all your luck data, upgrades, and item history? This cannot be undone.")) {
+            if (confirm("Erase all data? This cannot be undone.")) {
                 if (autoRolling) toggleAuto();
-                localStorage.removeItem('infinity_rng_save_v2');
+                localStorage.removeItem('infinity_rng_save_v3');
                 
                 rolls = 0;
                 luckPoints = 0;
-                up1_level = 0;
-                up2_level = 0;
-                luckMultiplier = 1.0;
-                
+                upgradePool.forEach(up => upgradeLevels[up.id] = 0);
                 itemPool.forEach(item => inventory[item.name] = 0);
+                recalculateMultiplier();
                 
                 document.getElementById('display-name').innerText = "Click Roll";
                 document.getElementById('display-name').style.color = "#94a3b8";
@@ -420,14 +411,12 @@
             }
         }
 
-        // Core Weighted Matrix Processing Execution Engine
+        // Core Weighted RNG
         function roll() {
             rolls++;
-            
             let virtualChance = Math.random() / luckMultiplier;
             let rolledItem = itemPool[0]; 
 
-            // Find matching bracket starting top down from maximum rarity index ceilings
             for(let i = itemPool.length - 1; i >= 0; i--) {
                 if (virtualChance <= (1 / itemPool[i].rarity)) {
                     rolledItem = itemPool[i];
@@ -438,7 +427,6 @@
             inventory[rolledItem.name]++;
             luckPoints += rolledItem.points;
 
-            // Simple micro-interaction scale feedback trigger
             const displayNode = document.getElementById('display-name');
             displayNode.style.transform = "scale(0.94)";
             setTimeout(() => displayNode.style.transform = "scale(1)", 40);
@@ -448,7 +436,7 @@
             document.getElementById('display-rarity').innerText = `Rarity: 1 in ${rolledItem.rarity.toLocaleString()}`;
 
             updateUI();
-            saveGame(); // Commit changes straight to local machine storage index
+            saveGame(); 
         }
 
         function toggleAuto() {
@@ -458,7 +446,7 @@
             if(autoRolling) {
                 autoBtn.innerText = "Auto-Roll: ON";
                 autoBtn.classList.add('active');
-                autoInterval = setInterval(roll, 700); 
+                autoInterval = setInterval(roll, 120); 
             } else {
                 autoBtn.innerText = "Auto-Roll: OFF";
                 autoBtn.classList.remove('active');
@@ -466,43 +454,59 @@
             }
         }
 
-        function getUpgradeCost(type) {
-            if(type === 1) return Math.round(10 * Math.pow(1.35, up1_level));
-            if(type === 2) return Math.round(150 * Math.pow(1.45, up2_level));
+        function getUpgradeCost(id) {
+            let up = upgradePool.find(u => u.id === id);
+            let lvl = upgradeLevels[id];
+            return Math.round(up.baseCost * Math.pow(up.costScaling, lvl));
         }
 
-        function buyUpgrade(type) {
-            let cost = getUpgradeCost(type);
+        function recalculateMultiplier() {
+            luckMultiplier = 1.0;
+            upgradePool.forEach(up => {
+                luckMultiplier += upgradeLevels[up.id] * up.multGain;
+            });
+        }
+
+        function buyUpgrade(id) {
+            let cost = getUpgradeCost(id);
             if(luckPoints >= cost) {
                 luckPoints -= cost;
-                if(type === 1) up1_level++;
-                if(type === 2) up2_level++;
+                upgradeLevels[id]++;
                 
-                luckMultiplier = 1.0 + (up1_level * 0.2) + (up2_level * 1.5);
+                recalculateMultiplier();
                 updateUI();
                 saveGame();
             }
         }
 
         function updateUI() {
-            // Numbers
             document.getElementById('stat-rolls').innerText = rolls.toLocaleString();
             document.getElementById('stat-luck').innerText = luckMultiplier.toFixed(1) + "x";
             document.getElementById('stat-points').innerText = luckPoints.toLocaleString();
 
-            // Store Elements
-            let c1 = getUpgradeCost(1);
-            let c2 = getUpgradeCost(2);
+            // Render Dynamic Upgrades
+            const upBox = document.getElementById('upgrades-box');
+            upBox.innerHTML = ''; // Clear existing
             
-            document.getElementById('btn-up1').innerText = `Cost: ${c1.toLocaleString()} LP`;
-            document.getElementById('btn-up1').disabled = luckPoints < c1;
-            document.getElementById('up1-desc').innerText = `+0.2x Multiplier (Lv. ${up1_level})`;
+            upgradePool.forEach(up => {
+                let cost = getUpgradeCost(up.id);
+                let lvl = upgradeLevels[up.id];
+                
+                let div = document.createElement('div');
+                div.className = 'upgrade-card';
+                div.innerHTML = `
+                    <div class="upgrade-info">
+                        <p>${up.name}</p>
+                        <span>${up.desc} (Lv. ${lvl})</span>
+                    </div>
+                    <button class="btn-buy" onclick="buyUpgrade('${up.id}')" ${luckPoints < cost ? 'disabled' : ''}>
+                        Cost: ${cost.toLocaleString()} LP
+                    </button>
+                `;
+                upBox.appendChild(div);
+            });
 
-            document.getElementById('btn-up2').innerText = `Cost: ${c2.toLocaleString()} LP`;
-            document.getElementById('btn-up2').disabled = luckPoints < c2;
-            document.getElementById('up2-desc').innerText = `+1.5x Multiplier (Lv. ${up2_level})`;
-
-            // Render Unlocked Collection Storage Elements
+            // Render Inventory
             const invBox = document.getElementById('inventory-box');
             invBox.innerHTML = '';
             
@@ -510,7 +514,7 @@
                 let name = itemPool[i].name;
                 if(inventory[name] > 0) {
                     let div = document.createElement('div');
-                    div.classList.add('inv-item');
+                    div.className = 'inv-item';
                     div.style.borderLeft = `3px solid ${itemPool[i].color}`;
                     div.innerHTML = `
                         <span style="color: ${itemPool[i].color}; font-weight: 600;">${name} <small style="color:var(--text-muted); font-weight:400; font-size:11px;">(1 in ${itemPool[i].rarity.toLocaleString()})</small></span>
@@ -521,7 +525,7 @@
             }
         }
 
-        // Initialize and paint screen
+        // Boot Init
         loadGame();
         updateUI();
     </script>
