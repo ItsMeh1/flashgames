@@ -220,22 +220,50 @@ async function executeSync(urls) {
     
     let current = 0;
     let failed = 0;
+    let updated = 0;
     const total = urls.length;
-    failedSyncUrls = []; // Reset failures for this run
+    failedSyncUrls = []; 
 
     try {
-        // Open the cache your Service Worker normally reads from
         const cache = await caches.open('flashgames-cache-v1'); 
         
         for (const url of urls) {
             try {
-                // Fetch directly to verify it works, then put in cache
-                const response = await fetch(url, { cache: 'reload' });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                // Check if we already have this file cached
+                const cachedResponse = await cache.match(url);
                 
-                await cache.put(url, response.clone());
-                current++;
-                logContainer.innerHTML += `<div class="text-emerald-400 truncate">✓ Cached: ${url.split('/').pop()}</div>`;
+                // Force a network fetch with cache-busting headers to see if GitHub has a newer version
+                const networkResponse = await fetch(url, { 
+                    cache: 'no-cache', // Forces browser to validate with server, ignoring local cache
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+                
+                if (!networkResponse.ok) throw new Error(`HTTP error! status: ${networkResponse.status}`);
+                
+                if (cachedResponse) {
+                    // Read and compare text contents to see if anything actually changed
+                    const cachedText = await cachedResponse.clone().text();
+                    const networkText = await networkResponse.clone().text();
+                    
+                    if (cachedText === networkText) {
+                        // The file is exactly the same, safe to skip!
+                        current++;
+                        logContainer.innerHTML += `<div class="text-slate-400 truncate">🟰 Unchanged: ${url.split('/').pop()}</div>`;
+                        continue;
+                    } else {
+                        // The file has changed! Overwrite the old cached asset with the new one
+                        updated++;
+                        logContainer.innerHTML += `<div class="text-amber-400 truncate">✨ Updated: ${url.split('/').pop()}</div>`;
+                    }
+                } else {
+                    // Brand new file altogether
+                    current++;
+                    logContainer.innerHTML += `<div class="text-emerald-400 truncate">✓ Cached: ${url.split('/').pop()}</div>`;
+                }
+                
+                // Update the specific asset inside the cache safely
+                await cache.put(url, networkResponse.clone());
+                
             } catch (err) {
                 failed++;
                 failedSyncUrls.push(url);
@@ -243,26 +271,26 @@ async function executeSync(urls) {
                 console.error('Failed to sync:', url, err);
             }
             
-            // Update UI dynamically
-            document.getElementById('syncProgressText').textContent = `${current + failed} / ${total}`;
-            document.getElementById('syncProgressBar').style.width = `${((current + failed) / total) * 100}%`;
-            logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll logs
+            // UI updates
+            document.getElementById('syncProgressText').textContent = `${current + updated + failed} / ${total}`;
+            document.getElementById('syncProgressBar').style.width = `${((current + updated + failed) / total) * 100}%`;
+            logContainer.scrollTop = logContainer.scrollHeight; 
         }
     } catch (err) {
         logContainer.innerHTML += `<div class="text-rose-500">Critical Error accessing Cache API.</div>`;
     }
 
-    // Finish up UI
     isSyncing = false;
     if (failed > 0) {
         btn.textContent = `Done (${failed} failed)`;
-        btn.classList.add('text-rose-300', 'border-rose-500/30', 'bg-rose-500/20');
+        btn.className = "px-4 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-lg hover:bg-rose-500/30 transition-all text-xs font-medium z-10 relative";
         retryBtn.classList.remove('hidden');
     } else {
-        btn.textContent = 'Sync Complete!';
+        btn.textContent = updated > 0 ? `Updated ${updated} games!` : 'All files up to date!';
         document.getElementById('syncProgressBar').classList.add('bg-emerald-400');
         setTimeout(() => {
             btn.textContent = 'Sync Offline Folder';
+            btn.className = "px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium z-10 relative";
             btn.disabled = false;
             document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
             setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
