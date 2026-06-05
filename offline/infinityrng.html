@@ -361,34 +361,58 @@
         }
 
         // PERSISTENCE: Load Game
+        // PERSISTENCE: Load Game & Migrate Old Saves
         function loadGame() {
-            const structuralData = localStorage.getItem('infinity_rng_save_v3');
-            if (!structuralData) return;
-
-            try {
-                const parsed = JSON.parse(structuralData);
-                rolls = parsed.rolls || 0;
-                luckPoints = parsed.luckPoints || 0;
-                
-                if (parsed.upgradeLevels) {
-                    for (const key in parsed.upgradeLevels) {
-                        if (upgradeLevels.hasOwnProperty(key)) {
-                            upgradeLevels[key] = parsed.upgradeLevels[key];
+            // 1. Try to load the new v3 data first
+            const v3Data = localStorage.getItem('infinity_rng_save_v3');
+            if (v3Data) {
+                try {
+                    const parsed = JSON.parse(v3Data);
+                    rolls = parsed.rolls || 0;
+                    luckPoints = parsed.luckPoints || 0;
+                    
+                    if (parsed.upgradeLevels) {
+                        for (const key in parsed.upgradeLevels) {
+                            if (upgradeLevels.hasOwnProperty(key)) upgradeLevels[key] = parsed.upgradeLevels[key];
                         }
                     }
-                }
-
-                if (parsed.inventory) {
-                    for (const key in parsed.inventory) {
-                        if (inventory.hasOwnProperty(key)) {
-                            inventory[key] = parsed.inventory[key];
+                    if (parsed.inventory) {
+                        for (const key in parsed.inventory) {
+                            if (inventory.hasOwnProperty(key)) inventory[key] = parsed.inventory[key];
                         }
                     }
-                }
-                
+                    recalculateMultiplier();
+                    return; // Exit if v3 loaded successfully
+                } catch (e) { console.error("Save parse error:", e); }
+            }
+
+            // 2. If no v3 data exists, hunt for the old save data!
+            // (Checking common keys from previous versions)
+            const oldData = localStorage.getItem('infinity_rng_save_v2') || localStorage.getItem('infinity_rng_save_v1') || localStorage.getItem('infinity_rng_save');
+            
+            if (oldData) {
+                try {
+                    const parsed = JSON.parse(oldData);
+                    rolls = parsed.rolls || 0;
+                    luckPoints = parsed.luckPoints || 0;
+                    
+                    // Translate old upgrades to the new naming system
+                    if (parsed.up1_level) upgradeLevels['clover'] = parsed.up1_level;
+                    if (parsed.up2_level) upgradeLevels['alignment'] = parsed.up2_level;
+                    
+                    // Port old inventory over
+                    if (parsed.inventory) {
+                        for (const key in parsed.inventory) {
+                            if (inventory.hasOwnProperty(key)) inventory[key] = parsed.inventory[key];
+                        }
+                    }
+                    
+                    console.log("Old save recovered and migrated to v3!");
+                    recalculateMultiplier();
+                    saveGame(); // Instantly save it into the new format so you don't lose it again
+                } catch (e) { console.error("Migration parse error:", e); }
+            } else {
                 recalculateMultiplier();
-            } catch (e) {
-                console.error("Save parse error:", e);
             }
         }
 
