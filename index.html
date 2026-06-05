@@ -401,7 +401,7 @@ document.getElementById('syncOfflineBtn').addEventListener('click', () => {
     // Collect all URLs for offline games
     const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
     const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
-    urlsToCache.push('./offline.json', './index.html');
+    urlsToCache.push('./offline.json', './index.html', './manifest.json', './offline/logo.png');
     
     document.getElementById('syncInfoPanel').classList.add('panel-enter');
     executeSync(urlsToCache);
