@@ -12,27 +12,27 @@ self.addEventListener('activate', (event) => {
 
 // The Traffic Cop: Intercept network requests
 self.addEventListener('fetch', (event) => {
-    // We only care about standard GET requests
     if (event.request.method !== 'GET') return;
-
-    // Ignore Chrome extension requests or weird schemes
     if (!event.request.url.startsWith('http')) return;
 
     event.respondWith(
-        // Step 1: Try to fetch from the live internet
         fetch(event.request).catch(async () => {
-            // Step 2: The internet failed! Look inside our synced vault.
             const cache = await caches.open(CACHE_NAME);
             
-            // ignoreSearch: true ensures that even if a URL has ?v=2 on it, 
-            // it still finds the base file we synced.
+            // NEW: If the browser is trying to load/navigate to the app itself (e.g. from the home screen)
+            if (event.request.mode === 'navigate') {
+                // Ignore the ?query and exact path, just force-feed it index.html
+                const indexMatch = await cache.match('./index.html');
+                if (indexMatch) return indexMatch;
+            }
+            
+            // Standard fallback for everything else (games, images, json)
             const cachedResponse = await cache.match(event.request, { ignoreSearch: true });
             
             if (cachedResponse) {
                 return cachedResponse;
             }
             
-            // If it's not in the cache, let it fail naturally.
             throw new Error('Offline and file not cached.');
         })
     );
