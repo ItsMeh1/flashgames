@@ -316,35 +316,40 @@
         upgradePool.forEach(up => upgradeLevels[up.id] = 0);
 
         // Expanded Item Database
-        const itemPool = [
-            { name: "Dirt", rarity: 2, color: "#94a3b8", points: 1 },
-            { name: "Pebble", rarity: 3, color: "#78716c", points: 2 }, 
-            { name: "Grass", rarity: 4, color: "#04483bff", points: 3 },
-            { name: "Copper Ring", rarity: 5, color: "#cd7f32", points: 5 },
-            { name: "Wooden Stick", rarity: 8, color: "#854d0e", points: 7 }, 
-            { name: "Iron Greatsword", rarity: 15, color: "#a5a5a5", points: 10 },
-            { name: "Steel Dagger", rarity: 22, color: "#cbd5e1", points: 12 }, 
-            { name: "Emerald", rarity: 30, color: "#2ef4b8ff", points: 15 },
-            { name: "Silver Chalice", rarity: 50, color: "#00b4d8", points: 25 },
-            { name: "Golden Crown", rarity: 100, color: "#fbbf24", points: 45 }, 
-            { name: "Light Amethyst", rarity: 200, color: "#9d4edd", points: 80 },
-            { name: "Dark Amethyst", rarity: 200, color: "#8c00ffff", points: 80 },
-            { name: "Sapphire Crystal", rarity: 500, color: "#2563eb", points: 180 }, 
-            { name: "Flawless Ruby", rarity: 1000, color: "#ff0055", points: 350 },
-            { name: "Meteorite Shard", rarity: 3000, color: "#ec4899", points: 800 }, 
-            { name: "Cyber Matrix", rarity: 7500, color: "#00f0ff", points: 1500 },
-            { name: "Data Core", rarity: 20000, color: "#729dfbff", points: 6000 },
-            { name: "Plasma Core", rarity: 40000, color: "#ffb703", points: 8000 },
-            { name: "Antimatter Droplet", rarity: 100000, color: "#a855f7", points: 22000 }, 
-            { name: "Singularity", rarity: 250000, color: "#ff007f", points: 50000 },
-            { name: "Infinity Void", rarity: 500000, color: "#ffaa00", points: 250000 },
-            { name: "Nothingness", rarity: 750000, color: "#64748b", points: 500000 }, 
-            { name: "Flash", rarity: 750000, color: "#fff709ff", points: 750000 },
-            { name: "Owner", rarity: 750000, color: "#369ce0ff", points: 1000000 },
-            { name: "Chronos Warp", rarity: 1500000, color: "#10b981", points: 2000000 }, 
-            { name: "Multiverse Core", rarity: 5000000, color: "#f43f5e", points: 6500000 }, 
-            { name: "Beyond Absolute", rarity: 10000000, color: "#ffffff", points: 15000000 } 
-        ];
+const itemPool = [
+    { name: "Dirt", rarity: 2, color: "#94a3b8", points: 1 },
+    { name: "Pebble", rarity: 3, color: "#78716c", points: 2 },
+    { name: "Grass", rarity: 4, color: "#04483bff", points: 3 },
+    { name: "Copper Ring", rarity: 5, color: "#cd7f32", points: 5 },
+    { name: "Wooden Stick", rarity: 8, color: "#854d0e", points: 7 },
+    { name: "Iron Greatsword", rarity: 15, color: "#a5a5a5", points: 10 },
+    { name: "Steel Dagger", rarity: 22, color: "#cbd5e1", points: 12 },
+    { name: "Emerald", rarity: 30, color: "#2ef4b8ff", points: 15 },
+    { name: "Silver Chalice", rarity: 50, color: "#00b4d8", points: 25 },
+    { name: "Golden Crown", rarity: 100, color: "#fbbf24", points: 45 },
+    { name: "Light Amethyst", rarity: 200, color: "#9d4edd", points: 80 },
+    { name: "Dark Amethyst", rarity: 200, color: "#8c00ffff", points: 80 },
+    { name: "Sapphire Crystal", rarity: 500, color: "#2563eb", points: 180 },
+    { name: "Flawless Ruby", rarity: 1000, color: "#ff0055", points: 350 },
+    { name: "Cobalt Relic", rarity: 2000, color: "#0284c7", points: 550 },
+    { name: "Meteorite Shard", rarity: 3000, color: "#ec4899", points: 800 },
+    { name: "Cyber Matrix", rarity: 7500, color: "#00f0ff", points: 1500 },
+    { name: "Quantum Catalyst", rarity: 12500, color: "#14b8a6", points: 3500 },
+    { name: "Data Core", rarity: 20000, color: "#729dfbff", points: 6000 },
+    { name: "Plasma Core", rarity: 40000, color: "#ffb703", points: 8000 },
+    { name: "Antimatter Droplet", rarity: 100000, color: "#a855f7", points: 22000 },
+    { name: "Singularity", rarity: 250000, color: "#ff007f", points: 50000 },
+    { name: "Infinity Void", rarity: 500000, color: "#ffaa00", points: 250000 },
+    { name: "Nothingness", rarity: 750000, color: "#64748b", points: 500000 },
+    { name: "Flash", rarity: 750000, color: "#fff709ff", points: 750000 },
+    { name: "Owner", rarity: 750000, color: "#369ce0ff", points: 1000000 },
+    { name: "Chronos Warp", rarity: 1500000, color: "#10b981", points: 2000000 },
+    { name: "Nebula Blossom", rarity: 3500000, color: "#f472b6", points: 4500000 },
+    { name: "Multiverse Core", rarity: 5000000, color: "#f43f5e", points: 6500000 },
+    { name: "The Terrmari", rarity: 8500000, color: "#000000", points: 11000000 },
+    { name: "Beyond Absolute", rarity: 10000000, color: "#ffffff", points: 15000000 }
+];
+
 
         let inventory = {};
         itemPool.forEach(item => inventory[item.name] = 0);
