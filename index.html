@@ -261,7 +261,6 @@ function buildChangelogUI() {
     switchChangelogTab(defaultVersion);
 }
 
-// Swaps log content configurations instantly
 function switchChangelogTab(versionId) {
     const log = CHANGELOG_DATA[versionId];
     if (!log) return;
@@ -277,21 +276,29 @@ function switchChangelogTab(versionId) {
         activeBtn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap w-full";
     }
 
-    // Build lists items out of data arrays
+    // Build lists items out of data arrays (Loops ONLY through bullet points now)
     const listItems = log.notes.map(note => `
         <li class="flex items-start gap-2">
             <span class="text-emerald-400 mt-0.5">✔</span> 
             <div>${note}</div>
         </li>
-        <img src='https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1' alt='Visitor Count' class='mt-2 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm' title='Total Page Views'>
     `).join('');
 
-    // Inject text strings cleanly
+    // Inject text strings cleanly and append the centered visitor badge at the absolute end
     document.getElementById('changelogContent').innerHTML = `
         <h2 class="text-xl font-bold text-white mb-4">${log.title}</h2>
         <ul class="space-y-3 text-sm text-slate-300">${listItems}</ul>
+        
+        <div class="flex justify-center items-center mt-8 pt-4 border-t border-white/5 w-full">
+            <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" 
+                 alt="Visitor Count" 
+                 class="h-6 opacity-75 hover:opacity-100 transition-opacity rounded shadow-md" 
+                 title="Total Page Views">
+        </div>
     `;
 }
+
+        
         const BASE_URL = 'https://ess-education.org';
         const CONFIG = { 
             endpoints: ['./offline.json', '/asset/json/zones/gnmath.json', '/asset/json/zones/truffled.json', '/asset/json/zones/seraph.json', '/asset/json/zones/velara.json', '/asset/json/zones/ugs.json', '/asset/json/zones/tglsc.json', '/asset/json/zones/selenite.json'], 
