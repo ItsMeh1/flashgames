@@ -329,10 +329,12 @@ function clearSystemLogs() {
     renderSystemLogs();
 }
 
-// Global Shortcuts Configuration: Toggle Panel view using [Alt + C]
+// Global Shortcuts Configuration: Toggle Panel view using [Alt/Option + C]
 document.addEventListener('keydown', (e) => {
-    if (e.altKey && e.key.toLowerCase() === 'c') {
-        e.preventDefault();
+    // e.altKey catches both Windows Alt and Mac Option
+    // e.code === 'KeyC' checks the physical key position, ignoring the 'ç' character swap
+    if (e.altKey && e.code === 'KeyC') {
+        e.preventDefault(); // Prevents 'ç' from typing into inputs
         const modal = document.getElementById('devConsoleModal');
         if (modal) {
             if (modal.classList.contains('hidden')) {
@@ -357,6 +359,7 @@ const CHANGELOG_DATA = {
             "<strong>Instant Sync Pipeline:</strong> Patched the update handler. The cache-busting engine now forces new game builds to download instantly without dropping your data.",
             "<strong>Infinity RNG Upgraded:</strong> Deployed the latest standalone package directly into the arcade matrix.",
             "<strong>Lightning Fast Navigation:</strong> Smash the <code>/</code> key from anywhere on the dashboard to instantly drop into the library search.",
+            "<strong>For Devs:</strong> Built-in logs running @<code>alt+c</code>",
             "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
         ]
     },
