@@ -1,3 +1,5 @@
+console.log("service worker script running")
+
 const CACHE_NAME = 'flashgames-cache-v1';
 
 // Install instantly
@@ -8,6 +10,7 @@ self.addEventListener('install', (event) => {
 // Take control of the page immediately upon activation
 self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
+    console.log("service worker initialized")
 });
 
 // The Traffic Cop: Intercept network requests
