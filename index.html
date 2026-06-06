@@ -178,15 +178,15 @@
 // ==========================================
 const CHANGELOG_DATA = {
     "v3.1": {
-        title: "Offline Patches & Some More",
+        title: "⚡ The Unstoppable Offline & QoL Update",
         isCurrent: true,
         notes: [
-            "Fixed a bug where the whole entire app wouldn't even load offline.",
-            "Fixed a bug where the app wouldn't update when available",
-            "Updated Infinity RNG",
-            "Press <code>/</code> to skip to the search.",
-            "New visitor count!!",
-            "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
+            "<strong>True Offline Vault:</strong> Destroyed the bug causing the app to crash without Wi-Fi. Your local games are now 100% playable completely off the grid!",
+            "<strong>Instant Sync Pipeline:</strong> Patched the update handler. The cache-busting engine now forces new game builds to download instantly without dropping your data.",
+            "<strong>Infinity RNG Upgraded:</strong> Deployed the latest standalone package directly into the arcade matrix.",
+            "<strong>Lightning Fast Navigation:</strong> Smash the <code>/</code> key from anywhere on the dashboard to instantly drop into the library search.",
+            "<strong>thanks for playing on flash!❤️🔥⚡️</strong>",
+            "<img src='https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1' alt='Visitor Count' class='mt-2 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm' title='Total Page Views'>"
         ]
     },
     "v3.0": {
@@ -421,6 +421,32 @@ document.getElementById('syncOfflineBtn').addEventListener('click', () => {
     executeSync(urlsToCache);
 });
 
+// ==========================================
+// FORCE CHANGELOG POPUP FOR NEW UPDATES
+// ==========================================
+function enforceChangelogViewing() {
+    // 1. Find which version is currently active in your CHANGELOG_DATA
+    const currentVersion = Object.keys(CHANGELOG_DATA).find(ver => CHANGELOG_DATA[ver].isCurrent);
+    
+    // Safety check just in case
+    if (!currentVersion) return;
+
+    // 2. Check the user's browser memory to see what the last version they saw was
+    const lastViewedVersion = localStorage.getItem('lastViewedPatchNotes');
+
+    // 3. If they've never seen any notes, or they are on an older version...
+    if (lastViewedVersion !== currentVersion) {
+        // FORCE THE MODAL OPEN
+        const modal = document.getElementById('changelogModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+        
+        // Save the new version to their browser so it doesn't spam them on every refresh
+        localStorage.setItem('lastViewedPatchNotes', currentVersion);
+    }
+}
+
 // Retry Trigger
 document.getElementById('retrySyncBtn').addEventListener('click', () => {
     if (failedSyncUrls.length > 0) {
@@ -629,7 +655,7 @@ document.addEventListener('keydown', (e) => {
 
         document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
 
-        handleNetworkChange(); fetchSystemData(); buildChangelogUI();
+        handleNetworkChange(); fetchSystemData(); buildChangelogUI(); enforceChangelogViewing();
     </script>
 </body>
 </html>
