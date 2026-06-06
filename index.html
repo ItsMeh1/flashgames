@@ -171,7 +171,179 @@
     </div>
 </div>
 
+    <div id="devConsoleModal" class="hidden fixed inset-0 z-[150] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6 font-mono text-xs select-text">
+    <div class="glass-panel-dark max-w-4xl w-full rounded-2xl shadow-2xl border border-white/10 flex flex-col h-[80vh] overflow-hidden">
+        
+        <div class="px-6 py-4 bg-slate-900/80 border-b border-white/5 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <span class="text-indigo-400 font-bold text-sm">🛠️ System Diagnostics Pipeline</span>
+                <span class="px-2 py-0.5 rounded bg-white/5 text-slate-400 text-[10px]">Alt + C to toggle console view</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="clearSystemLogs()" class="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all font-medium text-[11px]">Clear Logs</button>
+                <button onclick="document.getElementById('devConsoleModal').classList.add('hidden')" class="text-slate-400 hover:text-white text-base px-2 transition-colors">✕</button>
+            </div>
+        </div>
+        
+        <div id="devConsoleLogs" class="p-4 flex-1 overflow-y-auto space-y-2 bg-slate-950/40 select-text">
+            <div class="text-slate-500 text-center py-12">No data streaming pipelines registered yet. Core status stable.</div>
+        </div>
+        
+    </div>
+</div>
+
     <script>
+
+        // ==========================================
+// CENTRALIZED SYSTEM CORE LOGGER (ALT + C)
+// ==========================================
+let SYSTEM_LOGS = [];
+
+// Back up native console outputs so the desktop inspection toolkit still updates normally
+const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error
+};
+
+// Extracts exactly what line number, file path, or game folder triggered the script error
+function getLogOrigin() {
+    try {
+        const err = new Error();
+        const stack = err.stack.split('\n');
+        // Index [3] usually tracks the original caller right outside our intercept wrapper loop
+        let targetFrame = stack[3] || '';
+        
+        if (targetFrame.includes('at ')) {
+            targetFrame = targetFrame.split('at ')[1];
+        }
+        // Shave off the redundant domain text parameters to save grid panel spacing
+        targetFrame = targetFrame.replace(/https?:\/\/[^\/]+/g, '');
+        return targetFrame.trim() || 'core.js';
+    } catch (e) {
+        return 'unknown-origin';
+    }
+}
+
+// Global engine formatting array compilation handler
+function pushToSystemLogs(type, args) {
+    const timestamp = new Date().toLocaleTimeString();
+    const origin = getLogOrigin();
+    
+    // Convert object states/arrays cleanly into visible JSON strings if printed
+    const message = Array.from(args).map(arg => {
+        if (typeof arg === 'object') {
+            try { return JSON.stringify(arg); } catch(e) { return '[Complex Object]'; }
+        }
+        return String(arg);
+    }).join(' ');
+
+    SYSTEM_LOGS.push({ type, message, origin, timestamp });
+    
+    // Auto-update UI container if the user currently views the panel live
+    const modal = document.getElementById('devConsoleModal');
+    if (modal && !modal.classList.contains('hidden')) {
+        renderSystemLogs();
+    }
+}
+
+// Inject customized wrappers over standard developer console engines
+console.log = function() {
+    pushToSystemLogs('PRINT', arguments);
+    originalConsole.log.apply(console, arguments);
+};
+console.warn = function() {
+    pushToSystemLogs('WARN', arguments);
+    originalConsole.warn.apply(console, arguments);
+};
+console.error = function() {
+    pushToSystemLogs('ERROR', arguments);
+    originalConsole.error.apply(console, arguments);
+};
+
+// Automatically intercept unhandled system fatal crashes or broken scripts
+window.addEventListener('error', (event) => {
+    const file = event.filename ? event.filename.replace(/https?:\/\/[^\/]+/g, '') : 'index.html';
+    const origin = `${file}:${event.lineno}:${event.colno}`;
+    SYSTEM_LOGS.push({
+        type: 'CRASH',
+        message: event.message,
+        origin: origin,
+        timestamp: new Date().toLocaleTimeString()
+    });
+    renderSystemLogs();
+});
+
+// Automatically log async promise network sync loop failures
+window.addEventListener('unhandledrejection', (event) => {
+    SYSTEM_LOGS.push({
+        type: 'SYNC-FAIL',
+        message: event.reason ? (event.reason.message || event.reason) : 'Unhandled promise pipeline drop',
+        origin: 'Network Sync Hub',
+        timestamp: new Date().toLocaleTimeString()
+    });
+    renderSystemLogs();
+});
+
+// Build the diagnostic entries into structural tailwind components
+function renderSystemLogs() {
+    const container = document.getElementById('devConsoleLogs');
+    if (!container) return;
+
+    if (SYSTEM_LOGS.length === 0) {
+        container.innerHTML = `<div class="text-slate-500 text-center py-12">No data streaming pipelines registered yet. Core status stable.</div>`;
+        return;
+    }
+
+    container.innerHTML = SYSTEM_LOGS.map(log => {
+        let badgeStyle = 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+        let rowColor = 'text-slate-300';
+        
+        if (log.type === 'WARN') {
+            badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
+            rowColor = 'text-amber-100/90';
+        } else if (log.type === 'ERROR' || log.type === 'CRASH') {
+            badgeStyle = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+            rowColor = 'text-rose-200';
+        } else if (log.type === 'SYNC-FAIL') {
+            badgeStyle = 'bg-purple-500/10 text-purple-300 border-purple-500/20';
+            rowColor = 'text-purple-200';
+        }
+
+        return `
+            <div class="flex items-start gap-4 py-1.5 px-2 border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors rounded-lg group select-text">
+                <span class="text-slate-600 select-none tracking-tighter shrink-0">${log.timestamp}</span>
+                <span class="px-1.5 py-0.5 rounded border text-[9px] font-bold tracking-wider uppercase shrink-0 ${badgeStyle}">${log.type}</span>
+                <div class="flex-1 min-w-0 font-medium ${rowColor} break-all whitespace-pre-wrap select-text">${log.message}</div>
+                <span class="text-slate-500 text-[11px] truncate max-w-[280px] text-right font-light tracking-tight group-hover:text-slate-400 select-all" title="${log.origin}">${log.origin}</span>
+            </div>
+        `;
+    }).join('');
+    
+    // Auto-scroll screen down to display logs in real-time
+    container.scrollTop = container.scrollHeight;
+}
+
+function clearSystemLogs() {
+    SYSTEM_LOGS = [];
+    renderSystemLogs();
+}
+
+// Global Shortcuts Configuration: Toggle Panel view using [Alt + C]
+document.addEventListener('keydown', (e) => {
+    if (e.altKey && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        const modal = document.getElementById('devConsoleModal');
+        if (modal) {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                renderSystemLogs();
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+    }
+});
 
         // ==========================================
 // EASILY CHANGE YOUR UPDATE LOGS HERE
