@@ -171,130 +171,108 @@
     </div>
 </div>
 
-    <div id="devConsoleModal" class="hidden fixed inset-0 z-[150] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6 font-mono text-xs select-text">
-    <div class="glass-panel-dark max-w-4xl w-full rounded-2xl shadow-2xl border border-white/10 flex flex-col h-[80vh] overflow-hidden">
+    <div id="devConsoleModal" class="hidden fixed inset-0 z-[150] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 md:p-6 font-mono text-xs select-text">
+    <div class="glass-panel-dark max-w-4xl w-full rounded-2xl shadow-2xl border border-white/10 flex flex-col h-[85vh] overflow-hidden">
         
-        <div class="px-6 py-4 bg-slate-900/80 border-b border-white/5 flex items-center justify-between shrink-0">
+        <div class="px-5 py-3.5 bg-slate-900/90 border-b border-white/5 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-                <span class="text-indigo-400 font-bold text-sm">🛠️ System Devtools</span>
-                <span class="px-2 py-0.5 rounded bg-white/5 text-slate-400 text-[10px]">Alt + C to toggle console view</span>
+                <div class="flex gap-1.5 select-none">
+                    <span class="w-3 h-3 rounded-full bg-rose-500/40 border border-rose-500/50 block"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500/40 border border-amber-500/50 block"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500/40 border border-emerald-500/50 block"></span>
+                </div>
+                <span class="text-indigo-400 font-bold text-[13px] ml-1 tracking-tight">📟 FLASH_OS // Interactive Terminal Core</span>
+                <span class="px-2 py-0.5 rounded bg-white/5 text-slate-500 text-[10px] hidden sm:inline-block">Alt/Option + C to exit terminal</span>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="clearSystemLogs()" class="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all font-medium text-[11px]">Clear Logs</button>
+                <button onclick="clearSystemLogs()" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all font-medium text-[11px]">clear</button>
                 <button onclick="document.getElementById('devConsoleModal').classList.add('hidden')" class="text-slate-400 hover:text-white text-base px-2 transition-colors">✕</button>
             </div>
         </div>
         
-        <div id="devConsoleLogs" class="p-4 flex-1 overflow-y-auto space-y-2 bg-slate-950/40 select-text">
-            <div class="text-slate-500 text-center py-12">Nothing registered yet. Check again later.</div>
+        <div id="devConsoleLogs" class="p-5 flex-1 overflow-y-auto space-y-1.5 bg-slate-950/20 select-text scroll-smooth">
+            <div class="text-indigo-400/60 font-bold mb-1">Flash Games Diagnostics Terminal</div>
+            <div class="text-slate-500 font-light mb-4">Type <span class="text-emerald-400">flash help</span> for commands...</div>
+        </div>
+        
+        <div class="px-4 py-3 bg-slate-950/80 border-t border-white/5 flex items-center gap-2.5 shrink-0 font-mono">
+            <span class="text-emerald-400 font-bold select-none tracking-tight">flash</span>
+            <span class="text-indigo-400 font-bold select-none animate-pulse">&gt;</span>
+            <input type="text" id="terminalInput" 
+                   class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-700 font-mono text-xs" 
+                   placeholder="Type a subsystem command (e.g., flash help)..." 
+                   autocomplete="off" 
+                   spellcheck="false">
         </div>
         
     </div>
+</div>
+    
 </div>
 
     <script>
         console.log("index core script running")
 
-        // ==========================================
-// CENTRALIZED SYSTEM CORE LOGGER (ALT + C)
-// ==========================================
+// ==========================================================
+// INTERACTIVE SYSTEM CORE LOGGING & TERMINAL ENGINE (ALT+C)
+// ==========================================================
 let SYSTEM_LOGS = [];
+let COMMAND_HISTORY = [];
+let HISTORY_INDEX = -1;
 
-// Back up native console outputs so the desktop inspection toolkit still updates normally
 const originalConsole = {
     log: console.log,
     warn: console.warn,
     error: console.error
 };
 
-// Extracts exactly what line number, file path, or game folder triggered the script error
+// Auto-resolves executing path frame traces down to exact scripts/lines
 function getLogOrigin() {
     try {
         const err = new Error();
         const stack = err.stack.split('\n');
-        // Index [3] usually tracks the original caller right outside our intercept wrapper loop
         let targetFrame = stack[3] || '';
-        
-        if (targetFrame.includes('at ')) {
-            targetFrame = targetFrame.split('at ')[1];
-        }
-        // Shave off the redundant domain text parameters to save grid panel spacing
-        targetFrame = targetFrame.replace(/https?:\/\/[^\/]+/g, '');
-        return targetFrame.trim() || 'core.js';
+        if (targetFrame.includes('at ')) targetFrame = targetFrame.split('at ')[1];
+        return targetFrame.replace(/https?:\/\/[^\/]+/g, '').trim() || 'core.js';
     } catch (e) {
         return 'unknown-origin';
     }
 }
 
-// Global engine formatting array compilation handler
-function pushToSystemLogs(type, args) {
+// Global logger aggregator pipeline
+function pushToSystemLogs(type, args, customOrigin = null) {
     const timestamp = new Date().toLocaleTimeString();
-    const origin = getLogOrigin();
+    const origin = customOrigin || getLogOrigin();
     
-    // Convert object states/arrays cleanly into visible JSON strings if printed
     const message = Array.from(args).map(arg => {
         if (typeof arg === 'object') {
-            try { return JSON.stringify(arg); } catch(e) { return '[Complex Object]'; }
+            try { return JSON.stringify(arg, null, 2); } catch(e) { return '[Complex Object]'; }
         }
         return String(arg);
     }).join(' ');
 
     SYSTEM_LOGS.push({ type, message, origin, timestamp });
-    
-    // Auto-update UI container if the user currently views the panel live
-    const modal = document.getElementById('devConsoleModal');
-    if (modal && !modal.classList.contains('hidden')) {
-        renderSystemLogs();
-    }
+    renderSystemLogs();
 }
 
-// Inject customized wrappers over standard developer console engines
-console.log = function() {
-    pushToSystemLogs('PRINT', arguments);
-    originalConsole.log.apply(console, arguments);
-};
-console.warn = function() {
-    pushToSystemLogs('WARN', arguments);
-    originalConsole.warn.apply(console, arguments);
-};
-console.error = function() {
-    pushToSystemLogs('ERROR', arguments);
-    originalConsole.error.apply(console, arguments);
-};
+// Redirect standard browser debug outputs into our local view layout stream
+console.log = function() { pushToSystemLogs('PRINT', arguments); originalConsole.log.apply(console, arguments); };
+console.warn = function() { pushToSystemLogs('WARN', arguments); originalConsole.warn.apply(console, arguments); };
+console.error = function() { pushToSystemLogs('ERROR', arguments); originalConsole.error.apply(console, arguments); };
 
-// Automatically intercept unhandled system fatal crashes or broken scripts
-window.addEventListener('error', (event) => {
-    const file = event.filename ? event.filename.replace(/https?:\/\/[^\/]+/g, '') : 'index.html';
-    const origin = `${file}:${event.lineno}:${event.colno}`;
-    SYSTEM_LOGS.push({
-        type: 'CRASH',
-        message: event.message,
-        origin: origin,
-        timestamp: new Date().toLocaleTimeString()
-    });
-    renderSystemLogs();
+window.addEventListener('error', (e) => {
+    const file = e.filename ? e.filename.replace(/https?:\/\/[^\/]+/g, '') : 'index.html';
+    pushToSystemLogs('CRASH', [e.message], `${file}:${e.lineno}`);
 });
 
-// Automatically log async promise network sync loop failures
-window.addEventListener('unhandledrejection', (event) => {
-    SYSTEM_LOGS.push({
-        type: 'SYNC-FAIL',
-        message: event.reason ? (event.reason.message || event.reason) : 'Unhandled promise pipeline drop',
-        origin: 'Network Sync Hub',
-        timestamp: new Date().toLocaleTimeString()
-    });
-    renderSystemLogs();
+window.addEventListener('unhandledrejection', (e) => {
+    pushToSystemLogs('SYNC-FAIL', [e.reason?.message || e.reason || 'Unhandled Promise Drop'], 'Async Pipeline');
 });
 
-// Build the diagnostic entries into structural tailwind components
+// Structural layout painter formatting
 function renderSystemLogs() {
     const container = document.getElementById('devConsoleLogs');
     if (!container) return;
-
-    if (SYSTEM_LOGS.length === 0) {
-        container.innerHTML = `<div class="text-slate-500 text-center py-12">No data streaming pipelines registered yet. Core status stable.</div>`;
-        return;
-    }
 
     container.innerHTML = SYSTEM_LOGS.map(log => {
         let badgeStyle = 'bg-slate-500/10 text-slate-400 border-slate-500/20';
@@ -302,26 +280,28 @@ function renderSystemLogs() {
         
         if (log.type === 'WARN') {
             badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
-            rowColor = 'text-amber-100/90';
+            rowColor = 'text-amber-200/90';
         } else if (log.type === 'ERROR' || log.type === 'CRASH') {
             badgeStyle = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-            rowColor = 'text-rose-200';
-        } else if (log.type === 'SYNC-FAIL') {
-            badgeStyle = 'bg-purple-500/10 text-purple-300 border-purple-500/20';
-            rowColor = 'text-purple-200';
+            rowColor = 'text-rose-300';
+        } else if (log.type === 'CLI-IN') {
+            badgeStyle = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+            rowColor = 'text-emerald-400 font-bold';
+        } else if (log.type === 'CLI-OUT') {
+            badgeStyle = 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20';
+            rowColor = 'text-indigo-200 font-mono';
         }
 
         return `
-            <div class="flex items-start gap-4 py-1.5 px-2 border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors rounded-lg group select-text">
-                <span class="text-slate-600 select-none tracking-tighter shrink-0">${log.timestamp}</span>
+            <div class="flex items-start gap-4 py-1 px-1.5 border-b border-white/[0.01] hover:bg-white/[0.01] transition-colors rounded group font-mono text-[11px]">
+                <span class="text-slate-600 select-none tracking-tight shrink-0">${log.timestamp}</span>
                 <span class="px-1.5 py-0.5 rounded border text-[9px] font-bold tracking-wider uppercase shrink-0 ${badgeStyle}">${log.type}</span>
-                <div class="flex-1 min-w-0 font-medium ${rowColor} break-all whitespace-pre-wrap select-text">${log.message}</div>
-                <span class="text-slate-500 text-[11px] truncate max-w-[280px] text-right font-light tracking-tight group-hover:text-slate-400 select-all" title="${log.origin}">${log.origin}</span>
+                <div class="flex-1 min-w-0 ${rowColor} break-all whitespace-pre-wrap">${log.message}</div>
+                <span class="text-slate-600 text-[10px] truncate max-w-[200px] text-right font-light tracking-tight group-hover:text-slate-400 select-all" title="${log.origin}">${log.origin}</span>
             </div>
         `;
     }).join('');
     
-    // Auto-scroll screen down to display logs in real-time
     container.scrollTop = container.scrollHeight;
 }
 
@@ -330,17 +310,219 @@ function clearSystemLogs() {
     renderSystemLogs();
 }
 
-// Global Shortcuts Configuration: Toggle Panel view using [Alt/Option + C]
+// ==========================================================
+// TERMINAL COMMAND COMMAND LINE INTERFACES (CLI)
+// ==========================================================
+const COMMAND_MATRIX = {
+    "help": {
+        desc: "Displays the available layout execution command manifest maps.",
+        exec: () => {
+            let table = "AVAILABLE COMMANDS:\n====================================================================\n";
+            Object.keys(COMMAND_MATRIX).forEach(cmd => {
+                table += `${cmd.padEnd(22)} -> ${COMMAND_MATRIX[cmd].desc}\n`;
+            });
+            console.log(table);
+        }
+    },
+    "init": {
+        desc: "Forcibly flushes, configures, and validates database pipelines. Initalizes Flash.",
+        exec: () => {
+            pushToSystemLogs('CLI-OUT', ['Initializing system assets...'], 'System Kernel');
+            try {
+                if (typeof fetchSystemData === 'function') fetchSystemData();
+                if (typeof buildChangelogUI === 'function') buildChangelogUI();
+                if (typeof enforceChangelogViewing === 'function') enforceChangelogViewing();
+                pushToSystemLogs('CLI-OUT', ['🟢 System Initialization Complete. Catalogs & storage bridges functional.'], 'System Kernel');
+            } catch (err) {
+                console.error("Initialization pipeline failed:", err);
+            }
+        }
+    },
+    "functions": {
+        desc: "Prints all globally bound application operational tasks.",
+        exec: () => {
+            const coreFuncs = [
+                "fetchSystemData()          - Polls dynamic database entries",
+                "buildChangelogUI()         - Generates historical release nodes",
+                "switchChangelogTab(id)     - Toggles modal configuration views",
+                "enforceChangelogViewing()  - Evaluates local update checks",
+                "executeSync(urls)          - Runs cache protection engines",
+                "clearSystemLogs()          - Empties diagnostic workspace states"
+            ];
+            pushToSystemLogs('CLI-OUT', ["BOUND INTERACTIVE RUNTIME FUNCTIONS:\n\n" + coreFuncs.join('\n')], 'Developer Map');
+        }
+    },
+    "run": {
+        desc: "Executes a global runtime module. Usage: flash run {function_name}",
+        exec: (args) => {
+            if (!args || args.length === 0) {
+                console.error("Execution error: Specifiy a target function. Example: flash run buildChangelogUI");
+                return;
+            }
+            const funcName = args[0];
+            if (typeof window[funcName] === 'function') {
+                pushToSystemLogs('CLI-OUT', [`Running execution pipeline window.${funcName}()...`], 'Evaluator');
+                try {
+                    window[funcName]();
+                    pushToSystemLogs('CLI-OUT', [`🟢 Execution of window.${funcName}() completed successfully.`], 'Evaluator');
+                } catch(e) {
+                    console.error(`Runtime break inside ${funcName}:`, e);
+                }
+            } else {
+                console.error(`Namespace error: '${funcName}' is not a valid global function.`);
+            }
+        }
+    },
+    "health": {
+        desc: "Evaluates application platform connectivity, worker setups, and cache status.",
+        exec: async () => {
+            pushToSystemLogs('CLI-OUT', ['Running platform matrix diagnostic scans...'], 'Health Monitor');
+            const network = navigator.onLine ? "📡 ONLINE (Live Sync Available)" : "🔌 OFFLINE (Running Local Sandbox Mode)";
+            const swActive = navigator.serviceWorker?.controller ? "✅ ACTIVE (Intercepting Traffic Paths)" : "❌ INACTIVE / UNREGISTERED (Offline Loading Will Break)";
+            
+            let cachedFilesCount = 0;
+            try {
+                const keys = await caches.keys();
+                for (let key of keys) {
+                    const c = await caches.open(key);
+                    const records = await c.keys();
+                    cachedFilesCount += records.length;
+                }
+            } catch(e) { cachedFilesCount = "Access Blocked"; }
+
+            let localKeysCount = Object.keys(localStorage).length;
+
+            const report = `SYSTEM DIAGNOSTICS REPORT:\n----------------------------------------------------\n` +
+                           `Network Mode:     ${network}\n` +
+                           `Service Worker:   ${swActive}\n` +
+                           `Cached Artifacts: ${cachedFilesCount} items preserved in cache storage\n` +
+                           `Local Storage:    ${localKeysCount} configuration/save strings recorded`;
+            
+            pushToSystemLogs('CLI-OUT', [report], 'Health Monitor');
+        }
+    },
+    "play": {
+        desc: "Launches any catalog game from terminal queries. Usage: flash play {game_title}",
+        exec: (args) => {
+            if (!args || args.length === 0) {
+                console.error("Launcher error: Target query cannot be empty. Example: flash play 2048");
+                return;
+            }
+            const query = args.join(' ').toLowerCase();
+            
+            // Checks your custom engine's structural game database state if loaded
+            if (typeof STATE === 'undefined' || !STATE.rawGamesList) {
+                console.error("Database unavailable. Run 'flash init' to check system connectivity pipelines.");
+                return;
+            }
+
+            const target = STATE.rawGamesList.find(g => 
+                g.title?.toLowerCase().includes(query) || g.id?.toString().toLowerCase() === query
+            );
+
+            if (target) {
+                pushToSystemLogs('CLI-OUT', [`🎯 Match Located: [${target.title}]. Intercepting container contexts...`], 'App Launcher');
+                // Attempts to run standard interface launchers depending on how your frame handles clicks
+                if (typeof openGame === 'function') {
+                    openGame(target.id);
+                    document.getElementById('devConsoleModal').classList.add('hidden');
+                } else {
+                    pushToSystemLogs('CLI-OUT', [`Found game resource at path: ${target.url || 'No Path'}. Cannot auto-invoke openGame() framework binding.`], 'App Launcher');
+                }
+            } else {
+                console.error(`Search failure: Could not map game elements matching '${query}' inside current library caches.`);
+            }
+        }
+    },
+    "storage": {
+        desc: "Inspects and breaks down browser data storage maps.",
+        exec: () => {
+            let localStr = "LOCAL STORAGE DUMP:\n----------------------------------------------------\n";
+            for(let i=0; i<localStorage.length; i++) {
+                const k = localStorage.key(i);
+                const v = localStorage.getItem(k);
+                localStr += `[${k}] -> ${v.substring(0, 60)}${v.length > 60 ? '...' : ''}\n`;
+            }
+            pushToSystemLogs('CLI-OUT', [localStr], 'Storage System');
+        }
+    },
+    "sync": {
+        desc: "Forces the system cache sync loop sequence.",
+        exec: () => {
+            const btn = document.getElementById('syncOfflineBtn');
+            if (btn) {
+                pushToSystemLogs('CLI-OUT', ['Invoking background sync engine trigger button click event...'], 'Sync Controller');
+                btn.click();
+            } else {
+                console.error("UI link error: Could not bind command to reference node '#syncOfflineBtn'.");
+            }
+        }
+    },
+    "clear": {
+        desc: "Wipes clean the display terminal text fields.",
+        exec: () => { clearSystemLogs(); }
+    }
+};
+
+// Command Line Parsing Processing Input Field Core Loop
+document.getElementById('terminalInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const fullInput = this.value.trim();
+        if (!fullInput) return;
+
+        this.value = '';
+        COMMAND_HISTORY.push(fullInput);
+        HISTORY_INDEX = COMMAND_HISTORY.length;
+
+        // Print entered instruction straight back to display grid output
+        pushToSystemLogs('CLI-IN', [fullInput], 'Client Shell');
+
+        const tokens = fullInput.split(/\s+/);
+        if (tokens[0] !== 'flash') {
+            console.error(`Syntax Error: Commands require 'flash' syntax. Type 'flash help'.`);
+            return;
+        }
+
+        const action = tokens[1];
+        const args = tokens.slice(2);
+
+        if (COMMAND_MATRIX[action]) {
+            COMMAND_MATRIX[action].exec(args);
+        } else {
+            console.error(`Flash Games terminal error: Command '${action}' unrecognized by console. Type 'flash help'.`);
+        }
+    } 
+    // Cycle up and down through user prompt command text logs histories
+    else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (COMMAND_HISTORY.length > 0 && HISTORY_INDEX > 0) {
+            HISTORY_INDEX--;
+            this.value = COMMAND_HISTORY[HISTORY_INDEX];
+        }
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (HISTORY_INDEX < COMMAND_HISTORY.length - 1) {
+            HISTORY_INDEX++;
+            this.value = COMMAND_HISTORY[HISTORY_INDEX];
+        } else {
+            HISTORY_INDEX = COMMAND_HISTORY.length;
+            this.value = '';
+        }
+    }
+});
+
+// Windows Alt+C & Mac Option+C Keyboard Core Toggles Interceptors 
 document.addEventListener('keydown', (e) => {
-    // e.altKey catches both Windows Alt and Mac Option
-    // e.code === 'KeyC' checks the physical key position, ignoring the 'ç' character swap
     if (e.altKey && e.code === 'KeyC') {
-        e.preventDefault(); // Prevents 'ç' from typing into inputs
+        e.preventDefault();
         const modal = document.getElementById('devConsoleModal');
+        const inputField = document.getElementById('terminalInput');
         if (modal) {
             if (modal.classList.contains('hidden')) {
                 modal.classList.remove('hidden');
                 renderSystemLogs();
+                // Forces browser focus straight down to command prompt input area for instant execution
+                setTimeout(() => inputField?.focus(), 50);
             } else {
                 modal.classList.add('hidden');
             }
