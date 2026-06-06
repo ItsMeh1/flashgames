@@ -176,7 +176,7 @@
         
         <div class="px-6 py-4 bg-slate-900/80 border-b border-white/5 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-                <span class="text-indigo-400 font-bold text-sm">🛠️ System Diagnostics Pipeline</span>
+                <span class="text-indigo-400 font-bold text-sm">🛠️ System Devtools</span>
                 <span class="px-2 py-0.5 rounded bg-white/5 text-slate-400 text-[10px]">Alt + C to toggle console view</span>
             </div>
             <div class="flex items-center gap-2">
@@ -186,13 +186,14 @@
         </div>
         
         <div id="devConsoleLogs" class="p-4 flex-1 overflow-y-auto space-y-2 bg-slate-950/40 select-text">
-            <div class="text-slate-500 text-center py-12">No data streaming pipelines registered yet. Core status stable.</div>
+            <div class="text-slate-500 text-center py-12">Nothing registered yet. Check again later.</div>
         </div>
         
     </div>
 </div>
 
     <script>
+        console.log("index core script running")
 
         // ==========================================
 // CENTRALIZED SYSTEM CORE LOGGER (ALT + C)
@@ -403,6 +404,7 @@ const CHANGELOG_DATA = {
 
 // Automatically builds and updates the log UI
 function buildChangelogUI() {
+    console.log("buildChangelogUI called")
     const tabsContainer = document.getElementById('changelogTabs');
     const headerTitle = document.querySelector('button[onclick="openChangelog()"]');
     
@@ -500,6 +502,7 @@ let isSyncing = false;
 async function executeSync(urls) {
     if (isSyncing) return;
     isSyncing = true;
+    console.log("syncing activated")
     
     const btn = document.getElementById('syncOfflineBtn');
     const logContainer = document.getElementById('syncLogsContainer');
@@ -655,11 +658,13 @@ document.getElementById('retrySyncBtn').addEventListener('click', () => {
                 STATE.activeFilters.zone = 'OFFLINE';
                 zoneFilter.disabled = true;
                 syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
+                console.log("offline mode active")
             } else {
                 dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
                 text.textContent = "Connected. Ready to sync local games.";
                 zoneFilter.disabled = false;
                 syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
+                console.log("online mode active")
             }
             processAndRenderView();
         }
