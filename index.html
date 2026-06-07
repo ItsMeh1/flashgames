@@ -296,7 +296,7 @@ function renderSystemLogs() {
             <div class="flex items-start gap-4 py-1 px-1.5 border-b border-white/[0.01] hover:bg-white/[0.01] transition-colors rounded group font-mono text-[11px]">
                 <span class="text-slate-600 select-none tracking-tight shrink-0">${log.timestamp}</span>
                 <span class="px-1.5 py-0.5 rounded border text-[9px] font-bold tracking-wider uppercase shrink-0 ${badgeStyle}">${log.type}</span>
-                <div class="flex-1 min-w-0 ${rowColor} break-all whitespace-pre-wrap">${log.message}</div>
+                <div class="flex-1 min-w-0 ${rowColor} break-words whitespace-pre-wrap">${log.message}</div>
                 <span class="text-slate-600 text-[10px] truncate max-w-[200px] text-right font-light tracking-tight group-hover:text-slate-400 select-all" title="${log.origin}">${log.origin}</span>
             </div>
         `;
@@ -310,8 +310,33 @@ function clearSystemLogs() {
     renderSystemLogs();
 }
 
+// ==========================================
+// OFFLINE DIRECTORY CONSOLE PACKAGES INTEGRATOR
+// ==========================================
+function loadOfflinePackages() {
+    const storedFolder = localStorage.getItem('flash_offline_folder');
+    
+    if (storedFolder && typeof STATE !== 'undefined' && STATE.rawGamesList) {
+        try {
+            const offlineGames = JSON.parse(storedFolder);
+            
+            offlineGames.forEach(game => {
+                // Double check to prevent injecting duplicates into the dashboard arrays
+                if (!STATE.rawGamesList.some(g => g.id === game.id)) {
+                    STATE.rawGamesList.push(game);
+                }
+            });
+            
+            // Log the recovery inside your terminal logs
+            pushToSystemLogs('PRINT', [`📦 Loaded ${offlineGames.length} custom packages from your local offline folder setup.`], 'flash-kernel');
+        } catch (error) {
+            console.error("ERR! Structural corruption parsing offline storage data directory:", error);
+        }
+    }
+}
+        
 // ==========================================================
-// TERMINAL COMMAND COMMAND LINE INTERFACES (CLI)
+// TERMINAL COMMAND MATRIX (NPM-STYLE ARCHITECTURE)
 // ==========================================================
 const COMMAND_MATRIX = {
     "help": {
@@ -319,148 +344,195 @@ const COMMAND_MATRIX = {
         exec: () => {
             let table = "AVAILABLE COMMANDS:\n====================================================================\n";
             Object.keys(COMMAND_MATRIX).forEach(cmd => {
-                table += `${cmd.padEnd(22)} -> ${COMMAND_MATRIX[cmd].desc}\n`;
+                table += `${cmd.padEnd(12)} -> ${COMMAND_MATRIX[cmd].desc}\n`;
             });
             console.log(table);
         }
     },
     "init": {
-        desc: "Forcibly flushes, configures, and validates database pipelines. Initalizes Flash.",
+        desc: "Initializes Flash. Configures and validates database pipelines.",
         exec: () => {
-            pushToSystemLogs('CLI-OUT', ['Initializing system assets...'], 'System Kernel');
+            pushToSystemLogs('CLI-OUT', ['Initializing system assets...'], 'flash-kernel');
             try {
                 if (typeof fetchSystemData === 'function') fetchSystemData();
                 if (typeof buildChangelogUI === 'function') buildChangelogUI();
                 if (typeof enforceChangelogViewing === 'function') enforceChangelogViewing();
-                pushToSystemLogs('CLI-OUT', ['🟢 System Initialization Complete. Catalogs & storage bridges functional.'], 'System Kernel');
+                
+                // Mount the offline folder here!
+                loadOfflinePackages(); 
+                
+                pushToSystemLogs('CLI-OUT', ['🟢 System Initialization Complete. Catalogs ready.'], 'flash-kernel');
             } catch (err) {
-                console.error("Initialization pipeline failed:", err);
+                console.error("ERR! Initialization pipeline failed:", err);
             }
-        }
-    },
-    "functions": {
-        desc: "Prints all globally bound application operational tasks.",
-        exec: () => {
-            const coreFuncs = [
-                "fetchSystemData()          - Polls dynamic database entries",
-                "buildChangelogUI()         - Generates historical release nodes",
-                "switchChangelogTab(id)     - Toggles modal configuration views",
-                "enforceChangelogViewing()  - Evaluates local update checks",
-                "executeSync(urls)          - Runs cache protection engines",
-                "clearSystemLogs()          - Empties diagnostic workspace states"
-            ];
-            pushToSystemLogs('CLI-OUT', ["BOUND INTERACTIVE RUNTIME FUNCTIONS:\n\n" + coreFuncs.join('\n')], 'Developer Map');
         }
     },
     "run": {
-        desc: "Executes a global runtime module. Usage: flash run {function_name}",
-        exec: (args) => {
+        desc: "Executes a system script or global function. Usage: flash run {script}",
+        exec: async (args) => {
             if (!args || args.length === 0) {
-                console.error("Execution error: Specifiy a target function. Example: flash run buildChangelogUI");
+                console.error("ERR! Missing script name. Example: flash run sync");
                 return;
             }
-            const funcName = args[0];
-            if (typeof window[funcName] === 'function') {
-                pushToSystemLogs('CLI-OUT', [`Running execution pipeline window.${funcName}()...`], 'Evaluator');
-                try {
-                    window[funcName]();
-                    pushToSystemLogs('CLI-OUT', [`🟢 Execution of window.${funcName}() completed successfully.`], 'Evaluator');
-                } catch(e) {
-                    console.error(`Runtime break inside ${funcName}:`, e);
+            
+            const scriptName = args[0];
+            pushToSystemLogs('CLI-OUT', [`> flash run ${scriptName}`], 'flash-cli');
+
+            // Built-in "npm" scripts
+            const scripts = {
+                "sync": () => {
+                    const btn = document.getElementById('syncOfflineBtn');
+                    if (btn) btn.click();
+                    else console.error("ERR! UI link error: Could not bind to '#syncOfflineBtn'.");
+                },
+                "health": async () => {
+                    const network = navigator.onLine ? "📡 ONLINE" : "🔌 OFFLINE";
+                    const swActive = navigator.serviceWorker?.controller ? "✅ ACTIVE" : "❌ INACTIVE";
+                    let cachedFiles = 0;
+                    try {
+                        for (let key of await caches.keys()) {
+                            cachedFiles += (await (await caches.open(key)).keys()).length;
+                        }
+                    } catch(e) { cachedFiles = "Blocked"; }
+
+                    console.log(`SYSTEM HEALTH:\nNet: ${network}\nSW:  ${swActive}\nCache: ${cachedFiles} items`);
+                },
+                "functions": () => {
+                    console.log("BOUND RUNTIME FUNCTIONS:\nfetchSystemData()\nbuildChangelogUI()\nenforceChangelogViewing()\nexecuteSync(urls)");
                 }
-            } else {
-                console.error(`Namespace error: '${funcName}' is not a valid global function.`);
+            };
+
+            // 1. Try to run a built-in script (like 'sync' or 'health')
+            if (scripts[scriptName]) {
+                await scripts[scriptName]();
+            } 
+            // 2. Fallback to trying to run a literal JavaScript function on the window
+            else if (typeof window[scriptName] === 'function') {
+                try {
+                    window[scriptName]();
+                    pushToSystemLogs('CLI-OUT', [`🟢 Execution of window.${scriptName}() completed.`], 'flash-eval');
+                } catch(e) {
+                    console.error(`ERR! Runtime break inside ${scriptName}:`, e);
+                }
+            } 
+            else {
+                console.error(`ERR! missing script: ${scriptName}`);
             }
         }
     },
-    "health": {
-        desc: "Evaluates application platform connectivity, worker setups, and cache status.",
-        exec: async () => {
-            pushToSystemLogs('CLI-OUT', ['Running platform matrix diagnostic scans...'], 'Health Monitor');
-            const network = navigator.onLine ? "📡 ONLINE (Live Sync Available)" : "🔌 OFFLINE (Running Local Sandbox Mode)";
-            const swActive = navigator.serviceWorker?.controller ? "✅ ACTIVE (Intercepting Traffic Paths)" : "❌ INACTIVE / UNREGISTERED (Offline Loading Will Break)";
+    "install": {
+        desc: "Fetches and safely installs a remote game package. Usage: flash install {url}",
+        exec: async (args) => {
+            if (!args || args.length === 0) {
+                console.error("ERR! install requires a target URL. Usage: flash install https://...");
+                return;
+            }
+            const targetUrl = args[0];
+            pushToSystemLogs('CLI-OUT', [`📦 initializing safe-fetch for ${targetUrl}`], 'flash-pkg');
             
-            let cachedFilesCount = 0;
             try {
-                const keys = await caches.keys();
-                for (let key of keys) {
-                    const c = await caches.open(key);
-                    const records = await c.keys();
-                    cachedFilesCount += records.length;
+                // LAYER 1: Network Request & Timeout Protection
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // Kills request if it hangs for 5 seconds
+                
+                const response = await fetch(targetUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                // LAYER 2: Server Response Check (Catches 404, 500, etc.)
+                if (!response.ok) {
+                    throw new Error(`Bad Server Response! Status Code: ${response.status} (${response.statusText})`);
                 }
-            } catch(e) { cachedFilesCount = "Access Blocked"; }
-
-            let localKeysCount = Object.keys(localStorage).length;
-
-            const report = `SYSTEM DIAGNOSTICS REPORT:\n----------------------------------------------------\n` +
-                           `Network Mode:     ${network}\n` +
-                           `Service Worker:   ${swActive}\n` +
-                           `Cached Artifacts: ${cachedFilesCount} items preserved in cache storage\n` +
-                           `Local Storage:    ${localKeysCount} configuration/save strings recorded`;
-            
-            pushToSystemLogs('CLI-OUT', [report], 'Health Monitor');
+                
+                // LAYER 3: File Type Quarantine (Makes sure it's actually JSON data)
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error(`Weird file format! Expected JSON metadata, but received: "${contentType}"`);
+                }
+                
+                // LAYER 4: Structural Data Integrity Check
+                const incomingGame = await response.json();
+                
+                // Checks if the incoming file has the mandatory keys your site needs to build the game frame
+                if (!incomingGame.id || !incomingGame.title || !incomingGame.url) {
+                    throw new Error("Data corruption! The configuration file is missing mandatory 'id', 'title', or 'url' fields.");
+                }
+                
+                // SYSTEM APPROVED: Commit to current game state memory
+                if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
+                    // Tag it as an offline package so our storage saver can find it
+                    incomingGame.isOfflinePackage = true; 
+                    
+                    const alreadyExists = STATE.rawGamesList.some(game => game.id === incomingGame.id);
+                    
+                    if (alreadyExists) {
+                        pushToSystemLogs('WARN', [`⚠️ Package [${incomingGame.title}] already exists. Overwriting config...`], 'flash-pkg');
+                        STATE.rawGamesList = STATE.rawGamesList.map(game => game.id === incomingGame.id ? incomingGame : game);
+                    } else {
+                        STATE.rawGamesList.push(incomingGame);
+                        pushToSystemLogs('CLI-OUT', [`📦 added 1 package: ${incomingGame.title}`], 'flash-pkg');
+                    }
+                    
+                    // ==========================================================
+                    // 💾 LOCAL STORAGE PIPELINE (THE OFFLINE FOLDER SAVE)
+                    // ==========================================================
+                    // 1. Gather all custom games currently in your active list
+                    const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+                    
+                    // 2. Save that whole array straight to the browser's persistent memory
+                    localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
+                    
+                    pushToSystemLogs('CLI-OUT', [`📦 1 package was saved: [${incomingGame.title}] `], 'flash-pkg');
+                    
+                } else {
+                    throw new Error("Core database array 'STATE.rawGamesList' was unreachable.");
+                }
+                
+            } catch (error) {
+                // Protection Catch-all: If anything fails above, it lands safely here without crashing the site
+                console.error(`ERR! flash-npm installation aborted.`);
+                pushToSystemLogs('ERROR', [`❌ installation failed: ${error.message}`], 'flash-pkg');
+            }
         }
     },
     "play": {
-        desc: "Launches any catalog game from terminal queries. Usage: flash play {game_title}",
+        desc: "Launches any catalog game. Usage: flash play {game_title}",
         exec: (args) => {
             if (!args || args.length === 0) {
-                console.error("Launcher error: Target query cannot be empty. Example: flash play 2048");
+                console.error("ERR! Target query cannot be empty. Example: flash play 2048");
                 return;
             }
             const query = args.join(' ').toLowerCase();
-            
-            // Checks your custom engine's structural game database state if loaded
             if (typeof STATE === 'undefined' || !STATE.rawGamesList) {
-                console.error("Database unavailable. Run 'flash init' to check system connectivity pipelines.");
+                console.error("ERR! Database unavailable. Run 'flash init' first.");
                 return;
             }
 
-            const target = STATE.rawGamesList.find(g => 
-                g.title?.toLowerCase().includes(query) || g.id?.toString().toLowerCase() === query
-            );
-
+            const target = STATE.rawGamesList.find(g => g.title?.toLowerCase().includes(query) || g.id?.toString().toLowerCase() === query);
+            
             if (target) {
-                pushToSystemLogs('CLI-OUT', [`🎯 Match Located: [${target.title}]. Intercepting container contexts...`], 'App Launcher');
-                // Attempts to run standard interface launchers depending on how your frame handles clicks
+                pushToSystemLogs('CLI-OUT', [`🎯 Match Located: [${target.title}]. Launching...`], 'flash-launcher');
                 if (typeof openGame === 'function') {
                     openGame(target.id);
                     document.getElementById('devConsoleModal').classList.add('hidden');
-                } else {
-                    pushToSystemLogs('CLI-OUT', [`Found game resource at path: ${target.url || 'No Path'}. Cannot auto-invoke openGame() framework binding.`], 'App Launcher');
                 }
             } else {
-                console.error(`Search failure: Could not map game elements matching '${query}' inside current library caches.`);
+                console.error(`ERR! Could not find game matching '${query}'`);
             }
         }
     },
     "storage": {
-        desc: "Inspects and breaks down browser data storage maps.",
+        desc: "Inspects local browser storage maps.",
         exec: () => {
-            let localStr = "LOCAL STORAGE DUMP:\n----------------------------------------------------\n";
+            let str = "LOCAL STORAGE DUMP:\n";
             for(let i=0; i<localStorage.length; i++) {
-                const k = localStorage.key(i);
-                const v = localStorage.getItem(k);
-                localStr += `[${k}] -> ${v.substring(0, 60)}${v.length > 60 ? '...' : ''}\n`;
+                str += `[${localStorage.key(i)}] -> ${localStorage.getItem(localStorage.key(i)).substring(0, 40)}...\n`;
             }
-            pushToSystemLogs('CLI-OUT', [localStr], 'Storage System');
-        }
-    },
-    "sync": {
-        desc: "Forces the system cache sync loop sequence.",
-        exec: () => {
-            const btn = document.getElementById('syncOfflineBtn');
-            if (btn) {
-                pushToSystemLogs('CLI-OUT', ['Invoking background sync engine trigger button click event...'], 'Sync Controller');
-                btn.click();
-            } else {
-                console.error("UI link error: Could not bind command to reference node '#syncOfflineBtn'.");
-            }
+            console.log(str);
         }
     },
     "clear": {
-        desc: "Wipes clean the display terminal text fields.",
-        exec: () => { clearSystemLogs(); }
+        desc: "Wipes clean the display terminal.",
+        exec: () => clearSystemLogs()
     }
 };
 
