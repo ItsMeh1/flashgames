@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Games - Custom Installer Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { background-color: #0b1329; color: #f8fafc; font-family: system-ui, sans-serif; }
+    </style>
+</head>
+<body class="p-6 min-h-screen">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 border-b border-slate-800 pb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+                    ⚡ Flash Game Installer Hub
+                </h1>
+                <p class="text-slate-400 mt-1">Click any game card to instantly copy its terminal installation command! These are just some games I found online on github, but you can package any compatible game via the Flash CLI.</p>
+            </div>
+            <span class="bg-blue-500/10 text-blue-400 text-xs px-3 py-1.5 rounded-full font-mono border border-blue-500/20">
+                v1.1
+            </span>
+        </header>
+
+        <div class="mb-8 max-w-md">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="🔍 Search across 30+ arcade titles..." 
+                    class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30 transition-all text-sm"
+                    oninput="handleSearch(this.value)"
+                >
+            </div>
+        </div>
+
+        <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+    </div>
+
+    <script>
+        // ==========================================================
+        // 📋 JUST ADD OR CHANGE YOUR LINKS AND LABELS HERE!
+        // ==========================================================
+const GAME_LINKS = [
+    // ==========================================================
+    // 🕹️ SECTION 1: YOUR ORIGINAL 13 GAMES
+    // ==========================================================
+    {
+        label: "Wordle Unlimited",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/wordleunlimited.html"
+    },
+    {
+        label: "Flappy Bird",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/flappybird.html"
+    },
+    {
+        label: "Ages of Conflict",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/agesofconflict.html"
+    },
+    {
+        label: "Hanger 2",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/hanger2.html"
+    },
+    {
+        label: "Age of War 2",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ageofwar2.html"
+    },
+    {
+        label: "Football Legends",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/footballlegends.html"
+    },
+    {
+        label: "Duck Life 5",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ducklife5.html"
+    },
+    {
+        label: "Duck Life 4",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ducklife4.html"
+    },
+    {
+        label: "Duck Life 3",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ducklife3.html"
+    },
+    {
+        label: "10 Minutes Till Dawn",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/10minutestilldawn.html"
+    },
+    {
+        label: "12 Mini Battles",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/12minibattles.html"
+    },
+    {
+        label: "1 on 1 Soccer",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/1on1soccer.html"
+    },
+    {
+        label: "1 on 1 Tennis",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/1on1tennis.html"
+    },
+
+    // ==========================================================
+    // 🚀 SECTION 2: POPULAR CLASSICS VAULT (COOLDUDE2349 REPO)
+    // ==========================================================
+    {
+        label: "Slope",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/slope.html"
+    },
+    {
+        label: "Retro Bowl",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/retrobowl.html"
+    },
+    {
+        label: "Cookie Clicker",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/cookieclicker.html"
+    },
+    {
+        label: "2048",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/2048.html"
+    },
+    {
+        label: "Tunnel Rush",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/tunnelrush.html"
+    },
+    {
+        label: "Geometry Dash",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/geometrydash.html"
+    },
+    {
+        label: "Crossy Road",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/crossyroad.html"
+    },
+    {
+        label: "Drive Mad",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/drivemad.html"
+    },
+    {
+        label: "Drift Hunters",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/drifthunters.html"
+    },
+    {
+        label: "Basket Random",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/basketrandom.html"
+    },
+    {
+        label: "Soccer Random",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/soccerrandom.html"
+    },
+    {
+        label: "Papa's Freezeria",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/papasfreezeria.html"
+    },
+    {
+        label: "Papa's Pizzeria",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/papaspizzeria.html"
+    },
+    {
+        label: "Stick War",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/stickwar.html"
+    },
+    {
+        label: "Run 3",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/run3.html"
+    },
+    {
+        label: "Burrito Bison",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/burritobison.html"
+    },
+
+    // ==========================================================
+    // 🔥 SECTION 3: ADDITIONAL DISCOVERED REPO TARGETS
+    // ==========================================================
+    {
+        label: "Age of War",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ageofwar.html"
+    },
+    {
+        label: "A Small World Cup",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/asmallworldcup.html"
+    },
+    {
+        label: "Binding of Isaac (Demo)",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/bindingofisaac.html"
+    },
+    {
+        label: "Bloons TD 4",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/bloonstd4.html"
+    },
+    {
+        label: "Cubefield",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/cubefield.html"
+    },
+    {
+        label: "Doodle Jump",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/doodlejump.html"
+    },
+    {
+        label: "Duck Life",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ducklife.html"
+    },
+    {
+        label: "Duck Life 2",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ducklife2.html"
+    },
+    {
+        label: "Feather Knight",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/featherknight.html"
+    },
+    {
+        label: "Getaway Shootout",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/getawayshootout.html"
+    },
+    {
+        label: "Happy Wheels",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/happywheels.html"
+    },
+    {
+        label: "Impossible Quiz",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/impossiblequiz.html"
+    },
+    {
+        label: "OvO",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ovo.html"
+    },
+    {
+        label: "Rooftop Snipers",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/rooftopsnipers.html"
+    },
+    {
+        label: "Temple Run 2",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/templerun2.html"
+    },
+    {
+        label: "The World's Hardest Game",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/worldshardestgame.html"
+    },
+    {
+        label: "Vex 4",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/vex4.html"
+    },
+    {
+        label: "Vex 5",
+        url: "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/vex5.html"
+    }
+];
+
+        let currentSearchQuery = "";
+
+        function handleSearch(value) {
+            currentSearchQuery = value.toLowerCase().trim();
+            renderHub();
+        }
+
+        function renderHub() {
+            const container = document.getElementById('games-grid');
+            container.innerHTML = '';
+
+            // Filter down the global links array based on the active query string
+            const filteredGames = GAME_LINKS.filter(game => {
+                return game.label.toLowerCase().includes(currentSearchQuery);
+            });
+
+            if (filteredGames.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-900/20">
+                        💨 No matching library elements found for "${currentSearchQuery}"
+                    </div>
+                `;
+                return;
+            }
+
+            filteredGames.forEach(game => {
+                let domain = "google.com";
+                try {
+                    domain = new URL(game.url).hostname;
+                } catch(e) {}
+                
+                const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                const installCommand = `flash install ${game.url}`;
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-blue-500/50 transition-all duration-200 flex flex-col justify-between group backdrop-blur-sm shadow-xl animate-fade-in";
+                
+                card.innerHTML = `
+                    <div class="flex items-start gap-4 mb-4">
+                        <img src="${iconUrl}" alt="${game.label}" class="w-12 h-12 rounded-lg bg-slate-800 p-1 object-contain border border-slate-700/50 group-hover:scale-105 transition-transform" onerror="this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128'">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-slate-100 truncate group-hover:text-blue-400 transition-colors">${game.label}</h3>
+                            <p class="text-xs text-slate-500 truncate mt-0.5 font-mono">${domain}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-slate-950/80 rounded-lg p-2.5 font-mono text-xs text-slate-400 border border-slate-900 overflow-x-auto whitespace-nowrap mb-3 scrollbar-none select-all">
+                            ${installCommand}
+                        </div>
+                        <button onclick="copyCommand(this, '${btoa(installCommand)}')" class="w-full bg-slate-800 hover:bg-blue-600 text-slate-200 hover:text-white font-medium text-sm py-2 px-4 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center gap-2 shadow-inner">
+                            📋 Copy Code Block
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function copyCommand(button, encodedCommand) {
+            const command = atob(encodedCommand);
+            navigator.clipboard.writeText(command).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = "✨ Copied To Clipboard!";
+                button.classList.remove('bg-slate-800', 'hover:bg-blue-600', 'text-slate-200');
+                button.classList.add('bg-green-600/90', 'text-white');
+
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('bg-green-600/90');
+                    button.classList.add('bg-slate-800', 'hover:bg-blue-600', 'text-slate-200');
+                }, 1800);
+            }).catch(err => {
+                console.error('Could not copy command to layout target clipboard.', err);
+            });
+        }
+
+        renderHub();
+    </script>
+</body>
+</html>
