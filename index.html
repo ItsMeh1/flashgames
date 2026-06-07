@@ -428,7 +428,7 @@ const COMMAND_MATRIX = {
                 return;
             }
             const targetUrl = args[0];
-            pushToSystemLogs('CLI-OUT', [`📦 initializing smart-fetch for ${targetUrl}`], 'flash-pkg');
+            pushToSystemLogs('CLI-OUT', [`📦 Initializing smart-fetch for ${targetUrl}`], 'flash-pkg');
             
             try {
                 // ==========================================================
@@ -460,7 +460,6 @@ const COMMAND_MATRIX = {
                 let rawTextData = "";
                 const contentType = response.headers.get("content-type") || "";
 
-                // If content-length header is omitted by server configuration, read stream manually to get real size
                 if (!bytes) {
                     rawTextData = await response.text();
                     bytes = new Blob([rawTextData]).size;
@@ -469,10 +468,14 @@ const COMMAND_MATRIX = {
                 const sizeInKB = (bytes / 1024).toFixed(2);
                 pushToSystemLogs('CLI-OUT', [`📏 Remote package size detected: ${sizeInKB} KB`], 'flash-pkg');
 
-                // Interactive Confirmation Request Box
-                const confirmation = window.prompt(`Game payload size is ${sizeInKB} KB. Are you sure you want to commit this to localStorage? (y/n)`);
+                // 🖥️ IN-TERMINAL PROMPT INSTEAD OF WINDOW.PROMPT
+                pushToSystemLogs('CLI-OUT', [`❓ Game payload size is ${sizeInKB} KB. Are you sure you want to commit this to localStorage? [y/n]`], 'flash-pkg');
+                
+                // Await your terminal's line-reading response mechanism directly from the CLI input field
+                const confirmation = await terminalReadLine(); 
+                
                 if (!confirmation || confirmation.toLowerCase().trim() !== 'y') {
-                    pushToSystemLogs('WARN', ["🛑 Installation canceled by user prompt request."], 'flash-pkg');
+                    pushToSystemLogs('WARN', ["🛑 Installation canceled by user inside CLI."], 'flash-pkg');
                     return;
                 }
 
@@ -481,7 +484,6 @@ const COMMAND_MATRIX = {
 
                 // LAYER 2: Smart Type Sniffing (JSON vs. Direct HTML file)
                 if (contentType.includes("application/json")) {
-                    // Parse text data if already read, otherwise fetch stream
                     incomingGame = rawTextData ? JSON.parse(rawTextData) : await response.json();
                     if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) {
                         throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
@@ -515,7 +517,7 @@ const COMMAND_MATRIX = {
                         icon: autoIcon
                     };
                     
-                    pushToSystemLogs('WARN', [`📦 direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
+                    pushToSystemLogs('WARN', [`📦 Direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
                 } 
                 else {
                     throw new Error(`Unsupported content type registry: "${contentType}"`);
@@ -532,7 +534,7 @@ const COMMAND_MATRIX = {
                         STATE.rawGamesList = STATE.rawGamesList.map(game => game.id === incomingGame.id ? incomingGame : game);
                     } else {
                         STATE.rawGamesList.push(incomingGame);
-                        pushToSystemLogs('CLI-OUT', [`📦 added 1 package: ${incomingGame.title}`], 'flash-pkg');
+                        pushToSystemLogs('CLI-OUT', [`📦 Added 1 package: ${incomingGame.title}`], 'flash-pkg');
                     }
                     
                     const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
@@ -555,14 +557,13 @@ const COMMAND_MATRIX = {
         }
     },
     "delgame": {
-        desc: "Displays an indexed list of your installed custom games and allows deletion of them.",
+        desc: "Displays an indexed list of your installed custom games and allows deletion via the CLI terminal.",
         exec: async (args) => {
             if (typeof STATE === 'undefined' || !STATE.rawGamesList) {
                 console.error("ERR! Database state index context unreachable.");
                 return;
             }
 
-            // Isolate only the custom packages downloaded locally via user actions
             const installedGames = STATE.rawGamesList.filter(game => game.isOfflinePackage);
 
             if (installedGames.length === 0) {
@@ -570,14 +571,15 @@ const COMMAND_MATRIX = {
                 return;
             }
 
-            // Print listing catalog to the system terminal view layout
             pushToSystemLogs('CLI-OUT', ["📋 --- Custom Downloaded Games List ---"], 'flash-pkg');
             installedGames.forEach((game, index) => {
                 pushToSystemLogs('CLI-OUT', [`[${index + 1}] Title: ${game.title} (ID: ${game.id})`], 'flash-pkg');
             });
 
-            // Prompt user selection matching print indexing criteria loop
-            const selectionInput = window.prompt(`Enter the index number (1-${installedGames.length}) of the custom game asset you want to completely erase from disk storage:`);
+            // 🖥️ CLI SELECT INDEX PROMPT
+            pushToSystemLogs('CLI-OUT', [`❓ Enter the index number (1-${installedGames.length}) of the game to permanently erase:`], 'flash-pkg');
+            const selectionInput = await terminalReadLine();
+
             if (!selectionInput) {
                 pushToSystemLogs('WARN', ["🛑 Selection sequence broken or terminated."], 'flash-pkg');
                 return;
@@ -586,29 +588,30 @@ const COMMAND_MATRIX = {
             const targetIndex = parseInt(selectionInput.trim(), 10) - 1;
 
             if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= installedGames.length) {
-                pushToSystemLogs('ERROR', ["❌ Invalid selection target registry out of boundary limitations."], 'flash-pkg');
+                pushToSystemLogs('ERROR', ["❌ Invalid selection target registry index out of boundary limitations."], 'flash-pkg');
                 return;
             }
 
             const selectedGame = installedGames[targetIndex];
             
-            // Double check confirm loop action verification validation safety check
-            const confirmDelete = window.prompt(`Are you absolutely sure you want to permanently delete "${selectedGame.title}"? Type 'YES' to clear records.`);
-            if (!confirmDelete || confirmDelete.trim().toUpperCase() !== 'YES') {
-                pushToSystemLogs('WARN', ["🛑 Clear routine scrub terminated safety backup triggered."], 'flash-pkg');
+            // 🖥️ CLI INLINE [y/n] CONFIRMATION
+            pushToSystemLogs('CLI-OUT', [`⚠️ Are you absolutely sure you want to permanently delete "${selectedGame.title}"? [y/n]`], 'flash-pkg');
+            const confirmDelete = await terminalReadLine();
+
+            if (!confirmDelete || confirmDelete.toLowerCase().trim() !== 'y') {
+                pushToSystemLogs('WARN', ["🛑 Clear routine scrub terminated. Safety backup triggered."], 'flash-pkg');
                 return;
             }
 
-            // Strip specific configuration mappings dynamically away from memory array stack context
+            // Remove game configuration layout properties
             STATE.rawGamesList = STATE.rawGamesList.filter(game => game.id !== selectedGame.id);
 
-            // Re-compile local physical storage partition values
+            // Commit modifications back to system directory
             const updatedOfflineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
             localStorage.setItem('flash_offline_folder', JSON.stringify(updatedOfflineFolder));
 
             pushToSystemLogs('CLI-OUT', [`🔥 [${selectedGame.title}] was purged from active storage targets successfully!`], 'flash-pkg');
 
-            // Force dashboard view to drop element cards instantly without soft reboot
             if (typeof processAndRenderView === 'function') {
                 processAndRenderView();
             }
