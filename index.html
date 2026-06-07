@@ -431,6 +431,19 @@ const COMMAND_MATRIX = {
             pushToSystemLogs('CLI-OUT', [`📦 initializing smart-fetch for ${targetUrl}`], 'flash-pkg');
             
             try {
+                // ==========================================================
+                // 🎨 FAVICON EXTRACTION PIPELINE
+                // ==========================================================
+                let autoIcon = "";
+                try {
+                    // Extracts just the base website (e.g. "raw.githubusercontent.com")
+                    const domain = new URL(targetUrl).hostname;
+                    // Uses Google's open Favicon API to grab a high-res (128px) icon
+                    autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                } catch (err) {
+                    console.warn("Could not parse domain for favicon.", err);
+                }
+
                 // LAYER 1: Network Connection & Timeout Protection
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -456,13 +469,16 @@ const COMMAND_MATRIX = {
                     incomingGame.name = incomingGame.name || incomingGame.title;
                     incomingGame.title = incomingGame.title || incomingGame.name;
                     incomingGame.zone = incomingGame.zone || "OFFLINE";
+                    
+                    // Assign icon: Use the JSON's custom image if it exists, otherwise use our generated Favicon
+                    incomingGame.image = incomingGame.image || incomingGame.icon || autoIcon;
+                    incomingGame.icon = incomingGame.icon || incomingGame.image; 
                 } 
                 else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
                     let filename = targetUrl.split('/').pop().split('?')[0] || "customgame.html";
                     let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
                     let cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
 
-                    // FIX 1: Auto-detect if your system utilizes all-caps "OFFLINE" or lowercase "offline"
                     let targetZoneCasing = "OFFLINE"; 
                     if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
                         const usesLowercase = STATE.rawGamesList.some(g => g.zone === "offline");
@@ -474,7 +490,9 @@ const COMMAND_MATRIX = {
                         name: cleanTitle,   
                         title: cleanTitle,
                         url: targetUrl,
-                        zone: targetZoneCasing // Aligns perfectly with your current dashboard setup
+                        zone: targetZoneCasing,
+                        image: autoIcon, // Stuffs the newly generated Favicon directly into your UI map!
+                        icon: autoIcon
                     };
                     
                     pushToSystemLogs('WARN', [`📦 direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
@@ -503,9 +521,7 @@ const COMMAND_MATRIX = {
                     
                     pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] safely committed to local offline storage folder!`], 'flash-pkg');
                     
-                    // ==========================================================
-                    // 🔄 FIX 2: FORCE DASHBOARD VIEWPORT REFRESH
-                    // ==========================================================
+                    // Force Dashboard Viewport Refresh
                     if (typeof processAndRenderView === 'function') {
                         processAndRenderView();
                     }
