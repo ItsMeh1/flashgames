@@ -450,13 +450,17 @@ const COMMAND_MATRIX = {
                 if (contentType.includes("application/json")) {
                     // User supplied a pre-made manifest JSON file
                     incomingGame = await response.json();
-                    if (!incomingGame.id || !incomingGame.title || !incomingGame.url) {
+                    if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) {
                         throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
                     }
+                    
+                    // Ensure BOTH name and zone properties exist for your existing system maps
+                    incomingGame.name = incomingGame.name || incomingGame.title;
+                    incomingGame.title = incomingGame.title || incomingGame.name;
+                    incomingGame.zone = incomingGame.zone || "offline";
                 } 
                 else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
                     // User pasted a direct raw HTML game link! Auto-build the manifest details
-                    // Example: "https://.../offline/wordleunlimited.html" -> "wordleunlimited.html"
                     let filename = targetUrl.split('/').pop().split('?')[0] || "customgame.html";
                     
                     // Clean up characters: "wordle-unlimited" or "wordle_unlimited" -> "wordle unlimited"
@@ -465,10 +469,15 @@ const COMMAND_MATRIX = {
                     // Capitalize the first letter for the UI display: "Wordle unlimited"
                     let cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
 
+                    // ==========================================================
+                    // ⚙️ SYSTEM COMPATIBILITY INJECTION MAP
+                    // ==========================================================
                     incomingGame = {
                         id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
+                        name: cleanTitle,   // Matches your search/sort function's 'g.name' requirement
                         title: cleanTitle,
-                        url: targetUrl
+                        url: targetUrl,
+                        zone: "offline"     // Automatically dumps it straight into your existing offline folder!
                     };
                     
                     pushToSystemLogs('WARN', [`📦 direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
