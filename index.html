@@ -41,7 +41,7 @@
                     <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
                     <span id="totalGamesCounter" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400">0 games</span>
                 </div>
-                <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v3.1 Updates</button>
+                <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v3.2 Updates</button>
 
                 <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="ml-3 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm" title="Total Page Views">
             </div>
@@ -421,76 +421,89 @@ const COMMAND_MATRIX = {
         }
     },
     "install": {
-        desc: "Fetches and safely installs a remote game package. Usage: flash install {url}",
+        desc: "Installs a game package or direct HTML link. Usage: flash install {url}",
         exec: async (args) => {
             if (!args || args.length === 0) {
                 console.error("ERR! install requires a target URL. Usage: flash install https://...");
                 return;
             }
             const targetUrl = args[0];
-            pushToSystemLogs('CLI-OUT', [`📦 initializing safe-fetch for ${targetUrl}`], 'flash-pkg');
+            pushToSystemLogs('CLI-OUT', [`📦 initializing smart-fetch for ${targetUrl}`], 'flash-pkg');
             
             try {
-                // LAYER 1: Network Request & Timeout Protection
+                // LAYER 1: Network Connection & Timeout Protection
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // Kills request if it hangs for 5 seconds
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 
                 const response = await fetch(targetUrl, { signal: controller.signal });
                 clearTimeout(timeoutId);
 
-                // LAYER 2: Server Response Check (Catches 404, 500, etc.)
                 if (!response.ok) {
-                    throw new Error(`Bad Server Response! Status Code: ${response.status} (${response.statusText})`);
+                    throw new Error(`Bad Server Response! Status Code: ${response.status}`);
                 }
                 
-                // LAYER 3: File Type Quarantine (Makes sure it's actually JSON data)
-                const contentType = response.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
-                    throw new Error(`Weird file format! Expected JSON metadata, but received: "${contentType}"`);
+                let incomingGame = null;
+                const contentType = response.headers.get("content-type") || "";
+                const isHtmlUrl = targetUrl.toLowerCase().endsWith('.html') || targetUrl.toLowerCase().includes('.html');
+
+                // LAYER 2: Smart Type Sniffing (JSON vs. Direct HTML file)
+                if (contentType.includes("application/json")) {
+                    // User supplied a pre-made manifest JSON file
+                    incomingGame = await response.json();
+                    if (!incomingGame.id || !incomingGame.title || !incomingGame.url) {
+                        throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
+                    }
+                } 
+                else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
+                    // User pasted a direct raw HTML game link! Auto-build the manifest details
+                    // Example: "https://.../offline/wordleunlimited.html" -> "wordleunlimited.html"
+                    let filename = targetUrl.split('/').pop().split('?')[0] || "customgame.html";
+                    
+                    // Clean up characters: "wordle-unlimited" or "wordle_unlimited" -> "wordle unlimited"
+                    let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
+                    
+                    // Capitalize the first letter for the UI display: "Wordle unlimited"
+                    let cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+
+                    incomingGame = {
+                        id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
+                        title: cleanTitle,
+                        url: targetUrl
+                    };
+                    
+                    pushToSystemLogs('WARN', [`📦 direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
+                } 
+                else {
+                    throw new Error(`Unsupported content type registry: "${contentType}"`);
                 }
                 
-                // LAYER 4: Structural Data Integrity Check
-                const incomingGame = await response.json();
-                
-                // Checks if the incoming file has the mandatory keys your site needs to build the game frame
-                if (!incomingGame.id || !incomingGame.title || !incomingGame.url) {
-                    throw new Error("Data corruption! The configuration file is missing mandatory 'id', 'title', or 'url' fields.");
-                }
-                
-                // SYSTEM APPROVED: Commit to current game state memory
+                // LAYER 3: Core Memory Injection & Local Hard Drive Save
                 if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
-                    // Tag it as an offline package so our storage saver can find it
                     incomingGame.isOfflinePackage = true; 
                     
                     const alreadyExists = STATE.rawGamesList.some(game => game.id === incomingGame.id);
                     
                     if (alreadyExists) {
-                        pushToSystemLogs('WARN', [`⚠️ Package [${incomingGame.title}] already exists. Overwriting config...`], 'flash-pkg');
+                        pushToSystemLogs('WARN', [`⚠️ Package [${incomingGame.title}] already exists. Overwriting configs...`], 'flash-pkg');
                         STATE.rawGamesList = STATE.rawGamesList.map(game => game.id === incomingGame.id ? incomingGame : game);
                     } else {
                         STATE.rawGamesList.push(incomingGame);
                         pushToSystemLogs('CLI-OUT', [`📦 added 1 package: ${incomingGame.title}`], 'flash-pkg');
                     }
                     
-                    // ==========================================================
-                    // 💾 LOCAL STORAGE PIPELINE (THE OFFLINE FOLDER SAVE)
-                    // ==========================================================
-                    // 1. Gather all custom games currently in your active list
+                    // Rewrite local directory files
                     const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
-                    
-                    // 2. Save that whole array straight to the browser's persistent memory
                     localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
                     
-                    pushToSystemLogs('CLI-OUT', [`📦 1 package was saved: [${incomingGame.title}] `], 'flash-pkg');
+                    pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] safely committed to local offline storage folder!`], 'flash-pkg');
                     
                 } else {
                     throw new Error("Core database array 'STATE.rawGamesList' was unreachable.");
                 }
                 
             } catch (error) {
-                // Protection Catch-all: If anything fails above, it lands safely here without crashing the site
                 console.error(`ERR! flash-npm installation aborted.`);
-                pushToSystemLogs('ERROR', [`❌ installation failed: ${error.message}`], 'flash-pkg');
+                pushToSystemLogs('ERROR', [`❌ Installation failed: ${error.message}`], 'flash-pkg');
             }
         }
     },
@@ -602,13 +615,24 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-        // ==========================================
+// ==========================================
 // EASILY CHANGE YOUR UPDATE LOGS HERE
 // ==========================================
 const CHANGELOG_DATA = {
+    "v3.2": {
+        title: "Flash CLI",
+        isCurrent: true,
+        notes: [
+            "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline.",
+            "<code>flash health</code> Check your system health.",
+            "<code>flash init</code> Prepare Flash Games if it hasn't been already.",
+            "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update.",
+            "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
+        ]
+    },
     "v3.1": {
         title: "⚡ The Unstoppable Offline & QoL Update",
-        isCurrent: true,
+        isCurrent: false,
         notes: [
             "<strong>True Offline Vault:</strong> Destroyed the bug causing the app to crash without Wi-Fi. Your local games are now 100% playable completely off the grid!",
             "<strong>Instant Sync Pipeline:</strong> Patched the update handler. The cache-busting engine now forces new game builds to download instantly without dropping your data.",
