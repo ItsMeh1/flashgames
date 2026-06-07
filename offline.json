@@ -68,5 +68,12 @@
         "zone": "OFFLINE",
         "url": "./offline/orbital.html",
         "cover": ""
+    },
+    {
+        "name": "Flash CLI Installer",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/flash-installer.html",
+        "cover": ""
     }
 ]
