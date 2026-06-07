@@ -448,36 +448,33 @@ const COMMAND_MATRIX = {
 
                 // LAYER 2: Smart Type Sniffing (JSON vs. Direct HTML file)
                 if (contentType.includes("application/json")) {
-                    // User supplied a pre-made manifest JSON file
                     incomingGame = await response.json();
                     if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) {
                         throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
                     }
                     
-                    // Ensure BOTH name and zone properties exist for your existing system maps
                     incomingGame.name = incomingGame.name || incomingGame.title;
                     incomingGame.title = incomingGame.title || incomingGame.name;
-                    incomingGame.zone = incomingGame.zone || "offline";
+                    incomingGame.zone = incomingGame.zone || "OFFLINE";
                 } 
                 else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
-                    // User pasted a direct raw HTML game link! Auto-build the manifest details
                     let filename = targetUrl.split('/').pop().split('?')[0] || "customgame.html";
-                    
-                    // Clean up characters: "wordle-unlimited" or "wordle_unlimited" -> "wordle unlimited"
                     let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
-                    
-                    // Capitalize the first letter for the UI display: "Wordle unlimited"
                     let cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
 
-                    // ==========================================================
-                    // ⚙️ SYSTEM COMPATIBILITY INJECTION MAP
-                    // ==========================================================
+                    // FIX 1: Auto-detect if your system utilizes all-caps "OFFLINE" or lowercase "offline"
+                    let targetZoneCasing = "OFFLINE"; 
+                    if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
+                        const usesLowercase = STATE.rawGamesList.some(g => g.zone === "offline");
+                        if (usesLowercase) targetZoneCasing = "offline";
+                    }
+
                     incomingGame = {
                         id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
-                        name: cleanTitle,   // Matches your search/sort function's 'g.name' requirement
+                        name: cleanTitle,   
                         title: cleanTitle,
                         url: targetUrl,
-                        zone: "offline"     // Automatically dumps it straight into your existing offline folder!
+                        zone: targetZoneCasing // Aligns perfectly with your current dashboard setup
                     };
                     
                     pushToSystemLogs('WARN', [`📦 direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
@@ -505,6 +502,13 @@ const COMMAND_MATRIX = {
                     localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
                     
                     pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] safely committed to local offline storage folder!`], 'flash-pkg');
+                    
+                    // ==========================================================
+                    // 🔄 FIX 2: FORCE DASHBOARD VIEWPORT REFRESH
+                    // ==========================================================
+                    if (typeof processAndRenderView === 'function') {
+                        processAndRenderView();
+                    }
                     
                 } else {
                     throw new Error("Core database array 'STATE.rawGamesList' was unreachable.");
