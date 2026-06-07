@@ -436,9 +436,7 @@ const COMMAND_MATRIX = {
                 // ==========================================================
                 let autoIcon = "";
                 try {
-                    // Extracts just the base website (e.g. "raw.githubusercontent.com")
                     const domain = new URL(targetUrl).hostname;
-                    // Uses Google's open Favicon API to grab a high-res (128px) icon
                     autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
                 } catch (err) {
                     console.warn("Could not parse domain for favicon.", err);
@@ -455,13 +453,36 @@ const COMMAND_MATRIX = {
                     throw new Error(`Bad Server Response! Status Code: ${response.status}`);
                 }
                 
-                let incomingGame = null;
+                // ==========================================================
+                // 📊 FILE SIZE MEASUREMENT PIPELINE
+                // ==========================================================
+                let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
+                let rawTextData = "";
                 const contentType = response.headers.get("content-type") || "";
+
+                // If content-length header is omitted by server configuration, read stream manually to get real size
+                if (!bytes) {
+                    rawTextData = await response.text();
+                    bytes = new Blob([rawTextData]).size;
+                }
+
+                const sizeInKB = (bytes / 1024).toFixed(2);
+                pushToSystemLogs('CLI-OUT', [`📏 Remote package size detected: ${sizeInKB} KB`], 'flash-pkg');
+
+                // Interactive Confirmation Request Box
+                const confirmation = window.prompt(`Game payload size is ${sizeInKB} KB. Are you sure you want to commit this to localStorage? (y/n)`);
+                if (!confirmation || confirmation.toLowerCase().trim() !== 'y') {
+                    pushToSystemLogs('WARN', ["🛑 Installation canceled by user prompt request."], 'flash-pkg');
+                    return;
+                }
+
+                let incomingGame = null;
                 const isHtmlUrl = targetUrl.toLowerCase().endsWith('.html') || targetUrl.toLowerCase().includes('.html');
 
                 // LAYER 2: Smart Type Sniffing (JSON vs. Direct HTML file)
                 if (contentType.includes("application/json")) {
-                    incomingGame = await response.json();
+                    // Parse text data if already read, otherwise fetch stream
+                    incomingGame = rawTextData ? JSON.parse(rawTextData) : await response.json();
                     if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) {
                         throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
                     }
@@ -470,7 +491,6 @@ const COMMAND_MATRIX = {
                     incomingGame.title = incomingGame.title || incomingGame.name;
                     incomingGame.zone = incomingGame.zone || "OFFLINE";
                     
-                    // Assign icon: Use the JSON's custom image if it exists, otherwise use our generated Favicon
                     incomingGame.image = incomingGame.image || incomingGame.icon || autoIcon;
                     incomingGame.icon = incomingGame.icon || incomingGame.image; 
                 } 
@@ -491,7 +511,7 @@ const COMMAND_MATRIX = {
                         title: cleanTitle,
                         url: targetUrl,
                         zone: targetZoneCasing,
-                        image: autoIcon, // Stuffs the newly generated Favicon directly into your UI map!
+                        image: autoIcon,
                         icon: autoIcon
                     };
                     
@@ -515,13 +535,11 @@ const COMMAND_MATRIX = {
                         pushToSystemLogs('CLI-OUT', [`📦 added 1 package: ${incomingGame.title}`], 'flash-pkg');
                     }
                     
-                    // Rewrite local directory files
                     const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
                     localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
                     
                     pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] safely committed to local offline storage folder!`], 'flash-pkg');
                     
-                    // Force Dashboard Viewport Refresh
                     if (typeof processAndRenderView === 'function') {
                         processAndRenderView();
                     }
@@ -533,6 +551,66 @@ const COMMAND_MATRIX = {
             } catch (error) {
                 console.error(`ERR! flash-npm installation aborted.`);
                 pushToSystemLogs('ERROR', [`❌ Installation failed: ${error.message}`], 'flash-pkg');
+            }
+        }
+    },
+    "delgame": {
+        desc: "Displays an indexed list of your installed custom games and allows deletion of them.",
+        exec: async (args) => {
+            if (typeof STATE === 'undefined' || !STATE.rawGamesList) {
+                console.error("ERR! Database state index context unreachable.");
+                return;
+            }
+
+            // Isolate only the custom packages downloaded locally via user actions
+            const installedGames = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+
+            if (installedGames.length === 0) {
+                pushToSystemLogs('CLI-OUT', ["ℹ️ There are no custom downloaded packages detected inside storage."], 'flash-pkg');
+                return;
+            }
+
+            // Print listing catalog to the system terminal view layout
+            pushToSystemLogs('CLI-OUT', ["📋 --- Custom Downloaded Games List ---"], 'flash-pkg');
+            installedGames.forEach((game, index) => {
+                pushToSystemLogs('CLI-OUT', [`[${index + 1}] Title: ${game.title} (ID: ${game.id})`], 'flash-pkg');
+            });
+
+            // Prompt user selection matching print indexing criteria loop
+            const selectionInput = window.prompt(`Enter the index number (1-${installedGames.length}) of the custom game asset you want to completely erase from disk storage:`);
+            if (!selectionInput) {
+                pushToSystemLogs('WARN', ["🛑 Selection sequence broken or terminated."], 'flash-pkg');
+                return;
+            }
+
+            const targetIndex = parseInt(selectionInput.trim(), 10) - 1;
+
+            if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= installedGames.length) {
+                pushToSystemLogs('ERROR', ["❌ Invalid selection target registry out of boundary limitations."], 'flash-pkg');
+                return;
+            }
+
+            const selectedGame = installedGames[targetIndex];
+            
+            // Double check confirm loop action verification validation safety check
+            const confirmDelete = window.prompt(`Are you absolutely sure you want to permanently delete "${selectedGame.title}"? Type 'YES' to clear records.`);
+            if (!confirmDelete || confirmDelete.trim().toUpperCase() !== 'YES') {
+                pushToSystemLogs('WARN', ["🛑 Clear routine scrub terminated safety backup triggered."], 'flash-pkg');
+                return;
+            }
+
+            // Strip specific configuration mappings dynamically away from memory array stack context
+            STATE.rawGamesList = STATE.rawGamesList.filter(game => game.id !== selectedGame.id);
+
+            // Re-compile local physical storage partition values
+            const updatedOfflineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+            localStorage.setItem('flash_offline_folder', JSON.stringify(updatedOfflineFolder));
+
+            pushToSystemLogs('CLI-OUT', [`🔥 [${selectedGame.title}] was purged from active storage targets successfully!`], 'flash-pkg');
+
+            // Force dashboard view to drop element cards instantly without soft reboot
+            if (typeof processAndRenderView === 'function') {
+                processAndRenderView();
             }
         }
     },
@@ -655,7 +733,7 @@ const CHANGELOG_DATA = {
             "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline. If you're not a nerd, this basically just means that you can install any compatible game you see on the internet.",
             "<code>flash health</code> Check your system health.",
             "<code>flash init</code> Prepare Flash Games if it hasn't been already.",
-            "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update.",
+            "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update. Adding more.",
             "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
         ]
     },
