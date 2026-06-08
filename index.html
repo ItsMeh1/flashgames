@@ -466,10 +466,7 @@ const COMMAND_MATRIX = {
                 }
 
                 const sizeInKB = (bytes / 1024).toFixed(2);
-                pushToSystemLogs('CLI-OUT', [`📏 Remote package size detected: ${sizeInKB} KB`], 'flash-pkg');
-
-                // 🖥️ IN-TERMINAL PROMPT INSTEAD OF WINDOW.PROMPT
-                pushToSystemLogs('CLI-OUT', [`❓ Game payload size is ${sizeInKB} KB. Are you sure you want to commit this to localStorage? [y/n]`], 'flash-pkg');
+                pushToSystemLogs('CLI-OUT', [`📦 package size is ${sizeInKB}KB, are you sure you want to install? [y/n]`], 'flash-pkg');
                 
                 // Await your terminal's line-reading response mechanism directly from the CLI input field
                 const confirmation = await terminalReadLine(); 
