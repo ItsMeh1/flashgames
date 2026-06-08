@@ -698,17 +698,19 @@ document.getElementById('terminalInput')?.addEventListener('keydown', function(e
         // Print entered instruction straight back to display grid output
         pushToSystemLogs('CLI-IN', [fullInput], 'Client Shell');
 
+        // 1. 🔥 CHECK INTERCEPTOR FIRST: Is a command waiting for an answer?
+        if (activeInputResolver !== null) {
+            const resolveReference = activeInputResolver;
+            activeInputResolver = null; // Clear the hook so normal commands work again
+            resolveReference(fullInput); // ✅ FIXED: Changed 'userInput' to 'fullInput'
+            return; // Stop right here so it doesn't process as a new command!
+        }
+
+        // 2. RUN NORMAL COMMAND: Only enforce syntax rules if we aren't answering a prompt
         const tokens = fullInput.split(/\s+/);
         if (tokens[0] !== 'flash') {
             console.error(`Syntax Error: Commands require 'flash' syntax. Type 'flash help'.`);
             return;
-        }
-        
-        if (activeInputResolver !== null) {
-            const resolveReference = activeInputResolver;
-            activeInputResolver = null; // Clear the hook so normal commands work again
-            resolveReference(userInput); // Wake up the paused command and hand it the text!
-            return; // Stop right here so it doesn't try to run the text as a normal command
         }
 
         const action = tokens[1];
