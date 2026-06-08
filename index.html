@@ -421,7 +421,7 @@ const COMMAND_MATRIX = {
         }
     },
     "install": {
-        desc: "Installs a game package or direct HTML link. Usage: flash install {url}",
+        desc: "Installs a game package or direct HTML link to the browser Cache Storage. Usage: flash install {url}",
         exec: async (args) => {
             if (!args || args.length === 0) {
                 console.error("ERR! install requires a target URL. Usage: flash install https://...");
@@ -454,21 +454,21 @@ const COMMAND_MATRIX = {
                 }
                 
                 // ==========================================================
-                // 📊 FILE SIZE MEASUREMENT PIPELINE
+                // 📊 FILE SIZE MEASUREMENT & PAYLOAD BUFFERING
                 // ==========================================================
                 let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
-                let rawTextData = "";
                 const contentType = response.headers.get("content-type") || "";
-
+                
+                // Read response text stream immediately so we can measure size and preserve it for cache injection
+                const rawTextData = await response.text();
                 if (!bytes) {
-                    rawTextData = await response.text();
                     bytes = new Blob([rawTextData]).size;
                 }
 
                 const sizeInKB = (bytes / 1024).toFixed(2);
-                pushToSystemLogs('CLI-OUT', [`📦 package size is ${sizeInKB}KB, are you sure you want to install? [y/n]`], 'flash-pkg');
+                pushToSystemLogs('CLI-OUT', [`📦 Package size is ${sizeInKB} KB. Are you sure you want to install? [y/n]`], 'flash-pkg');
                 
-                // Await your terminal's line-reading response mechanism directly from the CLI input field
+                // Await terminal line-reading response mechanism directly from the CLI input field
                 const confirmation = await terminalReadLine(); 
                 
                 if (!confirmation || confirmation.toLowerCase().trim() !== 'y') {
@@ -476,12 +476,28 @@ const COMMAND_MATRIX = {
                     return;
                 }
 
+                // ==========================================================
+                // 🗄️ BROWSER CACHE STORAGE INJECTION (NOT LOCALSTORAGE!)
+                // ==========================================================
+                if ('caches' in window) {
+                    const gameCache = await caches.open('flash-games-cache');
+                    // Store a new synthetic response matched against the targetUrl key
+                    await gameCache.put(targetUrl, new Response(rawTextData, {
+                        status: 200,
+                        statusText: "OK",
+                        headers: { 'Content-Type': contentType }
+                    }));
+                    pushToSystemLogs('CLI-OUT', [`⚡ Content successfully committed to browser Cache Storage!`], 'flash-pkg');
+                } else {
+                    throw new Error("Browser Cache Storage API is unsupported or inaccessible on this domain profile.");
+                }
+
                 let incomingGame = null;
                 const isHtmlUrl = targetUrl.toLowerCase().endsWith('.html') || targetUrl.toLowerCase().includes('.html');
 
                 // LAYER 2: Smart Type Sniffing (JSON vs. Direct HTML file)
                 if (contentType.includes("application/json")) {
-                    incomingGame = rawTextData ? JSON.parse(rawTextData) : await response.json();
+                    incomingGame = JSON.parse(rawTextData);
                     if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) {
                         throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
                     }
@@ -508,7 +524,7 @@ const COMMAND_MATRIX = {
                         id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
                         name: cleanTitle,   
                         title: cleanTitle,
-                        url: targetUrl,
+                        url: targetUrl, // This acts as the pointer index for caches.match(url) later
                         zone: targetZoneCasing,
                         image: autoIcon,
                         icon: autoIcon
@@ -520,24 +536,26 @@ const COMMAND_MATRIX = {
                     throw new Error(`Unsupported content type registry: "${contentType}"`);
                 }
                 
-                // LAYER 3: Core Memory Injection & Local Hard Drive Save
+                // LAYER 3: Core Memory Registry Entry Update
                 if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
                     incomingGame.isOfflinePackage = true; 
                     
                     const alreadyExists = STATE.rawGamesList.some(game => game.id === incomingGame.id);
                     
                     if (alreadyExists) {
-                        pushToSystemLogs('WARN', [`⚠️ Package [${incomingGame.title}] already exists. Overwriting configs...`], 'flash-pkg');
+                        pushToSystemLogs('WARN', [`⚠️ Package [${incomingGame.title}] already exists. Overwriting config pointers...`], 'flash-pkg');
                         STATE.rawGamesList = STATE.rawGamesList.map(game => game.id === incomingGame.id ? incomingGame : game);
                     } else {
                         STATE.rawGamesList.push(incomingGame);
-                        pushToSystemLogs('CLI-OUT', [`📦 Added 1 package: ${incomingGame.title}`], 'flash-pkg');
+                        pushToSystemLogs('CLI-OUT', [`📦 Added 1 package pointer: ${incomingGame.title}`], 'flash-pkg');
                     }
                     
+                    // We only save the tiny manifest objects to localStorage so the UI card displays. 
+                    // The actual massive HTML payload stays entirely inside the browser's Cache Storage layer.
                     const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
                     localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
                     
-                    pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] safely committed to local offline storage folder!`], 'flash-pkg');
+                    pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] registry manifest successfully linked!`], 'flash-pkg');
                     
                     if (typeof processAndRenderView === 'function') {
                         processAndRenderView();
@@ -1111,10 +1129,32 @@ document.getElementById('retrySyncBtn').addEventListener('click', () => {
             }
 
             try {
-                const response = await fetch(game.url);
-                const originalText = await response.text();
-                const trimmedText = originalText.trim();
+                // We set up a blank variable to hold the game code
+                let originalText = "";
 
+                // 1. CHECK CACHE: Does the browser already have this downloaded?
+                if ('caches' in window) {
+                    const gameCache = await caches.open('flash-games-cache');
+                    const cachedResponse = await gameCache.match(game.url);
+                    
+                    if (cachedResponse) {
+                        console.log(`📦 Cache hit! Loading "${game.name}" completely offline.`);
+                        originalText = await cachedResponse.text();
+                    }
+                }
+
+                // 2. NETWORK FETCH: If it wasn't in the cache, fetch it from the web like normal
+                if (!originalText) {
+                    console.log(`🌐 Cache miss or empty. Fetching "${game.name}" from live network...`);
+                    const response = await fetch(game.url);
+                    if (!response.ok) {
+                        throw new Error(`Bad Server Response! Status Code: ${response.status}`);
+                    }
+                    originalText = await response.text();
+                }
+
+                // 3. YOUR PIPELINE: Processing the text (whether it came from cache OR web)
+                const trimmedText = originalText.trim();
                 const hasHtmlTags = /<html|<head|<body|<script/i.test(trimmedText);
                 const hasRawJsLogic = trimmedText.includes('function') || trimmedText.includes('var ') || trimmedText.includes('const ') || (trimmedText.startsWith('{') && trimmedText.endsWith('}'));
 
@@ -1141,7 +1181,7 @@ document.getElementById('retrySyncBtn').addEventListener('click', () => {
                     frame.src = game.url;
                 }
             } catch (err) {
-                console.warn("Direct fetch check blocked or restricted. Cascading to standard frame source allocation route.", err);
+                console.warn("Direct file acquisition route failed. Cascading to standard web frame mapping.", err);
                 frame.src = game.url;
             }
         }
