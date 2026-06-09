@@ -56,14 +56,14 @@
         "cover": "./offline/2048.png"
     },
     {
-        "name": "Flash Exclusive: Infinity RNG",
+        "name": "Infinity RNG",
         "category": "Standard",
         "zone": "OFFLINE",
         "url": "./offline/infinityrng.html",
         "cover": "./offline/rng.png"
     },
     {
-        "name": "Flash Exclusive: Infinity RNG Legacy",
+        "name": "Infinity RNG Legacy",
         "category": "Standard",
         "zone": "OFFLINE",
         "url": "./offline/infinityrnglegacy.html",
