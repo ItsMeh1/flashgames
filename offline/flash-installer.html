@@ -278,7 +278,7 @@ const GAME_LINKS = [
                 } catch(e) {}
                 
                 const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-                const installCommand = `flash install ${game.url}`;
+                const installCommand = `${game.url}`;
 
                 const card = document.createElement('div');
                 card.className = "bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-blue-500/50 transition-all duration-200 flex flex-col justify-between group backdrop-blur-sm shadow-xl animate-fade-in";
