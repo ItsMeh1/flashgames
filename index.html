@@ -3,68 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flash Games Platform</title>
+    <title>Flash Games</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="offline/logo.png">
     <script>
-        tailwind.config = { 
-            theme: { 
-                extend: { 
-                    fontFamily: { 
-                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'], 
-                    } 
-                } 
-            } 
-        }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'], } } } }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+    <script>
+        window.__flashFirebase = null;
+        (function initFlashFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBprG8pYZ1WQNh2wt0kih3P7Z3nIxhnU5k",
+                authDomain: "mobify-5b3c9.firebaseapp.com",
+                projectId: "mobify-5b3c9",
+                storageBucket: "mobify-5b3c9.firebasestorage.app",
+                messagingSenderId: "454093361079",
+                appId: "1:454093361079:web:ab1e1093a91a705be3a232"
+            };
+
+            if (!window.firebase) return;
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            try { firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (err) {}
+            window.__flashFirebase = { firebase, app: firebase.app(), auth, db };
+        })();
     </script>
     <style>
-        /* Premium Apple Liquid Glass Aesthetics */
-        .glass-panel { 
-            background: rgba(255, 255, 255, 0.02); 
-            backdrop-filter: blur(24px); 
-            -webkit-backdrop-filter: blur(24px); 
-            border: 1px solid rgba(255, 255, 255, 0.06); 
-            box-shadow: 0 4px 24px -8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); 
-        }
-        .glass-panel-dark { 
-            background: rgba(10, 12, 24, 0.7); 
-            backdrop-filter: blur(40px); 
-            -webkit-backdrop-filter: blur(40px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 24px 40px -12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05); 
-        }
+        /* Apple Liquid Glass Aesthetics */
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 4px 24px -8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .glass-panel-dark { background: rgba(10, 12, 24, 0.7); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 24px 40px -12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05); }
         
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); 
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
-        }
-        .glass-card:hover, .glass-card:focus-within { 
-            background: rgba(255, 255, 255, 0.08); 
-            border-color: rgba(255, 255, 255, 0.15); 
-            transform: translateY(-4px) scale(1.01); 
-            box-shadow: 0 16px 32px 0 rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255,255,255,0.1); 
-        }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+        .glass-card:hover, .glass-card:focus-within { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); transform: translateY(-4px) scale(1.01); box-shadow: 0 16px 32px 0 rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255,255,255,0.1); }
         
-        .btn-glass { 
-            background: rgba(255,255,255,0.05); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); 
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); 
-        }
-        .btn-glass:hover { 
-            background: rgba(255,255,255,0.12); 
-            border-color: rgba(255,255,255,0.2); 
-            transform: translateY(-1px); 
-        }
-        .btn-glass:active { 
-            transform: translateY(1px); 
-        }
+        .btn-glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+        .btn-glass:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+        .btn-glass:active { transform: translateY(1px); }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
@@ -74,6 +53,13 @@
         .info-btn-enter { width: 28px !important; transform: scale(1) !important; opacity: 1 !important; margin-left: 0.5rem !important; }
         .panel-enter { opacity: 1 !important; pointer-events: auto !important; transform: scale(1) translateY(0) !important; z-index: 90 !important; }
         .drawer-open { transform: translateX(0) !important; }
+
+        .account-avatar-ring { box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 0 4px rgba(99,102,241,0.18), 0 10px 30px rgba(0,0,0,0.35); }
+        .glass-input { background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.09); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+        .glass-input:focus { background: rgba(255,255,255,0.06); border-color: rgba(99,102,241,0.55); outline: none; }
+        .auth-field-hidden { display: none !important; }
+        .pulse-dot { box-shadow: 0 0 0 0 rgba(99,102,241,0.35); animation: pulseGlow 2.2s infinite; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.35); } 70% { box-shadow: 0 0 0 10px rgba(99,102,241,0); } 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
     </style>
 </head>
 <body class="h-full overflow-x-hidden antialiased bg-slate-950">
@@ -83,7 +69,98 @@
         <div class="absolute top-[30%] -right-[10%] w-[45vw] h-[45vw] rounded-full bg-purple-900/10 blur-[100px]"></div>
     </div>
 
-    <div id="app" class="min-h-full flex flex-col pb-12 transition-all duration-500">
+    <div id="performanceRestoreBanner" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[120] glass-panel-dark rounded-3xl px-4 py-3 shadow-2xl border border-amber-400/20 max-w-xl w-[calc(100%-2rem)] md:w-auto">
+        <div class="flex items-center gap-3">
+            <div class="h-3 w-3 rounded-full bg-amber-400 pulse-dot"></div>
+            <div class="min-w-0">
+                <div class="text-sm font-semibold text-white">Performance mode is still active.</div>
+                <div class="text-xs text-slate-300">Reload the page to bring the full UI back.</div>
+            </div>
+            <button onclick="window.location.reload()" class="ml-2 px-4 py-2 rounded-2xl bg-white text-slate-950 text-xs font-bold shadow-lg hover:bg-slate-100 transition-all">Reload page</button>
+        </div>
+    </div>
+
+    <div id="authGate" class="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6">
+        <div class="absolute inset-0 bg-slate-950/75 backdrop-blur-2xl"></div>
+        <div class="relative w-full max-w-6xl grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
+            <div class="glass-panel-dark rounded-[2rem] p-6 md:p-8 shadow-2xl border border-white/10">
+                <div class="flex items-start justify-between gap-4 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden">
+                            <img src="offline/logo.png" class="w-full h-full object-cover" alt="Flash logo" onerror="this.style.display='none'">
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.3em] text-indigo-300/80 font-semibold">Flash Games</p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Account first. Games second.</h2>
+                            <p id="authGateStatus" class="text-sm text-slate-400 mt-2">Create an account or log in to continue.</p>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-400">
+                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-indigo-400 pulse-dot"></span>
+                        Liquid glass account access
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-6">
+                    <button id="authModeSignin" onclick="setAuthMode('signin')" class="px-4 py-2 rounded-2xl text-sm font-semibold btn-glass border border-white/10 text-white">Log in</button>
+                    <button id="authModeSignup" onclick="setAuthMode('signup')" class="px-4 py-2 rounded-2xl text-sm font-semibold btn-glass border border-white/10 text-slate-300">Create account</button>
+                </div>
+
+                <form id="authForm" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div id="authUsernameWrap" class="auth-field-hidden md:col-span-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Username</label>
+                            <input id="authUsername" type="text" placeholder="sheep" class="w-full rounded-2xl px-4 py-3 text-sm text-white glass-input placeholder-slate-500">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Email</label>
+                            <input id="authEmail" type="email" placeholder="you@example.com" class="w-full rounded-2xl px-4 py-3 text-sm text-white glass-input placeholder-slate-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                        <input id="authPassword" type="password" placeholder="••••••••" class="w-full rounded-2xl px-4 py-3 text-sm text-white glass-input placeholder-slate-500">
+                    </div>
+                    <div id="authPfpWrap" class="auth-field-hidden">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Profile picture</label>
+                        <input id="authPfpFile" type="file" accept="image/*" class="w-full rounded-2xl px-4 py-3 text-sm text-slate-300 glass-input file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:px-4 file:py-2 file:text-indigo-200 file:font-semibold hover:file:bg-indigo-500/30">
+                        <p class="text-xs text-slate-500 mt-2">Upload a square avatar for your account. You can change it later.</p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-2">
+                        <button id="authSubmitBtn" type="submit" class="px-5 py-3 rounded-2xl bg-white text-slate-950 text-sm font-bold shadow-xl hover:bg-slate-100 transition-all">Log in</button>
+                        <button type="button" onclick="fillAuthDemo()" class="px-5 py-3 rounded-2xl btn-glass text-sm font-semibold text-slate-200 border border-white/10">Use sample text</button>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed">Your account profile will also be used by Mobify, so the same login can power both projects.</p>
+                </form>
+            </div>
+
+            <div class="glass-panel-dark rounded-[2rem] p-6 md:p-8 shadow-2xl border border-white/10 flex flex-col justify-between">
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-500/30 uppercase tracking-wider mb-4">What you get</span>
+                    <div class="space-y-4 text-sm text-slate-300">
+                        <div class="p-4 rounded-2xl bg-black/20 border border-white/8">
+                            <div class="font-semibold text-white mb-1">One account, same identity</div>
+                            <div>Flash Games and Mobify share the same users collection, so your profile picture, username, and bio stay in sync.</div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-black/20 border border-white/8">
+                            <div class="font-semibold text-white mb-1">Liquid glass profile shell</div>
+                            <div>Your account chip lives in the header. Tap it to open your profile and update your picture, username, and bio.</div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-black/20 border border-white/8">
+                            <div class="font-semibold text-white mb-1">CLI support too</div>
+                            <div>Use flash account, flash login, flash signup, flash profile, and flash logout from the terminal.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-between gap-3 text-xs text-slate-500">
+                    <span>Protected by Firebase Auth</span>
+                    <span id="authFirebaseState">Connecting...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="min-h-full flex flex-col pb-12">
         <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div onclick="goHome()" class="flex items-center gap-3 cursor-pointer group">
@@ -97,7 +174,8 @@
                 </div>
                 
                 <button id="headerUpdateBtn" onclick="openChangelog()" class="ml-2 px-3 py-1.5 text-xs font-medium btn-glass text-white rounded-xl">Updates</button>
-                <button onclick="openDevConsole()" class="px-3 py-1.5 text-xs font-medium btn-glass text-indigo-300 rounded-xl">CLI Terminal</button>
+                <button id="openInstallBtn" onclick="openInstallModal()" class="ml-2 px-3 py-1.5 text-xs font-medium btn-glass text-white rounded-xl">Install</button>
+
                 <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="ml-3 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm hidden sm:block" title="Total Page Views">
             </div>
             
@@ -107,21 +185,17 @@
                 </div>
                 <select id="zoneFilter" class="bg-black/20 border border-white/10 rounded-2xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
                     <option value="all" class="bg-slate-900">All Sources</option>
-                    <option value="vault" class="bg-slate-900">Vault Games</option>
-                    <option value="cloud" class="bg-slate-900">Cloud Network</option>
                 </select>
                 <select id="sortOrder" class="bg-black/20 border border-white/10 rounded-2xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
                     <option value="az" class="bg-slate-900">Name (A-Z)</option>
                     <option value="za" class="bg-slate-900">Name (Z-A)</option>
                 </select>
-
-                <div class="border-l border-white/10 pl-3 ml-1 flex items-center">
-                    <button onclick="openAccountModal()" class="h-9 w-9 rounded-full ring-2 ring-indigo-500/30 hover:ring-indigo-500/80 transition-all overflow-hidden bg-slate-800 shadow-md flex items-center justify-center group">
-                        <img id="headerProfilePic" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-full h-full object-cover">
-                    </button>
-                </div>
+                <button id="headerAccountBtn" onclick="openProfileModal()" class="flex items-center gap-2 px-2 py-1 rounded-2xl btn-glass border border-white/10">
+                    <img id="headerAvatarImg" src="" alt="Account avatar" class="h-8 w-8 rounded-xl object-cover account-avatar-ring bg-slate-800">
+                    <span class="hidden lg:block text-xs font-semibold text-slate-200 pr-1">Account</span>
+                </button>
             </div>
-        </header>
+                </header>
 
         <div class="mx-6 mt-4 flex flex-col gap-3">
             <div id="offlineHUD" class="p-3.5 rounded-2xl glass-panel border border-emerald-500/20 bg-emerald-950/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
@@ -134,136 +208,102 @@
                     <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl hover:bg-emerald-500/30 transition-all text-xs font-semibold shadow-inner z-10 relative">
                         Sync Offline Folder
                     </button>
-                    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-7 h-7 ml-2 opacity-100 scale-100" title="Sync Details">
+                    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
                         <span class="font-mono text-xs font-bold leading-none">i</span>
                     </button>
                 </div>                
             </div>
         </div>
 
-        <div id="statusView" class="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[50vh] w-full">
-            <div id="statusContent" class="max-w-md mx-auto flex flex-col items-center justify-center">
-                <div id="statusSpinner" class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
-                <h3 id="statusTitle" class="text-xl font-medium text-white tracking-tight">Loading Game Library</h3>
-                <p id="statusDesc" class="text-sm text-slate-400 mt-2 leading-relaxed">Aggregating secure game content nodes...</p>
-            </div>
-        </div>
+        <div id="statusView" class="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[50vh] w-full"><div id="statusContent" class="max-w-md mx-auto flex flex-col items-center justify-center"><div id="statusSpinner" class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div><h3 id="statusTitle" class="text-xl font-medium text-white tracking-tight">Loading Game Library</h3><p id="statusDesc" class="text-sm text-slate-400 mt-2 leading-relaxed">Aggregating game nodes...</p></div></div>
         
         <main id="mainWorkspace" class="px-6 mt-6 space-y-10 hidden flex-1">
             <section id="heroSection" class="relative rounded-[2rem] overflow-hidden glass-panel h-[280px] md:h-[360px] flex flex-col justify-end p-6 md:p-10 group transition-all shadow-2xl border border-white/10">
-                <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-700 scale-100 group-hover:scale-102 opacity-30" id="heroBg" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=80')"></div>
+                <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-700 scale-100 group-hover:scale-102 opacity-30" id="heroBg"></div>
                 <div class="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
                 <div class="max-w-xl">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-4 uppercase tracking-wider backdrop-blur-md">Spotlight Spotlight</span>
-                    <h2 id="heroTitle" class="text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 drop-shadow-lg">Retro Arcade Arcade</h2>
-                    <p id="heroMeta" class="text-sm text-slate-300 mb-6 font-medium">Explore standard high-fidelity performance flash files mapped natively.</p>
-                    <button id="heroLaunchBtn" onclick="launchDemoGame()" class="px-6 py-3 bg-white text-slate-950 font-bold rounded-2xl shadow-xl hover:bg-slate-100 active:scale-95 transition-all text-sm flex items-center gap-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-4 uppercase tracking-wider backdrop-blur-md">Spotlight</span>
+                    <h2 id="heroTitle" class="text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 drop-shadow-lg">---</h2>
+                    <p id="heroMeta" class="text-sm text-slate-300 mb-6 font-medium"></p>
+                    <button id="heroLaunchBtn" class="px-6 py-3 bg-white text-slate-950 font-bold rounded-2xl shadow-xl hover:bg-slate-100 active:scale-95 transition-all text-sm flex items-center gap-2">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
                         Play Now
                     </button>
                 </div>
             </section>
-            
             <div id="userSpaceContainer" class="space-y-10 empty:hidden"></div>
             <div id="collectionsContainer" class="space-y-10"></div>
         </main>
     </div>
 
-    <div id="authGatewayOverlay" class="fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-3xl flex items-center justify-center p-4 transition-opacity duration-500 hidden">
-        <div class="glass-panel-dark max-w-md w-full rounded-[2.5rem] p-8 shadow-2xl border border-white/10 relative">
-            <div class="flex items-center gap-3 mb-6 justify-center">
-                <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
-                    <img src="offline/logo.png" class="w-6 h-6 object-cover" onerror="this.style.display='none'">
-                </div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">Flash Account Gate</h2>
+    <div id="installModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="glass-panel-dark max-w-md w-full rounded-3xl p-6 md:p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="installModalInner">
+            <button onclick="closeInstallModal()" class="absolute top-5 right-5 btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-400">✕</button>
+            <h2 class="text-2xl font-bold text-white mb-1">Install Custom Game</h2>
+            <p class="text-sm text-slate-400 mb-6">Enter the URL of any compatible HTML game to download and save it directly to your device.</p>
+            
+            <div id="installStep1">
+                <input id="installUrlInput" type="url" placeholder="https://example.com/game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all mb-4 shadow-inner">
+                <button id="installAnalyzeBtn" onclick="analyzeInstallUrl()" class="w-full py-3.5 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all">Analyze Payload</button>
+                <p class="text-sm text-slate-400 mb-6"><code>You may still install games via the Flash CLI for more advanced settings.</code></p>
             </div>
 
-            <div class="flex p-1 bg-black/40 rounded-2xl border border-white/5 mb-6">
-                <button id="authTabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-white bg-white/10 shadow-sm">Sign In</button>
-                <button id="authTabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-slate-200">Create Account</button>
-            </div>
-
-            <div id="authErrorMsg" class="hidden text-xs font-semibold p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 mb-4 text-center"></div>
-
-            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 pl-1">Username / Handle</label>
-                    <input id="authUsername" type="text" required placeholder="gaminglegend" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all shadow-inner">
+            <div id="installStep2" class="hidden flex-col items-center text-center">
+                <div class="w-20 h-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center mb-4 overflow-hidden shadow-inner p-2">
+                    <img id="installPreviewIcon" src="" class="w-full h-full object-contain rounded-xl" onerror="this.src='offline/logo.png'">
                 </div>
+                <h3 id="installPreviewTitle" class="text-xl text-white font-bold mb-1">Game Title</h3>
+                <p id="installPreviewSize" class="text-xs text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full mb-6 font-mono font-medium">Size: -- KB</p>
                 
-                <div id="authEmailWrapper" class="hidden">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 pl-1">Email Address</label>
-                    <input id="authEmail" type="email" placeholder="player@platform.com" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all shadow-inner">
+                <div class="flex gap-3 w-full">
+                    <button onclick="resetInstallModal()" class="flex-1 py-3.5 btn-glass rounded-2xl text-white font-semibold">Cancel</button>
+                    <button id="installConfirmBtn" onclick="commitInstallGame()" class="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.3)] transition-all">Install Offline</button>
                 </div>
-
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 pl-1">Password</label>
-                    <input id="authPassword" type="password" required placeholder="••••••••" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all shadow-inner">
-                </div>
-
-                <div id="authAvatarWrapper" class="hidden">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Choose Profile Avatar</label>
-                    <div class="grid grid-cols-4 gap-3 mb-3">
-                        <button type="button" onclick="selectPresetAvatar(0, this)" class="avatar-preset-btn h-12 w-12 rounded-full overflow-hidden border-2 border-indigo-500 ring-4 ring-indigo-500/20 transition-all mx-auto">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
-                        </button>
-                        <button type="button" onclick="selectPresetAvatar(1, this)" class="avatar-preset-btn h-12 w-12 rounded-full overflow-hidden border-2 border-transparent hover:border-white/40 transition-all mx-auto">
-                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
-                        </button>
-                        <button type="button" onclick="selectPresetAvatar(2, this)" class="avatar-preset-btn h-12 w-12 rounded-full overflow-hidden border-2 border-transparent hover:border-white/40 transition-all mx-auto">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
-                        </button>
-                        <button type="button" onclick="selectPresetAvatar(3, this)" class="avatar-preset-btn h-12 w-12 rounded-full overflow-hidden border-2 border-transparent hover:border-white/40 transition-all mx-auto">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
-                        </button>
-                    </div>
-                    <input id="authCustomAvatarUrl" type="url" placeholder="Or paste custom image URL..." class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all shadow-inner">
-                </div>
-
-                <button id="authSubmitBtn" type="submit" class="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-500/20 transform active:scale-[0.99]">
-                    Access Game Network
-                </button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <div id="accountModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-        <div class="glass-panel-dark max-w-md w-full rounded-[2.5rem] p-8 shadow-2xl relative border border-white/10 transform scale-95 transition-transform duration-300" id="accountModalInner">
-            <button onclick="closeAccountModal()" class="absolute top-6 right-6 btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white">✕</button>
-            
-            <h2 class="text-xl font-bold text-white mb-6">Account Profile Settings</h2>
-            
-            <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 mb-6">
-                <div class="h-16 w-16 rounded-full overflow-hidden ring-4 ring-indigo-500/20 bg-slate-800 shrink-0">
-                    <img id="modalProfilePreview" src="" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h3 id="modalProfileHandle" class="text-lg font-bold text-white">@username</h3>
-                    <p id="modalProfileEmail" class="text-xs text-slate-400">email@domain.com</p>
+    <div id="profileModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-xl flex items-center justify-center p-4 md:p-6 transition-opacity opacity-0 duration-300">
+        <div class="glass-panel-dark max-w-2xl w-full rounded-3xl shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300" id="profileModalInner">
+            <button onclick="closeProfileModal()" class="absolute top-5 right-5 btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-400">✕</button>
+            <div class="p-6 md:p-8 border-b border-white/10 bg-white/[0.02]">
+                <div class="flex items-center gap-4">
+                    <img id="profileAvatarPreview" src="" alt="Profile picture" class="h-20 w-20 rounded-3xl object-cover account-avatar-ring bg-slate-800">
+                    <div class="min-w-0">
+                        <p class="text-xs uppercase tracking-[0.3em] text-indigo-300/80 font-semibold">Account profile</p>
+                        <h3 id="profileModalTitle" class="text-2xl font-bold text-white tracking-tight truncate">Your profile</h3>
+                        <p id="profileModalSubtitle" class="text-sm text-slate-400 mt-1 truncate">Manage the shared Flash/Mobify account.</p>
+                    </div>
                 </div>
             </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Update Username</label>
-                    <input id="editUsername" type="text" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+            <div class="p-6 md:p-8 space-y-5">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Username</label>
+                        <input id="profileNameInput" type="text" class="w-full rounded-2xl px-4 py-3 text-sm text-white glass-input placeholder-slate-500" placeholder="Username">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Profile picture</label>
+                        <input id="profilePfpInput" type="file" accept="image/*" class="w-full rounded-2xl px-4 py-3 text-sm text-slate-300 glass-input file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-500/20 file:px-4 file:py-2 file:text-indigo-200 file:font-semibold hover:file:bg-indigo-500/30">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Update Email Address</label>
-                    <input id="editEmail" type="email" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Bio</label>
+                    <textarea id="profileBioInput" rows="4" class="w-full rounded-2xl px-4 py-3 text-sm text-white glass-input placeholder-slate-500 resize-none" placeholder="A short bio..."></textarea>
                 </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Update Custom Profile Pic URL</label>
-                    <input id="editAvatarUrl" type="url" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="rounded-2xl bg-black/20 border border-white/10 p-4">
+                        <div class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Email</div>
+                        <div id="profileEmailText" class="text-slate-200 break-all">—</div>
+                    </div>
+                    <div class="rounded-2xl bg-black/20 border border-white/10 p-4">
+                        <div class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Role / status</div>
+                        <div id="profileRoleText" class="text-slate-200">—</div>
+                    </div>
                 </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button onclick="logoutAccount()" class="px-4 py-3 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-400 rounded-2xl font-bold text-sm transition-all">
-                        Sign Out
-                    </button>
-                    <button onclick="saveProfileChanges()" class="flex-1 py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-2xl shadow-lg transition-all text-sm text-center">
-                        Save Modification
-                    </button>
+                <div class="flex flex-col md:flex-row gap-3 pt-2">
+                    <button id="profileSaveBtn" onclick="saveProfileChanges()" class="flex-1 px-5 py-3 rounded-2xl bg-white text-slate-950 text-sm font-bold shadow-xl hover:bg-slate-100 transition-all">Save changes</button>
+                    <button onclick="signOutUser()" class="px-5 py-3 rounded-2xl btn-glass text-sm font-semibold text-rose-200 border border-rose-500/20 hover:bg-rose-500/10">Log out</button>
                 </div>
             </div>
         </div>
@@ -275,10 +315,7 @@
             <h2 class="text-xl font-bold text-white mb-1">Organize Game</h2>
             <p id="folderModalGameName" class="text-xs text-indigo-400 mb-6 font-medium line-clamp-1 bg-indigo-500/10 inline-block px-2 py-0.5 rounded-md border border-indigo-500/20">Game Title</p>
             <div class="space-y-5">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Existing Folders</label>
-                    <div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div>
-                </div>
+                <div><label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Existing Folders</label><div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div></div>
                 <div class="border-t border-white/10 pt-5">
                     <label for="newFolderNameInput" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Create New Folder</label>
                     <div class="flex gap-2">
@@ -292,33 +329,53 @@
 
     <div id="changelogModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 md:p-6 transition-opacity opacity-0 duration-300">
         <div class="glass-panel-dark max-w-3xl w-full rounded-3xl shadow-2xl relative overflow-hidden flex flex-col h-[80vh] max-h-[600px] transform scale-95 transition-transform duration-300" id="changelogModalInner">
+            
             <div class="flex items-center justify-between p-4 border-b border-white/10 bg-white/[0.02] shrink-0">
                 <button onclick="toggleChangelogMenu()" class="btn-glass px-3 py-1.5 rounded-xl text-slate-300 hover:text-white flex items-center gap-2 text-xs font-semibold transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     Versions
                 </button>
-                <h2 id="changelogHeaderTitle" class="text-white font-bold tracking-tight text-lg drop-shadow-md">System Updates</h2>
+                <h2 class="text-white font-bold tracking-tight text-lg drop-shadow-md">System Updates</h2>
                 <button onclick="closeChangelog()" class="btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-300">✕</button>
             </div>
             
             <div class="flex flex-1 relative overflow-hidden">
                 <div id="changelogTabs" class="absolute inset-y-0 left-0 w-64 bg-slate-900/95 backdrop-blur-3xl border-r border-white/10 z-20 flex flex-col p-3 gap-1 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-out shadow-2xl">
                     <div class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Version History</div>
-                </div>
-                <div id="changelogContent" class="p-6 md:p-10 flex-1 overflow-y-auto w-full bg-transparent scroll-smooth"></div>
+                    </div>
+                
+                <div id="changelogContent" class="p-6 md:p-10 flex-1 overflow-y-auto w-full bg-transparent scroll-smooth">
+                    </div>
             </div>
+        </div>
+    </div>
+
+    <div id="gamePortal" class="fixed inset-0 z-50 glass-panel-dark hidden grid-rows-[auto_1fr] transition-all duration-300 opacity-0">
+        <header class="p-4 flex items-center justify-between border-b border-white/10 bg-slate-950/80 backdrop-blur-2xl">
+            <h3 id="portalTitle" class="font-bold text-white text-lg leading-tight tracking-tight drop-shadow-sm">Viewer</h3>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleFullscreen()" class="px-4 py-2 rounded-2xl bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30 transition-all text-sm font-semibold flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                    Fullscreen
+                </button>
+                <button onclick="togglePerformanceMode()" class="px-4 py-2 rounded-2xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 transition-all text-sm font-semibold flex items-center gap-2">⚡ Boost Performance</button>
+                <button id="closePortalBtn" class="px-4 py-2 rounded-2xl btn-glass hover:bg-rose-500/20 hover:text-rose-400 transition-all text-slate-300 text-sm font-semibold">✕ Close</button>
+            </div>
+        </header>
+        <div class="w-full h-full bg-black relative overflow-hidden flex items-center justify-center shadow-inner" id="iframeWrapper">
+            <iframe id="portalFrame" class="w-full h-full border-none" allow="gamepad; autoplay; fullscreen"></iframe>
         </div>
     </div>
 
     <div id="syncInfoPanel" class="fixed top-[140px] right-[24px] w-80 glass-panel-dark p-5 rounded-3xl shadow-2xl z-[9999] transition-all duration-300 opacity-0 pointer-events-none scale-95 origin-top-right border border-white/10">
         <h4 class="text-sm font-bold text-white mb-4 flex justify-between items-center">
-            <span>Background Sync Logs</span>
+            <span>Background Sync</span>
             <button onclick="toggleSyncPanel()" class="text-slate-400 hover:text-white text-xs btn-glass rounded-lg px-2.5 py-1">Close</button>
         </h4>
         <div class="space-y-4 text-xs font-medium text-slate-300">
             <div>
                 <div class="flex justify-between mb-2">
-                    <span>Library File Allocation</span>
+                    <span>Progress</span>
                     <span id="syncProgressText" class="text-indigo-400 font-mono">0 / 0</span>
                 </div>
                 <div class="w-full bg-black/40 rounded-full h-2 overflow-hidden shadow-inner border border-white/5">
@@ -327,10 +384,13 @@
             </div>
             
             <div class="border-t border-white/10 pt-4 mt-4">
-                <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Detailed Cache Allocation</h5>
+                <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Detailed Logs</h5>
                 <div id="syncLogsContainer" class="h-32 overflow-y-auto bg-black/40 border border-white/5 rounded-xl p-3 font-mono text-[10px] space-y-1.5 shadow-inner">
-                    <div class="text-slate-500 italic">Awaiting network trigger sync routine...</div>
+                    <div class="text-slate-500 italic">Waiting to sync...</div>
                 </div>
+                <button id="retrySyncBtn" class="w-full mt-3 hidden px-4 py-2 bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/40 rounded-xl transition-colors font-semibold">
+                    Retry Failed Items
+                </button>
             </div>
         </div>
     </div>
@@ -340,714 +400,1353 @@
             <div class="px-5 py-4 bg-black/40 border-b border-white/10 flex items-center justify-between shrink-0 shadow-inner">
                 <div class="flex items-center gap-4">
                     <div class="flex gap-2 select-none">
-                        <span class="w-3 h-3 rounded-full bg-rose-500 block"></span>
-                        <span class="w-3 h-3 rounded-full bg-amber-500 block"></span>
-                        <span class="w-3 h-3 rounded-full bg-emerald-500 block"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500 border border-rose-600 block shadow-sm"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-500 border border-amber-600 block shadow-sm"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 border border-emerald-600 block shadow-sm"></span>
                     </div>
-                    <span class="text-slate-400 font-bold tracking-tight">Platform Command Line Shell</span>
+                    <span class="text-indigo-400 font-bold text-[13px] tracking-tight">📟 FLASH_OS // Terminal Core</span>
+                    <span class="px-2.5 py-1 rounded-md bg-white/5 text-slate-500 text-[10px] hidden sm:inline-block border border-white/5">Alt/Option + C to exit</span>
                 </div>
-                <button onclick="closeDevConsole()" class="text-slate-400 hover:text-white px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all">Close Shell</button>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearSystemLogs()" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all font-semibold text-[11px]">clear</button>
+                    <button onclick="document.getElementById('devConsoleModal').classList.add('hidden')" class="btn-glass w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-white">✕</button>
+                </div>
             </div>
             
-            <div id="devConsoleLogs" class="flex-1 overflow-y-auto p-5 space-y-2 bg-black/20 font-mono text-slate-300 leading-relaxed shadow-inner">
-                <div class="text-indigo-400 font-bold">Platform CLI Operational initialization complete.</div>
-                <div class="text-slate-500 text-[11px]">Type 'help' to inspect authorized system methods, or account routines.</div>
+            <div id="devConsoleLogs" class="p-6 flex-1 overflow-y-auto space-y-1.5 bg-transparent select-text scroll-smooth">
+                <div class="text-indigo-400/80 font-bold mb-1 text-sm">Flash Games Diagnostics Terminal</div>
+                <div class="text-slate-500 font-medium mb-5">Type <span class="text-emerald-400">flash help</span> for commands...</div>
             </div>
-
-            <div class="p-4 bg-black/40 border-t border-white/10 flex items-center gap-3 shrink-0">
-                <span class="text-indigo-400 font-bold select-none">&gt;_</span>
-                <input id="devConsoleInput" type="text" placeholder="Enter system call command (e.g. account info, help)..." class="flex-1 bg-transparent border-none text-white text-xs font-mono focus:outline-none placeholder-slate-600">
+            
+            <div class="px-5 py-4 bg-black/40 border-t border-white/10 flex items-center gap-3 shrink-0 font-mono shadow-inner">
+                <span class="text-emerald-400 font-bold select-none tracking-tight text-sm">flash</span>
+                <span class="text-indigo-400 font-bold select-none animate-pulse text-sm">&gt;</span>
+                <input type="text" id="terminalInput" 
+                       class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-600 font-mono text-sm" 
+                       placeholder="Type a subsystem command..." 
+                       autocomplete="off" 
+                       spellcheck="false">
             </div>
         </div>
     </div>
+</div>
 
-    <div id="gamePortal" class="fixed inset-0 z-50 glass-panel-dark hidden grid-rows-[auto_1fr] transition-all duration-300 opacity-0">
-        <header class="p-4 flex items-center justify-between border-b border-white/10 bg-slate-950/80 backdrop-blur-2xl">
-            <div class="flex items-center gap-3">
-                <h3 id="portalTitle" class="font-bold text-white text-lg leading-tight tracking-tight drop-shadow-sm">Viewer</h3>
-                <span id="performanceBadge" class="hidden text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">⚡ Boost Active</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <button onclick="toggleFullscreen()" class="px-4 py-2 rounded-2xl bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30 transition-all text-sm font-semibold flex items-center gap-2">
-                    Fullscreen
-                </button>
-                <button id="perfBoostBtn" onclick="togglePerformanceMode()" class="px-4 py-2 rounded-2xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 transition-all text-sm font-semibold flex items-center gap-2">⚡ Boost Performance</button>
-                <button id="closePortalBtn" onclick="exitGamePortalRoutine()" class="px-4 py-2 rounded-2xl btn-glass hover:bg-rose-500/20 hover:text-rose-400 transition-all text-slate-300 text-sm font-semibold">✕ Close</button>
-            </div>
-        </header>
-        <div class="w-full h-full bg-black relative overflow-hidden flex items-center justify-center shadow-inner" id="iframeWrapper">
-            <iframe id="portalFrame" class="w-full h-full border-none" allow="gamepad; autoplay; fullscreen"></iframe>
-            
-            <div id="recoveryOverlay" class="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center text-center p-6 hidden">
-                <div class="max-w-md glass-panel p-8 rounded-3xl border border-white/10 space-y-4 shadow-2xl">
-                    <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl mx-auto">⚡</div>
-                    <h3 class="text-lg font-bold text-white">Performance Mode Engaged</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">The active application background layer was suspended to release device resources for extreme gameplay optimization.</p>
-                    <button onclick="hardRestoreWorkspace()" class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20">
-                        Restore Platform Workspace
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+console.log("index core script running")
 
+// ==========================================================
+// INTERACTIVE SYSTEM CORE LOGGING & TERMINAL ENGINE (ALT+C)
+// ==========================================================
+let SYSTEM_LOGS = [];
+let COMMAND_HISTORY = [];
+let HISTORY_INDEX = -1;
 
-    <script>
-        // CORE GLOBAL APPLICATION DATA ENGINE
-        const SYSTEM_LOGS = [];
-        const ACTIVE_AUTH_AVATARS = [
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
-        ];
+const originalConsole = { log: console.log, warn: console.warn, error: console.error };
 
-        const STATE = {
-            activeFilters: { search: '', zone: 'all', sort: 'az' },
-            folders: JSON.parse(localStorage.getItem('vault_folders') || '{}'),
-            favorites: JSON.parse(localStorage.getItem('vault_favorites') || '[]'),
-            installedGames: [],
-            currentActiveBlobUrl: null,
-            performanceModeActive: false,
-            activeAuthMode: 'login',
-            selectedAvatarIndex: 0,
-            currentUser: null
-        };
+function getLogOrigin() {
+    try {
+        const err = new Error();
+        const stack = err.stack.split('\n');
+        let targetFrame = stack[3] || '';
+        if (targetFrame.includes('at ')) targetFrame = targetFrame.split('at ')[1];
+        return targetFrame.replace(/https?:\/\/[^\/]+/g, '').trim() || 'core.js';
+    } catch (e) { return 'unknown-origin'; }
+}
 
-        // MOCK MASTER GAME NODE REPOSITORY FOR DEMONSTRATION & INTEGRITY
-        const GAME_CATALOG_DATA = [
-            { id: "g1", title: "Alien Fighter Prime", zone: "vault", image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80", desc: "Classic fast-paced high action sci-fi aerial survival game mechanics." },
-            { id: "g2", title: "Neon Cyber Racer", zone: "vault", image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80", desc: "Futuristic vector tracking simulation environment node stream." },
-            { id: "g3", title: "Pixel Dungeon Master", zone: "cloud", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80", desc: "Procedural structural layout exploration puzzle application." },
-            { id: "g4", title: "Vector Gravity Core", zone: "cloud", image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80", desc: "Physics manipulation trajectory analysis simulation matrix." }
-        ];
+function pushToSystemLogs(type, args, customOrigin = null) {
+    const timestamp = new Date().toLocaleTimeString();
+    const origin = customOrigin || getLogOrigin();
+    const message = Array.from(args).map(arg => {
+        if (typeof arg === 'object') { try { return JSON.stringify(arg, null, 2); } catch(e) { return '[Complex Object]'; } }
+        return String(arg);
+    }).join(' ');
 
-        const CHANGELOG_DATA = {
-            "v4.0": {
-                title: "Liquid Glass & Account Architecture",
-                isCurrent: true,
-                notes: [
-                    "<strong>Liquid Glass UI Aesthetics:</strong> Crafted with heavy backdrop blur filters and high-end typography modeled off professional workspace specifications.",
-                    "<strong>Secure Identity Gateway:</strong> Unified platform account validation layer enforced seamlessly prior to entering game spaces.",
-                    "<strong>Performance Refresh Routing:</strong> Clean recovery procedures for performance boosts preventing UI black-screens."
-                ]
-            }
-        };
+    SYSTEM_LOGS.push({ type, message, origin, timestamp });
+    renderSystemLogs();
+}
+    // Add this to your STATE object at the top of your file
+// performanceModeActive: false
 
-        // PROFILE / ACCOUNT CORE HANDLERS
-        function checkEnforcedAuthentication() {
-            const cache = localStorage.getItem('flash_platform_user');
-            if (cache) {
-                try {
-                    STATE.currentUser = JSON.parse(cache);
-                    applyUserInterfaceIdentity();
-                } catch (e) {
-                    triggerAuthenticationGateway(true);
-                }
-            } else {
-                triggerAuthenticationGateway(true);
-            }
+function togglePerformanceMode() {
+    STATE.performanceModeActive = !STATE.performanceModeActive;
+
+    const appBackground = document.getElementById('app');
+    const portal = document.getElementById('gamePortal');
+    const iframe = document.getElementById('portalFrame');
+
+    if (STATE.performanceModeActive) {
+        appBackground.style.display = 'none';
+        portal.classList.remove('glass-panel-dark');
+        portal.style.background = '#000000';
+        portal.style.backdropFilter = 'none';
+        iframe.style.transform = 'translateZ(0)';
+        iframe.style.willChange = 'transform';
+        hidePerformanceRestorePrompt();
+        console.log("⚡ Performance Mode: ENGAGED. UI suppressed, GPU focused.");
+        if (typeof pushToSystemLogs === 'function') {
+            pushToSystemLogs('WARN', ["🚀 PERFORMANCE MODE ENGAGED: Background rendering paused. GPU completely focused on iframe."], 'sys-perf');
         }
-
-        function triggerAuthenticationGateway(show = true) {
-            const overlay = document.getElementById('authGatewayOverlay');
-            if (show) {
-                overlay.classList.remove('hidden');
-            } else {
-                overlay.classList.add('hidden');
-            }
+    } else {
+        appBackground.style.display = 'flex';
+        portal.classList.add('glass-panel-dark');
+        portal.style.background = '';
+        portal.style.backdropFilter = '';
+        iframe.style.transform = '';
+        iframe.style.willChange = '';
+        hidePerformanceRestorePrompt();
+        console.log("🐢 Performance Mode: DISABLED. UI restored.");
+        if (typeof pushToSystemLogs === 'function') {
+            pushToSystemLogs('CLI-OUT', ["🐢 Performance mode disabled. Standard UI rendering restored."], 'sys-perf');
         }
+    }
+}
 
-        function switchAuthTab(mode) {
-            STATE.activeAuthMode = mode;
-            const tabLogin = document.getElementById('authTabLogin');
-            const tabReg = document.getElementById('authTabRegister');
-            const emailWrap = document.getElementById('authEmailWrapper');
-            const avatarWrap = document.getElementById('authAvatarWrapper');
-            const submitBtn = document.getElementById('authSubmitBtn');
-            const errorBanner = document.getElementById('authErrorMsg');
-            
-            errorBanner.classList.add('hidden');
+pushToSystemLogs("Boot", `Welcome to Flash Games!
+Flash Games is a passion project to bring thousands of games
+together in one, centralized area.
 
-            if (mode === 'login') {
-                tabLogin.className = "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-white bg-white/10 shadow-sm";
-                tabReg.className = "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-slate-200";
-                emailWrap.classList.add('hidden');
-                avatarWrap.classList.add('hidden');
-                submitBtn.textContent = "Access Game Network";
-            } else {
-                tabReg.className = "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-white bg-white/10 shadow-sm";
-                tabLogin.className = "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-slate-200";
-                emailWrap.classList.remove('hidden');
-                avatarWrap.classList.remove('hidden');
-                submitBtn.textContent = "Complete Authorization Profile";
-            }
-        }
+What your version of Flash Games is currently using:
+--------------------------------------------------------
+📦 flash-pkg v2 
+🎮 Flash v4.5 
+📟 flash-cli v3 
 
-        function selectPresetAvatar(idx, element) {
-            STATE.selectedAvatarIndex = idx;
-            document.querySelectorAll('.avatar-preset-btn').forEach(btn => {
-                btn.className = "avatar-preset-btn h-12 w-12 rounded-full overflow-hidden border-2 border-transparent hover:border-white/40 transition-all mx-auto";
+Thanks for using Flash Games!`, "Flash's Owner");
+console.log = function() { pushToSystemLogs('PRINT', arguments); originalConsole.log.apply(console, arguments); };
+console.warn = function() { pushToSystemLogs('WARN', arguments); originalConsole.warn.apply(console, arguments); };
+console.error = function() { pushToSystemLogs('ERROR', arguments); originalConsole.error.apply(console, arguments); };
+
+window.addEventListener('error', (e) => {
+    const file = e.filename ? e.filename.replace(/https?:\/\/[^\/]+/g, '') : 'index.html';
+    pushToSystemLogs('CRASH', [e.message], `${file}:${e.lineno}`);
+});
+window.addEventListener('unhandledrejection', (e) => {
+    pushToSystemLogs('SYNC-FAIL', [e.reason?.message || e.reason || 'Unhandled Promise Drop'], 'Async Pipeline');
+});
+
+function renderSystemLogs() {
+    const container = document.getElementById('devConsoleLogs');
+    if (!container) return;
+
+    container.innerHTML = SYSTEM_LOGS.map(log => {
+        let badgeStyle = 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+        let rowColor = 'text-slate-300';
+        if (log.type === 'WARN') { badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20'; rowColor = 'text-amber-200/90'; } 
+        else if (log.type === 'ERROR' || log.type === 'CRASH') { badgeStyle = 'bg-rose-500/10 text-rose-400 border-rose-500/20'; rowColor = 'text-rose-300'; } 
+        else if (log.type === 'CLI-IN') { badgeStyle = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'; rowColor = 'text-emerald-400 font-bold'; } 
+        else if (log.type === 'CLI-OUT') { badgeStyle = 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'; rowColor = 'text-indigo-200 font-mono'; }
+
+        return `<div class="flex items-start gap-4 py-1.5 px-2 border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors rounded group font-mono text-[11px]">
+            <span class="text-slate-600 select-none tracking-tight shrink-0 mt-0.5">${log.timestamp}</span>
+            <span class="px-2 py-0.5 rounded-md border text-[9px] font-bold tracking-wider uppercase shrink-0 ${badgeStyle} mt-0.5">${log.type}</span>
+            <div class="flex-1 min-w-0 ${rowColor} break-words whitespace-pre-wrap leading-relaxed">${log.message}</div>
+            <span class="text-slate-600 text-[10px] truncate max-w-[200px] text-right font-medium tracking-tight group-hover:text-slate-400 select-all mt-0.5" title="${log.origin}">${log.origin}</span>
+        </div>`;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+}
+
+function clearSystemLogs() { SYSTEM_LOGS = []; renderSystemLogs(); }
+
+// ==========================================
+// OFFLINE DIRECTORY CONSOLE PACKAGES INTEGRATOR
+// ==========================================
+function loadOfflinePackages() {
+    const storedFolder = localStorage.getItem('flash_offline_folder');
+    if (storedFolder && typeof STATE !== 'undefined' && STATE.rawGamesList) {
+        try {
+            const offlineGames = JSON.parse(storedFolder);
+            offlineGames.forEach(game => {
+                if (!STATE.rawGamesList.some(g => g.id === game.id)) { STATE.rawGamesList.push(game); }
             });
-            element.className = "avatar-preset-btn h-12 w-12 rounded-full overflow-hidden border-2 border-indigo-500 ring-4 ring-indigo-500/20 transition-all mx-auto";
-            document.getElementById('authCustomAvatarUrl').value = '';
+            pushToSystemLogs('PRINT', [`📦 Loaded ${offlineGames.length} custom packages from your local offline folder setup.`], 'flash-kernel');
+        } catch (error) {
+            console.error("ERR! Structural corruption parsing offline storage data directory:", error);
+        }
+    }
+}
+        
+// ==========================================================
+// TERMINAL COMMAND MATRIX
+// ==========================================================
+
+const FLASH_FB = window.__flashFirebase || {};
+const FLASH_FIREBASE = FLASH_FB.firebase || window.firebase || null;
+const FLASH_AUTH = FLASH_FB.auth || null;
+const FLASH_DB = FLASH_FB.db || null;
+const FLASH_AUTH_SUPPORTED = !!(FLASH_AUTH && FLASH_DB);
+let FLASH_AUTH_READY = false;
+let FLASH_PROFILE_UNSUB = null;
+let FLASH_CURRENT_USER = null;
+let FLASH_CURRENT_PROFILE = null;
+let FLASH_AUTH_MODE = 'signin';
+let FLASH_PROFILE_AVATAR_FILE = null;
+let FLASH_PROFILE_AVATAR_DATA = '';
+let FLASH_AUTH_GATED = true;
+let FLASH_LIBRARY_READY = false;
+
+function safeText(v, fallback = '') {
+    return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
+}
+
+function buildInitialAvatar(label = 'Flash User') {
+    const safeLabel = safeText(label, 'Flash User');
+    const initials = safeLabel.split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase() || 'F';
+    const colors = ['#4f46e5', '#7c3aed', '#2563eb', '#0f766e', '#be185d'];
+    const colorIndex = safeLabel.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % colors.length;
+    const svg = `\n        <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">\n            <defs>\n                <linearGradient id="g" x1="0%" x2="100%" y1="0%" y2="100%">\n                    <stop offset="0%" stop-color="${colors[colorIndex]}"/>\n                    <stop offset="100%" stop-color="#0f172a"/>\n                </linearGradient>\n            </defs>\n            <rect width="256" height="256" rx="48" fill="url(#g)"/>\n            <circle cx="128" cy="104" r="52" fill="rgba(255,255,255,0.14)"/>\n            <path d="M60 220c18-34 46-52 68-52s50 18 68 52" fill="rgba(255,255,255,0.12)"/>\n            <text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="88" font-weight="700" fill="white">${initials}</text>\n        </svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        if (!file) return reject(new Error('No file selected.'));
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(reader.error || new Error('Could not read the image file.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function getUserDocRef(uid) {
+    return FLASH_DB ? FLASH_DB.collection('users').doc(uid) : null;
+}
+
+function setGateMessage(message, tone = 'info') {
+    const node = document.getElementById('authGateStatus');
+    if (node) node.textContent = message;
+    const stateNode = document.getElementById('authFirebaseState');
+    if (stateNode) stateNode.textContent = FLASH_AUTH_SUPPORTED ? 'Connected' : 'Firebase missing';
+    const btn = document.getElementById('authSubmitBtn');
+    if (btn) {
+        btn.className = tone === 'error'
+            ? 'px-5 py-3 rounded-2xl bg-rose-500 text-white text-sm font-bold shadow-xl hover:bg-rose-400 transition-all'
+            : 'px-5 py-3 rounded-2xl bg-white text-slate-950 text-sm font-bold shadow-xl hover:bg-slate-100 transition-all';
+    }
+}
+
+function setAppLocked(isLocked) {
+    const app = document.getElementById('app');
+    const gate = document.getElementById('authGate');
+    if (app) app.style.display = isLocked ? 'none' : 'flex';
+    if (gate) gate.classList.toggle('hidden', !isLocked);
+    FLASH_AUTH_GATED = isLocked;
+    if (isLocked) hidePerformanceRestorePrompt();
+    if (!isLocked) hidePerformanceRestorePrompt();
+}
+
+function updateHeaderAccount(profile) {
+    const avatar = document.getElementById('headerAvatarImg');
+    const title = document.getElementById('headerAccountBtn');
+    const name = safeText(profile?.name, FLASH_CURRENT_USER?.displayName || 'Account');
+    const pfp = safeText(profile?.pfp, buildInitialAvatar(name));
+    if (avatar) avatar.src = pfp;
+    if (title) title.title = `${name}${profile?.role ? ` • ${profile.role}` : ''}`;
+}
+
+function setAuthMode(mode) {
+    FLASH_AUTH_MODE = mode === 'signup' ? 'signup' : 'signin';
+    const usernameWrap = document.getElementById('authUsernameWrap');
+    const pfpWrap = document.getElementById('authPfpWrap');
+    const submitBtn = document.getElementById('authSubmitBtn');
+    const signInBtn = document.getElementById('authModeSignin');
+    const signUpBtn = document.getElementById('authModeSignup');
+    const usernameInput = document.getElementById('authUsername');
+    const pfpInput = document.getElementById('authPfpFile');
+
+    if (usernameWrap) usernameWrap.classList.toggle('auth-field-hidden', FLASH_AUTH_MODE !== 'signup');
+    if (pfpWrap) pfpWrap.classList.toggle('auth-field-hidden', FLASH_AUTH_MODE !== 'signup');
+    if (usernameInput) usernameInput.required = FLASH_AUTH_MODE === 'signup';
+    if (pfpInput) pfpInput.required = FLASH_AUTH_MODE === 'signup';
+    if (submitBtn) submitBtn.textContent = FLASH_AUTH_MODE === 'signup' ? 'Create account' : 'Log in';
+    if (signInBtn) signInBtn.className = FLASH_AUTH_MODE === 'signin' ? 'px-4 py-2 rounded-2xl text-sm font-semibold bg-white text-slate-950 border border-white/10 shadow-lg' : 'px-4 py-2 rounded-2xl text-sm font-semibold btn-glass border border-white/10 text-slate-300';
+    if (signUpBtn) signUpBtn.className = FLASH_AUTH_MODE === 'signup' ? 'px-4 py-2 rounded-2xl text-sm font-semibold bg-white text-slate-950 border border-white/10 shadow-lg' : 'px-4 py-2 rounded-2xl text-sm font-semibold btn-glass border border-white/10 text-slate-300';
+    setGateMessage(FLASH_AUTH_MODE === 'signup' ? 'Create your shared Flash/Mobify account.' : 'Log in to continue.');
+}
+
+function fillAuthDemo() {
+    const username = document.getElementById('authUsername');
+    const email = document.getElementById('authEmail');
+    const password = document.getElementById('authPassword');
+    if (username) username.value = 'sheep';
+    if (email) email.value = 'sheep@sheep.com';
+    if (password) password.value = 'sheep12345';
+    setAuthMode(FLASH_AUTH_MODE);
+    setGateMessage('Sample credentials filled. Replace them with your own.');
+}
+
+async function signInAccount() {
+    const email = safeText(document.getElementById('authEmail')?.value);
+    const password = document.getElementById('authPassword')?.value || '';
+    if (!email || !password) throw new Error('Email and password are required.');
+    await FLASH_AUTH.signInWithEmailAndPassword(email, password);
+}
+
+async function createAccount() {
+    const username = safeText(document.getElementById('authUsername')?.value);
+    const email = safeText(document.getElementById('authEmail')?.value);
+    const password = document.getElementById('authPassword')?.value || '';
+    const file = document.getElementById('authPfpFile')?.files?.[0] || null;
+
+    if (!username) throw new Error('Username is required.');
+    if (!email) throw new Error('Email is required.');
+    if (!password || password.length < 6) throw new Error('Password must be at least 6 characters.');
+    if (!file) throw new Error('Choose a profile picture for your account.');
+
+    const credential = await FLASH_AUTH.createUserWithEmailAndPassword(email, password);
+    const user = credential.user;
+    const pfpData = await readFileAsDataURL(file);
+    const docRef = getUserDocRef(user.uid);
+    const profile = {
+        uid: user.uid,
+        name: username,
+        username,
+        email: user.email || email,
+        pfp: pfpData || buildInitialAvatar(username),
+        bio: '',
+        role: 'Member',
+        status: 'Online',
+        banned: false,
+        banReason: '',
+        muted: false,
+        verified: false,
+        rankPriority: 0,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    };
+
+    await docRef.set(profile, { merge: true });
+    await user.updateProfile({ displayName: username, photoURL: profile.pfp });
+    FLASH_PROFILE_AVATAR_FILE = null;
+    FLASH_PROFILE_AVATAR_DATA = '';
+    setGateMessage('Account created. Loading your library...');
+}
+
+async function handleAuthSubmit(event) {
+    event.preventDefault();
+    const btn = document.getElementById('authSubmitBtn');
+    if (!FLASH_AUTH_SUPPORTED) {
+        setGateMessage('Firebase is not ready yet. Check the config and try again.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = FLASH_AUTH_MODE === 'signup' ? 'Creating...' : 'Logging in...';
+
+    try {
+        if (FLASH_AUTH_MODE === 'signup') await createAccount();
+        else await signInAccount();
+    } catch (error) {
+        console.error(error);
+        setGateMessage(error?.message || 'Authentication failed.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = FLASH_AUTH_MODE === 'signup' ? 'Create account' : 'Log in';
+    }
+}
+
+function populateProfileModal(profile) {
+    const nameInput = document.getElementById('profileNameInput');
+    const bioInput = document.getElementById('profileBioInput');
+    const avatar = document.getElementById('profileAvatarPreview');
+    const emailText = document.getElementById('profileEmailText');
+    const roleText = document.getElementById('profileRoleText');
+    const title = document.getElementById('profileModalTitle');
+    const subtitle = document.getElementById('profileModalSubtitle');
+
+    const name = safeText(profile?.name, FLASH_CURRENT_USER?.displayName || 'User');
+    const pfp = safeText(profile?.pfp, buildInitialAvatar(name));
+    const role = safeText(profile?.role, 'Member');
+    const status = safeText(profile?.status, 'Online');
+
+    if (nameInput) nameInput.value = name;
+    if (bioInput) bioInput.value = safeText(profile?.bio, '');
+    if (avatar) avatar.src = pfp;
+    if (emailText) emailText.textContent = safeText(profile?.email, FLASH_CURRENT_USER?.email || '—');
+    if (roleText) roleText.textContent = `${role} • ${status}`;
+    if (title) title.textContent = name;
+    if (subtitle) subtitle.textContent = `UID: ${FLASH_CURRENT_USER?.uid || 'unknown'}`;
+}
+
+function openProfileModal() {
+    if (!FLASH_CURRENT_USER) {
+        setGateMessage('Please log in first.', 'error');
+        setAppLocked(true);
+        return;
+    }
+    populateProfileModal(FLASH_CURRENT_PROFILE);
+    const modal = document.getElementById('profileModal');
+    const inner = document.getElementById('profileModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        inner.classList.remove('scale-95');
+    });
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    const inner = document.getElementById('profileModalInner');
+    modal.classList.add('opacity-0');
+    inner.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+async function saveProfileChanges() {
+    if (!FLASH_CURRENT_USER) return;
+    const btn = document.getElementById('profileSaveBtn');
+    const name = safeText(document.getElementById('profileNameInput')?.value, FLASH_CURRENT_USER.displayName || 'User');
+    const bio = safeText(document.getElementById('profileBioInput')?.value, '');
+    const file = document.getElementById('profilePfpInput')?.files?.[0] || null;
+
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    try {
+        let pfp = safeText(FLASH_CURRENT_PROFILE?.pfp, buildInitialAvatar(name));
+        if (file) pfp = await readFileAsDataURL(file);
+
+        const payload = {
+            name,
+            username: name,
+            bio,
+            pfp,
+            role: FLASH_CURRENT_PROFILE?.role || 'Member',
+            status: 'Online',
+            updatedAt: Date.now()
+        };
+
+        await getUserDocRef(FLASH_CURRENT_USER.uid).set(payload, { merge: true });
+        await FLASH_CURRENT_USER.updateProfile({ displayName: name, photoURL: pfp });
+        FLASH_CURRENT_PROFILE = { ...(FLASH_CURRENT_PROFILE || {}), ...payload };
+        updateHeaderAccount(FLASH_CURRENT_PROFILE);
+        populateProfileModal(FLASH_CURRENT_PROFILE);
+        closeProfileModal();
+        setGateMessage('Profile saved successfully.');
+    } catch (error) {
+        console.error(error);
+        setGateMessage(error?.message || 'Could not save profile changes.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save changes';
+    }
+}
+
+async function signOutUser() {
+    if (!FLASH_AUTH_SUPPORTED) return;
+    await FLASH_AUTH.signOut();
+}
+
+function printCurrentAccount() {
+    if (!FLASH_CURRENT_USER) {
+        console.log('flash account: no user is signed in.');
+        return;
+    }
+    const profile = FLASH_CURRENT_PROFILE || {};
+    console.log(`ACCOUNT STATUS
+----------------------------------------
+UID: ${FLASH_CURRENT_USER.uid}
+Name: ${safeText(profile.name, FLASH_CURRENT_USER.displayName || '—')}
+Email: ${safeText(profile.email, FLASH_CURRENT_USER.email || '—')}
+Role: ${safeText(profile.role, 'Member')}
+Status: ${safeText(profile.status, 'Online')}
+Banned: ${profile.banned ? 'yes' : 'no'}
+Muted: ${profile.muted ? 'yes' : 'no'}`);
+}
+
+function showPerformanceRestorePrompt() {
+    const banner = document.getElementById('performanceRestoreBanner');
+    if (banner) banner.classList.remove('hidden');
+}
+
+function hidePerformanceRestorePrompt() {
+    const banner = document.getElementById('performanceRestoreBanner');
+    if (banner) banner.classList.add('hidden');
+}
+
+async function handleAuthStateChanged(user) {
+    FLASH_AUTH_READY = true;
+    const stateNode = document.getElementById('authFirebaseState');
+    if (stateNode) stateNode.textContent = FLASH_AUTH_SUPPORTED ? (user ? 'Signed in' : 'Signed out') : 'Firebase missing';
+
+    if (FLASH_PROFILE_UNSUB) {
+        try { FLASH_PROFILE_UNSUB(); } catch (err) {}
+        FLASH_PROFILE_UNSUB = null;
+    }
+
+    if (!user) {
+        FLASH_CURRENT_USER = null;
+        FLASH_CURRENT_PROFILE = null;
+        FLASH_LIBRARY_READY = false;
+        STATE.rawGamesList = [];
+        STATE.processedGames = [];
+        updateHeaderAccount(null);
+        setAppLocked(true);
+        setAuthMode(FLASH_AUTH_MODE);
+        showStatus('loading', 'Log in required', 'Please create an account or sign in to unlock Flash Games.');
+        return;
+    }
+
+    FLASH_CURRENT_USER = user;
+    setAppLocked(false);
+    setGateMessage('Welcome back. Loading your library...');
+    updateHeaderAccount({ name: user.displayName || user.email?.split('@')[0] || 'User', pfp: user.photoURL || buildInitialAvatar(user.displayName || user.email || 'User'), role: 'Member', status: 'Online' });
+
+    const docRef = getUserDocRef(user.uid);
+    const fallbackProfile = {
+        uid: user.uid,
+        name: user.displayName || user.email?.split('@')[0] || 'User',
+        username: user.displayName || user.email?.split('@')[0] || 'User',
+        email: user.email || '',
+        pfp: user.photoURL || buildInitialAvatar(user.displayName || user.email || 'User'),
+        bio: '',
+        role: 'Member',
+        status: 'Online',
+        banned: false,
+        banReason: '',
+        muted: false,
+        verified: false,
+        rankPriority: 0,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    };
+
+    try {
+        const snap = await docRef.get();
+        if (!snap.exists) {
+            await docRef.set(fallbackProfile, { merge: true });
+            FLASH_CURRENT_PROFILE = fallbackProfile;
+        } else {
+            const data = snap.data() || {};
+            FLASH_CURRENT_PROFILE = { ...fallbackProfile, ...data };
+            if (FLASH_CURRENT_PROFILE.status !== 'Online') {
+                await docRef.set({ status: 'Online', updatedAt: Date.now() }, { merge: true });
+                FLASH_CURRENT_PROFILE.status = 'Online';
+            }
         }
 
-        function handleAuthSubmit(e) {
-            e.preventDefault();
-            const userBox = document.getElementById('authUsername').value.trim();
-            const passBox = document.getElementById('authPassword').value.trim();
-            const emailBox = document.getElementById('authEmail').value.trim();
-            const customUrl = document.getElementById('authCustomAvatarUrl').value.trim();
-            const errorBanner = document.getElementById('authErrorMsg');
+        if (FLASH_CURRENT_PROFILE.banned) {
+            setGateMessage(`This account is banned. ${FLASH_CURRENT_PROFILE.banReason ? `Reason: ${FLASH_CURRENT_PROFILE.banReason}` : ''}`, 'error');
+            await FLASH_AUTH.signOut();
+            return;
+        }
 
-            if (!userBox || !passBox) {
-                errorBanner.textContent = "Please fill in all core fields.";
-                errorBanner.classList.remove('hidden');
+        updateHeaderAccount(FLASH_CURRENT_PROFILE);
+        populateProfileModal(FLASH_CURRENT_PROFILE);
+        FLASH_LIBRARY_READY = true;
+        if (!STATE.rawGamesList.length) await fetchSystemData();
+        buildChangelogUI();
+        enforceChangelogViewing();
+    } catch (error) {
+        console.error(error);
+        setGateMessage(error?.message || 'Could not load account data.', 'error');
+    }
+}
+
+function initFlashAccountSystem() {
+    if (!FLASH_AUTH_SUPPORTED) {
+        setGateMessage('Firebase is not ready. The app cannot continue without a signed-in account.', 'error');
+        setAppLocked(true);
+        return;
+    }
+
+    setAppLocked(true);
+    setAuthMode('signin');
+    updateHeaderAccount(null);
+
+    try {
+        FLASH_AUTH.setPersistence(FLASH_FIREBASE.auth.Auth.Persistence.LOCAL).catch(() => {});
+    } catch (err) {}
+
+    FLASH_AUTH.onAuthStateChanged(handleAuthStateChanged);
+    const authForm = document.getElementById('authForm');
+    if (authForm) authForm.addEventListener('submit', handleAuthSubmit);
+    const pfpInput = document.getElementById('authPfpFile');
+    if (pfpInput) {
+        pfpInput.addEventListener('change', () => {
+            const file = pfpInput.files?.[0] || null;
+            FLASH_PROFILE_AVATAR_FILE = file;
+            if (file) {
+                readFileAsDataURL(file).then(data => {
+                    FLASH_PROFILE_AVATAR_DATA = data;
+                    const preview = document.getElementById('headerAvatarImg');
+                    if (preview) preview.src = data;
+                }).catch(() => {});
+            }
+        });
+    }
+}
+
+function bootFlashApp() {
+    handleNetworkChange();
+    buildChangelogUI();
+    enforceChangelogViewing();
+    initFlashAccountSystem();
+}
+
+const COMMAND_MATRIX = {
+    "account": {
+        desc: "Account utilities. Usage: flash account status|login|signup|profile|logout",
+        exec: async (args) => {
+            const sub = (args?.[0] || 'status').toLowerCase();
+            if (sub === 'login') return setAuthMode('signin');
+            if (sub === 'signup') return setAuthMode('signup');
+            if (sub === 'profile' || sub === 'edit') return openProfileModal();
+            if (sub === 'logout') return signOutUser();
+            if (sub === 'status') return printCurrentAccount();
+            console.log("Usage: flash account status|login|signup|profile|logout");
+        }
+    },
+    "login": { desc: "Switches the gate to the log in panel.", exec: () => setAuthMode('signin') },
+    "signup": { desc: "Switches the gate to the create account panel.", exec: () => setAuthMode('signup') },
+    "logout": { desc: "Signs out of the current account.", exec: () => signOutUser() },
+    "profile": { desc: "Opens your profile editor.", exec: () => openProfileModal() },
+    "whoami": { desc: "Prints the active account summary.", exec: () => printCurrentAccount() },
+    "auth": { desc: "Shows the current auth gate state.", exec: () => setAuthMode(FLASH_AUTH_MODE) },
+
+    "help": {
+        desc: "Displays the available layout execution command manifest maps.",
+        exec: () => {
+            let table = "AVAILABLE COMMANDS:\n====================================================================\n";
+            Object.keys(COMMAND_MATRIX).forEach(cmd => { table += `${cmd.padEnd(12)} -> ${COMMAND_MATRIX[cmd].desc}\n`; });
+            console.log(table);
+        }
+    },
+    "boost": {
+        desc: "Toggles Performance Mode. Kills background UI rendering to dedicate 100% of GPU to the active game.",
+        exec: () => {
+            if (document.getElementById('gamePortal').classList.contains('hidden')) {
+                pushToSystemLogs('ERROR', ["❌ Cannot engage performance mode while no game is actively running."], 'sys-perf');
                 return;
             }
+            togglePerformanceMode();
+        }
+    },
+    "init": {
+        desc: "Initializes Flash. Configures and validates database pipelines.",
+        exec: () => {
+            pushToSystemLogs('CLI-OUT', ['Initializing system assets...'], 'flash-kernel');
+            try {
+                if (typeof fetchSystemData === 'function') fetchSystemData();
+                if (typeof buildChangelogUI === 'function') buildChangelogUI();
+                if (typeof enforceChangelogViewing === 'function') enforceChangelogViewing();
+                pushToSystemLogs('CLI-OUT', ['🟢 System Initialization Complete. Catalogs ready.'], 'flash-kernel');
+            } catch (err) { console.error("ERR! Initialization pipeline failed:", err); }
+        }
+    },
+    "run": {
+        desc: "Executes a system script or global function. Usage: flash run {script}",
+        exec: async (args) => {
+            if (!args || args.length === 0) { console.error("ERR! Missing script name. Example: flash run sync"); return; }
+            const scriptName = args[0];
+            pushToSystemLogs('CLI-OUT', [`> flash run ${scriptName}`], 'flash-cli');
 
-            let profileAvatar = ACTIVE_AUTH_AVATARS[STATE.selectedAvatarIndex];
-            if (customUrl) {
-                profileAvatar = customUrl;
-            }
-
-            if (STATE.activeAuthMode === 'register' && !emailBox) {
-                errorBanner.textContent = "Email address string sequence required for creation.";
-                errorBanner.classList.remove('hidden');
-                return;
-            }
-
-            // Client account payload binding
-            const accountPayload = {
-                username: userBox.startsWith('@') ? userBox : '@' + userBox,
-                email: emailBox || `${userBox}@local.platform`,
-                avatar: profileAvatar,
-                registeredAt: new Date().toLocaleDateString()
+            const scripts = {
+                "sync": () => { const btn = document.getElementById('syncOfflineBtn'); if (btn) btn.click(); },
+                "health": async () => {
+                    const network = navigator.onLine ? "📡 ONLINE" : "🔌 OFFLINE";
+                    const swActive = navigator.serviceWorker?.controller ? "✅ ACTIVE" : "❌ INACTIVE";
+                    let cachedFiles = 0;
+                    try { for (let key of await caches.keys()) { cachedFiles += (await (await caches.open(key)).keys()).length; } } catch(e) { cachedFiles = "Blocked"; }
+                    console.log(`SYSTEM HEALTH:\nNet: ${network}\nSW:  ${swActive}\nCache: ${cachedFiles} items`);
+                },
+                "functions": () => { console.log("BOUND RUNTIME FUNCTIONS:\nfetchSystemData()\nbuildChangelogUI()\nenforceChangelogViewing()\nexecuteSync(urls)"); }
             };
 
-            STATE.currentUser = accountPayload;
-            localStorage.setItem('flash_platform_user', JSON.stringify(accountPayload));
+            if (scripts[scriptName]) { await scripts[scriptName](); } 
+            else if (typeof window[scriptName] === 'function') {
+                try { window[scriptName](); pushToSystemLogs('CLI-OUT', [`🟢 Execution of window.${scriptName}() completed.`], 'flash-eval'); } 
+                catch(e) { console.error(`ERR! Runtime break inside ${scriptName}:`, e); }
+            } else { console.error(`ERR! missing script: ${scriptName}`); }
+        }
+    },
+    "install": {
+        desc: "Installs a game package to Cache Storage. Usage: flash install {url}",
+        exec: async (args) => {
+            if (!args || args.length === 0) { console.error("ERR! install requires a target URL. Usage: flash install https://..."); return; }
+            const targetUrl = args[0];
+            pushToSystemLogs('CLI-OUT', [`📦 Initializing smart-fetch for ${targetUrl}`], 'flash-pkg');
             
-            pushToSystemLogs('INFO', `User profile validation confirmed for ${accountPayload.username}`);
-            applyUserInterfaceIdentity();
-            triggerAuthenticationGateway(false);
-            initializePlatformWorkspace();
-        }
+            try {
+                let autoIcon = "";
+                try { const domain = new URL(targetUrl).hostname; autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`; } catch (err) {}
 
-        function applyUserInterfaceIdentity() {
-            if (!STATE.currentUser) return;
-            const headerPic = document.getElementById('headerProfilePic');
-            if (headerPic) headerPic.src = STATE.currentUser.avatar;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                const response = await fetch(targetUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
 
-            // Sync with profile manager input fields
-            document.getElementById('editUsername').value = STATE.currentUser.username;
-            document.getElementById('editEmail').value = STATE.currentUser.email;
-            document.getElementById('editAvatarUrl').value = STATE.currentUser.avatar;
-            document.getElementById('modalProfilePreview').src = STATE.currentUser.avatar;
-            document.getElementById('modalProfileHandle').textContent = STATE.currentUser.username;
-            document.getElementById('modalProfileEmail').textContent = STATE.currentUser.email;
-        }
-
-        function openAccountModal() {
-            applyUserInterfaceIdentity();
-            const m = document.getElementById('accountModal');
-            const inner = document.getElementById('accountModalInner');
-            m.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                m.classList.remove('opacity-0');
-                inner.classList.remove('scale-95');
-            });
-        }
-
-        function closeAccountModal() {
-            const m = document.getElementById('accountModal');
-            const inner = document.getElementById('accountModalInner');
-            m.classList.add('opacity-0');
-            inner.classList.add('scale-95');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        }
-
-        function saveProfileChanges() {
-            if (!STATE.currentUser) return;
-            const newU = document.getElementById('editUsername').value.trim();
-            const newE = document.getElementById('editEmail').value.trim();
-            const newA = document.getElementById('editAvatarUrl').value.trim();
-
-            if (newU) STATE.currentUser.username = newU.startsWith('@') ? newU : '@' + newU;
-            if (newE) STATE.currentUser.email = newE;
-            if (newA) STATE.currentUser.avatar = newA;
-
-            localStorage.setItem('flash_platform_user', JSON.stringify(STATE.currentUser));
-            applyUserInterfaceIdentity();
-            pushToSystemLogs('INFO', `Profile updates successfully saved.`);
-            closeAccountModal();
-        }
-
-        function logoutAccount() {
-            localStorage.removeItem('flash_platform_user');
-            STATE.currentUser = null;
-            closeAccountModal();
-            location.reload();
-        }
-
-        // PLATFORM WORKSPACE INTERFACE LAYOUT LOGIC
-        function goHome() {
-            document.getElementById('searchInput').value = '';
-            STATE.activeFilters.search = '';
-            STATE.activeFilters.zone = 'all';
-            document.getElementById('zoneFilter').value = 'all';
-            processAndRenderView();
-        }
-
-        function initializePlatformWorkspace() {
-            document.getElementById('statusView').classList.add('hidden');
-            document.getElementById('mainWorkspace').classList.remove('hidden');
-            STATE.installedGames = [...GAME_CATALOG_DATA];
-            processAndRenderView();
-        }
-
-        function processAndRenderView() {
-            const collectionsContainer = document.getElementById('collectionsContainer');
-            if (!collectionsContainer) return;
-
-            collectionsContainer.innerHTML = '';
-            let filtered = STATE.installedGames.filter(g => {
-                const matchesSearch = g.title.toLowerCase().includes(STATE.activeFilters.search.toLowerCase());
-                const matchesZone = STATE.activeFilters.zone === 'all' || g.zone === STATE.activeFilters.zone;
-                return matchesSearch && matchesZone;
-            });
-
-            // Sorting Routine
-            if (STATE.activeFilters.sort === 'az') {
-                filtered.sort((a,b) => a.title.localeCompare(b.title));
-            } else {
-                filtered.sort((a,b) => b.title.localeCompare(a.title));
-            }
-
-            document.getElementById('totalGamesCounter').textContent = `${filtered.length} node allocations`;
-
-            if (filtered.length === 0) {
-                collectionsContainer.innerHTML = `
-                    <div class="p-12 glass-panel text-center rounded-3xl text-slate-500 italic text-sm">
-                        No computational game nodes match filter requirements.
-                    </div>`;
-                return;
-            }
-
-            // Group by Zone Allocation for Professional Hierarchy
-            const zones = ['vault', 'cloud'];
-            zones.forEach(z => {
-                const zoneGames = filtered.filter(x => x.zone === z);
-                if (zoneGames.length === 0) return;
-
-                const sect = document.createElement('section');
-                sect.className = "space-y-4";
+                if (!response.ok) throw new Error(`Bad Server Response! Status Code: ${response.status}`);
                 
-                const titleStr = z === 'vault' ? "Secure Core Vault Node Registry" : "Distributed Cloud System Stream";
-                sect.innerHTML = `
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-400 pl-1">${titleStr}</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="grid-${z}"></div>
-                `;
-                collectionsContainer.appendChild(sect);
-                const grid = document.getElementById(`grid-${z}`);
-
-                zoneGames.forEach(g => {
-                    const isFav = STATE.favorites.includes(g.id);
-                    const card = document.createElement('div');
-                    card.className = "glass-card rounded-[2rem] overflow-hidden flex flex-col h-full relative group";
-                    card.innerHTML = `
-                        <div class="h-44 w-full relative overflow-hidden bg-slate-900 border-b border-white/5">
-                            <img src="${g.image}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Game Node">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
-                        </div>
-                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                            <div>
-                                <h4 class="font-bold text-white tracking-tight text-base group-hover:text-indigo-400 transition-colors">${g.title}</h4>
-                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">${g.desc}</p>
-                            </div>
-                            <div class="flex items-center justify-between gap-2 pt-2">
-                                <button onclick="launchPortalFrame('${g.title}', 'https://itsmeh1.github.io/flashgames/')" class="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs rounded-xl transition-all text-center">
-                                    Initialize Execution
-                                </button>
-                                <button onclick="toggleFavoriteNode('${g.id}', event)" class="p-2.5 rounded-xl btn-glass text-xs transition-transform hover:scale-105">
-                                    ${isFav ? '❤️' : '🤍'}
-                                </button>
-                                <button onclick="openFolderModal('${g.id}', '${g.title}')" class="p-2.5 rounded-xl btn-glass text-xs transition-transform hover:scale-105">
-                                    📁+
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            });
-        }
-
-        function toggleFavoriteNode(id, e) {
-            e.stopPropagation();
-            if (STATE.favorites.includes(id)) {
-                STATE.favorites = STATE.favorites.filter(x => x !== id);
-            } else {
-                STATE.favorites.push(id);
-            }
-            localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites));
-            processAndRenderView();
-        }
-
-        // FOLDER LAYOUT CONFIGURATIONS
-        function openFolderModal(id, title) {
-            STATE.activeTargetGameId = id;
-            document.getElementById('folderModalGameName').textContent = title;
-            renderExistingFolderSelector();
-            
-            const modal = document.getElementById('folderModal');
-            const inner = document.getElementById('folderModalInner');
-            modal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                modal.classList.remove('opacity-0');
-                inner.classList.remove('scale-95');
-            });
-        }
-
-        function closeFolderModal() {
-            const modal = document.getElementById('folderModal');
-            const inner = document.getElementById('folderModalInner');
-            modal.classList.add('opacity-0');
-            inner.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                STATE.activeTargetGameId = null;
-            }, 300);
-        }
-
-        function renderExistingFolderSelector() {
-            const list = document.getElementById('existingFoldersList');
-            list.innerHTML = '';
-            Object.keys(STATE.folders).forEach(f => {
-                const btn = document.createElement('button');
-                btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold btn-glass text-slate-300 hover:text-white";
-                btn.textContent = `${f} (${STATE.folders[f].length})`;
-                btn.onclick = () => {
-                    if (!STATE.folders[f].includes(STATE.activeTargetGameId)) {
-                        STATE.folders[f].push(STATE.activeTargetGameId);
-                        localStorage.setItem('vault_folders', JSON.stringify(STATE.folders));
-                    }
-                    closeFolderModal();
-                    processAndRenderView();
-                };
-                list.appendChild(btn);
-            });
-        }
-
-        function submitNewFolder() {
-            const input = document.getElementById('newFolderNameInput');
-            const name = input.value.trim();
-            if (!name || !STATE.activeTargetGameId) return;
-
-            if (!STATE.folders[name]) STATE.folders[name] = [];
-            if (!STATE.folders[name].includes(STATE.activeTargetGameId)) {
-                STATE.folders[name].push(STATE.activeTargetGameId);
-            }
-
-            localStorage.setItem('vault_folders', JSON.stringify(STATE.folders));
-            input.value = '';
-            closeFolderModal();
-            processAndRenderView();
-        }
-
-        // CHANGELOG INTERFACES
-        function openChangelog() {
-            buildChangelogUI();
-            const m = document.getElementById('changelogModal');
-            const inner = document.getElementById('changelogModalInner');
-            m.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                m.classList.remove('opacity-0');
-                inner.classList.remove('scale-95');
-            });
-        }
-
-        function closeChangelog() {
-            const m = document.getElementById('changelogModal');
-            const inner = document.getElementById('changelogModalInner');
-            m.classList.add('opacity-0');
-            inner.classList.add('scale-95');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        }
-
-        function buildChangelogUI() {
-            const container = document.getElementById('changelogContent');
-            const tabs = document.getElementById('changelogTabs');
-            container.innerHTML = '';
-            
-            Object.keys(CHANGELOG_DATA).forEach(ver => {
-                const log = CHANGELOG_DATA[ver];
-                const div = document.createElement('div');
-                div.className = "space-y-4";
-                div.innerHTML = `
-                    <h3 class="text-2xl font-extrabold text-white tracking-tight">${log.title} <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20 ml-2">${ver}</span></h3>
-                    <ul class="space-y-2.5 text-sm text-slate-300 list-disc pl-5 leading-relaxed">
-                        ${log.notes.map(n => `<li>${n}</li>`).join('')}
-                    </ul>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function toggleChangelogMenu() {
-            const tabs = document.getElementById('changelogTabs');
-            tabs.classList.toggle('-translate-x-full');
-        }
-
-        // PERFORMANCE TUNING AND RECOVERY ARCHITECTURE
-        function togglePerformanceMode() {
-            STATE.performanceModeActive = !STATE.performanceModeActive;
-            const badge = document.getElementById('performanceBadge');
-            const btn = document.getElementById('perfBoostBtn');
-            const overlay = document.getElementById('recoveryOverlay');
-            const portal = document.getElementById('gamePortal');
-            const appBackground = document.getElementById('app');
-
-            if (STATE.performanceModeActive) {
-                badge.classList.remove('hidden');
-                btn.className = "px-4 py-2 rounded-2xl bg-amber-500 text-slate-950 hover:bg-amber-400 transition-all text-sm font-bold flex items-center gap-2";
+                let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
+                const contentType = response.headers.get("content-type") || "";
                 
-                // Hide main framework structure completely to preserve CPU cycles
-                appBackground.style.display = 'none';
-                portal.style.background = '#020617';
-                portal.style.backdropFilter = 'none';
-                pushToSystemLogs('WARN', 'Engine optimization profile loaded. Resource saving routines enforced.');
-            } else {
-                badge.classList.add('hidden');
-                btn.className = "px-4 py-2 rounded-2xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 transition-all text-sm font-semibold flex items-center gap-2";
-                
-                appBackground.style.display = 'flex';
-                overlay.classList.add('hidden');
-                pushToSystemLogs('INFO', 'Engine structural mapping restored to base state parameters.');
-            }
-        }
+                const rawTextData = await response.text();
+                if (!bytes) bytes = new Blob([rawTextData]).size;
 
-        function exitGamePortalRoutine() {
-            const portal = document.getElementById('gamePortal');
-            portal.classList.add('opacity-0');
-            
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            }
-
-            // Performance recovery logic step sequence
-            setTimeout(() => {
-                portal.classList.add('hidden');
-                portal.classList.remove('grid');
-                document.getElementById('portalFrame').src = '';
+                const sizeInKB = (bytes / 1024).toFixed(2);
+                pushToSystemLogs('CLI-OUT', [`📦 Package size is ${sizeInKB} KB. Are you sure you want to install? [y/n]`], 'flash-pkg');
                 
-                if (STATE.performanceModeActive) {
-                    // Trigger recovery panel overlay state instead of maintaining black screens
-                    document.getElementById('recoveryOverlay').classList.remove('hidden');
-                    portal.classList.remove('hidden');
-                    portal.classList.add('block');
+                const confirmation = await terminalReadLine(); 
+                if (!confirmation || confirmation.toLowerCase().trim() !== 'y') {
+                    pushToSystemLogs('WARN', ["🛑 Installation canceled by user inside CLI."], 'flash-pkg'); return;
                 }
-            }, 300);
-        }
 
-        function hardRestoreWorkspace() {
-            // Turn off performance structures explicitly
-            STATE.performanceModeActive = false;
-            document.getElementById('performanceBadge').classList.add('hidden');
-            document.getElementById('recoveryOverlay').classList.add('hidden');
-            
-            const portal = document.getElementById('gamePortal');
-            portal.classList.remove('block');
-            portal.classList.add('hidden');
-            
-            const appBg = document.getElementById('app');
-            appBg.style.display = 'flex';
-            
-            pushToSystemLogs('INFO', 'Manual system layout workspace forced execution reload successfully completed.');
-            processAndRenderView();
-        }
+                if ('caches' in window) {
+                    const gameCache = await caches.open('flash-games-cache');
+                    await gameCache.put(targetUrl, new Response(rawTextData, { status: 200, statusText: "OK", headers: { 'Content-Type': contentType } }));
+                    pushToSystemLogs('CLI-OUT', [`⚡ Content successfully committed to browser Cache Storage!`], 'flash-pkg');
+                } else { throw new Error("Browser Cache Storage API is unsupported."); }
 
-        function launchPortalFrame(title, url) {
-            document.getElementById('portalTitle').textContent = title;
-            const portal = document.getElementById('gamePortal');
-            const frame = document.getElementById('portalFrame');
-            
-            portal.classList.remove('hidden');
-            portal.classList.add('grid');
-            frame.src = url;
-            
-            requestAnimationFrame(() => {
-                portal.classList.remove('opacity-0');
-            });
-            pushToSystemLogs('CALL', `Active context mapping shifted to runtime node [${title}]`);
-        }
+                let incomingGame = null;
+                const isHtmlUrl = targetUrl.toLowerCase().endsWith('.html') || targetUrl.toLowerCase().includes('.html');
 
-        function launchDemoGame() {
-            launchPortalFrame("Spotlight Retro Arcade", "https://itsmeh1.github.io/flashgames/");
-        }
-
-        function toggleFullscreen() {
-            const wrapper = document.getElementById('iframeWrapper');
-            if (!document.fullscreenElement) {
-                wrapper.requestFullscreen().catch(err => {
-                    pushToSystemLogs('ERROR', `Fullscreen call sequence rejected: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        function toggleSyncPanel() {
-            const p = document.getElementById('syncInfoPanel');
-            if (p.style.opacity === '1') {
-                p.style.opacity = '0';
-                p.style.pointerEvents = 'none';
-                p.style.transform = 'scale(0.95) translateY(0)';
-            } else {
-                p.style.opacity = '1';
-                p.style.pointerEvents = 'auto';
-                p.style.transform = 'scale(1) translateY(10px)';
-            }
-        }
-
-        // PROFESSIONAL PLATFORM LOG ROUTINES
-        function pushToSystemLogs(type, message) {
-            const ts = new Date().toLocaleTimeString();
-            SYSTEM_LOGS.push({ type, message, timestamp: ts });
-            
-            const logContainer = document.getElementById('devConsoleLogs');
-            if (logContainer) {
-                const colorMap = {
-                    'INFO': 'text-slate-300',
-                    'WARN': 'text-amber-300 font-medium',
-                    'ERROR': 'text-rose-400 font-semibold',
-                    'CALL': 'text-indigo-300 font-medium',
-                    'CLI-IN': 'text-emerald-400 font-bold',
-                    'CLI-OUT': 'text-sky-300 font-medium'
-                };
+                if (contentType.includes("application/json")) {
+                    incomingGame = JSON.parse(rawTextData);
+                    if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) throw new Error("Data corruption! Missing required manifest keys.");
+                    incomingGame.name = incomingGame.name || incomingGame.title;
+                    incomingGame.title = incomingGame.title || incomingGame.name;
+                    incomingGame.zone = incomingGame.zone || "OFFLINE";
+                    incomingGame.image = incomingGame.image || incomingGame.icon || autoIcon;
+                    incomingGame.icon = incomingGame.icon || incomingGame.image; 
+                } else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
+                    let filename = targetUrl.split('/').pop().split('?')[0] || "customgame.html";
+                    let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
+                    let cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+                    let targetZoneCasing = STATE.rawGamesList.some(g => g.zone === "offline") ? "offline" : "OFFLINE"; 
+                    
+                    incomingGame = { id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000), name: cleanTitle, title: cleanTitle, url: targetUrl, zone: targetZoneCasing, image: autoIcon, icon: autoIcon };
+                } else { throw new Error(`Unsupported content type registry: "${contentType}"`); }
                 
-                const styleClass = colorMap[type] || 'text-slate-400';
-                const row = document.createElement('div');
-                row.className = `text-xs font-mono leading-relaxed ${styleClass}`;
-                row.textContent = `[${ts}] [${type}] ${message}`;
-                logContainer.appendChild(row);
-                logContainer.scrollTop = logContainer.scrollHeight;
+                incomingGame.isOfflinePackage = true; 
+                const alreadyExists = STATE.rawGamesList.findIndex(game => game.url === incomingGame.url);
+                
+                if (alreadyExists > -1) {
+                    pushToSystemLogs('WARN', [`⚠️ Package already exists. Overwriting config pointers...`], 'flash-pkg');
+                    STATE.rawGamesList[alreadyExists] = incomingGame;
+                } else {
+                    STATE.rawGamesList.push(incomingGame);
+                    pushToSystemLogs('CLI-OUT', [`📦 Added 1 package pointer: ${incomingGame.title}`], 'flash-pkg');
+                }
+                
+                const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+                localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
+                pushToSystemLogs('CLI-OUT', [`💾 Registry manifest successfully linked!`], 'flash-pkg');
+                
+                document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+                if (typeof processAndRenderView === 'function') processAndRenderView();
+                
+            } catch (error) {
+                console.error(`ERR! flash-npm installation aborted.`);
+                pushToSystemLogs('ERROR', [`❌ Installation failed: ${error.message}`], 'flash-pkg');
             }
         }
+    },
+    "delgame": {
+        desc: "Displays an indexed list of your installed custom games and allows deletion via CLI.",
+        exec: async (args) => {
+            if (typeof STATE === 'undefined' || !STATE.rawGamesList) return;
+            const installedGames = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+            if (installedGames.length === 0) { pushToSystemLogs('CLI-OUT', ["ℹ️ There are no custom downloaded packages detected inside storage."], 'flash-pkg'); return; }
 
-        // DEV CLI COMMAND PROCESSOR SHELL
-        function openDevConsole() {
-            document.getElementById('devConsoleModal').classList.remove('hidden');
-            document.getElementById('devConsoleInput').focus();
+            pushToSystemLogs('CLI-OUT', ["📋 --- Custom Downloaded Games List ---"], 'flash-pkg');
+            installedGames.forEach((game, index) => { pushToSystemLogs('CLI-OUT', [`[${index + 1}] Title: ${game.title} (ID: ${game.id})`], 'flash-pkg'); });
+
+            pushToSystemLogs('CLI-OUT', [`❓ Enter the index number (1-${installedGames.length}) of the game to permanently erase:`], 'flash-pkg');
+            const selectionInput = await terminalReadLine();
+            if (!selectionInput) return;
+
+            const targetIndex = parseInt(selectionInput.trim(), 10) - 1;
+            if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= installedGames.length) { pushToSystemLogs('ERROR', ["❌ Invalid selection target registry index."], 'flash-pkg'); return; }
+
+            const selectedGame = installedGames[targetIndex];
+            pushToSystemLogs('CLI-OUT', [`⚠️ Are you absolutely sure you want to permanently delete "${selectedGame.title}"? [y/n]`], 'flash-pkg');
+            const confirmDelete = await terminalReadLine();
+
+            if (!confirmDelete || confirmDelete.toLowerCase().trim() !== 'y') { pushToSystemLogs('WARN', ["🛑 Clear routine scrub terminated."], 'flash-pkg'); return; }
+
+            STATE.rawGamesList = STATE.rawGamesList.filter(game => game.id !== selectedGame.id);
+            const updatedOfflineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+            localStorage.setItem('flash_offline_folder', JSON.stringify(updatedOfflineFolder));
+            pushToSystemLogs('CLI-OUT', [`🔥 [${selectedGame.title}] was purged successfully!`], 'flash-pkg');
+            
+            document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+            if (typeof processAndRenderView === 'function') processAndRenderView();
+        }
+    },
+    "play": {
+        desc: "Launches any catalog game. Usage: flash play {game_title}",
+        exec: (args) => {
+            if (!args || args.length === 0) return;
+            const query = args.join(' ').toLowerCase();
+            const target = STATE.rawGamesList.find(g => g.title?.toLowerCase().includes(query) || g.id?.toString().toLowerCase() === query);
+            if (target) {
+                pushToSystemLogs('CLI-OUT', [`🎯 Match Located: [${target.title}]. Launching...`], 'flash-launcher');
+                if (typeof executeGameLauncher === 'function') {
+                    executeGameLauncher(target);
+                    document.getElementById('devConsoleModal').classList.add('hidden');
+                }
+            } else { console.error(`ERR! Could not find game matching '${query}'`); }
+        }
+    },
+    "clear": { desc: "Wipes clean the display terminal.", exec: () => clearSystemLogs() }
+};
+
+let activeInputResolver = null;
+function terminalReadLine() { return new Promise((resolve) => { activeInputResolver = resolve; }); }
+        
+document.getElementById('terminalInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const fullInput = this.value.trim();
+        if (!fullInput) return;
+        this.value = '';
+        COMMAND_HISTORY.push(fullInput);
+        HISTORY_INDEX = COMMAND_HISTORY.length;
+        pushToSystemLogs('CLI-IN', [fullInput], 'Client Shell');
+
+        // 🔥 CHECK INTERCEPTOR FIRST
+        if (activeInputResolver !== null) {
+            const resolveReference = activeInputResolver;
+            activeInputResolver = null; 
+            resolveReference(fullInput); 
+            return; 
         }
 
-        function closeDevConsole() {
-            document.getElementById('devConsoleModal').classList.add('hidden');
+        const tokens = fullInput.split(/\s+/);
+        if (tokens[0] !== 'flash') { console.error(`Syntax Error: Commands require 'flash' syntax.`); return; }
+        const action = tokens[1];
+        const args = tokens.slice(2);
+
+        if (COMMAND_MATRIX[action]) { COMMAND_MATRIX[action].exec(args); } 
+        else { console.error(`Command '${action}' unrecognized by console. Type 'flash help'.`); }
+    } 
+    else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (COMMAND_HISTORY.length > 0 && HISTORY_INDEX > 0) { HISTORY_INDEX--; this.value = COMMAND_HISTORY[HISTORY_INDEX]; }
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (HISTORY_INDEX < COMMAND_HISTORY.length - 1) { HISTORY_INDEX++; this.value = COMMAND_HISTORY[HISTORY_INDEX]; } 
+        else { HISTORY_INDEX = COMMAND_HISTORY.length; this.value = ''; }
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.altKey && e.code === 'KeyC') {
+        e.preventDefault();
+        const modal = document.getElementById('devConsoleModal');
+        const inputField = document.getElementById('terminalInput');
+        if (modal) {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                renderSystemLogs();
+                setTimeout(() => inputField?.focus(), 50);
+            } else { modal.classList.add('hidden'); }
+        }
+    }
+});
+
+// ==========================================
+// GUI INSTALLER PIPELINE
+// ==========================================
+let pendingInstallData = null;
+
+async function analyzeInstallUrl() {
+    const urlInput = document.getElementById('installUrlInput');
+    const targetUrl = urlInput.value.trim();
+    if (!targetUrl) return;
+    
+    const btn = document.getElementById('installAnalyzeBtn');
+    btn.textContent = 'Analyzing...'; btn.disabled = true;
+
+    try {
+        let autoIcon = "";
+        try { const domain = new URL(targetUrl).hostname; autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`; } catch(e) {}
+
+        const response = await fetch(targetUrl);
+        if (!response.ok) throw new Error("Bad response from server");
+
+        let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
+        const contentType = response.headers.get("content-type") || "";
+        const rawTextData = await response.text();
+        if (!bytes) { bytes = new Blob([rawTextData]).size; }
+        const sizeInKB = (bytes / 1024).toFixed(2);
+
+        let cleanTitle = "Custom Game";
+        let filename = targetUrl.split('/').pop().split('?')[0];
+        if (filename) {
+            let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
+            cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
         }
 
-        document.getElementById('devConsoleInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const val = this.value.trim();
-                this.value = '';
-                if (!val) return;
+        pendingInstallData = { url: targetUrl, title: cleanTitle, size: sizeInKB, icon: autoIcon, rawText: rawTextData, contentType: contentType };
 
-                pushToSystemLogs('CLI-IN', `> ${val}`);
-                executeCommandLineArguments(val);
-            }
-        });
+        document.getElementById('installStep1').classList.add('hidden');
+        document.getElementById('installStep2').classList.remove('hidden');
+        document.getElementById('installStep2').classList.add('flex');
+        
+        document.getElementById('installPreviewIcon').src = autoIcon;
+        document.getElementById('installPreviewTitle').textContent = cleanTitle;
+        document.getElementById('installPreviewSize').textContent = `Size: ${sizeInKB} KB`;
 
-        function executeCommandLineArguments(inputString) {
-            const parts = inputString.split(' ');
-            const primary = parts[0].toLowerCase();
-            const args = parts.slice(1);
+    } catch (err) { alert("Analysis failed: " + err.message); }
+    btn.textContent = 'Analyze Payload'; btn.disabled = false;
+}
 
-            switch (primary) {
-                case 'help':
-                    pushToSystemLogs('CLI-OUT', "Available Core Controls: clear, help, profile, account info, account logout, account update-username <string>");
-                    break;
-                case 'clear':
-                    document.getElementById('devConsoleLogs').innerHTML = '';
-                    pushToSystemLogs('INFO', 'Console buffers cleared.');
-                    break;
-                case 'account':
-                    handleAccountCliRoutines(args);
-                    break;
-                case 'profile':
-                    if (STATE.currentUser) {
-                        pushToSystemLogs('CLI-OUT', `Authenticated context: ${STATE.currentUser.username} (${STATE.currentUser.email})`);
-                    } else {
-                        pushToSystemLogs('WARN', 'Unauthenticated node stream.');
-                    }
-                    break;
-                default:
-                    pushToSystemLogs('ERROR', `System instruction sequence unrecognized: '${primary}'. Type 'help' for specifications.`);
-            }
+async function commitInstallGame() {
+    if (!pendingInstallData) return;
+    const btn = document.getElementById('installConfirmBtn');
+    btn.textContent = 'Installing...'; btn.disabled = true;
+
+    try {
+        if ('caches' in window) {
+            const gameCache = await caches.open('flash-games-cache');
+            await gameCache.put(pendingInstallData.url, new Response(pendingInstallData.rawText, { status: 200, statusText: "OK", headers: { 'Content-Type': pendingInstallData.contentType } }));
         }
 
-        function handleAccountCliRoutines(args) {
-            if (args.length === 0) {
-                pushToSystemLogs('CLI-OUT', "Account syntax helper tools: info, logout, update-username <name>");
-                return;
+        const targetZoneCasing = STATE.rawGamesList.some(g => g.zone === "offline") ? "offline" : "OFFLINE";
+        const incomingGame = {
+            id: "pkg-" + pendingInstallData.title.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
+            name: pendingInstallData.title, title: pendingInstallData.title, url: pendingInstallData.url, zone: targetZoneCasing,
+            image: pendingInstallData.icon, icon: pendingInstallData.icon, isOfflinePackage: true
+        };
+
+        const alreadyExists = STATE.rawGamesList.findIndex(g => g.url === incomingGame.url);
+        if (alreadyExists > -1) { STATE.rawGamesList[alreadyExists] = incomingGame; } 
+        else { STATE.rawGamesList.push(incomingGame); }
+
+        const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+        localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
+        
+        document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+        processAndRenderView();
+        closeInstallModal();
+    } catch (err) { alert("Installation failed: " + err.message); }
+    
+    btn.textContent = 'Install Offline'; btn.disabled = false;
+}
+
+function resetInstallModal() {
+    pendingInstallData = null;
+    document.getElementById('installUrlInput').value = '';
+    document.getElementById('installStep1').classList.remove('hidden');
+    document.getElementById('installStep2').classList.add('hidden');
+    document.getElementById('installStep2').classList.remove('flex');
+}
+
+function openInstallModal() {
+    resetInstallModal();
+    const modal = document.getElementById('installModal');
+    const inner = document.getElementById('installModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); inner.classList.remove('scale-95'); });
+}
+
+function closeInstallModal() {
+    const modal = document.getElementById('installModal');
+    const inner = document.getElementById('installModalInner');
+    modal.classList.add('opacity-0'); inner.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); }, 300);
+}
+
+// ==========================================
+// EASILY CHANGE YOUR UPDATE LOGS HERE
+// ==========================================
+const CHANGELOG_DATA = {
+    "v4.5": {
+        title: "Accounts, Install Button & Performance Recovery",
+        isCurrent: true,
+        notes: [
+            "<strong>Account gate:</strong> You now have to create or log in before the library opens, with username, email, password, and profile picture on signup.",
+            "<strong>Profile chip:</strong> Your account now lives in the header. Tap it to edit your picture, username, bio, and view your shared Flash/Mobify identity.",
+            "<strong>CLI account commands:</strong> Added flash account, flash login, flash signup, flash profile, flash logout, and flash whoami for account control from the terminal.",
+            "<strong>Install button:</strong> Added a proper Install button in the header so custom games are easier to add without touching the CLI.",
+            "<strong>Performance recovery:</strong> If performance mode is active and you leave the game, a reload button now appears so you can bring the full UI back cleanly."
+        ]
+    },
+    "v4.0": {
+        title: "Liquid Glass & True Persistence",
+        isCurrent: false,
+        notes: [
+            "<strong>Liquid Glass UI:</strong> The entire hub was rewritten to feel smooth, utilizing heavy backdrop blurring, rich inset shadows, and deep dark-mode panels for a beautiful Apple-style aesthetic.",
+            "<strong>UI Game Installer:</strong> You can now add and install compatible web games offline directly via the new 'Install' button next to updates, skipping the CLI terminal.",
+            "<strong>Persistence Anchored:</strong> A massive architectural fix means any games installed offline (CLI or UI) will completely restore themselves on reboot. No more disappearing vault games!",
+            "<strong>Homepage Quick-Return:</strong> Click the Flash Games logo from anywhere in the app to instantly reset your search and jump back to the top of the homepage.",
+            "<strong>Changelog Redesign:</strong> The version history has been cleaned up. Past versions now sit neatly in a collapsible sidebar drawer to keep the viewport clean."
+        ]
+    },
+    "v3.2": {
+        title: "Flash CLI",
+        isCurrent: false,
+        notes: [
+            "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline.",
+            "<code>flash health</code> Check your system health.",
+            "<code>flash init</code> Prepare Flash Games if it hasn't been already.",
+            "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update. Adding more.",
+            "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
+        ]
+    },
+    "v3.1": { title: "⚡ The Unstoppable Offline & QoL Update", isCurrent: false, notes: ["<strong>True Offline Vault:</strong> Destroyed the bug causing the app to crash without Wi-Fi.", "<strong>Instant Sync Pipeline:</strong> Patched the update handler.", "<strong>Lightning Fast Navigation:</strong> Smash the <code>/</code> key to instantly drop into the library search."] }
+};
+function buildChangelogUI() {
+    const tabsContainer = document.getElementById('changelogTabs');
+    const headerTitle = document.getElementById('headerUpdateBtn');
+    
+    // Clear old tabs except the title block
+    Array.from(tabsContainer.children).forEach(child => {
+        if (!child.classList.contains('uppercase')) tabsContainer.removeChild(child);
+    });
+    
+    let defaultVersion = Object.keys(CHANGELOG_DATA)[0];
+
+    Object.keys(CHANGELOG_DATA).forEach(ver => {
+        const log = CHANGELOG_DATA[ver];
+        if (log.isCurrent) { headerTitle.textContent = `${ver} Updates`; defaultVersion = ver; }
+
+        const tabBtn = document.createElement('button');
+        tabBtn.id = `tab-${ver}`;
+        tabBtn.className = "tab-btn px-4 py-3 rounded-2xl text-sm font-bold text-left transition-all bg-transparent text-slate-400 hover:bg-white/10 whitespace-nowrap border border-transparent";
+        tabBtn.textContent = log.isCurrent ? `${ver} (Current)` : ver;
+        tabBtn.onclick = () => { switchChangelogTab(ver); if(window.innerWidth < 768) toggleChangelogMenu(); };
+        
+        tabsContainer.appendChild(tabBtn);
+    });
+
+    switchChangelogTab(defaultVersion);
+}
+
+function switchChangelogTab(versionId) {
+    const log = CHANGELOG_DATA[versionId];
+    if (!log) return;
+
+    document.querySelectorAll('.tab-btn').forEach(btn => { btn.className = "tab-btn px-4 py-3 rounded-2xl text-sm font-bold text-left transition-all bg-transparent text-slate-400 hover:bg-white/10 whitespace-nowrap border border-transparent w-full"; });
+    const activeBtn = document.getElementById(`tab-${versionId}`);
+    if (activeBtn) { activeBtn.className = "tab-btn px-4 py-3 rounded-2xl text-sm font-bold text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap w-full shadow-inner"; }
+
+    // Removed the checkmark, replaced with a clean CSS dot bullet
+    const listItems = log.notes.map(note => `
+        <li class="relative pl-5 text-slate-300 leading-relaxed mb-4 before:content-[''] before:absolute before:left-0 before:top-[8px] before:w-2 before:h-2 before:bg-indigo-400 before:rounded-full before:shadow-[0_0_8px_rgba(99,102,241,0.8)]">
+            <div>${note}</div>
+        </li>
+    `).join('');
+
+    document.getElementById('changelogContent').innerHTML = `
+        <h2 class="text-3xl font-bold text-white mb-8 tracking-tight">${log.title}</h2>
+        <ul class="space-y-2 text-sm">${listItems}</ul>
+        <div class="flex justify-center items-center mt-12 pt-6 border-t border-white/5 w-full">
+            <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="h-6 opacity-60 hover:opacity-100 transition-opacity rounded shadow-md" title="Total Page Views">
+        </div>
+    `;
+}
+
+function openChangelog() {
+    const modal = document.getElementById('changelogModal');
+    const inner = document.getElementById('changelogModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); inner.classList.remove('scale-95'); });
+}
+function closeChangelog() {
+    const modal = document.getElementById('changelogModal');
+    const inner = document.getElementById('changelogModalInner');
+    modal.classList.add('opacity-0'); inner.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); }, 300);
+}
+function toggleChangelogMenu() {
+    const tabs = document.getElementById('changelogTabs');
+    if (tabs.classList.contains('-translate-x-full')) { tabs.classList.remove('-translate-x-full'); tabs.classList.add('drawer-open'); } 
+    else { tabs.classList.add('-translate-x-full'); tabs.classList.remove('drawer-open'); }
+}
+
+const BASE_URL = 'https://ess-education.org';
+const CONFIG = { 
+    endpoints: ['./offline.json', '/asset/json/zones/gnmath.json', '/asset/json/zones/truffled.json', '/asset/json/zones/seraph.json', '/asset/json/zones/velara.json', '/asset/json/zones/ugs.json', '/asset/json/zones/tglsc.json', '/asset/json/zones/selenite.json'], 
+    fallbackImage: "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230f172a'/%3E%3C/svg%3E" 
+};
+let STATE = { 
+    rawGamesList: [], processedGames: [], 
+    activeFilters: { search: '', zone: 'all', sort: 'az' }, 
+    isOffline: !navigator.onLine,
+    favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
+    folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
+    activeTargetGameId: null, currentActiveBlobUrl: null, libraryLoaded: false, performanceModeActive: false
+};
+
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
+
+let failedSyncUrls = []; let isSyncing = false;
+
+async function executeSync(urls) {
+    if (isSyncing) return; isSyncing = true;
+    const btn = document.getElementById('syncOfflineBtn');
+    const logContainer = document.getElementById('syncLogsContainer');
+    const retryBtn = document.getElementById('retrySyncBtn');
+    
+    btn.textContent = 'Syncing...'; btn.disabled = true;
+    document.getElementById('syncInfoBtn').classList.add('info-btn-enter');
+    retryBtn.classList.add('hidden');
+    if (logContainer.innerHTML.includes('Waiting')) logContainer.innerHTML = '';
+    
+    let current = 0; let failed = 0; let updated = 0; const total = urls.length; failedSyncUrls = []; 
+
+    try {
+        const cache = await caches.open('flashgames-cache-v1'); 
+        for (const url of urls) {
+            try {
+                const cachedResponse = await cache.match(url);
+                const networkResponse = await fetch(url, { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache' } });
+                if (!networkResponse.ok) throw new Error(`HTTP error! status: ${networkResponse.status}`);
+                
+                if (cachedResponse) {
+                    const cachedText = await cachedResponse.clone().text(); const networkText = await networkResponse.clone().text();
+                    if (cachedText === networkText) { current++; logContainer.innerHTML += `<div class="text-slate-400 truncate">🟰 Unchanged: ${url.split('/').pop()}</div>`; continue; } 
+                    else { updated++; logContainer.innerHTML += `<div class="text-amber-400 truncate">✨ Updated: ${url.split('/').pop()}</div>`; }
+                } else { current++; logContainer.innerHTML += `<div class="text-emerald-400 truncate">✓ Cached: ${url.split('/').pop()}</div>`; }
+                await cache.put(url, networkResponse.clone());
+            } catch (err) {
+                failed++; failedSyncUrls.push(url);
+                logContainer.innerHTML += `<div class="text-rose-400 truncate">✗ Failed: ${url.split('/').pop()}</div>`;
             }
-            const sub = args[0].toLowerCase();
-            switch (sub) {
-                case 'info':
-                    if (!STATE.currentUser) {
-                        pushToSystemLogs('CLI-OUT', "No local user mapped to current terminal authorization state.");
-                    } else {
-                        pushToSystemLogs('CLI-OUT', `Identity Record: Handle: ${STATE.currentUser.username} | Mail: ${STATE.currentUser.email} | Node Created: ${STATE.currentUser.registeredAt}`);
-                    }
-                    break;
-                case 'logout':
-                    logoutAccount();
-                    break;
-                case 'update-username':
-                    if (!args[1]) {
-                        pushToSystemLogs('ERROR', "Missing data string array sequence. Usage: account update-username <new_name>");
-                        return;
-                    }
-                    const updatedName = args.slice(1).join(' ');
-                    STATE.currentUser.username = updatedName.startsWith('@') ? updatedName : '@' + updatedName;
-                    localStorage.setItem('flash_platform_user', JSON.stringify(STATE.currentUser));
-                    applyUserInterfaceIdentity();
-                    pushToSystemLogs('CLI-OUT', `Username bound successfully locally onto target system string: ${STATE.currentUser.username}`);
-                    break;
-                default:
-                    pushToSystemLogs('ERROR', `Sub-routine parameter out of range bounds: '${sub}'`);
-            }
+            document.getElementById('syncProgressText').textContent = `${current + updated + failed} / ${total}`;
+            document.getElementById('syncProgressBar').style.width = `${((current + updated + failed) / total) * 100}%`;
+            logContainer.scrollTop = logContainer.scrollHeight; 
+        }
+    } catch (err) { logContainer.innerHTML += `<div class="text-rose-500">Critical Error accessing Cache API.</div>`; }
+
+    isSyncing = false;
+    if (failed > 0) {
+        btn.textContent = `Done (${failed} failed)`;
+        btn.className = "px-4 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-xl hover:bg-rose-500/30 transition-all text-xs font-semibold z-10 relative shadow-inner";
+        retryBtn.classList.remove('hidden');
+    } else {
+        btn.textContent = updated > 0 ? `Updated ${updated} games!` : 'All files up to date!';
+        document.getElementById('syncProgressBar').classList.add('bg-emerald-400');
+        setTimeout(() => {
+            btn.textContent = 'Sync Offline Folder';
+            btn.className = "px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl hover:bg-emerald-500/30 transition-all text-xs font-semibold z-10 relative shadow-inner";
+            btn.disabled = false;
+            document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
+            setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
+        }, 5000);
+    }
+}
+
+document.getElementById('syncOfflineBtn').addEventListener('click', () => {
+    const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
+    const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
+    urlsToCache.push('./offline.json', './index.html', './manifest.json', './offline/logo.png');
+    document.getElementById('syncInfoPanel').classList.add('panel-enter');
+    executeSync(urlsToCache);
+});
+
+function enforceChangelogViewing() {
+    const currentVersion = Object.keys(CHANGELOG_DATA).find(ver => CHANGELOG_DATA[ver].isCurrent);
+    if (!currentVersion) return;
+    const lastViewedVersion = localStorage.getItem('lastViewedPatchNotes');
+    if (lastViewedVersion !== currentVersion) {
+        openChangelog();
+        localStorage.setItem('lastViewedPatchNotes', currentVersion);
+    }
+}
+
+document.getElementById('retrySyncBtn').addEventListener('click', () => {
+    if (failedSyncUrls.length > 0) {
+        document.getElementById('syncLogsContainer').innerHTML += `<div class="text-indigo-400 italic mt-2">--- Retrying ${failedSyncUrls.length} items ---</div>`;
+        executeSync([...failedSyncUrls]);
+    }
+});
+
+function toggleSyncPanel() { document.getElementById('syncInfoPanel').classList.toggle('panel-enter'); }
+
+function handleNetworkChange() {
+    STATE.isOffline = !navigator.onLine;
+    const dot = document.getElementById('networkStatusIcon');
+    const text = document.getElementById('offlineHUDText');
+    const zoneFilter = document.getElementById('zoneFilter');
+    const syncToolbox = document.getElementById('syncToolbox');
+
+    if (STATE.isOffline) {
+        dot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]";
+        text.textContent = "Offline Mode Active. You can now play saved games directly."; zoneFilter.value = 'OFFLINE'; STATE.activeFilters.zone = 'OFFLINE'; zoneFilter.disabled = true;
+        syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
+    } else {
+        dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
+        text.textContent = "Connected. Ready to sync local games for offline use."; zoneFilter.disabled = false;
+        syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
+    }
+    processAndRenderView();
+}
+
+window.addEventListener('online', handleNetworkChange);
+window.addEventListener('offline', handleNetworkChange);
+
+function toggleFullscreen() {
+    const frameWrapper = document.getElementById('iframeWrapper');
+    if (!document.fullscreenElement) { if (frameWrapper.requestFullscreen) { frameWrapper.requestFullscreen(); } else if (frameWrapper.webkitRequestFullscreen) { frameWrapper.webkitRequestFullscreen(); } } 
+    else { if (document.exitFullscreen) { document.exitFullscreen(); } }
+}
+
+async function executeGameLauncher(game) {
+    const portal = document.getElementById('gamePortal'); const frame = document.getElementById('portalFrame');
+    document.getElementById('portalTitle').textContent = game.name;
+    portal.classList.remove('hidden'); portal.classList.add('grid');
+    setTimeout(() => portal.classList.remove('opacity-0'), 50);
+
+    if (STATE.currentActiveBlobUrl) { URL.revokeObjectURL(STATE.currentActiveBlobUrl); STATE.currentActiveBlobUrl = null; }
+
+    try {
+        let originalText = "";
+        if ('caches' in window) {
+            const gameCache = await caches.open('flash-games-cache');
+            const cachedResponse = await gameCache.match(game.url);
+            if (cachedResponse) { originalText = await cachedResponse.text(); }
         }
 
-        // GLOBAL KEYBINDING MACROS
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                const searchBox = document.getElementById('searchInput');
-                if (searchBox) searchBox.focus();
-            }
-        });
+        if (!originalText) {
+            const response = await fetch(game.url);
+            if (!response.ok) throw new Error(`Status Code: ${response.status}`);
+            originalText = await response.text();
+        }
 
-        // LIVE COMPONENT FIELD LISTENERS
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            STATE.activeFilters.search = e.target.value;
-            processAndRenderView();
-        });
-        document.getElementById('zoneFilter').addEventListener('change', (e) => {
-            STATE.activeFilters.zone = e.target.value;
-            processAndRenderView();
-        });
-        document.getElementById('sortOrder').addEventListener('change', (e) => {
-            STATE.activeFilters.sort = e.target.value;
-            processAndRenderView();
-        });
+        const trimmedText = originalText.trim();
+        const hasHtmlTags = /<html|<head|<body|<script/i.test(trimmedText);
+        const hasRawJsLogic = trimmedText.includes('function') || trimmedText.includes('var ') || trimmedText.includes('const ') || (trimmedText.startsWith('{') && trimmedText.endsWith('}'));
 
-        // SYSTEM INITIALIZATION PIPE PIPELINE
-        window.addEventListener('load', () => {
-            checkEnforcedAuthentication();
-            if (STATE.currentUser) {
-                initializePlatformWorkspace();
+        if (hasHtmlTags || hasRawJsLogic) {
+            let executablePayload = originalText;
+            if (hasRawJsLogic && !hasHtmlTags) {
+                executablePayload = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0; background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh;"><script>${originalText}<\/script></body></html>`;
             }
-        });
-    </script>
+            const blob = new Blob([executablePayload], { type: 'text/html;charset=utf-8' });
+            STATE.currentActiveBlobUrl = URL.createObjectURL(blob);
+            frame.src = STATE.currentActiveBlobUrl;
+        } else { frame.src = game.url; }
+    } catch (err) { frame.src = game.url; }
+}
+
+function toggleFavorite(id, e) { e.stopPropagation(); const i = STATE.favorites.indexOf(id); i>-1 ? STATE.favorites.splice(i,1) : STATE.favorites.push(id); localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites)); processAndRenderView(); }
+function openFolderModal(id, e) { 
+    e.stopPropagation(); STATE.activeTargetGameId = id; const g = STATE.rawGamesList.find(x=>x.id===id); if(!g)return; 
+    document.getElementById('folderModalGameName').textContent = g.name; const c = document.getElementById('existingFoldersList'); c.innerHTML=''; 
+    Object.keys(STATE.folders).sort().forEach(f => { 
+        const b = document.createElement('button'); const a = STATE.folders[f].includes(id); 
+        b.className = `px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-sm ${a ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' : 'bg-black/30 border border-white/10 text-slate-300 hover:bg-white/10'}`; 
+        b.textContent = a ? `${f} (Added)` : f; 
+        b.onclick = () => { addGameToFolder(f, id); closeFolderModal(); }; c.appendChild(b); 
+    }); 
+    document.getElementById('newFolderNameInput').value = ''; 
+    const modal = document.getElementById('folderModal');
+    const inner = document.getElementById('folderModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); inner.classList.remove('scale-95'); });
+}
+function closeFolderModal() { 
+    const modal = document.getElementById('folderModal');
+    const inner = document.getElementById('folderModalInner');
+    modal.classList.add('opacity-0'); inner.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); STATE.activeTargetGameId = null; }, 300);
+}
+function addGameToFolder(f, id) { if(!STATE.folders[f]) STATE.folders[f]=[]; if(!STATE.folders[f].includes(id)) STATE.folders[f].push(id); localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); }
+function submitNewFolder() { const i = document.getElementById('newFolderNameInput'); const f = i.value.trim(); if(!f || !STATE.activeTargetGameId)return; addGameToFolder(f, STATE.activeTargetGameId); closeFolderModal(); }
+function removeFromFolder(f, id, e) { e.stopPropagation(); if(STATE.folders[f]) { STATE.folders[f] = STATE.folders[f].filter(x=>x!==id); if(STATE.folders[f].length===0) delete STATE.folders[f]; localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); } }
+
+function normalizeUrl(p, b = BASE_URL) { if(!p)return ''; if(p.startsWith('http') || p.startsWith('./')) return p; return `${b}${p.startsWith('/')?p:`/${p}`}`; }
+function extractZoneName(p) { if(p==='./offline.json') return 'OFFLINE'; const m=p.match(/\/([^/]+)\.json$/); return m?m[1].toUpperCase():'UNKNOWN'; }
+
+async function fetchSystemData() {
+    showStatus('loading', 'Loading Game Library', 'Aggregating game nodes...');
+    STATE.rawGamesList = [];
+    const endpoints = STATE.isOffline ? ['./offline.json'] : CONFIG.endpoints;
+    for (const ep of endpoints) {
+        const z = extractZoneName(ep);
+        try {
+            const u = ep==='./offline.json'?ep:`${BASE_URL}${ep}`;
+            const r = await fetch(u); if(!r.ok) throw new Error();
+            const d = await r.json();
+            if(Array.isArray(d)) { d.forEach((record, idx) => { if(record.name && record.url) STATE.rawGamesList.push({ id:`${z}-${idx}`, name:record.name.trim(), cover:record.cover?normalizeUrl(record.cover, ep==='./offline.json'?'':BASE_URL):CONFIG.fallbackImage, url:normalizeUrl(record.url, ep==='./offline.json'?'':BASE_URL), zone:z }); }); }
+        } catch (err) {}
+    }
+    
+    // 🔥 LOAD PERSISTED GAMES ON STARTUP (Fixes disappearing vault games)
+    loadOfflinePackages();
+
+    document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+    STATE.libraryLoaded = true;
+    processAndRenderView();
+}
+
+function processAndRenderView() {
+    let r = [...STATE.rawGamesList];
+    if(STATE.activeFilters.search) r = r.filter(g=>g.name.toLowerCase().includes(STATE.activeFilters.search.toLowerCase()));
+    if(STATE.activeFilters.zone!=='all') r = r.filter(g=>g.zone===STATE.activeFilters.zone);
+    if(STATE.activeFilters.sort==='az') r.sort((a,b)=>a.name.localeCompare(b.name));
+    if(STATE.activeFilters.sort==='za') r.sort((a,b)=>b.name.localeCompare(a.name));
+    STATE.processedGames = r;
+
+    const zs = document.getElementById('zoneFilter'); const c = STATE.activeFilters.zone; zs.innerHTML='<option value="all" class="bg-slate-900">All Sources</option>';
+    [...new Set(STATE.rawGamesList.map(g=>g.zone))].sort().forEach(d=>{ const o=document.createElement('option'); o.value=d; o.className='bg-slate-900'; o.textContent=`Source: ${d}`; if(c===d) o.selected=true; zs.appendChild(o); });
+    renderInterfaceDom();
+}
+
+// Global UI Reset / Go Home
+function goHome() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('zoneFilter').value = 'all';
+    document.getElementById('sortOrder').value = 'az';
+    STATE.activeFilters = { search: '', zone: 'all', sort: 'az' };
+    processAndRenderView();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function createGameCard(g, folder=null) {
+    const d = document.createElement('div'); d.className='glass-card rounded-[1.25rem] overflow-hidden flex flex-col cursor-pointer relative group';
+    const fv = STATE.favorites.includes(g.id);
+    d.innerHTML = `
+        <div class="aspect-[4/3] w-full bg-black/40 relative overflow-hidden"><img src="${g.cover}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="absolute top-3 right-3 flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10"><button onclick="toggleFavorite('${g.id}', event)" class="p-2 rounded-xl btn-glass text-xs shadow-md transition-transform hover:scale-110 active:scale-95">${fv?'❤️':'🤍'}</button><button onclick="openFolderModal('${g.id}', event)" class="p-2 rounded-xl btn-glass text-xs text-indigo-300 shadow-md font-bold transition-transform hover:scale-110 active:scale-95">📁+</button></div>
+        ${folder ? `<button onclick="removeFromFolder('${folder}', '${g.id}', event)" class="absolute bottom-3 left-3 px-3 py-1.5 text-[10px] font-bold bg-rose-500/90 hover:bg-rose-500 text-white rounded-lg shadow-lg opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all">Remove</button>`:''}</div>
+        <div class="p-4"><h4 class="text-[15px] font-bold text-white line-clamp-1 drop-shadow-sm">${g.name}</h4><span class="text-[11px] font-medium text-slate-400 mt-1 block">Source: ${g.zone}</span></div>`;
+    d.onclick = () => executeGameLauncher(g); return d;
+}
+
+function renderInterfaceDom() {
+    const ws = document.getElementById('mainWorkspace'); const sv = document.getElementById('statusView'); const us = document.getElementById('userSpaceContainer'); const cc = document.getElementById('collectionsContainer');
+    us.innerHTML=''; cc.innerHTML='';
+    if(STATE.processedGames.length===0) { showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi configurations.'); ws.classList.add('hidden'); return; }
+    sv.classList.add('hidden'); ws.classList.remove('hidden');
+
+    const ff = STATE.processedGames.filter(g=>STATE.favorites.includes(g.id));
+    if(ff.length>0) { const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-rose-500/20 pb-3 mb-5"><h3 class="text-xl font-bold text-rose-400 tracking-tight">❤️ Favorites</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5'; ff.forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); us.appendChild(s); }
+
+    Object.keys(STATE.folders).sort().forEach(f=>{ const ids=STATE.folders[f]; const gs=STATE.processedGames.filter(g=>ids.includes(g.id)); if(gs.length>0){ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-indigo-500/20 pb-3 mb-5"><h3 class="text-xl font-bold text-indigo-400 tracking-tight">📁 Folder: ${f}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5'; gs.forEach(x=>t.appendChild(createGameCard(x, f))); s.appendChild(t); us.appendChild(s); } });
+
+    const grp={}; STATE.processedGames.forEach(g=>{if(!grp[g.zone])grp[g.zone]=[]; grp[g.zone].push(g);});
+    Object.keys(grp).sort().forEach(k=>{ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-white/10 pb-3 mb-5"><h3 class="text-xl font-bold text-white tracking-tight">${k}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5'; grp[k].forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); cc.appendChild(s); });
+
+    const h = STATE.processedGames[0]; document.getElementById('heroBg').style.backgroundImage=`url('${h.cover}')`; document.getElementById('heroTitle').textContent=h.name; document.getElementById('heroMeta').textContent=`Source: ${h.zone}`; document.getElementById('heroLaunchBtn').onclick=()=>executeGameLauncher(h);
+}
+
+function showStatus(t, l, d) { document.getElementById('statusView').classList.remove('hidden'); document.getElementById('statusTitle').textContent=l; document.getElementById('statusDesc').textContent=d; document.getElementById('statusSpinner').style.display=t==='loading'?'block':'none'; }
+
+document.getElementById('closePortalBtn').addEventListener('click', () => {
+    const p = document.getElementById('gamePortal'); p.classList.add('opacity-0');
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    setTimeout(()=>{ 
+        p.classList.add('hidden'); p.classList.remove('grid'); document.getElementById('portalFrame').src=''; 
+        if (STATE.currentActiveBlobUrl) { URL.revokeObjectURL(STATE.currentActiveBlobUrl); STATE.currentActiveBlobUrl = null; }
+        if (STATE.performanceModeActive) showPerformanceRestorePrompt();
+    },300);
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault(); const searchBox = document.getElementById('searchInput'); if (searchBox) searchBox.focus();
+    }
+});
+
+document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); 
+document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); 
+document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
+
+bootFlashApp();
+</script>
 </body>
 </html>
