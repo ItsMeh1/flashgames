@@ -296,8 +296,17 @@ function pushToSystemLogs(type, args, customOrigin = null) {
     renderSystemLogs();
 }
 
-pushToSystemLogs("Boot", "Welcome to Flash Games!\nFlash Games is a passion project to bring many thousand of games together in one, centeralized area.\n\nWhat your version of Flash Games is currently using\n--------------------------------------------------------\n📦flash-pkg v2 \n🎮Flash v4 \n📟flash-cli v2 \n\n\nThanks for using Flash Games!", "Flash's Owner")
+pushToSystemLogs("Boot", `Welcome to Flash Games!
+Flash Games is a passion project to bring thousands of games
+together in one, centralized area.
 
+What your version of Flash Games is currently using:
+--------------------------------------------------------
+📦 flash-pkg v2 
+🎮 Flash v4 
+📟 flash-cli v2 
+
+Thanks for using Flash Games!`, "Flash's Owner");
 console.log = function() { pushToSystemLogs('PRINT', arguments); originalConsole.log.apply(console, arguments); };
 console.warn = function() { pushToSystemLogs('WARN', arguments); originalConsole.warn.apply(console, arguments); };
 console.error = function() { pushToSystemLogs('ERROR', arguments); originalConsole.error.apply(console, arguments); };
