@@ -11,17 +11,25 @@
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'], } } } }
     </script>
     <style>
-        .glass-panel { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glass-panel-dark { background: rgba(8, 10, 20, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.04); }
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.04); transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
-        .glass-card:hover, .glass-card:focus-within { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.18); transform: translateY(-4px); box-shadow: 0 12px 30px 0 rgba(99, 102, 241, 0.12); }
+        /* Apple Liquid Glass Aesthetics */
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 4px 24px -8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .glass-panel-dark { background: rgba(10, 12, 24, 0.7); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 24px 40px -12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05); }
+        
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+        .glass-card:hover, .glass-card:focus-within { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); transform: translateY(-4px) scale(1.01); box-shadow: 0 16px 32px 0 rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255,255,255,0.1); }
+        
+        .btn-glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+        .btn-glass:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+        .btn-glass:active { transform: translateY(1px); }
+
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
         
         .info-btn-enter { width: 28px !important; transform: scale(1) !important; opacity: 1 !important; margin-left: 0.5rem !important; }
         .panel-enter { opacity: 1 !important; pointer-events: auto !important; transform: scale(1) translateY(0) !important; z-index: 90 !important; }
+        .drawer-open { transform: translateX(0) !important; }
     </style>
 </head>
 <body class="h-full overflow-x-hidden antialiased bg-slate-950">
@@ -34,26 +42,33 @@
     <div id="app" class="min-h-full flex flex-col pb-12">
         <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/5 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-md overflow-hidden">
-                    <img src="offline/logo.png" class="w-full h-full object-cover" alt="Logo">
+                <div onclick="goHome()" class="flex items-center gap-3 cursor-pointer group">
+                    <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden transition-transform group-hover:scale-105">
+                        <img src="offline/logo.png" class="w-full h-full object-cover" alt="Logo" onerror="this.style.display='none'">
+                    </div>
+                    <div class="flex items-baseline gap-2 transition-opacity group-hover:opacity-80">
+                        <h1 class="text-xl font-bold tracking-tight text-white">Flash Games</h1>
+                        <span id="totalGamesCounter" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400">0 games</span>
+                    </div>
                 </div>
-                <div class="flex items-baseline gap-2">
-                    <h1 class="text-xl font-semibold tracking-tight text-white">Flash Games</h1>
-                    <span id="totalGamesCounter" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400">0 games</span>
-                </div>
-                <button onclick="openChangelog()" class="ml-2 px-2.5 py-1 text-xs font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">v3.2 Updates</button>
+                
+                <button id="headerUpdateBtn" onclick="openChangelog()" class="ml-2 px-3 py-1.5 text-xs font-medium btn-glass text-white rounded-xl">Updates</button>
+                <button onclick="openInstallModal()" class="px-3 py-1.5 text-xs font-semibold bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Install
+                </button>
 
-                <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="ml-3 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm" title="Total Page Views">
+                <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="ml-3 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm hidden sm:block" title="Total Page Views">
             </div>
             
             <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 <div class="relative flex-1 md:w-64">
-                    <input id="searchInput" type="text" placeholder="Search library..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 pl-10 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/10 transition-all">
+                    <input id="searchInput" type="text" placeholder="Search library..." class="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-2 pl-10 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all shadow-inner">
                 </div>
-                <select id="zoneFilter" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+                <select id="zoneFilter" class="bg-black/20 border border-white/10 rounded-2xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
                     <option value="all" class="bg-slate-900">All Sources</option>
                 </select>
-                <select id="sortOrder" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+                <select id="sortOrder" class="bg-black/20 border border-white/10 rounded-2xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
                     <option value="az" class="bg-slate-900">Name (A-Z)</option>
                     <option value="za" class="bg-slate-900">Name (Z-A)</option>
                 </select>
@@ -61,34 +76,37 @@
         </header>
 
         <div class="mx-6 mt-4 flex flex-col gap-3">
-            <div id="offlineHUD" class="p-3.5 rounded-xl glass-panel border border-emerald-500/20 bg-emerald-950/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
+            <div id="offlineHUD" class="p-3.5 rounded-2xl glass-panel border border-emerald-500/20 bg-emerald-950/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-300">
                 <div class="flex items-center gap-2.5">
                     <span id="networkStatusIcon" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
                     <span id="offlineHUDText" class="font-medium text-slate-300">Connected. Ready to sync local games.</span>
                 </div>
                 
                 <div id="syncToolbox" class="relative flex items-center transition-all duration-300">
-    <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium z-10 relative">
-        Sync Offline Folder
-    </button>
-    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
-        <span class="font-mono text-xs font-bold leading-none">i</span>
-    </button>
-</div>                
+                    <button id="syncOfflineBtn" class="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl hover:bg-emerald-500/30 transition-all text-xs font-semibold shadow-inner z-10 relative">
+                        Sync Offline Folder
+                    </button>
+                    <button id="syncInfoBtn" onclick="toggleSyncPanel()" class="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full transition-all duration-[400ms] ease-out w-0 opacity-0 scale-0 overflow-hidden h-7 ml-0" title="Sync Details">
+                        <span class="font-mono text-xs font-bold leading-none">i</span>
+                    </button>
+                </div>                
             </div>
         </div>
 
         <div id="statusView" class="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[50vh] w-full"><div id="statusContent" class="max-w-md mx-auto flex flex-col items-center justify-center"><div id="statusSpinner" class="w-10 h-10 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div><h3 id="statusTitle" class="text-xl font-medium text-white tracking-tight">Loading Game Library</h3><p id="statusDesc" class="text-sm text-slate-400 mt-2 leading-relaxed">Aggregating game nodes...</p></div></div>
         
         <main id="mainWorkspace" class="px-6 mt-6 space-y-10 hidden flex-1">
-            <section id="heroSection" class="relative rounded-2xl overflow-hidden glass-panel h-[280px] md:h-[360px] flex flex-col justify-end p-6 md:p-10 group transition-all">
-                <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-700 scale-100 group-hover:scale-102 opacity-25" id="heroBg"></div>
-                <div class="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+            <section id="heroSection" class="relative rounded-[2rem] overflow-hidden glass-panel h-[280px] md:h-[360px] flex flex-col justify-end p-6 md:p-10 group transition-all shadow-2xl border border-white/10">
+                <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-700 scale-100 group-hover:scale-102 opacity-30" id="heroBg"></div>
+                <div class="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
                 <div class="max-w-xl">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mb-3 uppercase">Spotlight</span>
-                    <h2 id="heroTitle" class="text-2xl md:text-4xl font-bold tracking-tight text-white mb-2">---</h2>
-                    <p id="heroMeta" class="text-sm text-slate-300 mb-5"></p>
-                    <button id="heroLaunchBtn" class="px-5 py-2.5 bg-white text-slate-950 font-medium rounded-xl shadow-md hover:bg-slate-100 active:scale-98 transition-all text-sm flex items-center gap-2">Play Game</button>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-4 uppercase tracking-wider backdrop-blur-md">Spotlight</span>
+                    <h2 id="heroTitle" class="text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 drop-shadow-lg">---</h2>
+                    <p id="heroMeta" class="text-sm text-slate-300 mb-6 font-medium"></p>
+                    <button id="heroLaunchBtn" class="px-6 py-3 bg-white text-slate-950 font-bold rounded-2xl shadow-xl hover:bg-slate-100 active:scale-95 transition-all text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+                        Play Now
+                    </button>
                 </div>
             </section>
             <div id="userSpaceContainer" class="space-y-10 empty:hidden"></div>
@@ -96,122 +114,155 @@
         </main>
     </div>
 
-    <div id="folderModal" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6">
-        <div class="glass-panel-dark max-w-md w-full rounded-2xl p-6 shadow-2xl border border-white/10 relative">
-            <button onclick="closeFolderModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm bg-white/5 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">✕</button>
-            <h2 class="text-lg font-bold text-white mb-1">Organize Game</h2>
-            <p id="folderModalGameName" class="text-xs text-indigo-400 mb-5 font-medium line-clamp-1">Game Title</p>
-            <div class="space-y-4">
-                <div><label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Add to Existing Folder</label><div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div></div>
-                <div class="border-t border-white/5 pt-4">
-                    <label for="newFolderNameInput" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Or Create A New Folder</label>
+    <div id="installModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="glass-panel-dark max-w-md w-full rounded-3xl p-6 md:p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="installModalInner">
+            <button onclick="closeInstallModal()" class="absolute top-5 right-5 btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-400">✕</button>
+            <h2 class="text-2xl font-bold text-white mb-1">Install Custom Game</h2>
+            <p class="text-sm text-slate-400 mb-6">Enter the URL of any compatible HTML game to download and save it directly to your device.</p>
+            
+            <div id="installStep1">
+                <input id="installUrlInput" type="url" placeholder="https://example.com/game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all mb-4 shadow-inner">
+                <button id="installAnalyzeBtn" onclick="analyzeInstallUrl()" class="w-full py-3.5 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all">Analyze Payload</button>
+            </div>
+
+            <div id="installStep2" class="hidden flex-col items-center text-center">
+                <div class="w-20 h-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center mb-4 overflow-hidden shadow-inner p-2">
+                    <img id="installPreviewIcon" src="" class="w-full h-full object-contain rounded-xl" onerror="this.src='offline/logo.png'">
+                </div>
+                <h3 id="installPreviewTitle" class="text-xl text-white font-bold mb-1">Game Title</h3>
+                <p id="installPreviewSize" class="text-xs text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full mb-6 font-mono font-medium">Size: -- KB</p>
+                
+                <div class="flex gap-3 w-full">
+                    <button onclick="resetInstallModal()" class="flex-1 py-3.5 btn-glass rounded-2xl text-white font-semibold">Cancel</button>
+                    <button id="installConfirmBtn" onclick="commitInstallGame()" class="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.3)] transition-all">Install Offline</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="folderModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 transition-opacity opacity-0 duration-300">
+        <div class="glass-panel-dark max-w-sm w-full rounded-3xl p-6 shadow-2xl relative transform scale-95 transition-transform duration-300" id="folderModalInner">
+            <button onclick="closeFolderModal()" class="absolute top-5 right-5 btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-400">✕</button>
+            <h2 class="text-xl font-bold text-white mb-1">Organize Game</h2>
+            <p id="folderModalGameName" class="text-xs text-indigo-400 mb-6 font-medium line-clamp-1 bg-indigo-500/10 inline-block px-2 py-0.5 rounded-md border border-indigo-500/20">Game Title</p>
+            <div class="space-y-5">
+                <div><label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Existing Folders</label><div id="existingFoldersList" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1 empty:after:content-['No_folders_created_yet.'] empty:after:text-xs empty:after:text-slate-500 empty:after:italic"></div></div>
+                <div class="border-t border-white/10 pt-5">
+                    <label for="newFolderNameInput" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Create New Folder</label>
                     <div class="flex gap-2">
-                        <input id="newFolderNameInput" type="text" placeholder="Folder name..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
-                        <button onclick="submitNewFolder()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors shadow-md">Create</button>
+                        <input id="newFolderNameInput" type="text" placeholder="Folder name..." class="flex-1 bg-black/30 border border-white/10 rounded-2xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all shadow-inner">
+                        <button onclick="submitNewFolder()" class="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-bold rounded-2xl transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)]">Add</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="changelogModal" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6">
-        <div class="glass-panel-dark max-w-2xl w-full rounded-2xl shadow-2xl border border-white/10 relative overflow-hidden flex flex-col md:flex-row min-h-[350px]">
-            <button onclick="document.getElementById('changelogModal').classList.add('hidden')" class="absolute top-3 right-3 z-10 text-slate-400 hover:text-white w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-colors">✕</button>
+    <div id="changelogModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 md:p-6 transition-opacity opacity-0 duration-300">
+        <div class="glass-panel-dark max-w-3xl w-full rounded-3xl shadow-2xl relative overflow-hidden flex flex-col h-[80vh] max-h-[600px] transform scale-95 transition-transform duration-300" id="changelogModalInner">
             
-            <div id="changelogTabs" class="bg-slate-900/50 border-r border-white/5 w-full md:w-1/3 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 hidden md:block">Version History</h3>
+            <div class="flex items-center justify-between p-4 border-b border-white/10 bg-white/[0.02] shrink-0">
+                <button onclick="toggleChangelogMenu()" class="btn-glass px-3 py-1.5 rounded-xl text-slate-300 hover:text-white flex items-center gap-2 text-xs font-semibold transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    Versions
+                </button>
+                <h2 class="text-white font-bold tracking-tight text-lg drop-shadow-md">System Updates</h2>
+                <button onclick="closeChangelog()" class="btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-300">✕</button>
             </div>
             
-            <div id="changelogContent" class="p-6 flex-1 relative overflow-y-auto max-h-[400px] md:max-h-[none]">
-                </div>
+            <div class="flex flex-1 relative overflow-hidden">
+                <div id="changelogTabs" class="absolute inset-y-0 left-0 w-64 bg-slate-900/95 backdrop-blur-3xl border-r border-white/10 z-20 flex flex-col p-3 gap-1 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-out shadow-2xl">
+                    <div class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Version History</div>
+                    </div>
+                
+                <div id="changelogContent" class="p-6 md:p-10 flex-1 overflow-y-auto w-full bg-transparent scroll-smooth">
+                    </div>
+            </div>
         </div>
     </div>
 
     <div id="gamePortal" class="fixed inset-0 z-50 glass-panel-dark hidden grid-rows-[auto_1fr] transition-all duration-300 opacity-0">
-        <header class="p-4 flex items-center justify-between border-b border-white/5 bg-slate-900/90 backdrop-blur-md">
-            <h3 id="portalTitle" class="font-semibold text-white text-base leading-tight">Viewer</h3>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleFullscreen()" class="px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30 transition-colors text-sm font-medium flex items-center gap-2">
+        <header class="p-4 flex items-center justify-between border-b border-white/10 bg-slate-950/80 backdrop-blur-2xl">
+            <h3 id="portalTitle" class="font-bold text-white text-lg leading-tight tracking-tight drop-shadow-sm">Viewer</h3>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleFullscreen()" class="px-4 py-2 rounded-2xl bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30 transition-all text-sm font-semibold flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                     Fullscreen
                 </button>
-                <button id="closePortalBtn" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-400 transition-colors text-slate-300 text-sm font-medium">✕ Close</button>
+                <button id="closePortalBtn" class="px-4 py-2 rounded-2xl btn-glass hover:bg-rose-500/20 hover:text-rose-400 transition-all text-slate-300 text-sm font-semibold">✕ Close</button>
             </div>
         </header>
-        <div class="w-full h-full bg-black relative overflow-hidden flex items-center justify-center" id="iframeWrapper">
+        <div class="w-full h-full bg-black relative overflow-hidden flex items-center justify-center shadow-inner" id="iframeWrapper">
             <iframe id="portalFrame" class="w-full h-full border-none" allow="gamepad; autoplay; fullscreen"></iframe>
         </div>
     </div>
 
-    <div id="syncInfoPanel" class="fixed top-[140px] right-[24px] w-80 glass-panel-dark p-4 rounded-xl shadow-2xl z-[9999] transition-all duration-300 opacity-0 pointer-events-none scale-95 origin-top-right border border-white/10">
-    <h4 class="text-sm font-semibold text-white mb-3 flex justify-between items-center">
-        <span>Background Sync</span>
-        <button onclick="toggleSyncPanel()" class="text-slate-400 hover:text-white text-xs bg-white/5 rounded px-2 py-0.5">Close</button>
-    </h4>
-    <div class="space-y-3 text-xs font-medium text-slate-300">
-        <div>
-            <div class="flex justify-between mb-1.5">
-                <span>Progress</span>
-                <span id="syncProgressText" class="text-indigo-400">0 / 0</span>
-            </div>
-            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                <div id="syncProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 w-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
-            </div>
-        </div>
-        
-        <div class="border-t border-white/10 pt-3 mt-3">
-            <h5 class="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Detailed Logs</h5>
-            <div id="syncLogsContainer" class="h-32 overflow-y-auto bg-black/50 border border-white/5 rounded-lg p-2 font-mono text-[10px] space-y-1">
-                <div class="text-slate-500 italic">Waiting to sync...</div>
-            </div>
-            <button id="retrySyncBtn" class="w-full mt-2 hidden px-3 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/40 rounded-lg transition-colors">
-                Retry Failed Items
-            </button>
-        </div>
-    </div>
-</div>
-
-    <div id="devConsoleModal" class="hidden fixed inset-0 z-[150] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 md:p-6 font-mono text-xs select-text">
-    <div class="glass-panel-dark max-w-4xl w-full rounded-2xl shadow-2xl border border-white/10 flex flex-col h-[85vh] overflow-hidden">
-        
-        <div class="px-5 py-3.5 bg-slate-900/90 border-b border-white/5 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="flex gap-1.5 select-none">
-                    <span class="w-3 h-3 rounded-full bg-rose-500/40 border border-rose-500/50 block"></span>
-                    <span class="w-3 h-3 rounded-full bg-amber-500/40 border border-amber-500/50 block"></span>
-                    <span class="w-3 h-3 rounded-full bg-emerald-500/40 border border-emerald-500/50 block"></span>
+    <div id="syncInfoPanel" class="fixed top-[140px] right-[24px] w-80 glass-panel-dark p-5 rounded-3xl shadow-2xl z-[9999] transition-all duration-300 opacity-0 pointer-events-none scale-95 origin-top-right border border-white/10">
+        <h4 class="text-sm font-bold text-white mb-4 flex justify-between items-center">
+            <span>Background Sync</span>
+            <button onclick="toggleSyncPanel()" class="text-slate-400 hover:text-white text-xs btn-glass rounded-lg px-2.5 py-1">Close</button>
+        </h4>
+        <div class="space-y-4 text-xs font-medium text-slate-300">
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span>Progress</span>
+                    <span id="syncProgressText" class="text-indigo-400 font-mono">0 / 0</span>
                 </div>
-                <span class="text-indigo-400 font-bold text-[13px] ml-1 tracking-tight">📟 FLASH_OS // Interactive Terminal Core</span>
-                <span class="px-2 py-0.5 rounded bg-white/5 text-slate-500 text-[10px] hidden sm:inline-block">Alt/Option + C to exit terminal</span>
+                <div class="w-full bg-black/40 rounded-full h-2 overflow-hidden shadow-inner border border-white/5">
+                    <div id="syncProgressBar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300 w-0 shadow-[0_0_10px_rgba(99,102,241,0.8)]"></div>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="clearSystemLogs()" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all font-medium text-[11px]">clear</button>
-                <button onclick="document.getElementById('devConsoleModal').classList.add('hidden')" class="text-slate-400 hover:text-white text-base px-2 transition-colors">✕</button>
+            
+            <div class="border-t border-white/10 pt-4 mt-4">
+                <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Detailed Logs</h5>
+                <div id="syncLogsContainer" class="h-32 overflow-y-auto bg-black/40 border border-white/5 rounded-xl p-3 font-mono text-[10px] space-y-1.5 shadow-inner">
+                    <div class="text-slate-500 italic">Waiting to sync...</div>
+                </div>
+                <button id="retrySyncBtn" class="w-full mt-3 hidden px-4 py-2 bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/40 rounded-xl transition-colors font-semibold">
+                    Retry Failed Items
+                </button>
             </div>
         </div>
-        
-        <div id="devConsoleLogs" class="p-5 flex-1 overflow-y-auto space-y-1.5 bg-slate-950/20 select-text scroll-smooth">
-            <div class="text-indigo-400/60 font-bold mb-1">Flash Games Diagnostics Terminal</div>
-            <div class="text-slate-500 font-light mb-4">Type <span class="text-emerald-400">flash help</span> for commands...</div>
+    </div>
+
+    <div id="devConsoleModal" class="hidden fixed inset-0 z-[150] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-4 md:p-6 font-mono text-xs select-text">
+        <div class="glass-panel-dark max-w-4xl w-full rounded-3xl shadow-2xl border border-white/10 flex flex-col h-[85vh] overflow-hidden">
+            <div class="px-5 py-4 bg-black/40 border-b border-white/10 flex items-center justify-between shrink-0 shadow-inner">
+                <div class="flex items-center gap-4">
+                    <div class="flex gap-2 select-none">
+                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500 border border-rose-600 block shadow-sm"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-500 border border-amber-600 block shadow-sm"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 border border-emerald-600 block shadow-sm"></span>
+                    </div>
+                    <span class="text-indigo-400 font-bold text-[13px] tracking-tight">📟 FLASH_OS // Terminal Core</span>
+                    <span class="px-2.5 py-1 rounded-md bg-white/5 text-slate-500 text-[10px] hidden sm:inline-block border border-white/5">Alt/Option + C to exit</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearSystemLogs()" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-all font-semibold text-[11px]">clear</button>
+                    <button onclick="document.getElementById('devConsoleModal').classList.add('hidden')" class="btn-glass w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-white">✕</button>
+                </div>
+            </div>
+            
+            <div id="devConsoleLogs" class="p-6 flex-1 overflow-y-auto space-y-1.5 bg-transparent select-text scroll-smooth">
+                <div class="text-indigo-400/80 font-bold mb-1 text-sm">Flash Games Diagnostics Terminal</div>
+                <div class="text-slate-500 font-medium mb-5">Type <span class="text-emerald-400">flash help</span> for commands...</div>
+            </div>
+            
+            <div class="px-5 py-4 bg-black/40 border-t border-white/10 flex items-center gap-3 shrink-0 font-mono shadow-inner">
+                <span class="text-emerald-400 font-bold select-none tracking-tight text-sm">flash</span>
+                <span class="text-indigo-400 font-bold select-none animate-pulse text-sm">&gt;</span>
+                <input type="text" id="terminalInput" 
+                       class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-600 font-mono text-sm" 
+                       placeholder="Type a subsystem command..." 
+                       autocomplete="off" 
+                       spellcheck="false">
+            </div>
         </div>
-        
-        <div class="px-4 py-3 bg-slate-950/80 border-t border-white/5 flex items-center gap-2.5 shrink-0 font-mono">
-            <span class="text-emerald-400 font-bold select-none tracking-tight">flash</span>
-            <span class="text-indigo-400 font-bold select-none animate-pulse">&gt;</span>
-            <input type="text" id="terminalInput" 
-                   class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-700 font-mono text-xs" 
-                   placeholder="Type a subsystem command (e.g., flash help)..." 
-                   autocomplete="off" 
-                   spellcheck="false">
-        </div>
-        
     </div>
 </div>
-    
-</div>
 
-    <script>
-        console.log("index core script running")
+<script>
+console.log("index core script running")
 
 // ==========================================================
 // INTERACTIVE SYSTEM CORE LOGGING & TERMINAL ENGINE (ALT+C)
@@ -220,13 +271,8 @@ let SYSTEM_LOGS = [];
 let COMMAND_HISTORY = [];
 let HISTORY_INDEX = -1;
 
-const originalConsole = {
-    log: console.log,
-    warn: console.warn,
-    error: console.error
-};
+const originalConsole = { log: console.log, warn: console.warn, error: console.error };
 
-// Auto-resolves executing path frame traces down to exact scripts/lines
 function getLogOrigin() {
     try {
         const err = new Error();
@@ -234,20 +280,14 @@ function getLogOrigin() {
         let targetFrame = stack[3] || '';
         if (targetFrame.includes('at ')) targetFrame = targetFrame.split('at ')[1];
         return targetFrame.replace(/https?:\/\/[^\/]+/g, '').trim() || 'core.js';
-    } catch (e) {
-        return 'unknown-origin';
-    }
+    } catch (e) { return 'unknown-origin'; }
 }
 
-// Global logger aggregator pipeline
 function pushToSystemLogs(type, args, customOrigin = null) {
     const timestamp = new Date().toLocaleTimeString();
     const origin = customOrigin || getLogOrigin();
-    
     const message = Array.from(args).map(arg => {
-        if (typeof arg === 'object') {
-            try { return JSON.stringify(arg, null, 2); } catch(e) { return '[Complex Object]'; }
-        }
+        if (typeof arg === 'object') { try { return JSON.stringify(arg, null, 2); } catch(e) { return '[Complex Object]'; } }
         return String(arg);
     }).join(' ');
 
@@ -255,7 +295,6 @@ function pushToSystemLogs(type, args, customOrigin = null) {
     renderSystemLogs();
 }
 
-// Redirect standard browser debug outputs into our local view layout stream
 console.log = function() { pushToSystemLogs('PRINT', arguments); originalConsole.log.apply(console, arguments); };
 console.warn = function() { pushToSystemLogs('WARN', arguments); originalConsole.warn.apply(console, arguments); };
 console.error = function() { pushToSystemLogs('ERROR', arguments); originalConsole.error.apply(console, arguments); };
@@ -264,12 +303,10 @@ window.addEventListener('error', (e) => {
     const file = e.filename ? e.filename.replace(/https?:\/\/[^\/]+/g, '') : 'index.html';
     pushToSystemLogs('CRASH', [e.message], `${file}:${e.lineno}`);
 });
-
 window.addEventListener('unhandledrejection', (e) => {
     pushToSystemLogs('SYNC-FAIL', [e.reason?.message || e.reason || 'Unhandled Promise Drop'], 'Async Pipeline');
 });
 
-// Structural layout painter formatting
 function renderSystemLogs() {
     const container = document.getElementById('devConsoleLogs');
     if (!container) return;
@@ -277,57 +314,34 @@ function renderSystemLogs() {
     container.innerHTML = SYSTEM_LOGS.map(log => {
         let badgeStyle = 'bg-slate-500/10 text-slate-400 border-slate-500/20';
         let rowColor = 'text-slate-300';
-        
-        if (log.type === 'WARN') {
-            badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
-            rowColor = 'text-amber-200/90';
-        } else if (log.type === 'ERROR' || log.type === 'CRASH') {
-            badgeStyle = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-            rowColor = 'text-rose-300';
-        } else if (log.type === 'CLI-IN') {
-            badgeStyle = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-            rowColor = 'text-emerald-400 font-bold';
-        } else if (log.type === 'CLI-OUT') {
-            badgeStyle = 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20';
-            rowColor = 'text-indigo-200 font-mono';
-        }
+        if (log.type === 'WARN') { badgeStyle = 'bg-amber-500/10 text-amber-300 border-amber-500/20'; rowColor = 'text-amber-200/90'; } 
+        else if (log.type === 'ERROR' || log.type === 'CRASH') { badgeStyle = 'bg-rose-500/10 text-rose-400 border-rose-500/20'; rowColor = 'text-rose-300'; } 
+        else if (log.type === 'CLI-IN') { badgeStyle = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'; rowColor = 'text-emerald-400 font-bold'; } 
+        else if (log.type === 'CLI-OUT') { badgeStyle = 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'; rowColor = 'text-indigo-200 font-mono'; }
 
-        return `
-            <div class="flex items-start gap-4 py-1 px-1.5 border-b border-white/[0.01] hover:bg-white/[0.01] transition-colors rounded group font-mono text-[11px]">
-                <span class="text-slate-600 select-none tracking-tight shrink-0">${log.timestamp}</span>
-                <span class="px-1.5 py-0.5 rounded border text-[9px] font-bold tracking-wider uppercase shrink-0 ${badgeStyle}">${log.type}</span>
-                <div class="flex-1 min-w-0 ${rowColor} break-words whitespace-pre-wrap">${log.message}</div>
-                <span class="text-slate-600 text-[10px] truncate max-w-[200px] text-right font-light tracking-tight group-hover:text-slate-400 select-all" title="${log.origin}">${log.origin}</span>
-            </div>
-        `;
+        return `<div class="flex items-start gap-4 py-1.5 px-2 border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors rounded group font-mono text-[11px]">
+            <span class="text-slate-600 select-none tracking-tight shrink-0 mt-0.5">${log.timestamp}</span>
+            <span class="px-2 py-0.5 rounded-md border text-[9px] font-bold tracking-wider uppercase shrink-0 ${badgeStyle} mt-0.5">${log.type}</span>
+            <div class="flex-1 min-w-0 ${rowColor} break-words whitespace-pre-wrap leading-relaxed">${log.message}</div>
+            <span class="text-slate-600 text-[10px] truncate max-w-[200px] text-right font-medium tracking-tight group-hover:text-slate-400 select-all mt-0.5" title="${log.origin}">${log.origin}</span>
+        </div>`;
     }).join('');
-    
     container.scrollTop = container.scrollHeight;
 }
 
-function clearSystemLogs() {
-    SYSTEM_LOGS = [];
-    renderSystemLogs();
-}
+function clearSystemLogs() { SYSTEM_LOGS = []; renderSystemLogs(); }
 
 // ==========================================
 // OFFLINE DIRECTORY CONSOLE PACKAGES INTEGRATOR
 // ==========================================
 function loadOfflinePackages() {
     const storedFolder = localStorage.getItem('flash_offline_folder');
-    
     if (storedFolder && typeof STATE !== 'undefined' && STATE.rawGamesList) {
         try {
             const offlineGames = JSON.parse(storedFolder);
-            
             offlineGames.forEach(game => {
-                // Double check to prevent injecting duplicates into the dashboard arrays
-                if (!STATE.rawGamesList.some(g => g.id === game.id)) {
-                    STATE.rawGamesList.push(game);
-                }
+                if (!STATE.rawGamesList.some(g => g.id === game.id)) { STATE.rawGamesList.push(game); }
             });
-            
-            // Log the recovery inside your terminal logs
             pushToSystemLogs('PRINT', [`📦 Loaded ${offlineGames.length} custom packages from your local offline folder setup.`], 'flash-kernel');
         } catch (error) {
             console.error("ERR! Structural corruption parsing offline storage data directory:", error);
@@ -336,16 +350,14 @@ function loadOfflinePackages() {
 }
         
 // ==========================================================
-// TERMINAL COMMAND MATRIX (NPM-STYLE ARCHITECTURE)
+// TERMINAL COMMAND MATRIX
 // ==========================================================
 const COMMAND_MATRIX = {
     "help": {
         desc: "Displays the available layout execution command manifest maps.",
         exec: () => {
             let table = "AVAILABLE COMMANDS:\n====================================================================\n";
-            Object.keys(COMMAND_MATRIX).forEach(cmd => {
-                table += `${cmd.padEnd(12)} -> ${COMMAND_MATRIX[cmd].desc}\n`;
-            });
+            Object.keys(COMMAND_MATRIX).forEach(cmd => { table += `${cmd.padEnd(12)} -> ${COMMAND_MATRIX[cmd].desc}\n`; });
             console.log(table);
         }
     },
@@ -357,213 +369,111 @@ const COMMAND_MATRIX = {
                 if (typeof fetchSystemData === 'function') fetchSystemData();
                 if (typeof buildChangelogUI === 'function') buildChangelogUI();
                 if (typeof enforceChangelogViewing === 'function') enforceChangelogViewing();
-                
-                // Mount the offline folder here!
-                loadOfflinePackages(); 
-                
                 pushToSystemLogs('CLI-OUT', ['🟢 System Initialization Complete. Catalogs ready.'], 'flash-kernel');
-            } catch (err) {
-                console.error("ERR! Initialization pipeline failed:", err);
-            }
+            } catch (err) { console.error("ERR! Initialization pipeline failed:", err); }
         }
     },
     "run": {
         desc: "Executes a system script or global function. Usage: flash run {script}",
         exec: async (args) => {
-            if (!args || args.length === 0) {
-                console.error("ERR! Missing script name. Example: flash run sync");
-                return;
-            }
-            
+            if (!args || args.length === 0) { console.error("ERR! Missing script name. Example: flash run sync"); return; }
             const scriptName = args[0];
             pushToSystemLogs('CLI-OUT', [`> flash run ${scriptName}`], 'flash-cli');
 
-            // Built-in "npm" scripts
             const scripts = {
-                "sync": () => {
-                    const btn = document.getElementById('syncOfflineBtn');
-                    if (btn) btn.click();
-                    else console.error("ERR! UI link error: Could not bind to '#syncOfflineBtn'.");
-                },
+                "sync": () => { const btn = document.getElementById('syncOfflineBtn'); if (btn) btn.click(); },
                 "health": async () => {
                     const network = navigator.onLine ? "📡 ONLINE" : "🔌 OFFLINE";
                     const swActive = navigator.serviceWorker?.controller ? "✅ ACTIVE" : "❌ INACTIVE";
                     let cachedFiles = 0;
-                    try {
-                        for (let key of await caches.keys()) {
-                            cachedFiles += (await (await caches.open(key)).keys()).length;
-                        }
-                    } catch(e) { cachedFiles = "Blocked"; }
-
+                    try { for (let key of await caches.keys()) { cachedFiles += (await (await caches.open(key)).keys()).length; } } catch(e) { cachedFiles = "Blocked"; }
                     console.log(`SYSTEM HEALTH:\nNet: ${network}\nSW:  ${swActive}\nCache: ${cachedFiles} items`);
                 },
-                "functions": () => {
-                    console.log("BOUND RUNTIME FUNCTIONS:\nfetchSystemData()\nbuildChangelogUI()\nenforceChangelogViewing()\nexecuteSync(urls)");
-                }
+                "functions": () => { console.log("BOUND RUNTIME FUNCTIONS:\nfetchSystemData()\nbuildChangelogUI()\nenforceChangelogViewing()\nexecuteSync(urls)"); }
             };
 
-            // 1. Try to run a built-in script (like 'sync' or 'health')
-            if (scripts[scriptName]) {
-                await scripts[scriptName]();
-            } 
-            // 2. Fallback to trying to run a literal JavaScript function on the window
+            if (scripts[scriptName]) { await scripts[scriptName](); } 
             else if (typeof window[scriptName] === 'function') {
-                try {
-                    window[scriptName]();
-                    pushToSystemLogs('CLI-OUT', [`🟢 Execution of window.${scriptName}() completed.`], 'flash-eval');
-                } catch(e) {
-                    console.error(`ERR! Runtime break inside ${scriptName}:`, e);
-                }
-            } 
-            else {
-                console.error(`ERR! missing script: ${scriptName}`);
-            }
+                try { window[scriptName](); pushToSystemLogs('CLI-OUT', [`🟢 Execution of window.${scriptName}() completed.`], 'flash-eval'); } 
+                catch(e) { console.error(`ERR! Runtime break inside ${scriptName}:`, e); }
+            } else { console.error(`ERR! missing script: ${scriptName}`); }
         }
     },
     "install": {
-        desc: "Installs a game package or direct HTML link to the browser Cache Storage. Usage: flash install {url}",
+        desc: "Installs a game package to Cache Storage. Usage: flash install {url}",
         exec: async (args) => {
-            if (!args || args.length === 0) {
-                console.error("ERR! install requires a target URL. Usage: flash install https://...");
-                return;
-            }
+            if (!args || args.length === 0) { console.error("ERR! install requires a target URL. Usage: flash install https://..."); return; }
             const targetUrl = args[0];
             pushToSystemLogs('CLI-OUT', [`📦 Initializing smart-fetch for ${targetUrl}`], 'flash-pkg');
             
             try {
-                // ==========================================================
-                // 🎨 FAVICON EXTRACTION PIPELINE
-                // ==========================================================
                 let autoIcon = "";
-                try {
-                    const domain = new URL(targetUrl).hostname;
-                    autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-                } catch (err) {
-                    console.warn("Could not parse domain for favicon.", err);
-                }
+                try { const domain = new URL(targetUrl).hostname; autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`; } catch (err) {}
 
-                // LAYER 1: Network Connection & Timeout Protection
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
                 const response = await fetch(targetUrl, { signal: controller.signal });
                 clearTimeout(timeoutId);
 
-                if (!response.ok) {
-                    throw new Error(`Bad Server Response! Status Code: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Bad Server Response! Status Code: ${response.status}`);
                 
-                // ==========================================================
-                // 📊 FILE SIZE MEASUREMENT & PAYLOAD BUFFERING
-                // ==========================================================
                 let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
                 const contentType = response.headers.get("content-type") || "";
                 
-                // Read response text stream immediately so we can measure size and preserve it for cache injection
                 const rawTextData = await response.text();
-                if (!bytes) {
-                    bytes = new Blob([rawTextData]).size;
-                }
+                if (!bytes) bytes = new Blob([rawTextData]).size;
 
                 const sizeInKB = (bytes / 1024).toFixed(2);
                 pushToSystemLogs('CLI-OUT', [`📦 Package size is ${sizeInKB} KB. Are you sure you want to install? [y/n]`], 'flash-pkg');
                 
-                // Await terminal line-reading response mechanism directly from the CLI input field
                 const confirmation = await terminalReadLine(); 
-                
                 if (!confirmation || confirmation.toLowerCase().trim() !== 'y') {
-                    pushToSystemLogs('WARN', ["🛑 Installation canceled by user inside CLI."], 'flash-pkg');
-                    return;
+                    pushToSystemLogs('WARN', ["🛑 Installation canceled by user inside CLI."], 'flash-pkg'); return;
                 }
 
-                // ==========================================================
-                // 🗄️ BROWSER CACHE STORAGE INJECTION (NOT LOCALSTORAGE!)
-                // ==========================================================
                 if ('caches' in window) {
                     const gameCache = await caches.open('flash-games-cache');
-                    // Store a new synthetic response matched against the targetUrl key
-                    await gameCache.put(targetUrl, new Response(rawTextData, {
-                        status: 200,
-                        statusText: "OK",
-                        headers: { 'Content-Type': contentType }
-                    }));
+                    await gameCache.put(targetUrl, new Response(rawTextData, { status: 200, statusText: "OK", headers: { 'Content-Type': contentType } }));
                     pushToSystemLogs('CLI-OUT', [`⚡ Content successfully committed to browser Cache Storage!`], 'flash-pkg');
-                } else {
-                    throw new Error("Browser Cache Storage API is unsupported or inaccessible on this domain profile.");
-                }
+                } else { throw new Error("Browser Cache Storage API is unsupported."); }
 
                 let incomingGame = null;
                 const isHtmlUrl = targetUrl.toLowerCase().endsWith('.html') || targetUrl.toLowerCase().includes('.html');
 
-                // LAYER 2: Smart Type Sniffing (JSON vs. Direct HTML file)
                 if (contentType.includes("application/json")) {
                     incomingGame = JSON.parse(rawTextData);
-                    if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) {
-                        throw new Error("Data corruption! Missing required manifest keys inside JSON metadata.");
-                    }
-                    
+                    if (!incomingGame.id || (!incomingGame.title && !incomingGame.name) || !incomingGame.url) throw new Error("Data corruption! Missing required manifest keys.");
                     incomingGame.name = incomingGame.name || incomingGame.title;
                     incomingGame.title = incomingGame.title || incomingGame.name;
                     incomingGame.zone = incomingGame.zone || "OFFLINE";
-                    
                     incomingGame.image = incomingGame.image || incomingGame.icon || autoIcon;
                     incomingGame.icon = incomingGame.icon || incomingGame.image; 
-                } 
-                else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
+                } else if (contentType.includes("text/html") || contentType.includes("text/plain") || isHtmlUrl) {
                     let filename = targetUrl.split('/').pop().split('?')[0] || "customgame.html";
                     let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
                     let cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-
-                    let targetZoneCasing = "OFFLINE"; 
-                    if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
-                        const usesLowercase = STATE.rawGamesList.some(g => g.zone === "offline");
-                        if (usesLowercase) targetZoneCasing = "offline";
-                    }
-
-                    incomingGame = {
-                        id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
-                        name: cleanTitle,   
-                        title: cleanTitle,
-                        url: targetUrl, // This acts as the pointer index for caches.match(url) later
-                        zone: targetZoneCasing,
-                        image: autoIcon,
-                        icon: autoIcon
-                    };
+                    let targetZoneCasing = STATE.rawGamesList.some(g => g.zone === "offline") ? "offline" : "OFFLINE"; 
                     
-                    pushToSystemLogs('WARN', [`📦 Direct file detected, flash-pkg generated config mapping for "${cleanTitle}"`], 'flash-pkg');
-                } 
-                else {
-                    throw new Error(`Unsupported content type registry: "${contentType}"`);
+                    incomingGame = { id: "pkg-" + baseName.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000), name: cleanTitle, title: cleanTitle, url: targetUrl, zone: targetZoneCasing, image: autoIcon, icon: autoIcon };
+                } else { throw new Error(`Unsupported content type registry: "${contentType}"`); }
+                
+                incomingGame.isOfflinePackage = true; 
+                const alreadyExists = STATE.rawGamesList.findIndex(game => game.url === incomingGame.url);
+                
+                if (alreadyExists > -1) {
+                    pushToSystemLogs('WARN', [`⚠️ Package already exists. Overwriting config pointers...`], 'flash-pkg');
+                    STATE.rawGamesList[alreadyExists] = incomingGame;
+                } else {
+                    STATE.rawGamesList.push(incomingGame);
+                    pushToSystemLogs('CLI-OUT', [`📦 Added 1 package pointer: ${incomingGame.title}`], 'flash-pkg');
                 }
                 
-                // LAYER 3: Core Memory Registry Entry Update
-                if (typeof STATE !== 'undefined' && STATE.rawGamesList) {
-                    incomingGame.isOfflinePackage = true; 
-                    
-                    const alreadyExists = STATE.rawGamesList.some(game => game.id === incomingGame.id);
-                    
-                    if (alreadyExists) {
-                        pushToSystemLogs('WARN', [`⚠️ Package [${incomingGame.title}] already exists. Overwriting config pointers...`], 'flash-pkg');
-                        STATE.rawGamesList = STATE.rawGamesList.map(game => game.id === incomingGame.id ? incomingGame : game);
-                    } else {
-                        STATE.rawGamesList.push(incomingGame);
-                        pushToSystemLogs('CLI-OUT', [`📦 Added 1 package pointer: ${incomingGame.title}`], 'flash-pkg');
-                    }
-                    
-                    // We only save the tiny manifest objects to localStorage so the UI card displays. 
-                    // The actual massive HTML payload stays entirely inside the browser's Cache Storage layer.
-                    const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
-                    localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
-                    
-                    pushToSystemLogs('CLI-OUT', [`💾 [${incomingGame.title}] registry manifest successfully linked!`], 'flash-pkg');
-                    
-                    if (typeof processAndRenderView === 'function') {
-                        processAndRenderView();
-                    }
-                    
-                } else {
-                    throw new Error("Core database array 'STATE.rawGamesList' was unreachable.");
-                }
+                const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+                localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
+                pushToSystemLogs('CLI-OUT', [`💾 Registry manifest successfully linked!`], 'flash-pkg');
+                
+                document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+                if (typeof processAndRenderView === 'function') processAndRenderView();
                 
             } catch (error) {
                 console.error(`ERR! flash-npm installation aborted.`);
@@ -572,176 +482,93 @@ const COMMAND_MATRIX = {
         }
     },
     "delgame": {
-        desc: "Displays an indexed list of your installed custom games and allows deletion via the CLI terminal.",
+        desc: "Displays an indexed list of your installed custom games and allows deletion via CLI.",
         exec: async (args) => {
-            if (typeof STATE === 'undefined' || !STATE.rawGamesList) {
-                console.error("ERR! Database state index context unreachable.");
-                return;
-            }
-
+            if (typeof STATE === 'undefined' || !STATE.rawGamesList) return;
             const installedGames = STATE.rawGamesList.filter(game => game.isOfflinePackage);
-
-            if (installedGames.length === 0) {
-                pushToSystemLogs('CLI-OUT', ["ℹ️ There are no custom downloaded packages detected inside storage."], 'flash-pkg');
-                return;
-            }
+            if (installedGames.length === 0) { pushToSystemLogs('CLI-OUT', ["ℹ️ There are no custom downloaded packages detected inside storage."], 'flash-pkg'); return; }
 
             pushToSystemLogs('CLI-OUT', ["📋 --- Custom Downloaded Games List ---"], 'flash-pkg');
-            installedGames.forEach((game, index) => {
-                pushToSystemLogs('CLI-OUT', [`[${index + 1}] Title: ${game.title} (ID: ${game.id})`], 'flash-pkg');
-            });
+            installedGames.forEach((game, index) => { pushToSystemLogs('CLI-OUT', [`[${index + 1}] Title: ${game.title} (ID: ${game.id})`], 'flash-pkg'); });
 
-            // 🖥️ CLI SELECT INDEX PROMPT
             pushToSystemLogs('CLI-OUT', [`❓ Enter the index number (1-${installedGames.length}) of the game to permanently erase:`], 'flash-pkg');
             const selectionInput = await terminalReadLine();
-
-            if (!selectionInput) {
-                pushToSystemLogs('WARN', ["🛑 Selection sequence broken or terminated."], 'flash-pkg');
-                return;
-            }
+            if (!selectionInput) return;
 
             const targetIndex = parseInt(selectionInput.trim(), 10) - 1;
-
-            if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= installedGames.length) {
-                pushToSystemLogs('ERROR', ["❌ Invalid selection target registry index out of boundary limitations."], 'flash-pkg');
-                return;
-            }
+            if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= installedGames.length) { pushToSystemLogs('ERROR', ["❌ Invalid selection target registry index."], 'flash-pkg'); return; }
 
             const selectedGame = installedGames[targetIndex];
-            
-            // 🖥️ CLI INLINE [y/n] CONFIRMATION
             pushToSystemLogs('CLI-OUT', [`⚠️ Are you absolutely sure you want to permanently delete "${selectedGame.title}"? [y/n]`], 'flash-pkg');
             const confirmDelete = await terminalReadLine();
 
-            if (!confirmDelete || confirmDelete.toLowerCase().trim() !== 'y') {
-                pushToSystemLogs('WARN', ["🛑 Clear routine scrub terminated. Safety backup triggered."], 'flash-pkg');
-                return;
-            }
+            if (!confirmDelete || confirmDelete.toLowerCase().trim() !== 'y') { pushToSystemLogs('WARN', ["🛑 Clear routine scrub terminated."], 'flash-pkg'); return; }
 
-            // Remove game configuration layout properties
             STATE.rawGamesList = STATE.rawGamesList.filter(game => game.id !== selectedGame.id);
-
-            // Commit modifications back to system directory
             const updatedOfflineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
             localStorage.setItem('flash_offline_folder', JSON.stringify(updatedOfflineFolder));
-
-            pushToSystemLogs('CLI-OUT', [`🔥 [${selectedGame.title}] was purged from active storage targets successfully!`], 'flash-pkg');
-
-            if (typeof processAndRenderView === 'function') {
-                processAndRenderView();
-            }
+            pushToSystemLogs('CLI-OUT', [`🔥 [${selectedGame.title}] was purged successfully!`], 'flash-pkg');
+            
+            document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+            if (typeof processAndRenderView === 'function') processAndRenderView();
         }
     },
     "play": {
         desc: "Launches any catalog game. Usage: flash play {game_title}",
         exec: (args) => {
-            if (!args || args.length === 0) {
-                console.error("ERR! Target query cannot be empty. Example: flash play 2048");
-                return;
-            }
+            if (!args || args.length === 0) return;
             const query = args.join(' ').toLowerCase();
-            if (typeof STATE === 'undefined' || !STATE.rawGamesList) {
-                console.error("ERR! Database unavailable. Run 'flash init' first.");
-                return;
-            }
-
             const target = STATE.rawGamesList.find(g => g.title?.toLowerCase().includes(query) || g.id?.toString().toLowerCase() === query);
-            
             if (target) {
                 pushToSystemLogs('CLI-OUT', [`🎯 Match Located: [${target.title}]. Launching...`], 'flash-launcher');
-                if (typeof openGame === 'function') {
-                    openGame(target.id);
+                if (typeof executeGameLauncher === 'function') {
+                    executeGameLauncher(target);
                     document.getElementById('devConsoleModal').classList.add('hidden');
                 }
-            } else {
-                console.error(`ERR! Could not find game matching '${query}'`);
-            }
+            } else { console.error(`ERR! Could not find game matching '${query}'`); }
         }
     },
-    "storage": {
-        desc: "Inspects local browser storage maps.",
-        exec: () => {
-            let str = "LOCAL STORAGE DUMP:\n";
-            for(let i=0; i<localStorage.length; i++) {
-                str += `[${localStorage.key(i)}] -> ${localStorage.getItem(localStorage.key(i)).substring(0, 40)}...\n`;
-            }
-            console.log(str);
-        }
-    },
-    "clear": {
-        desc: "Wipes clean the display terminal.",
-        exec: () => clearSystemLogs()
-    }
+    "clear": { desc: "Wipes clean the display terminal.", exec: () => clearSystemLogs() }
 };
 
-// 1. A global placeholder to store our pause/resume hook
 let activeInputResolver = null;
-
-// 2. The function your commands can call to pause and wait for the user
-function terminalReadLine() {
-    return new Promise((resolve) => {
-        // Store the resolve function globally so our input field can trigger it later
-        activeInputResolver = resolve;
-    });
-}
+function terminalReadLine() { return new Promise((resolve) => { activeInputResolver = resolve; }); }
         
-// Command Line Parsing Processing Input Field Core Loop
 document.getElementById('terminalInput')?.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         const fullInput = this.value.trim();
         if (!fullInput) return;
-
         this.value = '';
         COMMAND_HISTORY.push(fullInput);
         HISTORY_INDEX = COMMAND_HISTORY.length;
-
-        // Print entered instruction straight back to display grid output
         pushToSystemLogs('CLI-IN', [fullInput], 'Client Shell');
 
-        // 1. 🔥 CHECK INTERCEPTOR FIRST: Is a command waiting for an answer?
+        // 🔥 CHECK INTERCEPTOR FIRST
         if (activeInputResolver !== null) {
             const resolveReference = activeInputResolver;
-            activeInputResolver = null; // Clear the hook so normal commands work again
-            resolveReference(fullInput); // ✅ FIXED: Changed 'userInput' to 'fullInput'
-            return; // Stop right here so it doesn't process as a new command!
+            activeInputResolver = null; 
+            resolveReference(fullInput); 
+            return; 
         }
 
-        // 2. RUN NORMAL COMMAND: Only enforce syntax rules if we aren't answering a prompt
         const tokens = fullInput.split(/\s+/);
-        if (tokens[0] !== 'flash') {
-            console.error(`Syntax Error: Commands require 'flash' syntax. Type 'flash help'.`);
-            return;
-        }
-
+        if (tokens[0] !== 'flash') { console.error(`Syntax Error: Commands require 'flash' syntax.`); return; }
         const action = tokens[1];
         const args = tokens.slice(2);
 
-        if (COMMAND_MATRIX[action]) {
-            COMMAND_MATRIX[action].exec(args);
-        } else {
-            console.error(`Flash Games terminal error: Command '${action}' unrecognized by console. Type 'flash help'.`);
-        }
+        if (COMMAND_MATRIX[action]) { COMMAND_MATRIX[action].exec(args); } 
+        else { console.error(`Command '${action}' unrecognized by console. Type 'flash help'.`); }
     } 
-    // Cycle up and down through user prompt command text logs histories
     else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (COMMAND_HISTORY.length > 0 && HISTORY_INDEX > 0) {
-            HISTORY_INDEX--;
-            this.value = COMMAND_HISTORY[HISTORY_INDEX];
-        }
+        if (COMMAND_HISTORY.length > 0 && HISTORY_INDEX > 0) { HISTORY_INDEX--; this.value = COMMAND_HISTORY[HISTORY_INDEX]; }
     } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (HISTORY_INDEX < COMMAND_HISTORY.length - 1) {
-            HISTORY_INDEX++;
-            this.value = COMMAND_HISTORY[HISTORY_INDEX];
-        } else {
-            HISTORY_INDEX = COMMAND_HISTORY.length;
-            this.value = '';
-        }
+        if (HISTORY_INDEX < COMMAND_HISTORY.length - 1) { HISTORY_INDEX++; this.value = COMMAND_HISTORY[HISTORY_INDEX]; } 
+        else { HISTORY_INDEX = COMMAND_HISTORY.length; this.value = ''; }
     }
 });
 
-// Windows Alt+C & Mac Option+C Keyboard Core Toggles Interceptors 
 document.addEventListener('keydown', (e) => {
     if (e.altKey && e.code === 'KeyC') {
         e.preventDefault();
@@ -751,22 +578,133 @@ document.addEventListener('keydown', (e) => {
             if (modal.classList.contains('hidden')) {
                 modal.classList.remove('hidden');
                 renderSystemLogs();
-                // Forces browser focus straight down to command prompt input area for instant execution
                 setTimeout(() => inputField?.focus(), 50);
-            } else {
-                modal.classList.add('hidden');
-            }
+            } else { modal.classList.add('hidden'); }
         }
     }
 });
 
 // ==========================================
+// GUI INSTALLER PIPELINE
+// ==========================================
+let pendingInstallData = null;
+
+async function analyzeInstallUrl() {
+    const urlInput = document.getElementById('installUrlInput');
+    const targetUrl = urlInput.value.trim();
+    if (!targetUrl) return;
+    
+    const btn = document.getElementById('installAnalyzeBtn');
+    btn.textContent = 'Analyzing...'; btn.disabled = true;
+
+    try {
+        let autoIcon = "";
+        try { const domain = new URL(targetUrl).hostname; autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`; } catch(e) {}
+
+        const response = await fetch(targetUrl);
+        if (!response.ok) throw new Error("Bad response from server");
+
+        let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
+        const contentType = response.headers.get("content-type") || "";
+        const rawTextData = await response.text();
+        if (!bytes) { bytes = new Blob([rawTextData]).size; }
+        const sizeInKB = (bytes / 1024).toFixed(2);
+
+        let cleanTitle = "Custom Game";
+        let filename = targetUrl.split('/').pop().split('?')[0];
+        if (filename) {
+            let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
+            cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+        }
+
+        pendingInstallData = { url: targetUrl, title: cleanTitle, size: sizeInKB, icon: autoIcon, rawText: rawTextData, contentType: contentType };
+
+        document.getElementById('installStep1').classList.add('hidden');
+        document.getElementById('installStep2').classList.remove('hidden');
+        document.getElementById('installStep2').classList.add('flex');
+        
+        document.getElementById('installPreviewIcon').src = autoIcon;
+        document.getElementById('installPreviewTitle').textContent = cleanTitle;
+        document.getElementById('installPreviewSize').textContent = `Size: ${sizeInKB} KB`;
+
+    } catch (err) { alert("Analysis failed: " + err.message); }
+    btn.textContent = 'Analyze Payload'; btn.disabled = false;
+}
+
+async function commitInstallGame() {
+    if (!pendingInstallData) return;
+    const btn = document.getElementById('installConfirmBtn');
+    btn.textContent = 'Installing...'; btn.disabled = true;
+
+    try {
+        if ('caches' in window) {
+            const gameCache = await caches.open('flash-games-cache');
+            await gameCache.put(pendingInstallData.url, new Response(pendingInstallData.rawText, { status: 200, statusText: "OK", headers: { 'Content-Type': pendingInstallData.contentType } }));
+        }
+
+        const targetZoneCasing = STATE.rawGamesList.some(g => g.zone === "offline") ? "offline" : "OFFLINE";
+        const incomingGame = {
+            id: "pkg-" + pendingInstallData.title.toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000),
+            name: pendingInstallData.title, title: pendingInstallData.title, url: pendingInstallData.url, zone: targetZoneCasing,
+            image: pendingInstallData.icon, icon: pendingInstallData.icon, isOfflinePackage: true
+        };
+
+        const alreadyExists = STATE.rawGamesList.findIndex(g => g.url === incomingGame.url);
+        if (alreadyExists > -1) { STATE.rawGamesList[alreadyExists] = incomingGame; } 
+        else { STATE.rawGamesList.push(incomingGame); }
+
+        const offlineFolder = STATE.rawGamesList.filter(game => game.isOfflinePackage);
+        localStorage.setItem('flash_offline_folder', JSON.stringify(offlineFolder));
+        
+        document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+        processAndRenderView();
+        closeInstallModal();
+    } catch (err) { alert("Installation failed: " + err.message); }
+    
+    btn.textContent = 'Install Offline'; btn.disabled = false;
+}
+
+function resetInstallModal() {
+    pendingInstallData = null;
+    document.getElementById('installUrlInput').value = '';
+    document.getElementById('installStep1').classList.remove('hidden');
+    document.getElementById('installStep2').classList.add('hidden');
+    document.getElementById('installStep2').classList.remove('flex');
+}
+
+function openInstallModal() {
+    resetInstallModal();
+    const modal = document.getElementById('installModal');
+    const inner = document.getElementById('installModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); inner.classList.remove('scale-95'); });
+}
+
+function closeInstallModal() {
+    const modal = document.getElementById('installModal');
+    const inner = document.getElementById('installModalInner');
+    modal.classList.add('opacity-0'); inner.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); }, 300);
+}
+
+// ==========================================
 // EASILY CHANGE YOUR UPDATE LOGS HERE
 // ==========================================
 const CHANGELOG_DATA = {
+    "v4.0": {
+        title: "Liquid Glass & True Persistence",
+        isCurrent: true,
+        notes: [
+            "<strong>Liquid Glass UI:</strong> The entire hub was rewritten to feel smooth, utilizing heavy backdrop blurring, rich inset shadows, and deep dark-mode panels for a beautiful Apple-style aesthetic.",
+            "<strong>UI Game Installer:</strong> You can now add and install compatible web games offline directly via the new 'Install' button next to updates, skipping the CLI terminal.",
+            "<strong>Persistence Anchored:</strong> A massive architectural fix means any games installed offline (CLI or UI) will completely restore themselves on reboot. No more disappearing vault games!",
+            "<strong>Homepage Quick-Return:</strong> Click the Flash Games logo from anywhere in the app to instantly reset your search and jump back to the top of the homepage.",
+            "<strong>Changelog Redesign:</strong> The version history has been cleaned up. Past versions now sit neatly in a collapsible sidebar drawer to keep the viewport clean."
+        ]
+    },
     "v3.2": {
         title: "Flash CLI",
-        isCurrent: true,
+        isCurrent: false,
         notes: [
             "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline. If you're not a nerd, this basically just means that you can install any compatible game you see on the internet.",
             "<code>flash health</code> Check your system health.",
@@ -775,89 +713,33 @@ const CHANGELOG_DATA = {
             "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
         ]
     },
-    "v3.1": {
-        title: "⚡ The Unstoppable Offline & QoL Update",
-        isCurrent: false,
-        notes: [
-            "<strong>True Offline Vault:</strong> Destroyed the bug causing the app to crash without Wi-Fi. Your local games are now 100% playable completely off the grid!",
-            "<strong>Instant Sync Pipeline:</strong> Patched the update handler. The cache-busting engine now forces new game builds to download instantly without dropping your data.",
-            "<strong>Infinity RNG Upgraded:</strong> Deployed the latest standalone package directly into the arcade matrix.",
-            "<strong>Lightning Fast Navigation:</strong> Smash the <code>/</code> key from anywhere on the dashboard to instantly drop into the library search.",
-            "<strong>For Devs:</strong> Built-in Flash CLI running @<code>alt+c</code>. Install custom games via the Flash CLI by using <code>flash install {url via https}</code>",
-            "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
-        ]
-    },
-    "v3.0": {
-        title: "Any Game, Any Time",
-        isCurrent: false,
-        notes: [
-            "Fixed a bug where the inline code engine wasn't as powerful. Now its even better.",
-            "<strong>Live Updating & New Syncing:</strong> Upgraded ETA, more powerful downloads, and update games. All of this, directly at your new status bar.",
-            "<strong>Emulator Support:</strong> Fixed a bug where there wasn't support for some emulator games.",
-            "<strong>Flash Exclusives:</strong> Added Orbital to offline games and updates Infinity RNG.",
-            "<strong>thanks for playing on flash!❤️🔥⚡️</strong>"
-        ]
-    },
-    "v2.3": {
-        title: "The QoL & Code Compiler Update",
-        isCurrent: false,
-        notes: [
-            "<strong>Inline Code Engine:</strong> Dynamically executes targets that send full text HTML fragments or embedded script strings inside standard sandbox boundaries.",
-            "<strong>Live Download Stats:</strong> View ETA, skips, and live download progress.",
-            "<strong>Fullscreen Engine:</strong> Maximize any game portal instantly."
-        ]
-    },
-    "v2.2": {
-        title: "Folders & UI Enhancements",
-        isCurrent: false,
-        notes: [
-            "Replaced intrusive browser popups with dynamic native UI modals.",
-            "Optimized rendering frameworks for smoother scrolling across extended catalogs."
-        ]
-    },
-    "v2.1": {
-        title: "The Vault System",
-        isCurrent: false,
-        notes: [
-            "Introduced persistent caching logic and localized JSON database aggregation.",
-            "Added core favoriting pipeline."
-        ]
-    }
+    "v3.1": { title: "⚡ The Unstoppable Offline & QoL Update", isCurrent: false, notes: ["<strong>True Offline Vault:</strong> Destroyed the bug causing the app to crash without Wi-Fi.", "<strong>Instant Sync Pipeline:</strong> Patched the update handler.", "<strong>Lightning Fast Navigation:</strong> Smash the <code>/</code> key to instantly drop into the library search."] }
 };
 
-// Automatically builds and updates the log UI
 function buildChangelogUI() {
-    console.log("buildChangelogUI called")
     const tabsContainer = document.getElementById('changelogTabs');
-    const headerTitle = document.querySelector('button[onclick="openChangelog()"]');
+    const headerTitle = document.getElementById('headerUpdateBtn');
     
-    // Clear old dynamic elements except the title
-    const titleElement = tabsContainer.querySelector('h3');
-    tabsContainer.innerHTML = '';
-    if (titleElement) tabsContainer.appendChild(titleElement);
+    // Clear old tabs except the title block
+    Array.from(tabsContainer.children).forEach(child => {
+        if (!child.classList.contains('uppercase')) tabsContainer.removeChild(child);
+    });
     
     let defaultVersion = Object.keys(CHANGELOG_DATA)[0];
 
     Object.keys(CHANGELOG_DATA).forEach(ver => {
         const log = CHANGELOG_DATA[ver];
-        
-        // Update top-bar badge button text to match current version
-        if (log.isCurrent) {
-            headerTitle.textContent = `${ver} Updates`;
-            defaultVersion = ver;
-        }
+        if (log.isCurrent) { headerTitle.textContent = `${ver} Updates`; defaultVersion = ver; }
 
-        // Generate the sidebar button tab
         const tabBtn = document.createElement('button');
         tabBtn.id = `tab-${ver}`;
-        tabBtn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent";
+        tabBtn.className = "tab-btn px-4 py-3 rounded-2xl text-sm font-bold text-left transition-all bg-transparent text-slate-400 hover:bg-white/10 whitespace-nowrap border border-transparent";
         tabBtn.textContent = log.isCurrent ? `${ver} (Current)` : ver;
-        tabBtn.onclick = () => switchChangelogTab(ver);
+        tabBtn.onclick = () => { switchChangelogTab(ver); if(window.innerWidth < 768) toggleChangelogMenu(); };
         
         tabsContainer.appendChild(tabBtn);
     });
 
-    // Display the latest version by default
     switchChangelogTab(defaultVersion);
 }
 
@@ -865,152 +747,110 @@ function switchChangelogTab(versionId) {
     const log = CHANGELOG_DATA[versionId];
     if (!log) return;
 
-    // Reset styles on all tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent w-full";
-    });
-
-    // Highlight selected tab
+    document.querySelectorAll('.tab-btn').forEach(btn => { btn.className = "tab-btn px-4 py-3 rounded-2xl text-sm font-bold text-left transition-all bg-transparent text-slate-400 hover:bg-white/10 whitespace-nowrap border border-transparent w-full"; });
     const activeBtn = document.getElementById(`tab-${versionId}`);
-    if (activeBtn) {
-        activeBtn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap w-full";
-    }
+    if (activeBtn) { activeBtn.className = "tab-btn px-4 py-3 rounded-2xl text-sm font-bold text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap w-full shadow-inner"; }
 
-    // Build lists items out of data arrays (Loops ONLY through bullet points now)
+    // Removed the checkmark, replaced with a clean CSS dot bullet
     const listItems = log.notes.map(note => `
-        <li class="flex items-start gap-2">
-            <span class="text-emerald-400 mt-0.5">✔</span> 
+        <li class="relative pl-5 text-slate-300 leading-relaxed mb-4 before:content-[''] before:absolute before:left-0 before:top-[8px] before:w-2 before:h-2 before:bg-indigo-400 before:rounded-full before:shadow-[0_0_8px_rgba(99,102,241,0.8)]">
             <div>${note}</div>
         </li>
     `).join('');
 
-    // Inject text strings cleanly and append the centered visitor badge at the absolute end
     document.getElementById('changelogContent').innerHTML = `
-        <h2 class="text-xl font-bold text-white mb-4">${log.title}</h2>
-        <ul class="space-y-3 text-sm text-slate-300">${listItems}</ul>
-        
-        <div class="flex justify-center items-center mt-8 pt-4 border-t border-white/5 w-full">
-            <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" 
-                 alt="Visitor Count" 
-                 class="h-6 opacity-75 hover:opacity-100 transition-opacity rounded shadow-md" 
-                 title="Total Page Views">
+        <h2 class="text-3xl font-bold text-white mb-8 tracking-tight">${log.title}</h2>
+        <ul class="space-y-2 text-sm">${listItems}</ul>
+        <div class="flex justify-center items-center mt-12 pt-6 border-t border-white/5 w-full">
+            <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="h-6 opacity-60 hover:opacity-100 transition-opacity rounded shadow-md" title="Total Page Views">
         </div>
     `;
 }
 
-        
-        const BASE_URL = 'https://ess-education.org';
-        const CONFIG = { 
-            endpoints: ['./offline.json', '/asset/json/zones/gnmath.json', '/asset/json/zones/truffled.json', '/asset/json/zones/seraph.json', '/asset/json/zones/velara.json', '/asset/json/zones/ugs.json', '/asset/json/zones/tglsc.json', '/asset/json/zones/selenite.json'], 
-            fallbackImage: "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230f172a'/%3E%3C/svg%3E" 
-        };
-        let STATE = { 
-            rawGamesList: [], processedGames: [], 
-            activeFilters: { search: '', zone: 'all', sort: 'az' }, 
-            isOffline: !navigator.onLine,
-            favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
-            folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
-            activeTargetGameId: null,
-            currentActiveBlobUrl: null
-        };
+function openChangelog() {
+    const modal = document.getElementById('changelogModal');
+    const inner = document.getElementById('changelogModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); inner.classList.remove('scale-95'); });
+}
+function closeChangelog() {
+    const modal = document.getElementById('changelogModal');
+    const inner = document.getElementById('changelogModalInner');
+    modal.classList.add('opacity-0'); inner.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); }, 300);
+}
+function toggleChangelogMenu() {
+    const tabs = document.getElementById('changelogTabs');
+    if (tabs.classList.contains('-translate-x-full')) { tabs.classList.remove('-translate-x-full'); tabs.classList.add('drawer-open'); } 
+    else { tabs.classList.add('-translate-x-full'); tabs.classList.remove('drawer-open'); }
+}
 
-        let syncStartTime = 0;
-        
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
+const BASE_URL = 'https://ess-education.org';
+const CONFIG = { 
+    endpoints: ['./offline.json', '/asset/json/zones/gnmath.json', '/asset/json/zones/truffled.json', '/asset/json/zones/seraph.json', '/asset/json/zones/velara.json', '/asset/json/zones/ugs.json', '/asset/json/zones/tglsc.json', '/asset/json/zones/selenite.json'], 
+    fallbackImage: "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%230f172a'/%3E%3C/svg%3E" 
+};
+let STATE = { 
+    rawGamesList: [], processedGames: [], 
+    activeFilters: { search: '', zone: 'all', sort: 'az' }, 
+    isOffline: !navigator.onLine,
+    favorites: JSON.parse(localStorage.getItem('vault_favorites')) || [],
+    folders: JSON.parse(localStorage.getItem('vault_folders')) || {},
+    activeTargetGameId: null, currentActiveBlobUrl: null
+};
 
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
 
-let failedSyncUrls = [];
-let isSyncing = false;
+let failedSyncUrls = []; let isSyncing = false;
 
 async function executeSync(urls) {
-    if (isSyncing) return;
-    isSyncing = true;
-    console.log("syncing activated")
-    
+    if (isSyncing) return; isSyncing = true;
     const btn = document.getElementById('syncOfflineBtn');
     const logContainer = document.getElementById('syncLogsContainer');
     const retryBtn = document.getElementById('retrySyncBtn');
     
-    btn.textContent = 'Syncing...';
-    btn.disabled = true;
+    btn.textContent = 'Syncing...'; btn.disabled = true;
     document.getElementById('syncInfoBtn').classList.add('info-btn-enter');
     retryBtn.classList.add('hidden');
-    
     if (logContainer.innerHTML.includes('Waiting')) logContainer.innerHTML = '';
     
-    let current = 0;
-    let failed = 0;
-    let updated = 0;
-    const total = urls.length;
-    failedSyncUrls = []; 
+    let current = 0; let failed = 0; let updated = 0; const total = urls.length; failedSyncUrls = []; 
 
     try {
         const cache = await caches.open('flashgames-cache-v1'); 
-        
         for (const url of urls) {
             try {
-                // Check if we already have this file cached
                 const cachedResponse = await cache.match(url);
-                
-                // Force a network fetch with cache-busting headers to see if GitHub has a newer version
-                const networkResponse = await fetch(url, { 
-                    cache: 'no-cache', // Forces browser to validate with server, ignoring local cache
-                    headers: { 'Cache-Control': 'no-cache' }
-                });
-                
+                const networkResponse = await fetch(url, { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache' } });
                 if (!networkResponse.ok) throw new Error(`HTTP error! status: ${networkResponse.status}`);
                 
                 if (cachedResponse) {
-                    // Read and compare text contents to see if anything actually changed
-                    const cachedText = await cachedResponse.clone().text();
-                    const networkText = await networkResponse.clone().text();
-                    
-                    if (cachedText === networkText) {
-                        // The file is exactly the same, safe to skip!
-                        current++;
-                        logContainer.innerHTML += `<div class="text-slate-400 truncate">🟰 Unchanged: ${url.split('/').pop()}</div>`;
-                        continue;
-                    } else {
-                        // The file has changed! Overwrite the old cached asset with the new one
-                        updated++;
-                        logContainer.innerHTML += `<div class="text-amber-400 truncate">✨ Updated: ${url.split('/').pop()}</div>`;
-                    }
-                } else {
-                    // Brand new file altogether
-                    current++;
-                    logContainer.innerHTML += `<div class="text-emerald-400 truncate">✓ Cached: ${url.split('/').pop()}</div>`;
-                }
-                
-                // Update the specific asset inside the cache safely
+                    const cachedText = await cachedResponse.clone().text(); const networkText = await networkResponse.clone().text();
+                    if (cachedText === networkText) { current++; logContainer.innerHTML += `<div class="text-slate-400 truncate">🟰 Unchanged: ${url.split('/').pop()}</div>`; continue; } 
+                    else { updated++; logContainer.innerHTML += `<div class="text-amber-400 truncate">✨ Updated: ${url.split('/').pop()}</div>`; }
+                } else { current++; logContainer.innerHTML += `<div class="text-emerald-400 truncate">✓ Cached: ${url.split('/').pop()}</div>`; }
                 await cache.put(url, networkResponse.clone());
-                
             } catch (err) {
-                failed++;
-                failedSyncUrls.push(url);
+                failed++; failedSyncUrls.push(url);
                 logContainer.innerHTML += `<div class="text-rose-400 truncate">✗ Failed: ${url.split('/').pop()}</div>`;
-                console.error('Failed to sync:', url, err);
             }
-            
-            // UI updates
             document.getElementById('syncProgressText').textContent = `${current + updated + failed} / ${total}`;
             document.getElementById('syncProgressBar').style.width = `${((current + updated + failed) / total) * 100}%`;
             logContainer.scrollTop = logContainer.scrollHeight; 
         }
-    } catch (err) {
-        logContainer.innerHTML += `<div class="text-rose-500">Critical Error accessing Cache API.</div>`;
-    }
+    } catch (err) { logContainer.innerHTML += `<div class="text-rose-500">Critical Error accessing Cache API.</div>`; }
 
     isSyncing = false;
     if (failed > 0) {
         btn.textContent = `Done (${failed} failed)`;
-        btn.className = "px-4 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-lg hover:bg-rose-500/30 transition-all text-xs font-medium z-10 relative";
+        btn.className = "px-4 py-1.5 bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-xl hover:bg-rose-500/30 transition-all text-xs font-semibold z-10 relative shadow-inner";
         retryBtn.classList.remove('hidden');
     } else {
         btn.textContent = updated > 0 ? `Updated ${updated} games!` : 'All files up to date!';
         document.getElementById('syncProgressBar').classList.add('bg-emerald-400');
         setTimeout(() => {
             btn.textContent = 'Sync Offline Folder';
-            btn.className = "px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg hover:bg-emerald-500/30 transition-all text-xs font-medium z-10 relative";
+            btn.className = "px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl hover:bg-emerald-500/30 transition-all text-xs font-semibold z-10 relative shadow-inner";
             btn.disabled = false;
             document.getElementById('syncProgressBar').classList.remove('bg-emerald-400');
             setTimeout(() => document.getElementById('syncInfoBtn').classList.remove('info-btn-enter'), 500);
@@ -1018,44 +858,24 @@ async function executeSync(urls) {
     }
 }
 
-// Initial Sync Trigger
 document.getElementById('syncOfflineBtn').addEventListener('click', () => {
-    // Collect all URLs for offline games
     const offlineGames = STATE.rawGamesList.filter(g => g.zone === 'OFFLINE');
     const urlsToCache = offlineGames.flatMap(g => [g.url, g.cover].filter(Boolean));
     urlsToCache.push('./offline.json', './index.html', './manifest.json', './offline/logo.png');
-    
     document.getElementById('syncInfoPanel').classList.add('panel-enter');
     executeSync(urlsToCache);
 });
 
-// ==========================================
-// FORCE CHANGELOG POPUP FOR NEW UPDATES
-// ==========================================
 function enforceChangelogViewing() {
-    // 1. Find which version is currently active in your CHANGELOG_DATA
     const currentVersion = Object.keys(CHANGELOG_DATA).find(ver => CHANGELOG_DATA[ver].isCurrent);
-    
-    // Safety check just in case
     if (!currentVersion) return;
-
-    // 2. Check the user's browser memory to see what the last version they saw was
     const lastViewedVersion = localStorage.getItem('lastViewedPatchNotes');
-
-    // 3. If they've never seen any notes, or they are on an older version...
     if (lastViewedVersion !== currentVersion) {
-        // FORCE THE MODAL OPEN
-        const modal = document.getElementById('changelogModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
-        
-        // Save the new version to their browser so it doesn't spam them on every refresh
+        openChangelog();
         localStorage.setItem('lastViewedPatchNotes', currentVersion);
     }
 }
 
-// Retry Trigger
 document.getElementById('retrySyncBtn').addEventListener('click', () => {
     if (failedSyncUrls.length > 0) {
         document.getElementById('syncLogsContainer').innerHTML += `<div class="text-indigo-400 italic mt-2">--- Retrying ${failedSyncUrls.length} items ---</div>`;
@@ -1063,231 +883,198 @@ document.getElementById('retrySyncBtn').addEventListener('click', () => {
     }
 });
 
-        function toggleSyncPanel() {
-            document.getElementById('syncInfoPanel').classList.toggle('panel-enter');
+function toggleSyncPanel() { document.getElementById('syncInfoPanel').classList.toggle('panel-enter'); }
+
+function handleNetworkChange() {
+    STATE.isOffline = !navigator.onLine;
+    const dot = document.getElementById('networkStatusIcon');
+    const text = document.getElementById('offlineHUDText');
+    const zoneFilter = document.getElementById('zoneFilter');
+    const syncToolbox = document.getElementById('syncToolbox');
+
+    if (STATE.isOffline) {
+        dot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]";
+        text.textContent = "Offline Mode Active."; zoneFilter.value = 'OFFLINE'; STATE.activeFilters.zone = 'OFFLINE'; zoneFilter.disabled = true;
+        syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
+    } else {
+        dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
+        text.textContent = "Connected. Ready to sync local games."; zoneFilter.disabled = false;
+        syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
+    }
+    processAndRenderView();
+}
+
+window.addEventListener('online', handleNetworkChange);
+window.addEventListener('offline', handleNetworkChange);
+
+function toggleFullscreen() {
+    const frameWrapper = document.getElementById('iframeWrapper');
+    if (!document.fullscreenElement) { if (frameWrapper.requestFullscreen) { frameWrapper.requestFullscreen(); } else if (frameWrapper.webkitRequestFullscreen) { frameWrapper.webkitRequestFullscreen(); } } 
+    else { if (document.exitFullscreen) { document.exitFullscreen(); } }
+}
+
+async function executeGameLauncher(game) {
+    const portal = document.getElementById('gamePortal'); const frame = document.getElementById('portalFrame');
+    document.getElementById('portalTitle').textContent = game.name;
+    portal.classList.remove('hidden'); portal.classList.add('grid');
+    setTimeout(() => portal.classList.remove('opacity-0'), 50);
+
+    if (STATE.currentActiveBlobUrl) { URL.revokeObjectURL(STATE.currentActiveBlobUrl); STATE.currentActiveBlobUrl = null; }
+
+    try {
+        let originalText = "";
+        if ('caches' in window) {
+            const gameCache = await caches.open('flash-games-cache');
+            const cachedResponse = await gameCache.match(game.url);
+            if (cachedResponse) { originalText = await cachedResponse.text(); }
         }
 
-        function handleNetworkChange() {
-            STATE.isOffline = !navigator.onLine;
-            const dot = document.getElementById('networkStatusIcon');
-            const text = document.getElementById('offlineHUDText');
-            const zoneFilter = document.getElementById('zoneFilter');
-            const syncToolbox = document.getElementById('syncToolbox');
+        if (!originalText) {
+            const response = await fetch(game.url);
+            if (!response.ok) throw new Error(`Status Code: ${response.status}`);
+            originalText = await response.text();
+        }
 
-            if (STATE.isOffline) {
-                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]";
-                text.textContent = "Offline Mode Active.";
-                zoneFilter.value = 'OFFLINE';
-                STATE.activeFilters.zone = 'OFFLINE';
-                zoneFilter.disabled = true;
-                syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
-                console.log("offline mode active")
-            } else {
-                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
-                text.textContent = "Connected. Ready to sync local games.";
-                zoneFilter.disabled = false;
-                syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
-                console.log("online mode active")
+        const trimmedText = originalText.trim();
+        const hasHtmlTags = /<html|<head|<body|<script/i.test(trimmedText);
+        const hasRawJsLogic = trimmedText.includes('function') || trimmedText.includes('var ') || trimmedText.includes('const ') || (trimmedText.startsWith('{') && trimmedText.endsWith('}'));
+
+        if (hasHtmlTags || hasRawJsLogic) {
+            let executablePayload = originalText;
+            if (hasRawJsLogic && !hasHtmlTags) {
+                executablePayload = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0; background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh;"><script>${originalText}<\/script></body></html>`;
             }
-            processAndRenderView();
-        }
+            const blob = new Blob([executablePayload], { type: 'text/html;charset=utf-8' });
+            STATE.currentActiveBlobUrl = URL.createObjectURL(blob);
+            frame.src = STATE.currentActiveBlobUrl;
+        } else { frame.src = game.url; }
+    } catch (err) { frame.src = game.url; }
+}
 
-        window.addEventListener('online', handleNetworkChange);
-        window.addEventListener('offline', handleNetworkChange);
+function toggleFavorite(id, e) { e.stopPropagation(); const i = STATE.favorites.indexOf(id); i>-1 ? STATE.favorites.splice(i,1) : STATE.favorites.push(id); localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites)); processAndRenderView(); }
+function openFolderModal(id, e) { 
+    e.stopPropagation(); STATE.activeTargetGameId = id; const g = STATE.rawGamesList.find(x=>x.id===id); if(!g)return; 
+    document.getElementById('folderModalGameName').textContent = g.name; const c = document.getElementById('existingFoldersList'); c.innerHTML=''; 
+    Object.keys(STATE.folders).sort().forEach(f => { 
+        const b = document.createElement('button'); const a = STATE.folders[f].includes(id); 
+        b.className = `px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-sm ${a ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' : 'bg-black/30 border border-white/10 text-slate-300 hover:bg-white/10'}`; 
+        b.textContent = a ? `${f} (Added)` : f; 
+        b.onclick = () => { addGameToFolder(f, id); closeFolderModal(); }; c.appendChild(b); 
+    }); 
+    document.getElementById('newFolderNameInput').value = ''; 
+    const modal = document.getElementById('folderModal');
+    const inner = document.getElementById('folderModalInner');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); inner.classList.remove('scale-95'); });
+}
+function closeFolderModal() { 
+    const modal = document.getElementById('folderModal');
+    const inner = document.getElementById('folderModalInner');
+    modal.classList.add('opacity-0'); inner.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); STATE.activeTargetGameId = null; }, 300);
+}
+function addGameToFolder(f, id) { if(!STATE.folders[f]) STATE.folders[f]=[]; if(!STATE.folders[f].includes(id)) STATE.folders[f].push(id); localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); }
+function submitNewFolder() { const i = document.getElementById('newFolderNameInput'); const f = i.value.trim(); if(!f || !STATE.activeTargetGameId)return; addGameToFolder(f, STATE.activeTargetGameId); closeFolderModal(); }
+function removeFromFolder(f, id, e) { e.stopPropagation(); if(STATE.folders[f]) { STATE.folders[f] = STATE.folders[f].filter(x=>x!==id); if(STATE.folders[f].length===0) delete STATE.folders[f]; localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); } }
 
-        function openChangelog() { document.getElementById('changelogModal').classList.remove('hidden'); }
-        function switchTab(versionId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-transparent text-slate-400 hover:bg-white/5 whitespace-nowrap border border-transparent";
-            });
-            const activeBtn = document.getElementById(`tab-${versionId}`);
-            activeBtn.className = "tab-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap";
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-            document.getElementById(`content-${versionId}`).classList.remove('hidden');
-        }
+function normalizeUrl(p, b = BASE_URL) { if(!p)return ''; if(p.startsWith('http') || p.startsWith('./')) return p; return `${b}${p.startsWith('/')?p:`/${p}`}`; }
+function extractZoneName(p) { if(p==='./offline.json') return 'OFFLINE'; const m=p.match(/\/([^/]+)\.json$/); return m?m[1].toUpperCase():'UNKNOWN'; }
 
-        function toggleFullscreen() {
-            const frameWrapper = document.getElementById('iframeWrapper');
-            if (!document.fullscreenElement) {
-                if (frameWrapper.requestFullscreen) { frameWrapper.requestFullscreen(); } 
-                else if (frameWrapper.webkitRequestFullscreen) { frameWrapper.webkitRequestFullscreen(); }
-            } else {
-                if (document.exitFullscreen) { document.exitFullscreen(); }
-            }
-        }
+async function fetchSystemData() {
+    showStatus('loading', 'Loading Game Library', 'Aggregating game nodes...');
+    STATE.rawGamesList = [];
+    const endpoints = STATE.isOffline ? ['./offline.json'] : CONFIG.endpoints;
+    for (const ep of endpoints) {
+        const z = extractZoneName(ep);
+        try {
+            const u = ep==='./offline.json'?ep:`${BASE_URL}${ep}`;
+            const r = await fetch(u); if(!r.ok) throw new Error();
+            const d = await r.json();
+            if(Array.isArray(d)) { d.forEach((record, idx) => { if(record.name && record.url) STATE.rawGamesList.push({ id:`${z}-${idx}`, name:record.name.trim(), cover:record.cover?normalizeUrl(record.cover, ep==='./offline.json'?'':BASE_URL):CONFIG.fallbackImage, url:normalizeUrl(record.url, ep==='./offline.json'?'':BASE_URL), zone:z }); }); }
+        } catch (err) {}
+    }
+    
+    // 🔥 LOAD PERSISTED GAMES ON STARTUP (Fixes disappearing vault games)
+    loadOfflinePackages();
 
-        async function executeGameLauncher(game) {
-            const portal = document.getElementById('gamePortal');
-            const frame = document.getElementById('portalFrame');
-            document.getElementById('portalTitle').textContent = game.name;
-            
-            portal.classList.remove('hidden');
-            portal.classList.add('grid');
-            setTimeout(() => portal.classList.remove('opacity-0'), 50);
+    document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
+    processAndRenderView();
+}
 
-            if (STATE.currentActiveBlobUrl) {
-                URL.revokeObjectURL(STATE.currentActiveBlobUrl);
-                STATE.currentActiveBlobUrl = null;
-            }
+function processAndRenderView() {
+    let r = [...STATE.rawGamesList];
+    if(STATE.activeFilters.search) r = r.filter(g=>g.name.toLowerCase().includes(STATE.activeFilters.search.toLowerCase()));
+    if(STATE.activeFilters.zone!=='all') r = r.filter(g=>g.zone===STATE.activeFilters.zone);
+    if(STATE.activeFilters.sort==='az') r.sort((a,b)=>a.name.localeCompare(b.name));
+    if(STATE.activeFilters.sort==='za') r.sort((a,b)=>b.name.localeCompare(a.name));
+    STATE.processedGames = r;
 
-            try {
-                // We set up a blank variable to hold the game code
-                let originalText = "";
+    const zs = document.getElementById('zoneFilter'); const c = STATE.activeFilters.zone; zs.innerHTML='<option value="all" class="bg-slate-900">All Sources</option>';
+    [...new Set(STATE.rawGamesList.map(g=>g.zone))].sort().forEach(d=>{ const o=document.createElement('option'); o.value=d; o.className='bg-slate-900'; o.textContent=`Source: ${d}`; if(c===d) o.selected=true; zs.appendChild(o); });
+    renderInterfaceDom();
+}
 
-                // 1. CHECK CACHE: Does the browser already have this downloaded?
-                if ('caches' in window) {
-                    const gameCache = await caches.open('flash-games-cache');
-                    const cachedResponse = await gameCache.match(game.url);
-                    
-                    if (cachedResponse) {
-                        console.log(`📦 Cache hit! Loading "${game.name}" completely offline.`);
-                        originalText = await cachedResponse.text();
-                    }
-                }
+// Global UI Reset / Go Home
+function goHome() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('zoneFilter').value = 'all';
+    document.getElementById('sortOrder').value = 'az';
+    STATE.activeFilters = { search: '', zone: 'all', sort: 'az' };
+    processAndRenderView();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
 
-                // 2. NETWORK FETCH: If it wasn't in the cache, fetch it from the web like normal
-                if (!originalText) {
-                    console.log(`🌐 Cache miss or empty. Fetching "${game.name}" from live network...`);
-                    const response = await fetch(game.url);
-                    if (!response.ok) {
-                        throw new Error(`Bad Server Response! Status Code: ${response.status}`);
-                    }
-                    originalText = await response.text();
-                }
+function createGameCard(g, folder=null) {
+    const d = document.createElement('div'); d.className='glass-card rounded-[1.25rem] overflow-hidden flex flex-col cursor-pointer relative group';
+    const fv = STATE.favorites.includes(g.id);
+    d.innerHTML = `
+        <div class="aspect-[4/3] w-full bg-black/40 relative overflow-hidden"><img src="${g.cover}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="absolute top-3 right-3 flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10"><button onclick="toggleFavorite('${g.id}', event)" class="p-2 rounded-xl btn-glass text-xs shadow-md transition-transform hover:scale-110 active:scale-95">${fv?'❤️':'🤍'}</button><button onclick="openFolderModal('${g.id}', event)" class="p-2 rounded-xl btn-glass text-xs text-indigo-300 shadow-md font-bold transition-transform hover:scale-110 active:scale-95">📁+</button></div>
+        ${folder ? `<button onclick="removeFromFolder('${folder}', '${g.id}', event)" class="absolute bottom-3 left-3 px-3 py-1.5 text-[10px] font-bold bg-rose-500/90 hover:bg-rose-500 text-white rounded-lg shadow-lg opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all">Remove</button>`:''}</div>
+        <div class="p-4"><h4 class="text-[15px] font-bold text-white line-clamp-1 drop-shadow-sm">${g.name}</h4><span class="text-[11px] font-medium text-slate-400 mt-1 block">Source: ${g.zone}</span></div>`;
+    d.onclick = () => executeGameLauncher(g); return d;
+}
 
-                // 3. YOUR PIPELINE: Processing the text (whether it came from cache OR web)
-                const trimmedText = originalText.trim();
-                const hasHtmlTags = /<html|<head|<body|<script/i.test(trimmedText);
-                const hasRawJsLogic = trimmedText.includes('function') || trimmedText.includes('var ') || trimmedText.includes('const ') || (trimmedText.startsWith('{') && trimmedText.endsWith('}'));
+function renderInterfaceDom() {
+    const ws = document.getElementById('mainWorkspace'); const sv = document.getElementById('statusView'); const us = document.getElementById('userSpaceContainer'); const cc = document.getElementById('collectionsContainer');
+    us.innerHTML=''; cc.innerHTML='';
+    if(STATE.processedGames.length===0) { showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi configurations.'); ws.classList.add('hidden'); return; }
+    sv.classList.add('hidden'); ws.classList.remove('hidden');
 
-                if (hasHtmlTags || hasRawJsLogic) {
-                    console.log(`Executing code injection pipeline for: ${game.name}`);
-                    let executablePayload = originalText;
-                    
-                    if (hasRawJsLogic && !hasHtmlTags) {
-                        executablePayload = `
-                            <!DOCTYPE html>
-                            <html>
-                            <head><meta charset="utf-8"></head>
-                            <body style="margin:0; background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh;">
-                                <script>${originalText}<\/script>
-                            </body>
-                            </html>
-                        `;
-                    }
+    const ff = STATE.processedGames.filter(g=>STATE.favorites.includes(g.id));
+    if(ff.length>0) { const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-rose-500/20 pb-3 mb-5"><h3 class="text-xl font-bold text-rose-400 tracking-tight">❤️ Favorites</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5'; ff.forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); us.appendChild(s); }
 
-                    const blob = new Blob([executablePayload], { type: 'text/html;charset=utf-8' });
-                    STATE.currentActiveBlobUrl = URL.createObjectURL(blob);
-                    frame.src = STATE.currentActiveBlobUrl;
-                } else {
-                    frame.src = game.url;
-                }
-            } catch (err) {
-                console.warn("Direct file acquisition route failed. Cascading to standard web frame mapping.", err);
-                frame.src = game.url;
-            }
-        }
+    Object.keys(STATE.folders).sort().forEach(f=>{ const ids=STATE.folders[f]; const gs=STATE.processedGames.filter(g=>ids.includes(g.id)); if(gs.length>0){ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-indigo-500/20 pb-3 mb-5"><h3 class="text-xl font-bold text-indigo-400 tracking-tight">📁 Folder: ${f}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5'; gs.forEach(x=>t.appendChild(createGameCard(x, f))); s.appendChild(t); us.appendChild(s); } });
 
-        function toggleFavorite(id, e) { e.stopPropagation(); const i = STATE.favorites.indexOf(id); i>-1 ? STATE.favorites.splice(i,1) : STATE.favorites.push(id); localStorage.setItem('vault_favorites', JSON.stringify(STATE.favorites)); processAndRenderView(); }
-        function openFolderModal(id, e) { e.stopPropagation(); STATE.activeTargetGameId = id; const g = STATE.rawGamesList.find(x=>x.id===id); if(!g)return; document.getElementById('folderModalGameName').textContent = g.name; const c = document.getElementById('existingFoldersList'); c.innerHTML=''; Object.keys(STATE.folders).sort().forEach(f => { const b = document.createElement('button'); const a = STATE.folders[f].includes(id); b.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${a ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 pointer-events-none opacity-50' : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'}`; b.textContent = a ? `${f} (Added)` : f; b.onclick = () => { addGameToFolder(f, id); closeFolderModal(); }; c.appendChild(b); }); document.getElementById('newFolderNameInput').value = ''; document.getElementById('folderModal').classList.remove('hidden'); }
-        function closeFolderModal() { document.getElementById('folderModal').classList.add('hidden'); STATE.activeTargetGameId = null; }
-        function addGameToFolder(f, id) { if(!STATE.folders[f]) STATE.folders[f]=[]; if(!STATE.folders[f].includes(id)) STATE.folders[f].push(id); localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); }
-        function submitNewFolder() { const i = document.getElementById('newFolderNameInput'); const f = i.value.trim(); if(!f || !STATE.activeTargetGameId)return; addGameToFolder(f, STATE.activeTargetGameId); closeFolderModal(); }
-        function removeFromFolder(f, id, e) { e.stopPropagation(); if(STATE.folders[f]) { STATE.folders[f] = STATE.folders[f].filter(x=>x!==id); if(STATE.folders[f].length===0) delete STATE.folders[f]; localStorage.setItem('vault_folders', JSON.stringify(STATE.folders)); processAndRenderView(); } }
+    const grp={}; STATE.processedGames.forEach(g=>{if(!grp[g.zone])grp[g.zone]=[]; grp[g.zone].push(g);});
+    Object.keys(grp).sort().forEach(k=>{ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-white/10 pb-3 mb-5"><h3 class="text-xl font-bold text-white tracking-tight">${k}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5'; grp[k].forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); cc.appendChild(s); });
 
-        function normalizeUrl(p, b = BASE_URL) { if(!p)return ''; if(p.startsWith('http') || p.startsWith('./')) return p; return `${b}${p.startsWith('/')?p:`/${p}`}`; }
-        function extractZoneName(p) { if(p==='./offline.json') return 'OFFLINE'; const m=p.match(/\/([^/]+)\.json$/); return m?m[1].toUpperCase():'UNKNOWN'; }
+    const h = STATE.processedGames[0]; document.getElementById('heroBg').style.backgroundImage=`url('${h.cover}')`; document.getElementById('heroTitle').textContent=h.name; document.getElementById('heroMeta').textContent=`Source: ${h.zone}`; document.getElementById('heroLaunchBtn').onclick=()=>executeGameLauncher(h);
+}
 
-        async function fetchSystemData() {
-            showStatus('loading', 'Loading Game Library', 'Aggregating game nodes...');
-            STATE.rawGamesList = [];
-            const endpoints = STATE.isOffline ? ['./offline.json'] : CONFIG.endpoints;
-            for (const ep of endpoints) {
-                const z = extractZoneName(ep);
-                try {
-                    const u = ep==='./offline.json'?ep:`${BASE_URL}${ep}`;
-                    const r = await fetch(u); if(!r.ok) throw new Error();
-                    const d = await r.json();
-                    if(Array.isArray(d)) { d.forEach((record, idx) => { if(record.name && record.url) STATE.rawGamesList.push({ id:`${z}-${idx}`, name:record.name.trim(), cover:record.cover?normalizeUrl(record.cover, ep==='./offline.json'?'':BASE_URL):CONFIG.fallbackImage, url:normalizeUrl(record.url, ep==='./offline.json'?'':BASE_URL), zone:z }); }); }
-                } catch (err) {}
-            }
-            
-            // NEW LOGIC: Update total games counter badge with total count of raw items found
-            document.getElementById('totalGamesCounter').textContent = `${STATE.rawGamesList.length} games`;
-            
-            processAndRenderView();
-        }
+function showStatus(t, l, d) { document.getElementById('statusView').classList.remove('hidden'); document.getElementById('statusTitle').textContent=l; document.getElementById('statusDesc').textContent=d; document.getElementById('statusSpinner').style.display=t==='loading'?'block':'none'; }
 
-        function processAndRenderView() {
-            let r = [...STATE.rawGamesList];
-            if(STATE.activeFilters.search) r = r.filter(g=>g.name.toLowerCase().includes(STATE.activeFilters.search.toLowerCase()));
-            if(STATE.activeFilters.zone!=='all') r = r.filter(g=>g.zone===STATE.activeFilters.zone);
-            if(STATE.activeFilters.sort==='az') r.sort((a,b)=>a.name.localeCompare(b.name));
-            if(STATE.activeFilters.sort==='za') r.sort((a,b)=>b.name.localeCompare(a.name));
-            STATE.processedGames = r;
+document.getElementById('closePortalBtn').addEventListener('click', () => {
+    const p = document.getElementById('gamePortal'); p.classList.add('opacity-0');
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    setTimeout(()=>{ 
+        p.classList.add('hidden'); p.classList.remove('grid'); document.getElementById('portalFrame').src=''; 
+        if (STATE.currentActiveBlobUrl) { URL.revokeObjectURL(STATE.currentActiveBlobUrl); STATE.currentActiveBlobUrl = null; }
+    },300);
+});
 
-            const zs = document.getElementById('zoneFilter'); const c = STATE.activeFilters.zone; zs.innerHTML='<option value="all" class="bg-slate-900">All Sources</option>';
-            [...new Set(STATE.rawGamesList.map(g=>g.zone))].sort().forEach(d=>{ const o=document.createElement('option'); o.value=d; o.className='bg-slate-900'; o.textContent=`Source: ${d}`; if(c===d) o.selected=true; zs.appendChild(o); });
-            renderInterfaceDom();
-        }
-
-        function createGameCard(g, folder=null) {
-            const d = document.createElement('div'); d.className='glass-card rounded-xl overflow-hidden flex flex-col cursor-pointer relative group';
-            const fv = STATE.favorites.includes(g.id);
-            d.innerHTML = `
-                <div class="aspect-[4/3] w-full bg-slate-900 relative overflow-hidden"><img src="${g.cover}" class="w-full h-full object-cover" loading="lazy">
-                <div class="absolute top-2 right-2 flex gap-1.5 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10"><button onclick="toggleFavorite('${g.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs shadow-md transition-transform hover:scale-110 active:scale-95">${fv?'❤️':'🤍'}</button><button onclick="openFolderModal('${g.id}', event)" class="p-1.5 rounded-lg bg-slate-950/70 backdrop-blur-md border border-white/10 text-xs text-indigo-400 shadow-md font-bold transition-transform hover:scale-110 active:scale-95">📁+</button></div>
-                ${folder ? `<button onclick="removeFromFolder('${folder}', '${g.id}', event)" class="absolute bottom-2 left-2 px-2 py-1 text-[10px] font-medium bg-rose-950/80 border border-rose-500/30 text-rose-300 rounded-md backdrop-blur-sm opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>`:''}</div>
-                <div class="p-3"><h4 class="text-sm font-medium text-slate-200 line-clamp-1">${g.name}</h4><span class="text-[11px] text-slate-400">Source: ${g.zone}</span></div>`;
-            d.onclick = () => executeGameLauncher(g); return d;
-        }
-
-        function renderInterfaceDom() {
-            const ws = document.getElementById('mainWorkspace'); const sv = document.getElementById('statusView'); const us = document.getElementById('userSpaceContainer'); const cc = document.getElementById('collectionsContainer');
-            us.innerHTML=''; cc.innerHTML='';
-            if(STATE.processedGames.length===0) { showStatus('empty', 'No Games Found', 'Check your filters or Wi-Fi configurations.'); ws.classList.add('hidden'); return; }
-            sv.classList.add('hidden'); ws.classList.remove('hidden');
-
-            const ff = STATE.processedGames.filter(g=>STATE.favorites.includes(g.id));
-            if(ff.length>0) { const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-rose-500/20 pb-2 mb-4"><h3 class="text-lg font-semibold text-rose-400">❤️ Favorites</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'; ff.forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); us.appendChild(s); }
-
-            Object.keys(STATE.folders).sort().forEach(f=>{ const ids=STATE.folders[f]; const gs=STATE.processedGames.filter(g=>ids.includes(g.id)); if(gs.length>0){ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-indigo-500/20 pb-2 mb-4"><h3 class="text-lg font-semibold text-indigo-400">📁 Folder: ${f}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'; gs.forEach(x=>t.appendChild(createGameCard(x, f))); s.appendChild(t); us.appendChild(s); } });
-
-            const grp={}; STATE.processedGames.forEach(g=>{if(!grp[g.zone])grp[g.zone]=[]; grp[g.zone].push(g);});
-            Object.keys(grp).sort().forEach(k=>{ const s=document.createElement('section'); s.innerHTML=`<div class="border-b border-white/5 pb-2 mb-4"><h3 class="text-lg font-medium text-white">${k}</h3></div>`; const t=document.createElement('div'); t.className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'; grp[k].forEach(x=>t.appendChild(createGameCard(x))); s.appendChild(t); cc.appendChild(s); });
-
-            const h = STATE.processedGames[0]; document.getElementById('heroBg').style.backgroundImage=`url('${h.cover}')`; document.getElementById('heroTitle').textContent=h.name; document.getElementById('heroMeta').textContent=`Source: ${h.zone}`; document.getElementById('heroLaunchBtn').onclick=()=>executeGameLauncher(h);
-        }
-
-        function showStatus(t, l, d) { document.getElementById('statusView').classList.remove('hidden'); document.getElementById('statusTitle').textContent=l; document.getElementById('statusDesc').textContent=d; document.getElementById('statusSpinner').style.display=t==='loading'?'block':'none'; }
-
-        document.getElementById('closePortalBtn').addEventListener('click', () => {
-            const p = document.getElementById('gamePortal'); p.classList.add('opacity-0');
-            if (document.fullscreenElement) { document.exitFullscreen(); }
-            setTimeout(()=>{ 
-                p.classList.add('hidden'); 
-                p.classList.remove('grid'); 
-                document.getElementById('portalFrame').src=''; 
-                if (STATE.currentActiveBlobUrl) {
-                    URL.revokeObjectURL(STATE.currentActiveBlobUrl);
-                    STATE.currentActiveBlobUrl = null;
-                }
-            },300);
-        });
-
-        // Press '/' to instantly focus the search bar
 document.addEventListener('keydown', (e) => {
-    // Make sure we aren't already typing in an input box
     if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-        e.preventDefault(); // Stops the '/' from actually typing into the box
-        const searchBox = document.getElementById('searchInput');
-        if (searchBox) searchBox.focus();
+        e.preventDefault(); const searchBox = document.getElementById('searchInput'); if (searchBox) searchBox.focus();
     }
 });
 
-        document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
+document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); 
+document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); 
+document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
 
-        handleNetworkChange(); fetchSystemData(); buildChangelogUI(); enforceChangelogViewing();
-    </script>
+handleNetworkChange(); fetchSystemData(); buildChangelogUI(); enforceChangelogViewing();
+</script>
 </body>
 </html>
