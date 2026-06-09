@@ -191,6 +191,7 @@
                     Fullscreen
                 </button>
                 <button id="closePortalBtn" class="px-4 py-2 rounded-2xl btn-glass hover:bg-rose-500/20 hover:text-rose-400 transition-all text-slate-300 text-sm font-semibold">✕ Close</button>
+                <button onclick="togglePerformanceMode()" class="px-4 py-2 rounded-2xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 transition-all text-sm font-semibold flex items-center gap-2">⚡ Boost Performance</button>
             </div>
         </header>
         <div class="w-full h-full bg-black relative overflow-hidden flex items-center justify-center shadow-inner" id="iframeWrapper">
@@ -295,6 +296,55 @@ function pushToSystemLogs(type, args, customOrigin = null) {
     SYSTEM_LOGS.push({ type, message, origin, timestamp });
     renderSystemLogs();
 }
+    // Add this to your STATE object at the top of your file
+// performanceModeActive: false
+
+function togglePerformanceMode() {
+    STATE.performanceModeActive = !STATE.performanceModeActive;
+    
+    const appBackground = document.getElementById('app');
+    const portal = document.getElementById('gamePortal');
+    const iframe = document.getElementById('portalFrame');
+
+    if (STATE.performanceModeActive) {
+        // 🚀 ENGAGE PERFORMANCE MODE
+        // 1. Hide the entire background app to stop the browser from painting it
+        appBackground.style.display = 'none'; 
+        
+        // 2. Strip away the heavy GPU blur effects and shadows from the portal
+        portal.classList.remove('glass-panel-dark');
+        portal.style.background = '#000000'; // Pure black, zero transparency math
+        portal.style.backdropFilter = 'none';
+        
+        // 3. Force hardware acceleration hint on the iframe
+        iframe.style.transform = 'translateZ(0)'; 
+        iframe.style.willChange = 'transform';
+        
+        console.log("⚡ Performance Mode: ENGAGED. UI suppressed, GPU focused.");
+        if (typeof pushToSystemLogs === 'function') {
+            pushToSystemLogs('WARN', ["🚀 PERFORMANCE MODE ENGAGED: Background rendering paused. GPU completely focused on iframe."], 'sys-perf');
+        }
+        
+    } else {
+        // 🐢 DISENGAGE PERFORMANCE MODE
+        // 1. Restore the background app
+        appBackground.style.display = 'flex'; 
+        
+        // 2. Restore the beautiful liquid glass styling
+        portal.classList.add('glass-panel-dark');
+        portal.style.background = '';
+        portal.style.backdropFilter = '';
+        
+        // 3. Remove hardware hints
+        iframe.style.transform = '';
+        iframe.style.willChange = '';
+        
+        console.log("🐢 Performance Mode: DISABLED. UI restored.");
+        if (typeof pushToSystemLogs === 'function') {
+            pushToSystemLogs('CLI-OUT', ["🐢 Performance mode disabled. Standard UI rendering restored."], 'sys-perf');
+        }
+    }
+}
 
 pushToSystemLogs("Boot", `Welcome to Flash Games!
 Flash Games is a passion project to bring thousands of games
@@ -371,6 +421,16 @@ const COMMAND_MATRIX = {
             let table = "AVAILABLE COMMANDS:\n====================================================================\n";
             Object.keys(COMMAND_MATRIX).forEach(cmd => { table += `${cmd.padEnd(12)} -> ${COMMAND_MATRIX[cmd].desc}\n`; });
             console.log(table);
+        }
+    },
+    "boost": {
+        desc: "Toggles Performance Mode. Kills background UI rendering to dedicate 100% of GPU to the active game.",
+        exec: () => {
+            if (document.getElementById('gamePortal').classList.contains('hidden')) {
+                pushToSystemLogs('ERROR', ["❌ Cannot engage performance mode while no game is actively running."], 'sys-perf');
+                return;
+            }
+            togglePerformanceMode();
         }
     },
     "init": {
