@@ -82,5 +82,12 @@
         "zone": "OFFLINE",
         "url": "./offline/flash-installer.html",
         "cover": ""
+    },
+    {
+        "name": "Pocket Monsters Pokemon",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/pocket_monsters_dark_catcher.html",
+        "cover": ""
     }
 ]
