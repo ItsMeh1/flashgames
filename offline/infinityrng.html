@@ -30,7 +30,7 @@
     }
 
     body{
-      padding:18px;
+      padding:12px;
       background:
         radial-gradient(circle at top left, rgba(10,132,255,.14), transparent 30%),
         radial-gradient(circle at top right, rgba(94,92,230,.12), transparent 26%),
@@ -52,16 +52,16 @@
       width:min(1280px,100%);
       margin:0 auto;
       display:grid;
-      gap:14px;
+      gap:8px;
     }
 
     .header{
       display:flex;
       justify-content:space-between;
       align-items:flex-end;
-      gap:14px;
+      gap:8px;
       flex-wrap:wrap;
-      padding:4px 2px 0;
+      padding:0;
     }
 
     .brand h1{
@@ -73,19 +73,19 @@
     }
 
     .brand p{
-      margin:8px 0 0;
+      margin:4px 0 0;
       color:var(--muted);
-      font-size:14px;
-      line-height:1.45;
+      font-size:12px;
+      line-height:1.38;
     }
 
     .save-pill{
-      padding:9px 12px;
+      padding:8px 10px;
       border-radius:999px;
       border:1px solid var(--stroke);
       background:rgba(255,255,255,.06);
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       box-shadow:var(--shadow);
       backdrop-filter:blur(16px);
       white-space:nowrap;
@@ -94,7 +94,7 @@
     .stats{
       display:grid;
       grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:12px;
+      gap:8px;
     }
 
     @media (max-width:1100px){
@@ -112,28 +112,28 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       backdrop-filter:blur(18px);
-      padding:14px;
-      min-height:92px;
+      padding:11px;
+      min-height:74px;
     }
 
     .stat label{
       display:block;
       color:var(--muted);
-      font-size:12px;
-      margin-bottom:8px;
+      font-size:11px;
+      margin-bottom:6px;
     }
 
     .stat .value{
-      font-size:26px;
+      font-size:22px;
       font-weight:900;
       letter-spacing:-.05em;
       line-height:1;
     }
 
     .stat .sub{
-      margin-top:7px;
+      margin-top:4px;
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       line-height:1.35;
     }
 
@@ -146,24 +146,24 @@
       overflow:hidden;
     }
 
-    .shell-inner{padding:14px}
+    .shell-inner{padding:10px}
 
     .tabs{
       display:flex;
       gap:6px;
       flex-wrap:wrap;
-      padding:0 0 12px;
+      padding:0 0 8px;
     }
 
     .tab-btn{
       border:1px solid var(--stroke);
       background:rgba(255,255,255,.05);
       color:var(--muted);
-      padding:8px 12px;
-      border-radius:14px;
+      padding:7px 10px;
+      border-radius:12px;
       font-weight:800;
-      font-size:12px;
-      min-width:72px;
+      font-size:11px;
+      min-width:64px;
       box-shadow:none;
     }
 
@@ -179,8 +179,8 @@
 
     .play-grid{
       display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:12px;
+      grid-template-columns:1.15fr .85fr;
+      gap:8px;
       align-items:start;
     }
 
@@ -191,14 +191,14 @@
     .hero,.subcard,.list-card{
       background:var(--card2);
       border:1px solid var(--stroke);
-      border-radius:26px;
-      padding:16px;
+      border-radius:14px;
+      padding:12px;
     }
 
     .hero{
-      min-height:320px;
+      min-height:250px;
       display:grid;
-      gap:14px;
+      gap:8px;
       align-content:center;
       position:relative;
       overflow:hidden;
@@ -262,7 +262,7 @@
     .hero-top{
       display:flex;
       justify-content:space-between;
-      gap:12px;
+      gap:8px;
       align-items:center;
       flex-wrap:wrap;
       position:relative;
@@ -271,12 +271,12 @@
 
     .big-name{
       margin:0;
-      font-size:clamp(30px,5vw,52px);
-      line-height:1.08;
+      font-size:clamp(26px,4vw,42px);
+      line-height:1.02;
       letter-spacing:-.03em;
       font-weight:850;
       font-variant-ligatures:none;
-      padding-right:6px;
+      padding-right:4px;
       transition:transform 120ms ease, text-shadow 120ms ease, color 120ms ease;
       text-wrap:balance;
       word-break:break-word;
@@ -289,7 +289,7 @@
     .big-rarity{
       margin-top:6px;
       color:var(--muted);
-      font-size:14px;
+      font-size:12px;
       line-height:1.35;
       position:relative;
       z-index:1;
@@ -297,11 +297,11 @@
     }
 
     .badge{
-      padding:8px 11px;
+      padding:7px 10px;
       border-radius:999px;
       background:rgba(255,255,255,.06);
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       border:1px solid rgba(255,255,255,.06);
       position:relative;
       z-index:1;
@@ -318,9 +318,9 @@
     .meter .row{
       display:flex;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
     }
 
     .bar{
@@ -342,7 +342,7 @@
     .actions{
       display:grid;
       grid-template-columns:1.1fr 1fr 1fr;
-      gap:10px;
+      gap:8px;
       position:relative;
       z-index:1;
     }
@@ -362,8 +362,8 @@
     button:active{transform:scale(.985)}
 
     .btn{
-      padding:15px 16px;
-      border-radius:18px;
+      padding:8px 10px;
+      border-radius:12px;
       background:linear-gradient(180deg,#0a84ff,#007aff);
       color:#fff;
       font-weight:800;
@@ -371,8 +371,8 @@
     }
 
     .btn-secondary{
-      padding:15px 16px;
-      border-radius:18px;
+      padding:8px 10px;
+      border-radius:12px;
       background:rgba(255,255,255,.07);
       border:1px solid var(--stroke);
       color:var(--text);
@@ -393,32 +393,42 @@
 
     .side{
       display:grid;
-      gap:12px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .side .subcard:last-child{
+      grid-column:1 / -1;
+    }
+
+    @media (max-width:980px){
+      .side{grid-template-columns:1fr}
+      .side .subcard:last-child{grid-column:auto}
     }
 
     .subcard h3,.list-card h3{
       margin:0 0 8px;
-      font-size:16px;
+      font-size:14px;
       letter-spacing:-.04em;
     }
 
     .muted{
       color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
+      font-size:12px;
+      line-height:1.38;
     }
 
     .tiny{
       color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
+      font-size:11px;
+      line-height:1.38;
     }
 
     .footer-actions{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:12px;
+      gap:8px;
+      margin-top:8px;
     }
 
     @media (max-width:700px){
@@ -428,7 +438,7 @@
     .inventory{
       display:grid;
       gap:8px;
-      max-height:360px;
+      max-height:240px;
       overflow:auto;
       padding-right:2px;
     }
@@ -442,14 +452,14 @@
     .inv-row,.achievement,.shop-item{
       background:rgba(255,255,255,.05);
       border:1px solid var(--stroke);
-      border-radius:18px;
+      border-radius:14px;
       padding:12px;
     }
 
     .inv-row{
       display:flex;
       justify-content:space-between;
-      gap:12px;
+      gap:8px;
       align-items:center;
     }
 
@@ -459,13 +469,13 @@
       font-weight:900;
       letter-spacing:-.03em;
       line-height:1.15;
-      font-size:15px;
+      font-size:14px;
     }
 
     .inv-meta,.reward{
       color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
+      font-size:11px;
+      line-height:1.38;
     }
 
     .inv-count{
@@ -476,8 +486,8 @@
 
     .list{
       display:grid;
-      gap:10px;
-      max-height:420px;
+      gap:8px;
+      max-height:300px;
       overflow:auto;
       padding-right:2px;
     }
@@ -490,18 +500,18 @@
     .row-top{
       display:flex;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
       align-items:center;
     }
 
     .chip{
       display:inline-flex;
       align-items:center;
-      padding:6px 10px;
+      padding:5px 8px;
       border-radius:999px;
       background:rgba(255,255,255,.06);
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       font-weight:700;
       white-space:nowrap;
     }
@@ -524,7 +534,7 @@
     .shop-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
+      gap:8px;
     }
 
     @media (max-width:980px){
@@ -533,13 +543,13 @@
 
     .shop-item{
       display:grid;
-      gap:10px;
+      gap:8px;
     }
 
     .shop-item .top{
       display:flex;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
       align-items:center;
     }
 
@@ -551,25 +561,25 @@
 
     .shop-item .desc{
       color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
+      font-size:12px;
+      line-height:1.38;
     }
 
     .shop-item .meta{
       display:flex;
       justify-content:space-between;
-      gap:12px;
+      gap:8px;
       align-items:center;
       flex-wrap:wrap;
     }
 
     .small-btn{
-      padding:10px 12px;
-      border-radius:14px;
+      padding:8px 10px;
+      border-radius:12px;
       background:linear-gradient(180deg,#0a84ff,#007aff);
       color:#fff;
       font-weight:800;
-      font-size:12px;
+      font-size:11px;
       white-space:nowrap;
     }
 
@@ -580,24 +590,24 @@
     }
 
     .tab-note{
-      padding:0 2px 12px;
+      padding:0 2px 8px;
       color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
+      font-size:12px;
+      line-height:1.38;
     }
 
     .reboot-list{
       display:grid;
-      gap:10px;
-      margin-top:12px;
+      gap:8px;
+      margin-top:8px;
     }
 
     .reboot-item{
       display:flex;
       justify-content:space-between;
-      gap:12px;
+      gap:8px;
       align-items:center;
-      padding:12px 14px;
+      padding:10px 12px;
       border-radius:16px;
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.06);
@@ -605,23 +615,23 @@
 
     .reboot-item b{
       display:block;
-      font-size:13px;
+      font-size:12px;
       margin-bottom:4px;
       letter-spacing:-.02em;
     }
 
     .reboot-item span{
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       line-height:1.35;
     }
 
     .reboot-tag{
-      padding:6px 10px;
+      padding:5px 8px;
       border-radius:999px;
       background:rgba(10,132,255,.12);
       color:#7dd3fc;
-      font-size:12px;
+      font-size:11px;
       font-weight:800;
       white-space:nowrap;
     }
@@ -629,7 +639,7 @@
     .recent-list{
       display:grid;
       gap:8px;
-      max-height:220px;
+      max-height:150px;
       overflow:auto;
       padding-right:2px;
     }
@@ -637,9 +647,9 @@
     .recent-item{
       display:flex;
       justify-content:space-between;
-      gap:12px;
+      gap:8px;
       align-items:center;
-      padding:10px 12px;
+      padding:8px 10px;
       border-radius:16px;
       background:rgba(255,255,255,.05);
       border:1px solid var(--stroke);
@@ -647,13 +657,13 @@
     }
 
     .recent-item strong{
-      font-size:13px;
+      font-size:12px;
       letter-spacing:-.02em;
     }
 
     .recent-item small{
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       white-space:nowrap;
     }
 
@@ -954,8 +964,8 @@
     ].sort((a, b) => a.rarity - b.rarity);
 
     const pointShop = [
-      { id: "luckyDice", name: "Lucky Dice", desc: "+0.30x effective luck per level.", baseCost: 250, scale: 1.10, maxLevel: 25 },
-      { id: "luckyClover", name: "Lucky Clover", desc: "+5x effective luck per level.", baseCost: 500, scale: 1.28, maxLevel: 100 },
+      { id: "luckyDice", name: "Lucky Dice", desc: "+0.30x effective luck per level.", baseCost: 250, scale: 1.28, maxLevel: 25 },
+      { id: "luckyClover", name: "Lucky Clover", desc: "+5x effective luck per level.", baseCost: 500, scale: 1.35, maxLevel: 100 },
       { id: "pureLuck", name: "Pure Luck", desc: "+40x effective luck per level.", baseCost: 2500, scale: 1.45, maxLevel: 100 },
       { id: "holyGrail", name: "Holy Grail", desc: "+100x effective luck per level.", baseCost: 10000, scale: 1.6, maxLevel: 170 },
       { id: "pointLens", name: "Point Lens", desc: "+10% Luck Points from every roll per level.", baseCost: 400, scale: 1.26, maxLevel: 20 },
@@ -1038,12 +1048,18 @@
     let isRolling = false;
     let spinTimer = null;
 
-    const legacyBonusMap = {
-      clover: 0.2,
-      alignment: 1.5,
-      matrix: 8.0,
-      singularity: 50.0
-    };
+    function parseJSON(raw){
+      if (!raw) return null;
+      try{
+        return JSON.parse(raw);
+      }catch(_err){
+        return null;
+      }
+    }
+
+    function clone(obj){
+      return JSON.parse(JSON.stringify(obj));
+    }
 
     function getUniqueCount(){
       return Object.values(state.inventory).filter(v => v > 0).length;
@@ -1057,20 +1073,174 @@
       return state.rebirthShopLevels[id] || 0;
     }
 
-function getEffectiveLuck() {
-    let pointBonus = 0;
+    function legacyUpgradeMultiplier(raw){
+      if (!raw || typeof raw !== "object") return 0;
 
-    pointBonus += getPointLevel("luckyDice") * 0.30;
-    pointBonus += getPointLevel("luckyClover") * 5;
-    pointBonus += getPointLevel("pureLuck") * 40;
-    pointBonus += getPointLevel("holyGrail") * 100;
+      let bonus = 0;
+      const oldUpgradePool = [
+        { id: "clover", multGain: 0.2 },
+        { id: "alignment", multGain: 1.5 },
+        { id: "matrix", multGain: 8.0 },
+        { id: "singularity", multGain: 50.0 }
+      ];
 
-    const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
-    const globalRebirthBonus = state.rebirths * 0.15;
-    const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
-    const legacyBonus = state.legacyMultiplierBonus || 0;
+      if (raw.upgradeLevels && typeof raw.upgradeLevels === "object") {
+        for (const up of oldUpgradePool) {
+          bonus += (raw.upgradeLevels[up.id] || 0) * up.multGain;
+        }
+      } else {
+        if (typeof raw.up1_level === "number") bonus += raw.up1_level * 0.2;
+        if (typeof raw.up2_level === "number") bonus += raw.up2_level * 1.5;
+        if (typeof raw.up3_level === "number") bonus += raw.up3_level * 8.0;
+        if (typeof raw.up4_level === "number") bonus += raw.up4_level * 50.0;
+      }
 
-    return Math.max(
+      if (typeof raw.luckMultiplier === "number") {
+        bonus = Math.max(bonus, Math.max(0, raw.luckMultiplier - 1));
+      }
+
+      return bonus;
+    }
+
+    function normalizeLoadedSave(raw){
+      if (!raw || typeof raw !== "object") return null;
+
+      const data = clone(raw);
+
+      if (typeof data.points === "number" && (typeof data.luckPoints !== "number" || data.luckPoints === 0)) {
+        data.luckPoints = data.points;
+      }
+
+      if (Array.isArray(data.recentRolls)) {
+        data.recentRolls = data.recentRolls.slice(0, 10);
+      }
+
+      data.legacyMultiplierBonus = Math.max(
+        typeof data.legacyMultiplierBonus === "number" ? data.legacyMultiplierBonus : 0,
+        legacyUpgradeMultiplier(data)
+      );
+
+      delete data.points;
+      return data;
+    }
+
+    function scoreSaveData(data){
+      if (!data || typeof data !== "object") return 0;
+
+      let score = 0;
+      score += (data.rolls || 0);
+      score += (data.luckPoints || 0) * 0.1;
+      score += (data.rebirths || 0) * 1000000;
+      score += (data.rebirthShards || 0) * 10000;
+      score += (data.bestRarity || 0) / 1000;
+      score += (data.legacyMultiplierBonus || 0) * 1000;
+
+      if (data.inventory && typeof data.inventory === "object") {
+        score += Object.values(data.inventory).reduce((a, b) => a + (b || 0), 0) * 50;
+      }
+
+      if (data.pointShopLevels && typeof data.pointShopLevels === "object") {
+        score += Object.values(data.pointShopLevels).reduce((a, b) => a + (b || 0), 0) * 100;
+      }
+
+      if (data.rebirthShopLevels && typeof data.rebirthShopLevels === "object") {
+        score += Object.values(data.rebirthShopLevels).reduce((a, b) => a + (b || 0), 0) * 200;
+      }
+
+      return score;
+    }
+
+    function getBestLegacySave(){
+      let best = null;
+
+      for (const key of LEGACY_KEYS){
+        const raw = localStorage.getItem(key);
+        const data = normalizeLoadedSave(parseJSON(raw));
+        if (!data) continue;
+
+        const score = scoreSaveData(data);
+        if (!best || score > best.score) {
+          best = { key, data, score };
+        }
+      }
+
+      return best;
+    }
+
+    function mergeInventory(targetInv, sourceInv){
+      for (const item of itemPool) {
+        const current = targetInv[item.name] || 0;
+        const incoming = sourceInv && typeof sourceInv[item.name] === "number" ? sourceInv[item.name] : 0;
+        targetInv[item.name] = Math.max(current, incoming);
+      }
+
+      if (sourceInv && typeof sourceInv === "object") {
+        for (const key of Object.keys(sourceInv)) {
+          if (!(key in targetInv) && typeof sourceInv[key] === "number") {
+            targetInv[key] = sourceInv[key];
+          }
+        }
+      }
+    }
+
+    function mergeLevels(targetMap, sourceMap){
+      if (!sourceMap || typeof sourceMap !== "object") return;
+      for (const key of Object.keys(sourceMap)) {
+        const incoming = typeof sourceMap[key] === "number" ? sourceMap[key] : 0;
+        const current = typeof targetMap[key] === "number" ? targetMap[key] : 0;
+        targetMap[key] = Math.max(current, incoming);
+      }
+    }
+
+    function mergeSaveData(base, incoming){
+      if (!incoming) return base;
+
+      base.rolls = Math.max(base.rolls || 0, incoming.rolls || 0);
+      base.luckPoints = Math.max(base.luckPoints || 0, incoming.luckPoints || 0);
+      base.rebirths = Math.max(base.rebirths || 0, incoming.rebirths || 0);
+      base.rebirthShards = Math.max(base.rebirthShards || 0, incoming.rebirthShards || 0);
+      base.bestRarity = Math.max(base.bestRarity || 0, incoming.bestRarity || 0);
+      base.legacyMultiplierBonus = Math.max(base.legacyMultiplierBonus || 0, incoming.legacyMultiplierBonus || 0);
+
+      if (!base.lastRoll || base.lastRoll === "Tap Roll") {
+        if (incoming.lastRoll) base.lastRoll = incoming.lastRoll;
+      }
+
+      if (!base.lastRarity || base.lastRarity === "1 in 0") {
+        if (incoming.lastRarity) base.lastRarity = incoming.lastRarity;
+      }
+
+      mergeInventory(base.inventory, incoming.inventory);
+      mergeLevels(base.pointShopLevels, incoming.pointShopLevels);
+      mergeLevels(base.rebirthShopLevels, incoming.rebirthShopLevels);
+
+      for (const ach of achievementDefs) {
+        base.achievements[ach.id] = !!base.achievements[ach.id] || !!(incoming.achievements && incoming.achievements[ach.id]);
+      }
+
+      if (!Array.isArray(base.recentRolls) || base.recentRolls.length === 0) {
+        if (Array.isArray(incoming.recentRolls)) base.recentRolls = incoming.recentRolls.slice(0, 10);
+      }
+
+      base.autoUnlock = !!base.autoUnlock || !!incoming.autoUnlock || (base.pointShopLevels.autoRoller || 0) >= 1;
+      base.autoRolling = !!base.autoRolling && base.autoUnlock;
+
+      return base;
+    }
+
+    function getEffectiveLuck() {
+      let pointBonus = 0;
+      pointBonus += getPointLevel("luckyDice") * 0.30;
+      pointBonus += getPointLevel("luckyClover") * 5;
+      pointBonus += getPointLevel("pureLuck") * 40;
+      pointBonus += getPointLevel("holyGrail") * 100;
+
+      const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
+      const globalRebirthBonus = state.rebirths * 0.15;
+      const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
+      const legacyBonus = state.legacyMultiplierBonus || 0;
+
+      return Math.max(
         1,
         1 +
         pointBonus +
@@ -1078,37 +1248,8 @@ function getEffectiveLuck() {
         globalRebirthBonus +
         collectionBonus +
         legacyBonus
-    );
-}
-
-    function recoverOldLuckMultiplier() {
-    const save = localStorage.getItem("infinity_rng_save_v3");
-
-    if (!save) {
-        console.log("No old save found.");
-        return 1;
+      );
     }
-
-    const data = JSON.parse(save);
-
-    const oldUpgradePool = [
-        { id: "clover", multGain: 0.2 },
-        { id: "alignment", multGain: 1.5 },
-        { id: "matrix", multGain: 8.0 },
-        { id: "singularity", multGain: 50.0 }
-    ];
-
-    let oldLuck = 1;
-
-    if (data.upgradeLevels) {
-        oldUpgradePool.forEach(up => {
-            oldLuck += (data.upgradeLevels[up.id] || 0) * up.multGain;
-        });
-    }
-
-    console.log("Recovered old luck:", oldLuck);
-    return oldLuck;
-}
 
     function getPointMultiplier(){
       const lens = getPointLevel("pointLens") * 0.10;
@@ -1123,69 +1264,6 @@ function getEffectiveLuck() {
     function getAutoDelay(){
       return Math.max(35, 300 - (getPointLevel("turboMotor") * 15));
     }
-
-    if (!state.oldLuckMigrated) {
-    state.legacyMultiplierBonus = recoverOldLuckMultiplier() - 1;
-    state.oldLuckMigrated = true;
-    saveGame();
-}
-
-function migrateOldSave() {
-    const oldSave = localStorage.getItem("infinity_rng_save_v3");
-
-    if (!oldSave) return;
-
-    try {
-        const oldData = JSON.parse(oldSave);
-
-        // Keep old stats
-        state.rolls = oldData.rolls || 0;
-        state.points = oldData.luckPoints || 0;
-
-        // Keep inventory/collection
-        if (oldData.inventory) {
-            for (const item in oldData.inventory) {
-                state.inventory[item] = oldData.inventory[item];
-            }
-        }
-
-        // Recover old multiplier
-        let oldLuck = 1;
-
-        const oldUpgradePool = [
-            { id: "clover", multGain: 0.2 },
-            { id: "alignment", multGain: 1.5 },
-            { id: "matrix", multGain: 8.0 },
-            { id: "singularity", multGain: 50.0 }
-        ];
-
-        if (oldData.upgradeLevels) {
-            oldUpgradePool.forEach(up => {
-                oldLuck += (oldData.upgradeLevels[up.id] || 0) * up.multGain;
-            });
-        }
-
-        state.legacyMultiplierBonus = oldLuck - 1;
-
-        state.oldLuckMigrated = true;
-
-        saveGame();
-
-        console.log(
-            "Migration complete:",
-            state.rolls,
-            state.points,
-            state.legacyMultiplierBonus
-        );
-
-    } catch (err) {
-        console.error("Migration failed:", err);
-    }
-}
-
-if (!state.oldLuckMigrated) {
-    migrateOldSave();
-}
 
     function getRebirthRequirement(){
       return Math.round(2500 * Math.pow(state.rebirths + 1, 1.65));
@@ -1221,127 +1299,50 @@ if (!state.oldLuckMigrated) {
       lastSaveStamp = Date.now();
     }
 
+    function loadGame(){
+      let repaired = false;
+      state = defaultState();
+
+      const currentRaw = parseJSON(localStorage.getItem(SAVE_KEY));
+      if (currentRaw) {
+        const current = normalizeLoadedSave(currentRaw);
+        mergeSaveData(state, current);
+      }
+
+      const bestLegacy = getBestLegacySave();
+      if (bestLegacy) {
+        const before = scoreSaveData(state);
+        mergeSaveData(state, bestLegacy.data);
+        const after = scoreSaveData(state);
+        if (after > before || scoreSaveData(currentRaw) < bestLegacy.score) {
+          repaired = true;
+        }
+      }
+
+      state.autoUnlock = !!state.autoUnlock || (state.pointShopLevels.autoRoller || 0) >= 1;
+      state.autoRolling = !!state.autoRolling && state.autoUnlock;
+
+      recalcDerived();
+      checkAchievements();
+
+      if (repaired) {
+        saveGame();
+        setSaveStatus("Migrated old save");
+      }
+    }
+
     function recalcDerived(target = state){
       target.uniqueItems = getUniqueCount();
-    }
-
-    function mergeLoadedState(parsed){
-      const base = defaultState();
-      const merged = {
-        ...base,
-        ...parsed,
-        inventory: { ...base.inventory, ...(parsed.inventory || {}) },
-        pointShopLevels: { ...base.pointShopLevels, ...(parsed.pointShopLevels || {}) },
-        rebirthShopLevels: { ...base.rebirthShopLevels, ...(parsed.rebirthShopLevels || {}) },
-        achievements: { ...base.achievements, ...(parsed.achievements || {}) },
-        recentRolls: Array.isArray(parsed.recentRolls) ? parsed.recentRolls.slice(0, 12) : []
-      };
-
-      merged.autoUnlock = !!merged.autoUnlock || (merged.pointShopLevels.autoRoller || 0) >= 1;
-      merged.autoRolling = !!merged.autoRolling && merged.autoUnlock;
-      merged.legacyMultiplierBonus = typeof merged.legacyMultiplierBonus === "number" ? merged.legacyMultiplierBonus : 0;
-
-      recalcDerived(merged);
-      return merged;
-    }
-
-    function migrateLegacyState(parsed){
-      const base = defaultState();
-      const migrated = {
-        ...base,
-        rolls: parsed.rolls || 0,
-        luckPoints: parsed.luckPoints || 0,
-        rebirths: parsed.rebirths || 0,
-        rebirthShards: parsed.rebirthShards || 0,
-        bestRarity: parsed.bestRarity || 0,
-        lastRoll: parsed.lastRoll || "Tap Roll",
-        lastRarity: parsed.lastRarity || "1 in 0",
-        autoRolling: !!parsed.autoRolling,
-        autoUnlock: !!parsed.autoUnlock,
-        inventory: { ...base.inventory },
-        pointShopLevels: { ...base.pointShopLevels },
-        rebirthShopLevels: { ...base.rebirthShopLevels },
-        achievements: { ...base.achievements },
-        legacyMultiplierBonus: 0,
-        tab: parsed.tab || "play",
-        recentRolls: []
-      };
-
-      if (parsed.inventory){
-        for (const key in parsed.inventory){
-          if (key in migrated.inventory) migrated.inventory[key] = parsed.inventory[key];
-        }
-      }
-
-      if (parsed.pointShopLevels){
-        for (const key in parsed.pointShopLevels){
-          if (key in migrated.pointShopLevels) migrated.pointShopLevels[key] = parsed.pointShopLevels[key];
-        }
-      }
-
-      if (parsed.rebirthShopLevels){
-        for (const key in parsed.rebirthShopLevels){
-          if (key in migrated.rebirthShopLevels) migrated.rebirthShopLevels[key] = parsed.rebirthShopLevels[key];
-        }
-      }
-
-      if (parsed.achievements){
-        for (const key in parsed.achievements){
-          if (key in migrated.achievements) migrated.achievements[key] = parsed.achievements[key];
-        }
-      }
-
-      if (typeof parsed.legacyMultiplierBonus === "number"){
-        migrated.legacyMultiplierBonus = parsed.legacyMultiplierBonus;
-      } else if (parsed.upgradeLevels){
-        for (const key in legacyBonusMap){
-          const lvl = parsed.upgradeLevels[key] || 0;
-          migrated.legacyMultiplierBonus += lvl * legacyBonusMap[key];
-        }
-      } else if (typeof parsed.luckMultiplier === "number"){
-        migrated.legacyMultiplierBonus = Math.max(0, parsed.luckMultiplier - 1);
-      }
-
-      migrated.autoUnlock = migrated.autoUnlock || (migrated.pointShopLevels.autoRoller || 0) >= 1;
-      migrated.autoRolling = migrated.autoRolling && migrated.autoUnlock;
-
-      recalcDerived(migrated);
-      return migrated;
-    }
-
-    function loadGame(){
-      const current = localStorage.getItem(SAVE_KEY);
-      if (current){
-        try{
-          const parsed = JSON.parse(current);
-          state = mergeLoadedState(parsed);
-          return;
-        }catch(err){
-          console.error("Current save parse failed:", err);
-        }
-      }
-
-      for (const key of LEGACY_KEYS){
-        const raw = localStorage.getItem(key);
-        if (!raw) continue;
-        try{
-          const parsed = JSON.parse(raw);
-          state = migrateLegacyState(parsed);
-          saveGame();
-          setSaveStatus("Migrated old save");
-          return;
-        }catch(err){
-          console.error("Legacy save migration failed:", err);
-        }
-      }
-
-      state = defaultState();
     }
 
     function wipeSave(){
       if (!confirm("Erase all data? This cannot be undone.")) return;
       stopAuto();
-      localStorage.removeItem(SAVE_KEY);
+
+      for (const key of [SAVE_KEY, ...LEGACY_KEYS]) {
+        localStorage.removeItem(key);
+      }
+
       state = defaultState();
       renderAll();
       saveGame();
@@ -1365,7 +1366,6 @@ if (!state.oldLuckMigrated) {
       if (tier === "cosmic" || tier === "void") return "screen-flash-cosmic";
       if (tier === "mythic") return "screen-flash-mythic";
       if (tier === "legendary") return "screen-flash-legendary";
-      if (tier === "rare") return "screen-flash-common";
       return "screen-flash-common";
     }
 
@@ -1944,32 +1944,6 @@ if (!state.oldLuckMigrated) {
       }
     }
 
-    function renderRecentRolls(){
-      const box = el("recent-rolls-box");
-      box.innerHTML = "";
-
-      if (!state.recentRolls.length){
-        const empty = document.createElement("div");
-        empty.className = "tiny";
-        empty.textContent = "No rolls yet.";
-        box.appendChild(empty);
-        return;
-      }
-
-      for (const roll of state.recentRolls){
-        const row = document.createElement("div");
-        row.className = "recent-item";
-        row.innerHTML = `
-          <div>
-            <strong style="color:${roll.color};">${roll.name}</strong>
-            <div class="tiny">${roll.crit ? "Critical pull" : "Normal pull"} • ${roll.points.toLocaleString()} LP</div>
-          </div>
-          <small>1 in ${roll.rarity.toLocaleString()}</small>
-        `;
-        box.appendChild(row);
-      }
-    }
-
     function renderAll(){
       state.uniqueItems = getUniqueCount();
 
@@ -2042,8 +2016,6 @@ if (!state.oldLuckMigrated) {
 
     function boot(){
       loadGame();
-      checkAchievements();
-      recalcDerived();
       initTabs();
       initButtons();
       initAutoRecover();
@@ -2061,6 +2033,6 @@ if (!state.oldLuckMigrated) {
     }, 5000);
 
     boot();
-  </script>
+</script>
 </body>
 </html>
