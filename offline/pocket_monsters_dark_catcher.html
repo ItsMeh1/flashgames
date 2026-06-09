@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pocket Monsters — Dark Catcher</title>
+  <style>
+    :root{
+      --bg1:#050608;
+      --bg2:#0b1020;
+      --card:rgba(17,24,39,.72);
+      --card2:rgba(15,23,42,.90);
+      --stroke:rgba(255,255,255,.08);
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --accent:#0a84ff;
+      --accent2:#5e5ce6;
+      --good:#22c55e;
+      --danger:#ef4444;
+      --shadow:0 20px 60px rgba(0,0,0,.36);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,system-ui,sans-serif;color:var(--text)}
+    body{
+      padding:16px;
+      background:
+        radial-gradient(circle at top left, rgba(10,132,255,.14), transparent 30%),
+        radial-gradient(circle at top right, rgba(94,92,230,.12), transparent 26%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+      overflow-x:hidden;
+    }
+    #flashOverlay{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 180ms ease;z-index:9999;background:transparent}
+    .app{width:min(1280px,100%);margin:0 auto;display:grid;gap:12px}
+    .header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:2px 1px 0}
+    .brand h1{margin:0;font-size:clamp(26px,4vw,40px);line-height:1.02;letter-spacing:-.07em;font-weight:900}
+    .brand p{margin:8px 0 0;color:var(--muted);font-size:14px;line-height:1.45}
+    .save-pill{
+      padding:9px 12px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.06);
+      color:var(--muted);font-size:12px;box-shadow:var(--shadow);backdrop-filter:blur(16px);white-space:nowrap
+    }
+    .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+    @media (max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:640px){body{padding:12px}.stats{grid-template-columns:1fr}}
+    .stat{
+      background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);padding:12px;min-height:84px
+    }
+    .stat label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+    .stat .value{font-size:25px;font-weight:900;letter-spacing:-.05em;line-height:1}
+    .stat .sub{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.32}
+    .shell{background:var(--card);border:1px solid var(--stroke);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(18px);overflow:hidden}
+    .shell-inner{padding:12px}
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 10px}
+    .tab-btn{
+      border:1px solid var(--stroke);background:rgba(255,255,255,.05);color:var(--muted);
+      padding:8px 11px;border-radius:13px;font-weight:800;font-size:12px;min-width:70px
+    }
+    .tab-btn.active{background:linear-gradient(180deg,#0a84ff,#007aff);color:#fff;border-color:transparent;box-shadow:0 12px 28px rgba(0,122,255,.24)}
+    .tab-note{padding:0 2px 10px;color:var(--muted);font-size:13px;line-height:1.45}
+    .panel{display:none}
+    .panel.active{display:block}
+    .main-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:10px;
+      align-items:start;
+    }
+    @media (max-width:980px){.main-grid{grid-template-columns:1fr}}
+    .card,.subcard{
+      background:var(--card2);border:1px solid var(--stroke);border-radius:24px;padding:14px
+    }
+    .hero{
+      min-height:300px;display:grid;gap:12px;align-content:center;position:relative;overflow:hidden;
+      background:radial-gradient(circle at top, rgba(10,132,255,.10), transparent 42%),radial-gradient(circle at bottom right, rgba(94,92,230,.08), transparent 34%),rgba(15,23,42,.82);
+      transition:box-shadow 200ms ease, transform 200ms ease
+    }
+    .hero.rolling{transform:scale(1.01)}
+    .hero-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;position:relative;z-index:1}
+    .hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center, rgba(255,255,255,.06), transparent 42%);opacity:.15}
+    .particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+    .particle{
+      position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:999px;background:var(--pColor);
+      transform:translate(-50%,-50%);opacity:0;box-shadow:0 0 16px var(--pColor);animation:particleFly 720ms ease-out forwards
+    }
+    @keyframes particleFly{
+      0%{transform:translate(-50%,-50%) scale(.6);opacity:1}
+      100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);opacity:0}
+    }
+    .big-name{
+      margin:0;font-size:clamp(30px,5vw,52px);line-height:1.05;letter-spacing:-.03em;font-weight:900;
+      padding-right:6px;text-wrap:balance;word-break:break-word;min-height:1.1em;position:relative;z-index:1;
+      transition:transform 120ms ease,text-shadow 120ms ease,color 120ms ease
+    }
+    .big-rarity{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.35;position:relative;z-index:1;transition:color 120ms ease,text-shadow 120ms ease}
+    .badge{
+      padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);font-size:12px;border:1px solid rgba(255,255,255,.06);position:relative;z-index:1
+    }
+    .meter{display:grid;gap:8px;position:relative;z-index:1}
+    .meter .row{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}
+    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
+    .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit;transition:width 220ms ease}
+    .actions{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px;position:relative;z-index:1}
+    @media (max-width:700px){.actions{grid-template-columns:1fr}}
+    button{appearance:none;border:0;font:inherit;cursor:pointer;transition:transform 120ms ease,box-shadow 120ms ease,opacity 120ms ease}
+    button:active{transform:scale(.985)}
+    .btn{
+      padding:14px 15px;border-radius:16px;background:linear-gradient(180deg,#0a84ff,#007aff);color:#fff;font-weight:800;
+      box-shadow:0 14px 30px rgba(0,122,255,.26)
+    }
+    .btn-secondary{
+      padding:14px 15px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--stroke);color:var(--text);font-weight:800
+    }
+    .btn-danger{background:rgba(239,68,68,.10);color:#fca5a5;border:1px solid rgba(239,68,68,.16)}
+    .btn:disabled,.btn-secondary:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+    .side{display:grid;gap:10px}
+    .subcard h3{margin:0 0 7px;font-size:15px;letter-spacing:-.04em}
+    .muted{color:var(--muted);font-size:13px;line-height:1.5}
+    .tiny{color:var(--muted);font-size:12px;line-height:1.4}
+    .footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    @media (max-width:700px){.footer-actions{grid-template-columns:1fr}}
+    .inventory,.list,.recent-list{display:grid;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+    .inventory::-webkit-scrollbar,.list::-webkit-scrollbar,.recent-list::-webkit-scrollbar{width:8px}
+    .inventory::-webkit-scrollbar-thumb,.list::-webkit-scrollbar-thumb,.recent-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+    .inv-row,.achievement,.shop-item,.recent-item{background:rgba(255,255,255,.05);border:1px solid var(--stroke);border-radius:16px;padding:11px}
+    .inv-row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .inv-left{display:grid;gap:3px}
+    .inv-name{font-weight:900;letter-spacing:-.03em;line-height:1.15;font-size:15px}
+    .inv-meta,.reward{color:var(--muted);font-size:12px;line-height:1.4}
+    .inv-count{font-weight:800;color:var(--muted);white-space:nowrap}
+    .chip{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap}
+    .progress{height:10px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden;margin:8px 0}
+    .progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
+    .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:980px){.shop-grid{grid-template-columns:1fr}}
+    .shop-item{display:grid;gap:9px}
+    .shop-item .top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .shop-item .name{font-weight:900;letter-spacing:-.03em;line-height:1.2}
+    .shop-item .desc{color:var(--muted);font-size:13px;line-height:1.45}
+    .shop-item .meta{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .small-btn{padding:9px 11px;border-radius:13px;background:linear-gradient(180deg,#0a84ff,#007aff);color:#fff;font-weight:800;font-size:12px;white-space:nowrap}
+    .small-btn.ghost{background:rgba(255,255,255,.06);color:var(--text);box-shadow:none}
+    .reboot-list{display:grid;gap:8px;margin-top:10px}
+    .reboot-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)}
+    .reboot-item b{display:block;font-size:13px;margin-bottom:3px;letter-spacing:-.02em}
+    .reboot-item span{color:var(--muted);font-size:12px;line-height:1.35}
+    .reboot-tag{padding:6px 10px;border-radius:999px;background:rgba(10,132,255,.12);color:#7dd3fc;font-size:12px;font-weight:800;white-space:nowrap}
+    .recent-item{display:flex;justify-content:space-between;gap:10px;align-items:center;line-height:1.2}
+    .recent-item strong{font-size:13px;letter-spacing:-.02em}
+    .recent-item small{color:var(--muted);font-size:12px;white-space:nowrap}
+    .rare-glow{animation:rareGlow 700ms ease both}
+    .name-pop{animation:namePop 460ms ease both}
+    .badge-pop{animation:badgePop 420ms ease both}
+    .rare-shake{animation:rareShake 360ms ease both}
+    @keyframes namePop{0%{transform:scale(.82);opacity:0;filter:blur(3px)}60%{transform:scale(1.08);opacity:1;filter:blur(0)}100%{transform:scale(1)}}
+    @keyframes badgePop{0%{transform:translateY(6px) scale(.95);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+    @keyframes rareShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+    @keyframes rareGlow{0%{filter:saturate(1);transform:scale(1)}50%{filter:saturate(1.3);transform:scale(1.01)}100%{filter:saturate(1);transform:scale(1)}}
+    .screen-flash-common{background:rgba(59,130,246,.10)!important}
+    .screen-flash-legendary{background:rgba(245,158,11,.14)!important}
+    .screen-flash-mythic{background:rgba(244,114,182,.16)!important}
+    .screen-flash-cosmic{background:rgba(34,211,238,.16)!important}
+    .screen-flash-divine{background:rgba(255,255,255,.18)!important}
+    .party-grid{display:grid;gap:8px}
+    .party-slot{
+      display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--stroke)
+    }
+    .party-slot b{font-size:13px;letter-spacing:-.02em}
+    .party-slot span{color:var(--muted);font-size:12px}
+    .battle-box{display:grid;gap:10px}
+    .battle-bar{display:grid;gap:6px}
+    .battle-line{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}
+    .log-box{display:grid;gap:8px;max-height:220px;overflow:auto;padding-right:2px}
+    .log-item{
+      padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--stroke);font-size:12px;line-height:1.45;color:var(--muted)
+    }
+    .badge-grid{display:grid;gap:8px}
+    .badge-row{
+      display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--stroke)
+    }
+    .badge-row strong{font-size:13px}
+    .badge-row small{color:var(--muted);font-size:12px}
+    .badge-row.unlocked{border-color:rgba(34,197,94,.22);background:rgba(20,83,45,.22)}
+    .mono{font-variant-numeric:tabular-nums}
+  </style>
+</head>
+<body>
+  <div id="flashOverlay"></div>
+  <div class="app">
+    <div class="header">
+      <div class="brand">
+        <h1>Pocket Monsters</h1>
+        <p>A compact dark monster-catcher with rolls, party building, battles, a Pokédex, and a tight tab layout.</p>
+      </div>
+      <div class="save-pill" id="saveStatus">Saved locally</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><label>Coins</label><div class="value mono" id="stat-coins">0</div><div class="sub" id="stat-coins-sub">Spend them in the shop.</div></div>
+      <div class="stat"><label>Catches</label><div class="value mono" id="stat-catches">0</div><div class="sub" id="stat-catches-sub">Every catch boosts progress.</div></div>
+      <div class="stat"><label>Battle Wins</label><div class="value mono" id="stat-wins">0</div><div class="sub" id="stat-wins-sub">Gym wins unlock badges.</div></div>
+      <div class="stat"><label>Level</label><div class="value mono" id="stat-level">1</div><div class="sub" id="stat-level-sub">Level up from XP.</div></div>
+      <div class="stat"><label>Capture Bonus</label><div class="value mono" id="stat-bonus">1.00x</div><div class="sub" id="stat-bonus-sub">Better odds for rare finds.</div></div>
+    </div>
+
+    <div class="shell">
+      <div class="shell-inner">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="explore">Explore</button>
+          <button class="tab-btn" data-tab="party">Party</button>
+          <button class="tab-btn" data-tab="dex">Dex</button>
+          <button class="tab-btn" data-tab="battle">Battle</button>
+          <button class="tab-btn" data-tab="shop">Shop</button>
+          <button class="tab-btn" data-tab="badges">Badges</button>
+        </div>
+        <div class="tab-note" id="tabNote">Explore to meet wild monsters, then catch, train, and battle.</div>
+
+        <section class="panel active" data-panel="explore">
+          <div class="main-grid">
+            <div class="hero" id="heroCard" data-tier="common">
+              <div class="particles" id="particleLayer"></div>
+              <div class="hero-top">
+                <div>
+                  <h2 class="big-name" id="display-name">Tap Explore</h2>
+                  <div class="big-rarity" id="display-rarity">Wild encounter waiting</div>
+                </div>
+                <div class="badge" id="display-badge">Starter ready</div>
+              </div>
+
+              <div class="meter">
+                <div class="row"><span>XP to next level</span><span class="mono" id="xpText">0 / 50</span></div>
+                <div class="bar"><span id="xpBar"></span></div>
+              </div>
+
+              <div class="actions">
+                <button class="btn" id="btn-explore">EXPLORE</button>
+                <button class="btn-secondary" id="btn-catch">CATCH</button>
+                <button class="btn-secondary btn-danger" id="btn-reset">Wipe Save</button>
+              </div>
+            </div>
+
+            <div class="side">
+              <div class="subcard">
+                <h3>Wild Encounter</h3>
+                <div class="muted" id="encounterInfo">No encounter yet.</div>
+                <div class="footer-actions">
+                  <button class="btn-secondary" id="btn-reroll">New Encounter</button>
+                  <button class="btn-secondary" id="btn-heal">Heal Party</button>
+                </div>
+                <div class="tiny" id="catchHint" style="margin-top:10px">Catching uses your bonus, your level, and your shop upgrades.</div>
+              </div>
+
+              <div class="subcard">
+                <h3>Recent Events</h3>
+                <div class="recent-list" id="logBox"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="party">
+          <div class="subcard">
+            <h3>Party</h3>
+            <div class="tiny">Put your best monsters in the active party. Their power drives battles.</div>
+            <div class="party-grid" id="partyBox" style="margin-top:10px"></div>
+          </div>
+          <div class="subcard" style="margin-top:10px">
+            <h3>Party Power</h3>
+            <div class="muted" id="partySummary">No party set.</div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="dex">
+          <div class="subcard">
+            <h3>Pokédex</h3>
+            <div class="tiny" id="dexSummary">No entries yet.</div>
+            <div class="inventory" id="dexBox" style="margin-top:10px"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="battle">
+          <div class="subcard battle-box">
+            <h3>Battle</h3>
+            <div class="muted" id="battleInfo">Fight trainers for coins, XP, and badge progress.</div>
+            <div class="battle-bar">
+              <div class="battle-line"><span>Your Team</span><span class="mono" id="teamPower">0</span></div>
+              <div class="bar"><span id="teamBar"></span></div>
+            </div>
+            <div class="battle-bar">
+              <div class="battle-line"><span>Enemy Team</span><span class="mono" id="enemyPower">0</span></div>
+              <div class="bar"><span id="enemyBar"></span></div>
+            </div>
+            <div class="footer-actions">
+              <button class="btn" id="btn-battle">BATTLE</button>
+              <button class="btn-secondary" id="btn-refresh-battle">Refresh Opponent</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="shop">
+          <div class="shop-grid">
+            <div class="subcard">
+              <h3>Item Shop</h3>
+              <div class="list" id="shopItems" style="margin-top:10px"></div>
+            </div>
+            <div class="subcard">
+              <h3>Training Lab</h3>
+              <div class="list" id="labItems" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="badges">
+          <div class="subcard">
+            <h3>Badges</h3>
+            <div class="tiny" id="badgeSummary">Earn badges to boost your capture power and coins.</div>
+            <div class="badge-grid" id="badgeBox" style="margin-top:10px"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SAVE_KEY = "pocket_monsters_save_v1";
+    const el = (id) => document.getElementById(id);
+
+    const TYPE_COLORS = {
+      Grass:"#22c55e",
+      Fire:"#fb7185",
+      Water:"#38bdf8",
+      Electric:"#fde047",
+      Rock:"#a8a29e",
+      Psychic:"#a78bfa",
+      Dark:"#64748b",
+      Light:"#fef08a",
+      Ice:"#67e8f9",
+      Dragon:"#8b5cf6",
+      Cosmic:"#f472b6",
+      Void:"#111827",
+      Prismatic:"#ffffff"
+    };
+
+    const monsterPool = [
+      { id:"sproutlet", name:"Sproutlet", type:"Grass", rarity:2, power:4, evolveTo:"florabloom", evolveCost:120 },
+      { id:"florabloom", name:"Florabloom", type:"Grass", rarity:25, power:14 },
+      { id:"embercub", name:"Embercub", type:"Fire", rarity:2, power:5, evolveTo:"pyroclaw", evolveCost:120 },
+      { id:"pyroclaw", name:"Pyroclaw", type:"Fire", rarity:22, power:16 },
+      { id:"aquabub", name:"Aquabub", type:"Water", rarity:2, power:5, evolveTo:"tidefang", evolveCost:120 },
+      { id:"tidefang", name:"Tidefang", type:"Water", rarity:28, power:18 },
+      { id:"voltkit", name:"Voltkit", type:"Electric", rarity:3, power:6, evolveTo:"voltstorm", evolveCost:160 },
+      { id:"voltstorm", name:"Voltstorm", type:"Electric", rarity:30, power:20 },
+      { id:"pebblit", name:"Pebblit", type:"Rock", rarity:3, power:6, evolveTo:"bouldrex", evolveCost:160 },
+      { id:"bouldrex", name:"Bouldrex", type:"Rock", rarity:35, power:22 },
+      { id:"frostik", name:"Frostik", type:"Ice", rarity:12, power:10, evolveTo:"glaciera", evolveCost:220 },
+      { id:"glaciera", name:"Glaciera", type:"Ice", rarity:110, power:28 },
+      { id:"mindling", name:"Mindling", type:"Psychic", rarity:20, power:14, evolveTo:"mindflare", evolveCost:300 },
+      { id:"mindflare", name:"Mindflare", type:"Psychic", rarity:200, power:35 },
+      { id:"shadowpup", name:"Shadowpup", type:"Dark", rarity:25, power:15, evolveTo:"nightshade", evolveCost:300 },
+      { id:"nightshade", name:"Nightshade", type:"Dark", rarity:250, power:40 },
+      { id:"lumikit", name:"Lumikit", type:"Light", rarity:100, power:25, evolveTo:"solara", evolveCost:700 },
+      { id:"solara", name:"Solara", type:"Light", rarity:1200, power:60 },
+      { id:"dracuby", name:"Dracuby", type:"Dragon", rarity:500, power:35, evolveTo:"drakonis", evolveCost:2200 },
+      { id:"drakonis", name:"Drakonis", type:"Dragon", rarity:10000, power:80 },
+      { id:"starseed", name:"Starseed", type:"Cosmic", rarity:5000, power:60, evolveTo:"nebulix", evolveCost:5000 },
+      { id:"nebulix", name:"Nebulix", type:"Cosmic", rarity:1000000, power:120 },
+      { id:"mythra", name:"Mythra", type:"Cosmic", rarity:1000000000, power:250 },
+      { id:"eternyx", name:"Eternyx", type:"Void", rarity:1000000000000, power:500 },
+      { id:"apexor", name:"Apexor", type:"Prismatic", rarity:10000000000000000, power:1000 }
+    ];
+
+    const shopItems = [
+      { id:"balls", name:"Capture Balls", desc:"+20 balls", cost:60, max:9999, buy: s => { s.balls += 20; } },
+      { id:"lure", name:"Lucky Lure", desc:"+0.10x capture bonus", cost:120, max:30, buy: s => { s.shop.lure = (s.shop.lure || 0) + 1; } },
+      { id:"amplifier", name:"Training Amp", desc:"+10% battle power", cost:180, max:20, buy: s => { s.shop.amplifier = (s.shop.amplifier || 0) + 1; } },
+      { id:"meds", name:"Potion Kit", desc:"Heal your team after battles", cost:90, max:50, buy: s => { s.potions += 3; } },
+      { id:"scanner", name:"Rare Scanner", desc:"+5% rare encounter chance", cost:250, max:20, buy: s => { s.shop.scanner = (s.shop.scanner || 0) + 1; } },
+      { id:"xpCandy", name:"XP Candy", desc:"+20 XP", cost:110, max:9999, buy: s => { s.xp += 20; } },
+      { id:"masterLure", name:"Master Lure", desc:"+1% capture bonus per level", cost:900, max:10, buy: s => { s.shop.masterLure = (s.shop.masterLure || 0) + 1; } }
+    ];
+
+    const badgeDefs = [
+      { id:"catch5", name:"First Safari", desc:"Catch 5 monsters", rewardCoins:100, rewardBonus:0.05, check:s=>s.catches>=5 },
+      { id:"catch25", name:"Collector", desc:"Catch 25 monsters", rewardCoins:250, rewardBonus:0.10, check:s=>s.catches>=25 },
+      { id:"catch50", name:"Ranger", desc:"Catch 50 monsters", rewardCoins:600, rewardBonus:0.15, check:s=>s.catches>=50 },
+      { id:"level5", name:"Rising Trainer", desc:"Reach level 5", rewardCoins:250, rewardBonus:0.10, check:s=>s.level>=5 },
+      { id:"level10", name:"Elite Trainer", desc:"Reach level 10", rewardCoins:700, rewardBonus:0.15, check:s=>s.level>=10 },
+      { id:"win5", name:"Battle Rookie", desc:"Win 5 battles", rewardCoins:300, rewardBonus:0.10, check:s=>s.battleWins>=5 },
+      { id:"win20", name:"Gym Challenger", desc:"Win 20 battles", rewardCoins:900, rewardBonus:0.20, check:s=>s.battleWins>=20 },
+      { id:"evolve3", name:"Evolutionist", desc:"Evolve 3 monsters", rewardCoins:500, rewardBonus:0.15, check:s=>s.evolutions>=3 },
+      { id:"rare1", name:"Legend Sighted", desc:"Catch a 1 in 1,000,000+ monster", rewardCoins:1500, rewardBonus:0.20, check:s=>s.bestRarity>=1000000 },
+      { id:"fullParty", name:"Full Squad", desc:"Fill all 3 party slots", rewardCoins:400, rewardBonus:0.10, check:s=>s.party.every(Boolean) }
+    ];
+
+    const starterId = "sproutlet";
+
+    function blankState(){
+      return {
+        tab:"explore",
+        coins:200,
+        catches:0,
+        battleWins:0,
+        level:1,
+        xp:0,
+        balls:8,
+        potions:0,
+        bestRarity:0,
+        evolutions:0,
+        captureSeen:false,
+        captureBonusExtra:0,
+        recentLogs:[],
+        party:[starterId, null, null],
+        shop:{ lure:0, amplifier:0, scanner:0, masterLure:0 },
+        dex:Object.fromEntries(monsterPool.map(m => [m.id, 0])),
+        badges:Object.fromEntries(badgeDefs.map(b => [b.id, false])),
+        owned:Object.fromEntries(monsterPool.map(m => [m.id, 0])),
+        encounter:null,
+        battleEnemy:null,
+        battleEnemyPower:0,
+        battleEnemyName:"",
+        trainerName:"",
+        trainerPower:0
+      };
+    }
+
+    let state = blankState();
+    state.owned[starterId] = 1;
+    state.dex[starterId] = 1;
+
+    const findMonster = id => monsterPool.find(m => m.id === id);
+    const randomNamePool = ["Mira", "Kai", "Nova", "Luma", "Zed", "Rin", "Taro", "Iris", "Jett", "Sora", "Vera", "Ash", "Theo", "Lyra"];
+
+    function saveGame(){
+      state.tab = document.querySelector(".tab-btn.active")?.dataset.tab || state.tab;
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      el("saveStatus").textContent = "Saved locally";
+    }
+
+    function loadGame(){
+      const raw = localStorage.getItem(SAVE_KEY);
+      if(!raw) return;
+      try{
+        const parsed = JSON.parse(raw);
+        state = { ...blankState(), ...parsed };
+        state.party = Array.isArray(parsed.party) ? parsed.party.slice(0,3) : [starterId, null, null];
+        state.shop = { ...blankState().shop, ...(parsed.shop || {}) };
+        state.dex = { ...blankState().dex, ...(parsed.dex || {}) };
+        state.badges = { ...blankState().badges, ...(parsed.badges || {}) };
+        state.owned = { ...blankState().owned, ...(parsed.owned || {}) };
+        state.recentLogs = Array.isArray(parsed.recentLogs) ? parsed.recentLogs.slice(0, 10) : [];
+        if(!state.party.some(Boolean)) state.party[0] = starterId;
+        if(!state.owned[starterId]) state.owned[starterId] = 1;
+        if(!state.dex[starterId]) state.dex[starterId] = 1;
+      }catch(err){
+        console.error("Save parse failed:", err);
+      }
+    }
+
+    function addLog(text){
+      state.recentLogs.unshift(text);
+      state.recentLogs = state.recentLogs.slice(0, 8);
+    }
+
+    function calcLevelXPNeed(){
+      return Math.floor(50 * Math.pow(state.level, 1.35));
+    }
+
+    function getMonsterPower(mon){
+      if(!mon) return 0;
+      const evoBoost = mon.evolveTo ? 1 : 1;
+      const levelBoost = 1 + (state.level - 1) * 0.03;
+      return Math.floor(mon.power * levelBoost * evoBoost);
+    }
+
+    function getCapturedCount(){
+      return Object.values(state.owned).reduce((a,b)=>a+b,0);
+    }
+
+    function getUniqueCount(){
+      return Object.values(state.dex).filter(v => v > 0).length;
+    }
+
+    function getBadgeCount(){
+      return Object.values(state.badges).filter(Boolean).length;
+    }
+
+    function getCaptureBonus(){
+      return 1
+        + state.captureBonusExtra
+        + (state.level - 1) * 0.06
+        + getBadgeCount() * 0.03
+        + state.shop.lure * 0.10
+        + state.shop.masterLure * 0.01;
+    }
+
+    function getBattleBonus(){
+      return 1
+        + state.shop.amplifier * 0.10
+        + getBadgeCount() * 0.02;
+    }
+
+    function weightedPickMonster(){
+      const weights = monsterPool.map(m => 1 / Math.sqrt(m.rarity + 1));
+      const scannerBoost = 1 + state.shop.scanner * 0.05;
+      const pool = monsterPool.map((m, i) => ({
+        monster:m,
+        w: weights[i] * (m.rarity >= 1000000 ? scannerBoost : 1)
+      }));
+      const total = pool.reduce((s, x)=>s + x.w, 0);
+      let r = Math.random() * total;
+      for(const x of pool){
+        r -= x.w;
+        if(r <= 0) return x.monster;
+      }
+      return pool[0].monster;
+    }
+
+    function typeTier(mon){
+      if(mon.rarity >= 1e15) return "divine";
+      if(mon.rarity >= 1e12) return "cosmic";
+      if(mon.rarity >= 1e9) return "mythic";
+      if(mon.rarity >= 1e6) return "legendary";
+      if(mon.rarity >= 1e4) return "epic";
+      if(mon.rarity >= 1e3) return "rare";
+      if(mon.rarity >= 100) return "uncommon";
+      return "common";
+    }
+
+    function tierFlashClass(tier){
+      if(tier === "divine") return "screen-flash-divine";
+      if(tier === "cosmic" || tier === "mythic") return "screen-flash-cosmic";
+      if(tier === "legendary") return "screen-flash-legendary";
+      return "screen-flash-common";
+    }
+
+    function setHeroTier(mon){
+      const hero = el("heroCard");
+      const tier = typeTier(mon);
+      hero.dataset.tier = tier;
+    }
+
+    function updateStats(){
+      el("stat-coins").textContent = state.coins.toLocaleString();
+      el("stat-catches").textContent = state.catches.toLocaleString();
+      el("stat-wins").textContent = state.battleWins.toLocaleString();
+      el("stat-level").textContent = state.level.toLocaleString();
+      el("stat-bonus").textContent = `${getCaptureBonus().toFixed(2)}x`;
+
+      el("stat-coins-sub").textContent = `${getCapturedCount().toLocaleString()} monsters owned`;
+      el("stat-catches-sub").textContent = `${getUniqueCount().toLocaleString()} unique in the Dex`;
+      el("stat-wins-sub").textContent = `${getBadgeCount().toLocaleString()} badges unlocked`;
+      el("stat-level-sub").textContent = `XP: ${state.xp.toLocaleString()} / ${calcLevelXPNeed().toLocaleString()}`;
+      el("stat-bonus-sub").textContent = `Battle bonus: ${getBattleBonus().toFixed(2)}x`;
+    }
+
+    function getCurrentEncounter(){
+      return state.encounter ? findMonster(state.encounter) : null;
+    }
+
+    function revealEncounter(mon){
+      const nameNode = el("display-name");
+      const rarityNode = el("display-rarity");
+      const badgeNode = el("display-badge");
+
+      nameNode.textContent = mon.name;
+      nameNode.style.color = TYPE_COLORS[mon.type] || mon.color || "#f8fafc";
+      rarityNode.textContent = `${mon.type} • 1 in ${mon.rarity.toLocaleString()}`;
+      rarityNode.style.color = TYPE_COLORS[mon.type] || "#94a3b8";
+      badgeNode.textContent = `${mon.power.toLocaleString()} power`;
+      badgeNode.style.color = TYPE_COLORS[mon.type] || "#94a3b8";
+
+      nameNode.classList.remove("name-pop"); badgeNode.classList.remove("badge-pop");
+      void nameNode.offsetWidth;
+      nameNode.classList.add("name-pop");
+      badgeNode.classList.add("badge-pop");
+      if(mon.rarity >= 1e3) nameNode.classList.add("rare-glow");
+      if(mon.rarity >= 1e6) nameNode.classList.add("rare-shake");
+      setHeroTier(mon);
+    }
+
+    function makeParticles(mon){
+      const layer = el("particleLayer");
+      layer.innerHTML = "";
+      const tier = typeTier(mon);
+      const count = tier === "divine" ? 160 : tier === "cosmic" ? 110 : tier === "mythic" ? 80 : tier === "legendary" ? 50 : tier === "epic" ? 28 : 12;
+      for(let i=0;i<count;i++){
+        const p = document.createElement("span");
+        p.className = "particle";
+        p.style.setProperty("--pColor", TYPE_COLORS[mon.type] || mon.color || "#ffffff");
+        p.style.setProperty("--dx", `${(Math.random()*2-1)*(80+Math.random()*200)}px`);
+        p.style.setProperty("--dy", `${(Math.random()*2-1)*(60+Math.random()*160)}px`);
+        p.style.width = `${4 + Math.random()*7}px`;
+        p.style.height = p.style.width;
+        p.style.left = `${50 + (Math.random()*18-9)}%`;
+        p.style.top = `${50 + (Math.random()*18-9)}%`;
+        layer.appendChild(p);
+      }
+      setTimeout(() => layer.innerHTML = "", 900);
+    }
+
+    function screenFlash(mon){
+      const overlay = el("flashOverlay");
+      overlay.className = tierFlashClass(typeTier(mon));
+      overlay.style.opacity = "1";
+      overlay.style.background = mon.rarity >= 1e12 ? "rgba(255,255,255,.18)" : (mon.rarity >= 1e6 ? "rgba(34,211,238,.16)" : (mon.rarity >= 1e3 ? "rgba(245,158,11,.12)" : "rgba(59,130,246,.08)"));
+      setTimeout(() => overlay.style.opacity = "0", 180);
+      setTimeout(() => overlay.className = "", 420);
+    }
+
+    function spinEncounter(finalMon, done){
+      const nameNode = el("display-name");
+      const rarityNode = el("display-rarity");
+      const badgeNode = el("display-badge");
+      const hero = el("heroCard");
+      hero.classList.add("rolling");
+      let ticks = 0;
+      const spins = 14 + Math.floor(Math.random() * 8);
+      const timer = setInterval(() => {
+        const temp = monsterPool[Math.floor(Math.random() * monsterPool.length)];
+        nameNode.textContent = temp.name;
+        nameNode.style.color = TYPE_COLORS[temp.type] || "#f8fafc";
+        rarityNode.textContent = `${temp.type} • scanning... ${ticks+1}/${spins}`;
+        badgeNode.textContent = "Wild signal detected";
+        ticks++;
+        if(ticks >= spins){
+          clearInterval(timer);
+          done();
+        }
+      }, 42);
+    }
+
+    function setEncounter(mon){
+      state.encounter = mon.id;
+      revealEncounter(mon);
+      el("encounterInfo").innerHTML = `
+        <div><b style="color:${TYPE_COLORS[mon.type]};">${mon.name}</b> appeared in the tall grass.</div>
+        <div class="tiny">Type: ${mon.type} • Power: ${mon.power.toLocaleString()} • Rare: 1 in ${mon.rarity.toLocaleString()}</div>
+      `;
+      el("catchHint").textContent = `Catch chance scales with your level, badges, and shop bonuses.`;
+      renderBattle();
+      renderDex();
+      renderShop();
+      renderBadges();
+    }
+
+    function explore(){
+      const mon = weightedPickMonster();
+      spinEncounter(mon, () => {
+        setEncounter(mon);
+        makeParticles(mon);
+        screenFlash(mon);
+      });
+    }
+
+    function catchMonster(){
+      const mon = getCurrentEncounter();
+      if(!mon){
+        addLog("No encounter yet. Explore first.");
+        renderAll();
+        return;
+      }
+      if(state.balls <= 0){
+        addLog("You are out of Capture Balls.");
+        renderAll();
+        return;
+      }
+
+      state.balls -= 1;
+      const base = 0.95 / Math.sqrt(Math.log10(mon.rarity + 10));
+      const chance = Math.max(0.04, Math.min(0.95, base * getCaptureBonus()));
+      const caught = Math.random() < chance;
+
+      if(caught){
+        state.owned[mon.id] = (state.owned[mon.id] || 0) + 1;
+        state.dex[mon.id] = 1;
+        state.catches += 1;
+        state.coins += Math.max(10, Math.floor(mon.power * 2));
+        state.xp += 12 + Math.floor(mon.power / 5);
+        state.bestRarity = Math.max(state.bestRarity, mon.rarity);
+        addLog(`Caught ${mon.name}! +${Math.max(10, Math.floor(mon.power*2)).toLocaleString()} coins.`);
+        if(mon.rarity >= 1e6) addLog(`Huge catch: ${mon.name} was extremely rare.`);
+      } else {
+        state.coins += 5;
+        addLog(`The wild ${mon.name} escaped. You still found a few coins.`);
+      }
+
+      state.captureSeen = true;
+      checkBadges();
+      handleLevelUp();
+      renderAll();
+      saveGame();
+    }
+
+    function handleLevelUp(){
+      while(state.xp >= calcLevelXPNeed()){
+        state.xp -= calcLevelXPNeed();
+        state.level += 1;
+        state.coins += 100 + state.level * 15;
+        addLog(`Level up! You reached level ${state.level}.`);
+        checkBadges();
+      }
+    }
+
+    function addToParty(id){
+      const monster = findMonster(id);
+      if(!monster) return;
+      if(state.party.includes(id)) return;
+
+      const slot = state.party.findIndex(v => !v);
+      if(slot === -1){
+        addLog("Party is full. Remove one first.");
+        renderAll();
+        return;
+      }
+
+      state.party[slot] = id;
+      addLog(`${monster.name} joined your party.`);
+      checkBadges();
+      renderAll();
+      saveGame();
+    }
+
+    function removeFromParty(idx){
+      const mon = findMonster(state.party[idx]);
+      state.party[idx] = null;
+      if(mon) addLog(`${mon.name} left the party.`);
+      renderAll();
+      saveGame();
+    }
+
+    function evolveMonster(id){
+      const mon = findMonster(id);
+      if(!mon || !mon.evolveTo) return;
+      const next = findMonster(mon.evolveTo);
+      if(!next) return;
+      if((state.owned[id] || 0) <= 0) return;
+      if(state.coins < mon.evolveCost) return;
+      if(state.level < Math.max(3, Math.floor(next.power / 10))) return;
+
+      state.coins -= mon.evolveCost;
+      state.owned[id] -= 1;
+      state.owned[next.id] = (state.owned[next.id] || 0) + 1;
+      state.dex[next.id] = 1;
+      state.evolutions += 1;
+      state.xp += 35;
+      addLog(`${mon.name} evolved into ${next.name}!`);
+      checkBadges();
+      handleLevelUp();
+      renderAll();
+      saveGame();
+    }
+
+    function healParty(){
+      if(state.potions <= 0){
+        addLog("No potion kits left.");
+      } else {
+        state.potions -= 1;
+        state.coins += 15;
+        addLog("Party healed. Small bonus coins earned.");
+      }
+      renderAll();
+      saveGame();
+    }
+
+    function generateBattleOpponent(){
+      const trainer = randomNamePool[Math.floor(Math.random() * randomNamePool.length)];
+      const base = Math.max(8, state.level * 8 + getBadgeCount() * 4);
+      const foeMon = weightedPickMonster();
+      const enemyPower = Math.floor((base + foeMon.power * (0.8 + Math.random() * 0.8)));
+      state.trainerName = trainer;
+      state.battleEnemy = foeMon.id;
+      state.battleEnemyPower = enemyPower;
+      state.battleEnemyName = `${trainer}'s ${foeMon.name}`;
+      return { trainer, foeMon, enemyPower };
+    }
+
+    function battle(){
+      if(!state.party.some(Boolean)){
+        addLog("Add a monster to your party first.");
+        renderAll();
+        return;
+      }
+      if(!state.battleEnemy) generateBattleOpponent();
+
+      const teamPower = getTeamPower();
+      const enemyPower = state.battleEnemyPower || 25;
+      const winChance = teamPower / (teamPower + enemyPower);
+      const won = Math.random() < winChance;
+
+      if(won){
+        const reward = Math.max(60, Math.floor(enemyPower * 1.8));
+        state.coins += reward;
+        state.xp += 25 + Math.floor(enemyPower / 6);
+        state.battleWins += 1;
+        addLog(`Won against ${state.battleEnemyName}! +${reward.toLocaleString()} coins.`);
+      } else {
+        const reward = Math.max(20, Math.floor(enemyPower * 0.45));
+        state.coins += reward;
+        state.xp += 10;
+        addLog(`Lost to ${state.battleEnemyName}. You still earned ${reward.toLocaleString()} coins.`);
+      }
+
+      handleLevelUp();
+      checkBadges();
+      generateBattleOpponent();
+      renderAll();
+      saveGame();
+    }
+
+    function getTeamPower(){
+      const monsters = state.party.map(id => findMonster(id)).filter(Boolean);
+      const base = monsters.reduce((sum, m) => sum + getMonsterPower(m), 0);
+      return Math.floor(base * getBattleBonus());
+    }
+
+    function checkBadges(){
+      let changed = false;
+      for(const badge of badgeDefs){
+        if(state.badges[badge.id]) continue;
+        if(badge.check(state)){
+          state.badges[badge.id] = true;
+          state.coins += badge.rewardCoins || 0;
+          state.captureBonusExtra += badge.rewardBonus || 0;
+          addLog(`Badge unlocked: ${badge.name}.`);
+          changed = true;
+        }
+      }
+      return changed;
+    }
+
+    function shopBuy(item){
+      if(state.coins < item.cost) return;
+      const current = state.shop[item.id] || 0;
+      if(current >= item.max) return;
+      state.coins -= item.cost;
+      item.buy(state);
+      addLog(`Bought ${item.name}.`);
+      checkBadges();
+      renderAll();
+      saveGame();
+    }
+
+    function renderDex(){
+      const box = el("dexBox");
+      box.innerHTML = "";
+      const entries = monsterPool.filter(m => (state.dex[m.id] || 0) > 0);
+
+      el("dexSummary").textContent = `${entries.length} / ${monsterPool.length} entries unlocked.`;
+
+      if(!entries.length){
+        box.innerHTML = `<div class="tiny">Catch something to start filling the Dex.</div>`;
+        return;
+      }
+
+      for(const mon of entries.slice().reverse()){
+        const owned = state.owned[mon.id] || 0;
+        const inParty = state.party.includes(mon.id);
+        const canEvolve = mon.evolveTo && owned > 0 && state.coins >= mon.evolveCost && state.level >= Math.max(3, Math.floor(findMonster(mon.evolveTo).power / 10));
+        const row = document.createElement("div");
+        row.className = "inv-row";
+        row.innerHTML = `
+          <div class="inv-left">
+            <div class="inv-name" style="color:${TYPE_COLORS[mon.type]};">${mon.name}</div>
+            <div class="inv-meta">${mon.type} • 1 in ${mon.rarity.toLocaleString()} • Power ${mon.power.toLocaleString()}${mon.evolveTo ? ` • Evolves to ${findMonster(mon.evolveTo).name}` : ""}</div>
+          </div>
+          <div style="display:grid;gap:6px;justify-items:end">
+            <div class="inv-count">x${owned.toLocaleString()}${inParty ? " • Party" : ""}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+              ${inParty ? `<button class="small-btn ghost" data-remove-party="${state.party.indexOf(mon.id)}">Remove</button>` : `<button class="small-btn" data-add-party="${mon.id}">Party</button>`}
+              ${mon.evolveTo ? `<button class="small-btn" data-evolve="${mon.id}" ${canEvolve ? "" : "disabled"}>Evolve</button>` : ""}
+            </div>
+          </div>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function renderParty(){
+      const box = el("partyBox");
+      box.innerHTML = "";
+      const members = state.party.map(id => findMonster(id)).filter(Boolean);
+      const power = getTeamPower();
+
+      el("partySummary").textContent = members.length
+        ? `Active team power: ${power.toLocaleString()}`
+        : "No party set.";
+
+      for(let i=0;i<3;i++){
+        const mon = findMonster(state.party[i]);
+        const slot = document.createElement("div");
+        slot.className = "party-slot";
+        slot.innerHTML = mon ? `
+          <div>
+            <b style="color:${TYPE_COLORS[mon.type]};">Slot ${i+1}: ${mon.name}</b>
+            <span>${mon.type} • Power ${getMonsterPower(mon).toLocaleString()}</span>
+          </div>
+          <button class="small-btn ghost" data-remove-party="${i}">Remove</button>
+        ` : `
+          <div>
+            <b>Slot ${i+1}: Empty</b>
+            <span>Add a monster from the Dex</span>
+          </div>
+          <span class="chip">Open</span>
+        `;
+        box.appendChild(slot);
+      }
+    }
+
+    function renderBattle(){
+      if(!state.battleEnemy) generateBattleOpponent();
+      const foe = findMonster(state.battleEnemy);
+      const team = getTeamPower();
+      const enemy = state.battleEnemyPower || (foe ? foe.power : 25);
+      el("battleInfo").innerHTML = `
+        Fight <b style="color:${TYPE_COLORS[foe.type] || '#f8fafc'}">${state.battleEnemyName}</b>
+        for coins and XP.
+      `;
+      el("teamPower").textContent = team.toLocaleString();
+      el("enemyPower").textContent = enemy.toLocaleString();
+      el("teamBar").style.width = `${Math.min(100, (team / Math.max(team + enemy, 1)) * 100)}%`;
+      el("enemyBar").style.width = `${Math.min(100, (enemy / Math.max(team + enemy, 1)) * 100)}%`;
+    }
+
+    function renderShop(){
+      const items = el("shopItems");
+      items.innerHTML = "";
+      for(const item of shopItems){
+        const current = state.shop[item.id] || 0;
+        const cost = item.cost + current * Math.floor(item.cost * 0.35);
+        const card = document.createElement("div");
+        card.className = "shop-item";
+        card.innerHTML = `
+          <div class="top">
+            <div class="name">${item.name}</div>
+            <span class="chip">Lv. ${current} / ${item.max}</span>
+          </div>
+          <div class="desc">${item.desc}</div>
+          <div class="meta">
+            <span class="tiny">Cost: ${cost.toLocaleString()} coins</span>
+            <button class="small-btn" data-buy-item="${item.id}" ${state.coins < cost || current >= item.max ? "disabled" : ""}>Buy</button>
+          </div>
+        `;
+        items.appendChild(card);
+      }
+
+      const lab = el("labItems");
+      lab.innerHTML = "";
+      const evolvables = monsterPool.filter(m => m.evolveTo && (state.owned[m.id] || 0) > 0);
+      if(!evolvables.length){
+        lab.innerHTML = `<div class="tiny">Catch a base monster to unlock evolution here.</div>`;
+      } else {
+        for(const mon of evolvables){
+          const next = findMonster(mon.evolveTo);
+          const can = state.coins >= mon.evolveCost && state.level >= Math.max(3, Math.floor(next.power / 10));
+          const card = document.createElement("div");
+          card.className = "shop-item";
+          card.innerHTML = `
+            <div class="top">
+              <div class="name">${mon.name} → ${next.name}</div>
+              <span class="chip">${mon.type}</span>
+            </div>
+            <div class="desc">Cost: ${mon.evolveCost.toLocaleString()} coins • Requires level ${Math.max(3, Math.floor(next.power / 10))}</div>
+            <div class="meta">
+              <span class="tiny">Turns one copy into a stronger form.</span>
+              <button class="small-btn" data-evolve="${mon.id}" ${can ? "" : "disabled"}>Evolve</button>
+            </div>
+          `;
+          lab.appendChild(card);
+        }
+      }
+    }
+
+    function renderBadges(){
+      const box = el("badgeBox");
+      box.innerHTML = "";
+      const count = getBadgeCount();
+      el("badgeSummary").textContent = `${count} / ${badgeDefs.length} badges unlocked. Each one improves your capture odds.`;
+
+      for(const badge of badgeDefs){
+        const unlocked = !!state.badges[badge.id];
+        const row = document.createElement("div");
+        row.className = `badge-row ${unlocked ? "unlocked" : ""}`;
+        row.innerHTML = `
+          <div>
+            <strong>${unlocked ? "✓" : "•"} ${badge.name}</strong>
+            <div><small>${badge.desc}</small></div>
+          </div>
+          <div class="reboot-tag">${unlocked ? `+${badge.rewardBonus.toFixed(2)}x` : "Locked"}</div>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function renderLogs(){
+      const box = el("logBox");
+      box.innerHTML = "";
+      if(!state.recentLogs.length){
+        box.innerHTML = `<div class="tiny">No events yet.</div>`;
+        return;
+      }
+      for(const line of state.recentLogs){
+        const div = document.createElement("div");
+        div.className = "recent-item";
+        div.innerHTML = `<div><strong>Event</strong><div class="tiny">${line}</div></div>`;
+        box.appendChild(div);
+      }
+    }
+
+    function renderExplore(){
+      const mon = getCurrentEncounter();
+      if(!mon){
+        el("display-name").textContent = "Tap Explore";
+        el("display-name").style.color = "#f8fafc";
+        el("display-rarity").textContent = "Wild encounter waiting";
+        el("display-badge").textContent = "Starter ready";
+        el("encounterInfo").textContent = "No encounter yet.";
+        el("catchHint").textContent = "Catching uses your bonus, your level, and your shop upgrades.";
+        el("xpText").textContent = `${state.xp.toLocaleString()} / ${calcLevelXPNeed().toLocaleString()}`;
+        el("xpBar").style.width = `${Math.min(100, (state.xp / calcLevelXPNeed()) * 100)}%`;
+        el("heroCard").dataset.tier = "common";
+      } else {
+        revealEncounter(mon);
+        el("encounterInfo").innerHTML = `
+          <div><b style="color:${TYPE_COLORS[mon.type]};">${mon.name}</b> is waiting in the grass.</div>
+          <div class="tiny">Type: ${mon.type} • Power: ${mon.power.toLocaleString()} • Rare: 1 in ${mon.rarity.toLocaleString()}</div>
+        `;
+      }
+      el("xpText").textContent = `${state.xp.toLocaleString()} / ${calcLevelXPNeed().toLocaleString()}`;
+      el("xpBar").style.width = `${Math.min(100, (state.xp / calcLevelXPNeed()) * 100)}%`;
+    }
+
+    function renderAll(){
+      updateStats();
+      renderExplore();
+      renderParty();
+      renderDex();
+      renderBattle();
+      renderShop();
+      renderBadges();
+      renderLogs();
+
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === state.tab));
+      document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === state.tab));
+
+      const notes = {
+        explore:"Explore to meet wild monsters, then catch, train, and battle.",
+        party:"Keep your strongest monsters in the active team.",
+        dex:"Every monster you catch fills the Pokédex.",
+        battle:"Beat trainers to earn coins, XP, and badges.",
+        shop:"Buy capture tools and training upgrades here.",
+        badges:"Badges make your progress faster and easier."
+      };
+      el("tabNote").textContent = notes[state.tab] || "";
+    }
+
+    function switchTab(tab){
+      state.tab = tab;
+      renderAll();
+      saveGame();
+    }
+
+    function clearSave(){
+      if(!confirm("Erase all Pocket Monsters save data? This cannot be undone.")) return;
+      localStorage.removeItem(SAVE_KEY);
+      state = blankState();
+      state.party[0] = starterId;
+      state.owned[starterId] = 1;
+      state.dex[starterId] = 1;
+      state.battleEnemy = null;
+      state.encounter = null;
+      addLog("Save wiped.");
+      renderAll();
+      saveGame();
+    }
+
+    function initBattleOpponent(){
+      const foe = weightedPickMonster();
+      state.battleEnemy = foe.id;
+      state.battleEnemyPower = Math.max(foe.power, Math.floor((state.level * 10 + getBadgeCount() * 3) * (0.9 + Math.random() * 0.6)));
+      state.battleEnemyName = `${randomNamePool[Math.floor(Math.random()*randomNamePool.length)]}'s ${foe.name}`;
+    }
+
+    function initEncounter(){
+      const mon = weightedPickMonster();
+      state.encounter = mon.id;
+      revealEncounter(mon);
+      setHeroTier(mon);
+      el("encounterInfo").innerHTML = `
+        <div><b style="color:${TYPE_COLORS[mon.type]};">${mon.name}</b> appeared in the grass.</div>
+        <div class="tiny">Type: ${mon.type} • Power: ${mon.power.toLocaleString()} • Rare: 1 in ${mon.rarity.toLocaleString()}</div>
+      `;
+      el("catchHint").textContent = `Catching gets easier as you level up and unlock badges.`;
+      makeParticles(mon);
+      screenFlash(mon);
+      renderAll();
+      saveGame();
+    }
+
+    function bindEvents(){
+      el("btn-explore").addEventListener("click", () => {
+        const mon = weightedPickMonster();
+        spinEncounter(mon, () => {
+          state.encounter = mon.id;
+          revealEncounter(mon);
+          setHeroTier(mon);
+          el("encounterInfo").innerHTML = `
+            <div><b style="color:${TYPE_COLORS[mon.type]};">${mon.name}</b> appeared in the grass.</div>
+            <div class="tiny">Type: ${mon.type} • Power: ${mon.power.toLocaleString()} • Rare: 1 in ${mon.rarity.toLocaleString()}</div>
+          `;
+          makeParticles(mon);
+          screenFlash(mon);
+          renderAll();
+          saveGame();
+        });
+      });
+      el("btn-reroll").addEventListener("click", initEncounter);
+      el("btn-catch").addEventListener("click", catchMonster);
+      el("btn-reset").addEventListener("click", clearSave);
+      el("btn-heal").addEventListener("click", healParty);
+      el("btn-battle").addEventListener("click", battle);
+      el("btn-refresh-battle").addEventListener("click", () => { initBattleOpponent(); renderBattle(); saveGame(); });
+
+      document.addEventListener("click", (e) => {
+        const add = e.target.closest("[data-add-party]");
+        const remove = e.target.closest("[data-remove-party]");
+        const evolve = e.target.closest("[data-evolve]");
+        const buy = e.target.closest("[data-buy-item]");
+        if(add){ addToParty(add.dataset.addParty); return; }
+        if(remove){ removeFromParty(Number(remove.dataset.removeParty)); return; }
+        if(evolve){ evolveMonster(evolve.dataset.evolve); return; }
+        if(buy){
+          const item = shopItems.find(x => x.id === buy.dataset.buyItem);
+          if(item) shopBuy(item);
+        }
+      });
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+      });
+    }
+
+    function loadInitialState(){
+      loadGame();
+      if(!state.party.some(Boolean)) state.party[0] = starterId;
+      if(!state.owned[starterId]) state.owned[starterId] = 1;
+      if(!state.dex[starterId]) state.dex[starterId] = 1;
+      if(!state.battleEnemy) initBattleOpponent();
+      if(!state.encounter) initEncounter();
+      checkBadges();
+      handleLevelUp();
+      renderAll();
+      saveGame();
+    }
+
+    window.addEventListener("beforeunload", saveGame);
+    setInterval(() => { saveGame(); }, 8000);
+
+    bindEvents();
+    loadInitialState();
+  </script>
+</body>
+</html>
