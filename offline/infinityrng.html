@@ -1057,17 +1057,58 @@
       return state.rebirthShopLevels[id] || 0;
     }
 
-    function getEffectiveLuck(){
-      let pointBonus = getPointLevel("luckyDice") * 0.30;
-      pointBonus = pointBonus + getPointLevel("luckyClover") * 5;
-      pointBonus = pointBonus + getPointLevel("pureLuck") * 40;
-      pointBonus = pointBonus + getPointLevel("holyGrail") * 100;
-      
-      const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
-      const globalRebirthBonus = state.rebirths * 0.15;
-      const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
-      return Math.max(1, 1 + pointBonus + rebirthBonus + globalRebirthBonus + state.legacyMultiplierBonus + collectionBonus);
+function getEffectiveLuck() {
+    let pointBonus = 0;
+
+    pointBonus += getPointLevel("luckyDice") * 0.30;
+    pointBonus += getPointLevel("luckyClover") * 5;
+    pointBonus += getPointLevel("pureLuck") * 40;
+    pointBonus += getPointLevel("holyGrail") * 100;
+
+    const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
+    const globalRebirthBonus = state.rebirths * 0.15;
+    const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
+    const legacyBonus = state.legacyMultiplierBonus || 0;
+
+    return Math.max(
+        1,
+        1 +
+        pointBonus +
+        rebirthBonus +
+        globalRebirthBonus +
+        collectionBonus +
+        legacyBonus
+    );
+}
+
+    function recoverOldLuckMultiplier() {
+    const save = localStorage.getItem("infinity_rng_save_v3");
+
+    if (!save) {
+        console.log("No old save found.");
+        return 1;
     }
+
+    const data = JSON.parse(save);
+
+    const oldUpgradePool = [
+        { id: "clover", multGain: 0.2 },
+        { id: "alignment", multGain: 1.5 },
+        { id: "matrix", multGain: 8.0 },
+        { id: "singularity", multGain: 50.0 }
+    ];
+
+    let oldLuck = 1;
+
+    if (data.upgradeLevels) {
+        oldUpgradePool.forEach(up => {
+            oldLuck += (data.upgradeLevels[up.id] || 0) * up.multGain;
+        });
+    }
+
+    console.log("Recovered old luck:", oldLuck);
+    return oldLuck;
+}
 
     function getPointMultiplier(){
       const lens = getPointLevel("pointLens") * 0.10;
@@ -1082,6 +1123,12 @@
     function getAutoDelay(){
       return Math.max(35, 300 - (getPointLevel("turboMotor") * 15));
     }
+
+    if (!state.oldLuckMigrated) {
+    state.legacyMultiplierBonus = recoverOldLuckMultiplier() - 1;
+    state.oldLuckMigrated = true;
+    saveGame();
+}
 
     function getRebirthRequirement(){
       return Math.round(2500 * Math.pow(state.rebirths + 1, 1.65));
