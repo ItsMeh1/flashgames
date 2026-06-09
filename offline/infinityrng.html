@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinity Luck RNG — Dark Animated Reforged</title>
+  <style>
+    :root{
+      --bg1:#050608;
+      --bg2:#0b1020;
+      --card:rgba(17,24,39,.72);
+      --card2:rgba(15,23,42,.90);
+      --stroke:rgba(255,255,255,.08);
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --accent:#0a84ff;
+      --accent2:#5e5ce6;
+      --good:#22c55e;
+      --danger:#ef4444;
+      --shadow:0 20px 60px rgba(0,0,0,.36);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,system-ui,sans-serif;
+      color:var(--text);
+    }
+
+    body{
+      padding:18px;
+      background:
+        radial-gradient(circle at top left, rgba(10,132,255,.14), transparent 30%),
+        radial-gradient(circle at top right, rgba(94,92,230,.12), transparent 26%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+      overflow-x:hidden;
+    }
+
+    #flashOverlay{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 180ms ease;
+      z-index:9999;
+      background:transparent;
+    }
+
+    .app{
+      width:min(1280px,100%);
+      margin:0 auto;
+      display:grid;
+      gap:14px;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:14px;
+      flex-wrap:wrap;
+      padding:4px 2px 0;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(26px,4vw,40px);
+      line-height:1.02;
+      letter-spacing:-.07em;
+      font-weight:900;
+    }
+
+    .brand p{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .save-pill{
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+      white-space:nowrap;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+    }
+
+    @media (max-width:1100px){
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media (max-width:640px){
+      body{padding:12px}
+      .stats{grid-template-columns:1fr}
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      padding:14px;
+      min-height:92px;
+    }
+
+    .stat label{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:-.05em;
+      line-height:1;
+    }
+
+    .stat .sub{
+      margin-top:7px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .shell{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      overflow:hidden;
+    }
+
+    .shell-inner{padding:14px}
+
+    .tabs{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      padding:0 0 12px;
+    }
+
+    .tab-btn{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      padding:8px 12px;
+      border-radius:14px;
+      font-weight:800;
+      font-size:12px;
+      min-width:72px;
+      box-shadow:none;
+    }
+
+    .tab-btn.active{
+      background:linear-gradient(180deg,#0a84ff,#007aff);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 12px 28px rgba(0,122,255,.24);
+    }
+
+    .panel{display:none}
+    .panel.active{display:block}
+
+    .play-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:12px;
+      align-items:start;
+    }
+
+    @media (max-width:980px){
+      .play-grid{grid-template-columns:1fr}
+    }
+
+    .hero,.subcard,.list-card{
+      background:var(--card2);
+      border:1px solid var(--stroke);
+      border-radius:26px;
+      padding:16px;
+    }
+
+    .hero{
+      min-height:320px;
+      display:grid;
+      gap:14px;
+      align-content:center;
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top, rgba(10,132,255,.10), transparent 42%),
+        radial-gradient(circle at bottom right, rgba(94,92,230,.08), transparent 34%),
+        rgba(15,23,42,.82);
+      transition:box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+    }
+
+    .hero.rolling{
+      transform:scale(1.01);
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background: radial-gradient(circle at center, rgba(255,255,255,.06), transparent 42%);
+      opacity:.15;
+      transition:opacity 200ms ease;
+    }
+
+    .hero[data-tier="common"]{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="uncommon"]{ box-shadow: 0 0 0 1px rgba(34,197,94,.10), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="rare"]{ box-shadow: 0 0 0 1px rgba(59,130,246,.16), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="epic"]{ box-shadow: 0 0 0 1px rgba(168,85,247,.16), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="legendary"]{ box-shadow: 0 0 0 1px rgba(245,158,11,.22), 0 0 36px rgba(245,158,11,.10), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="mythic"]{ box-shadow: 0 0 0 1px rgba(244,114,182,.22), 0 0 40px rgba(244,114,182,.12), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="cosmic"]{ box-shadow: 0 0 0 1px rgba(34,211,238,.22), 0 0 44px rgba(34,211,238,.14), 0 20px 60px rgba(0,0,0,.36); }
+    .hero[data-tier="divine"]{ box-shadow: 0 0 0 1px rgba(255,255,255,.22), 0 0 50px rgba(255,255,255,.10), 0 20px 60px rgba(0,0,0,.36); }
+
+    .particles{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    .particle{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--pColor);
+      transform:translate(-50%,-50%);
+      opacity:0;
+      box-shadow:0 0 16px var(--pColor);
+      animation:particleFly 720ms ease-out forwards;
+    }
+
+    @keyframes particleFly{
+      0%{ transform:translate(-50%,-50%) scale(.6); opacity:1; }
+      100%{ transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity:0; }
+    }
+
+    .hero-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .big-name{
+      margin:0;
+      font-size:clamp(30px,5vw,52px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+      font-weight:850;
+      font-variant-ligatures:none;
+      padding-right:6px;
+      transition:transform 120ms ease, text-shadow 120ms ease, color 120ms ease;
+      text-wrap:balance;
+      word-break:break-word;
+      min-height:1.1em;
+      position:relative;
+      z-index:1;
+      text-shadow:0 0 0 transparent;
+    }
+
+    .big-rarity{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.35;
+      position:relative;
+      z-index:1;
+      transition:color 120ms ease, text-shadow 120ms ease;
+    }
+
+    .badge{
+      padding:8px 11px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.06);
+      position:relative;
+      z-index:1;
+      transition:color 120ms ease, transform 120ms ease, opacity 120ms ease;
+    }
+
+    .meter{
+      display:grid;
+      gap:8px;
+      position:relative;
+      z-index:1;
+    }
+
+    .meter .row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .bar{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.09);
+      overflow:hidden;
+    }
+
+    .bar>span{
+      display:block;
+      height:100%;
+      width:0;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      border-radius:inherit;
+      transition:width 220ms ease;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1.1fr 1fr 1fr;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+
+    @media (max-width:700px){
+      .actions{grid-template-columns:1fr}
+    }
+
+    button{
+      appearance:none;
+      border:0;
+      font:inherit;
+      cursor:pointer;
+      transition:transform 120ms ease,box-shadow 120ms ease,opacity 120ms ease,background 120ms ease;
+    }
+
+    button:active{transform:scale(.985)}
+
+    .btn{
+      padding:15px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg,#0a84ff,#007aff);
+      color:#fff;
+      font-weight:800;
+      box-shadow:0 14px 30px rgba(0,122,255,.26);
+    }
+
+    .btn-secondary{
+      padding:15px 16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.07);
+      border:1px solid var(--stroke);
+      color:var(--text);
+      font-weight:800;
+    }
+
+    .btn-danger{
+      background:rgba(239,68,68,.10);
+      color:#fca5a5;
+      border:1px solid rgba(239,68,68,.16);
+    }
+
+    .btn:disabled,.btn-secondary:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .side{
+      display:grid;
+      gap:12px;
+    }
+
+    .subcard h3,.list-card h3{
+      margin:0 0 8px;
+      font-size:16px;
+      letter-spacing:-.04em;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .tiny{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .footer-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    @media (max-width:700px){
+      .footer-actions{grid-template-columns:1fr}
+    }
+
+    .inventory{
+      display:grid;
+      gap:8px;
+      max-height:360px;
+      overflow:auto;
+      padding-right:2px;
+    }
+
+    .inventory::-webkit-scrollbar,.list::-webkit-scrollbar{width:8px}
+    .inventory::-webkit-scrollbar-thumb,.list::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.14);
+      border-radius:999px;
+    }
+
+    .inv-row,.achievement,.shop-item{
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    .inv-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+
+    .inv-left{display:grid;gap:4px}
+
+    .inv-name{
+      font-weight:900;
+      letter-spacing:-.03em;
+      line-height:1.15;
+      font-size:15px;
+    }
+
+    .inv-meta,.reward{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .inv-count{
+      font-weight:800;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .list{
+      display:grid;
+      gap:10px;
+      max-height:420px;
+      overflow:auto;
+      padding-right:2px;
+    }
+
+    .achievement.unlocked{
+      background:rgba(20, 83, 45, .25);
+      border-color:rgba(34,197,94,.22);
+    }
+
+    .row-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .progress{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.09);
+      overflow:hidden;
+      margin:8px 0;
+    }
+
+    .progress>span{
+      display:block;
+      height:100%;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      border-radius:inherit;
+    }
+
+    .shop-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:980px){
+      .shop-grid{grid-template-columns:1fr}
+    }
+
+    .shop-item{
+      display:grid;
+      gap:10px;
+    }
+
+    .shop-item .top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    .shop-item .name{
+      font-weight:900;
+      letter-spacing:-.03em;
+      line-height:1.2;
+    }
+
+    .shop-item .desc{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .shop-item .meta{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .small-btn{
+      padding:10px 12px;
+      border-radius:14px;
+      background:linear-gradient(180deg,#0a84ff,#007aff);
+      color:#fff;
+      font-weight:800;
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .small-btn.ghost{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      box-shadow:none;
+    }
+
+    .tab-note{
+      padding:0 2px 12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .reboot-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .reboot-item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .reboot-item b{
+      display:block;
+      font-size:13px;
+      margin-bottom:4px;
+      letter-spacing:-.02em;
+    }
+
+    .reboot-item span{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .reboot-tag{
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(10,132,255,.12);
+      color:#7dd3fc;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .recent-list{
+      display:grid;
+      gap:8px;
+      max-height:220px;
+      overflow:auto;
+      padding-right:2px;
+    }
+
+    .recent-item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:10px 12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--stroke);
+      line-height:1.2;
+    }
+
+    .recent-item strong{
+      font-size:13px;
+      letter-spacing:-.02em;
+    }
+
+    .recent-item small{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .rare-glow{
+      animation:rareGlow 700ms ease both;
+    }
+
+    .rare-shake{
+      animation:rareShake 360ms ease both;
+    }
+
+    .name-pop{
+      animation:namePop 460ms ease both;
+    }
+
+    .badge-pop{
+      animation:badgePop 420ms ease both;
+    }
+
+    @keyframes namePop{
+      0%{transform:scale(.82);opacity:0;filter:blur(3px)}
+      60%{transform:scale(1.08);opacity:1;filter:blur(0)}
+      100%{transform:scale(1)}
+    }
+
+    @keyframes badgePop{
+      0%{transform:translateY(6px) scale(.95);opacity:0}
+      100%{transform:translateY(0) scale(1);opacity:1}
+    }
+
+    @keyframes rareShake{
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-3px)}
+      40%{transform:translateX(3px)}
+      60%{transform:translateX(-2px)}
+      80%{transform:translateX(2px)}
+    }
+
+    @keyframes rareGlow{
+      0%{filter:saturate(1); transform:scale(1)}
+      50%{filter:saturate(1.3); transform:scale(1.01)}
+      100%{filter:saturate(1); transform:scale(1)}
+    }
+
+    .screen-flash-common{background:rgba(59,130,246,.10)!important}
+    .screen-flash-legendary{background:rgba(245,158,11,.14)!important}
+    .screen-flash-mythic{background:rgba(244,114,182,.16)!important}
+    .screen-flash-cosmic{background:rgba(34,211,238,.16)!important}
+    .screen-flash-divine{background:rgba(255,255,255,.18)!important}
+  </style>
+</head>
+<body>
+  <div id="flashOverlay"></div>
+
+  <div class="app">
+    <div class="header">
+      <div class="brand">
+        <h1>Infinity Luck RNG</h1>
+        <p>Dark mode, tighter tabs, clearer item text, colored roll results, and full save migration.</p>
+      </div>
+      <div class="save-pill" id="saveStatus">Saved locally</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <label>Total Rolls</label>
+        <div class="value" id="stat-rolls">0</div>
+        <div class="sub" id="stat-rolls-sub">Keep rolling to push milestones.</div>
+      </div>
+      <div class="stat">
+        <label>Luck Points</label>
+        <div class="value" id="stat-points">0</div>
+        <div class="sub" id="stat-points-sub">Spend these in the shop.</div>
+      </div>
+      <div class="stat">
+        <label>Rebirths</label>
+        <div class="value" id="stat-rebirths">0</div>
+        <div class="sub" id="stat-rebirths-sub">Each rebirth boosts your run.</div>
+      </div>
+      <div class="stat">
+        <label>Rebirth Shards</label>
+        <div class="value" id="stat-shards">0</div>
+        <div class="sub" id="stat-shards-sub">Permanent forge currency.</div>
+      </div>
+      <div class="stat">
+        <label>Effective Luck</label>
+        <div class="value" id="stat-luck">1.00x</div>
+        <div class="sub" id="stat-luck-sub">All bonuses combined.</div>
+      </div>
+    </div>
+
+    <div class="shell">
+      <div class="shell-inner">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="play">Play</button>
+          <button class="tab-btn" data-tab="rebirth">Rebirth</button>
+          <button class="tab-btn" data-tab="collection">Collection</button>
+          <button class="tab-btn" data-tab="achievements">Achievements</button>
+          <button class="tab-btn" data-tab="shop">Shop</button>
+        </div>
+
+        <div class="tab-note" id="tabNote">Roll, collect, and build up enough points to rebirth.</div>
+
+        <section class="panel active" data-panel="play">
+          <div class="play-grid">
+            <div class="hero" id="heroCard" data-tier="common">
+              <div class="particles" id="particleLayer"></div>
+
+              <div class="hero-top">
+                <div>
+                  <h2 class="big-name" id="display-name">Tap Roll</h2>
+                  <div class="big-rarity" id="display-rarity">1 in 0</div>
+                </div>
+                <div class="badge" id="display-badge">Nothing rolled yet</div>
+              </div>
+
+              <div class="meter">
+                <div class="row">
+                  <span>Rebirth progress</span>
+                  <span id="rebirth-progress-text">0 / 0 LP</span>
+                </div>
+                <div class="bar"><span id="rebirth-progress-bar"></span></div>
+              </div>
+
+              <div class="actions">
+                <button class="btn" id="btn-roll">ROLL</button>
+                <button class="btn-secondary" id="btn-auto">Auto Roll: OFF</button>
+                <button class="btn-secondary btn-danger" id="btn-wipe">Wipe Save</button>
+              </div>
+            </div>
+
+            <div class="side">
+              <div class="subcard">
+                <h3>Quick Notes</h3>
+                <div class="muted" id="play-summary">
+                  Rebirth resets rolls and points. The Museum forge upgrade can preserve your collection, and the Vault can keep some LP.
+                </div>
+                <div class="footer-actions">
+                  <button class="btn" id="btn-rebirth">REBIRTH</button>
+                  <button class="btn-secondary" id="btn-max-rebirth">Preview Gain</button>
+                </div>
+                <div class="tiny" id="rebirth-requirement-text" style="margin-top:10px"></div>
+              </div>
+
+              <div class="subcard">
+                <h3>Current State</h3>
+                <div class="tiny" id="state-summary">No run loaded yet.</div>
+              </div>
+
+              <div class="subcard">
+                <h3>Recent Rolls</h3>
+                <div class="recent-list" id="recent-rolls-box"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="rebirth">
+          <div class="subcard">
+            <h3>Why Rebirth Matters</h3>
+            <div class="muted" id="rebirth-description">
+              Rebirth is the prestige layer. Spend your run to gain shards and permanent power.
+            </div>
+            <div class="progress"><span id="rebirth-progress-bar-2"></span></div>
+            <div class="tiny" id="rebirth-text-2"></div>
+            <div class="footer-actions">
+              <button class="btn" id="btn-rebirth-2">REBIRTH NOW</button>
+              <button class="btn-secondary" id="btn-preview-2">Preview Next Rebirth</button>
+            </div>
+
+            <div class="reboot-list">
+              <div class="reboot-item">
+                <div>
+                  <b>Permanent Luck Boost</b>
+                  <span>Every rebirth increases your effective luck.</span>
+                </div>
+                <div class="reboot-tag" id="rebirth-luck-tag">+0%</div>
+              </div>
+              <div class="reboot-item">
+                <div>
+                  <b>Shard Gain</b>
+                  <span>Shards are the permanent currency for the forge.</span>
+                </div>
+                <div class="reboot-tag" id="rebirth-shard-tag">0 shards</div>
+              </div>
+              <div class="reboot-item">
+                <div>
+                  <b>Run Preservation</b>
+                  <span>The Vault can keep some LP after rebirth, and the Museum can preserve your collection.</span>
+                </div>
+                <div class="reboot-tag" id="rebirth-milestone-tag">Check list</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subcard" style="margin-top:12px">
+            <h3>Rebirth Milestones</h3>
+            <div class="muted">
+              These are the big reasons to keep prestige climbing.
+            </div>
+            <div class="reboot-list" id="rebirth-milestones"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="collection">
+          <div class="subcard">
+            <h3>Collection</h3>
+            <div class="tiny" id="unique-count">0 unique collected</div>
+            <div class="inventory" id="inventory-box" style="margin-top:10px"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="achievements">
+          <div class="subcard">
+            <h3>Achievements</h3>
+            <div class="tiny" id="achievement-progress-text">0 / 0 unlocked</div>
+            <div class="list" id="achievement-box" style="margin-top:10px"></div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="shop">
+          <div class="shop-grid">
+            <div class="subcard">
+              <h3>Luck Point Shop</h3>
+              <div class="tiny">Spend LP on run power.</div>
+              <div class="list" id="shop-points" style="margin-top:10px"></div>
+            </div>
+
+            <div class="subcard">
+              <h3>Rebirth Forge</h3>
+              <div class="tiny">Spend shards on permanent upgrades.</div>
+              <div class="list" id="shop-shards" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SAVE_KEY = "infinity_rng_save_v9";
+    const LEGACY_KEYS = [
+      "infinity_rng_save_v8",
+      "infinity_rng_save_v7",
+      "infinity_rng_save_v6",
+      "infinity_rng_save_v5",
+      "infinity_rng_save_v4",
+      "infinity_rng_save_v3",
+      "infinity_rng_save_v2",
+      "infinity_rng_save_v1",
+      "infinity_rng_save"
+    ];
+
+    const el = (id) => document.getElementById(id);
+
+    const itemPool = [
+      { name: "Dirt", rarity: 2, color: "#9ca3af", points: 1 },
+      { name: "Pebble", rarity: 3, color: "#a8a29e", points: 2 },
+      { name: "Grass", rarity: 4, color: "#22c55e", points: 3 },
+      { name: "Copper Ring", rarity: 5, color: "#f59e0b", points: 5 },
+      { name: "Wooden Stick", rarity: 8, color: "#d97706", points: 7 },
+      { name: "Iron Greatsword", rarity: 15, color: "#cbd5e1", points: 10 },
+      { name: "Steel Dagger", rarity: 22, color: "#e2e8f0", points: 12 },
+      { name: "Emerald", rarity: 30, color: "#10b981", points: 15 },
+      { name: "Silver Chalice", rarity: 50, color: "#38bdf8", points: 25 },
+      { name: "Golden Crown", rarity: 100, color: "#fbbf24", points: 45 },
+      { name: "Light Amethyst", rarity: 200, color: "#a78bfa", points: 80 },
+      { name: "Dark Amethyst", rarity: 300, color: "#8b5cf6", points: 90 },
+      { name: "Sapphire Crystal", rarity: 500, color: "#60a5fa", points: 180 },
+      { name: "Flawless Ruby", rarity: 1000, color: "#fb7185", points: 350 },
+      { name: "Cobalt Relic", rarity: 2000, color: "#38bdf8", points: 550 },
+      { name: "Meteorite Shard", rarity: 3000, color: "#f472b6", points: 800 },
+      { name: "Cyber Matrix", rarity: 7500, color: "#22d3ee", points: 1500 },
+      { name: "Quantum Catalyst", rarity: 12500, color: "#2dd4bf", points: 3500 },
+      { name: "Data Core", rarity: 20000, color: "#60a5fa", points: 6000 },
+      { name: "Plasma Core", rarity: 40000, color: "#f59e0b", points: 8000 },
+      { name: "Antimatter Droplet", rarity: 100000, color: "#c084fc", points: 22000 },
+      { name: "Singularity", rarity: 250000, color: "#ff4d9d", points: 50000 },
+      { name: "Infinity Void", rarity: 500000, color: "#fb923c", points: 250000 },
+      { name: "Nothingness", rarity: 750000, color: "#94a3b8", points: 500000 },
+      { name: "Flash", rarity: 900000, color: "#fde047", points: 750000 },
+      { name: "Owner", rarity: 1200000, color: "#7dd3fc", points: 1000000 },
+      { name: "Chronos Warp", rarity: 1500000, color: "#34d399", points: 2000000 },
+      { name: "Nebula Blossom", rarity: 3500000, color: "#f9a8d4", points: 4500000 },
+      { name: "Multiverse Core", rarity: 5000000, color: "#fb7185", points: 6500000 },
+      { name: "The Terrmari", rarity: 8500000, color: "#e5e7eb", points: 11000000 },
+
+      { name: "Void Fragment", rarity: 25000000, color: "#c4b5fd", points: 25000000 },
+      { name: "Astral Engine", rarity: 100000000, color: "#67e8f9", points: 75000000 },
+      { name: "Celestial Crown", rarity: 250000000, color: "#fde68a", points: 250000000 },
+      { name: "Paradox Star", rarity: 1000000000, color: "#a5b4fc", points: 1000000000 },
+      { name: "Aether Throne", rarity: 5000000000, color: "#86efac", points: 5000000000 },
+      { name: "Eon Prism", rarity: 25000000000, color: "#f0abfc", points: 25000000000 },
+      { name: "Chronicle Halo", rarity: 100000000000, color: "#93c5fd", points: 100000000000 },
+      { name: "Omega Relic", rarity: 500000000000, color: "#fda4af", points: 500000000000 },
+      { name: "Eternal Singularity", rarity: 1000000000000000, color: "#ffffff", points: 1000000000000000 },
+      { name: "Apex of Silence", rarity: 10000000000000000, color: "#d1d5db", points: 7500000000000000 }
+    ].sort((a, b) => a.rarity - b.rarity);
+
+    const pointShop = [
+      { id: "luckyDice", name: "Lucky Dice", desc: "+0.30x effective luck per level.", baseCost: 250, scale: 1.10, maxLevel: 25 },
+      { id: "luckyClover", name: "Lucky Clover", desc: "+5x effective luck per level.", baseCost: 500, scale: 1.28, maxLevel: 100 },
+      { id: "pureLuck", name: "Pure Luck", desc: "+40x effective luck per level.", baseCost: 2500, scale: 1.45, maxLevel: 100 },
+      { id: "holyGrail", name: "Holy Grail", desc: "+100x effective luck per level.", baseCost: 10000, scale: 1.6, maxLevel: 170 },
+      { id: "pointLens", name: "Point Lens", desc: "+10% Luck Points from every roll per level.", baseCost: 400, scale: 1.26, maxLevel: 20 },
+      { id: "autoRoller", name: "Auto Roller", desc: "Unlock auto-roll.", baseCost: 600, scale: 1.00, maxLevel: 1 },
+      { id: "turboMotor", name: "Turbo Motor", desc: "Reduce auto-roll delay by 15 ms per level.", baseCost: 700, scale: 1.24, maxLevel: 12 },
+      { id: "critCharm", name: "Crit Charm", desc: "+4% chance to double roll points per level.", baseCost: 1000, scale: 1.30, maxLevel: 15 },
+      { id: "rareHunter", name: "Rare Hunter", desc: "Improves rolls in the upper rarity band.", baseCost: 2500, scale: 1.34, maxLevel: 12 },
+      { id: "collectionBoost", name: "Collection Boost", desc: "+1% luck per unique item owned per level.", baseCost: 3500, scale: 1.32, maxLevel: 10 },
+      { id: "superCrit", name: "Super Crit", desc: "Critical rolls become much stronger.", baseCost: 50000, scale: 2.00, maxLevel: 1 }
+    ];
+
+    const rebirthShop = [
+      { id: "legacyLuck", name: "Legacy Luck", desc: "+12% effective luck per rank.", baseCost: 1, scale: 1.70, maxLevel: 50 },
+      { id: "startingBank", name: "Starting Bank", desc: "Start each rebirth with +250 LP per rank.", baseCost: 1, scale: 1.55, maxLevel: 25 },
+      { id: "shardPulse", name: "Shard Pulse", desc: "+1 shard earned from each rebirth per rank.", baseCost: 2, scale: 1.80, maxLevel: 20 },
+      { id: "collectorGrid", name: "Collector Grid", desc: "+8% Luck Points from rolls per rank.", baseCost: 2, scale: 1.65, maxLevel: 30 },
+      { id: "preservationVault", name: "Preservation Vault", desc: "Keep 5% of LP after rebirth per rank.", baseCost: 3, scale: 1.90, maxLevel: 10 },
+      { id: "museum", name: "Museum", desc: "Keep all collection data on rebirth.", baseCost: 25, scale: 2.00, maxLevel: 1 },
+      { id: "shardAmplifier", name: "Shard Amplifier", desc: "Double shard gain from rebirth.", baseCost: 6, scale: 2.20, maxLevel: 5 }
+    ];
+
+    const achievementDefs = [
+      { id: "firstRoll", name: "First Drop", desc: "Roll once.", reward: { lp: 25 }, progress: s => [Math.min(s.rolls, 1), 1], unlocked: s => s.rolls >= 1 },
+      { id: "roll100", name: "Momentum", desc: "Reach 100 total rolls.", reward: { lp: 100 }, progress: s => [Math.min(s.rolls, 100), 100], unlocked: s => s.rolls >= 100 },
+      { id: "roll1000", name: "Committed", desc: "Reach 1,000 total rolls.", reward: { lp: 400 }, progress: s => [Math.min(s.rolls, 1000), 1000], unlocked: s => s.rolls >= 1000 },
+      { id: "roll10000", name: "Grinding", desc: "Reach 10,000 total rolls.", reward: { lp: 2500 }, progress: s => [Math.min(s.rolls, 10000), 10000], unlocked: s => s.rolls >= 10000 },
+      { id: "roll100000", name: "No Life", desc: "Reach 100,000 total rolls.", reward: { shards: 10 }, progress: s => [Math.min(s.rolls, 100000), 100000], unlocked: s => s.rolls >= 100000 },
+
+      { id: "collector10", name: "Collector", desc: "Own 10 unique items.", reward: { lp: 250 }, progress: s => [Math.min(s.uniqueItems, 10), 10], unlocked: s => s.uniqueItems >= 10 },
+      { id: "collector20", name: "Archivist", desc: "Own 20 unique items.", reward: { shards: 1 }, progress: s => [Math.min(s.uniqueItems, 20), 20], unlocked: s => s.uniqueItems >= 20 },
+      { id: "collectorAll", name: "Completionist", desc: "Collect every item.", reward: { shards: 100 }, progress: s => [Math.min(s.uniqueItems, itemPool.length), itemPool.length], unlocked: s => s.uniqueItems >= itemPool.length },
+
+      { id: "bigPoints", name: "Stacked", desc: "Hold 50,000 Luck Points.", reward: { lp: 500 }, progress: s => [Math.min(s.luckPoints, 50000), 50000], unlocked: s => s.luckPoints >= 50000 },
+      { id: "millionaire", name: "Million Club", desc: "Hold 1,000,000 Luck Points.", reward: { shards: 2 }, progress: s => [Math.min(s.luckPoints, 1000000), 1000000], unlocked: s => s.luckPoints >= 1000000 },
+
+      { id: "legendaryPull", name: "Legendary Pull", desc: "Roll something 1 in 100,000 or rarer.", reward: { shards: 1 }, progress: s => [Math.min(s.bestRarity, 100000), 100000], unlocked: s => s.bestRarity >= 100000 },
+      { id: "voidPull", name: "Impossible", desc: "Roll Infinity Void or better.", reward: { shards: 25 }, progress: s => [Math.min(s.bestRarity, 500000), 500000], unlocked: s => s.bestRarity >= 500000 },
+
+      { id: "rebirth1", name: "Restart", desc: "Perform your first rebirth.", reward: { shards: 1 }, progress: s => [Math.min(s.rebirths, 1), 1], unlocked: s => s.rebirths >= 1 },
+      { id: "rebirth5", name: "Cycle", desc: "Perform 5 rebirths.", reward: { shards: 3 }, progress: s => [Math.min(s.rebirths, 5), 5], unlocked: s => s.rebirths >= 5 },
+      { id: "rebirth10", name: "Ascension", desc: "Perform 10 rebirths.", reward: { shards: 5 }, progress: s => [Math.min(s.rebirths, 10), 10], unlocked: s => s.rebirths >= 10 },
+      { id: "rebirth25", name: "Transcendent", desc: "Perform 25 rebirths.", reward: { shards: 20 }, progress: s => [Math.min(s.rebirths, 25), 25], unlocked: s => s.rebirths >= 25 },
+      { id: "rebirth50", name: "Eternal", desc: "Perform 50 rebirths.", reward: { shards: 50 }, progress: s => [Math.min(s.rebirths, 50), 50], unlocked: s => s.rebirths >= 50 }
+    ];
+
+    const rebirthMilestones = [
+      { req: 1, title: "Auto Roll Unlock", text: "Auto Roll can be unlocked in the LP shop." },
+      { req: 5, title: "Permanent Luck Push", text: "Your rebirth scaling starts to feel much faster." },
+      { req: 10, title: "Shard Growth", text: "Rebirths start paying out more aggressively." },
+      { req: 25, title: "Collection Security", text: "The Museum upgrade can preserve your collection data." },
+      { req: 50, title: "Late-Game Speed", text: "Run resets become more efficient and rewarding." },
+      { req: 100, title: "Ascension Mode", text: "A major prestige threshold for endgame players." }
+    ];
+
+    function defaultState(){
+      return {
+        version: 9,
+        tab: "play",
+        rolls: 0,
+        luckPoints: 0,
+        rebirths: 0,
+        rebirthShards: 0,
+        bestRarity: 0,
+        lastRoll: "Tap Roll",
+        lastRarity: "1 in 0",
+        autoRolling: false,
+        autoUnlock: false,
+        legacyMultiplierBonus: 0,
+        inventory: Object.fromEntries(itemPool.map(item => [item.name, 0])),
+        pointShopLevels: Object.fromEntries(pointShop.map(item => [item.id, 0])),
+        rebirthShopLevels: Object.fromEntries(rebirthShop.map(item => [item.id, 0])),
+        achievements: Object.fromEntries(achievementDefs.map(a => [a.id, false])),
+        recentRolls: []
+      };
+    }
+
+    let state = defaultState();
+    let autoTimer = null;
+    let lastSaveStamp = Date.now();
+    let isRolling = false;
+    let spinTimer = null;
+
+    const legacyBonusMap = {
+      clover: 0.2,
+      alignment: 1.5,
+      matrix: 8.0,
+      singularity: 50.0
+    };
+
+    function getUniqueCount(){
+      return Object.values(state.inventory).filter(v => v > 0).length;
+    }
+
+    function getPointLevel(id){
+      return state.pointShopLevels[id] || 0;
+    }
+
+    function getRebirthLevel(id){
+      return state.rebirthShopLevels[id] || 0;
+    }
+
+function getEffectiveLuck() {
+    let pointBonus = 0;
+
+    pointBonus += getPointLevel("luckyDice") * 0.30;
+    pointBonus += getPointLevel("luckyClover") * 5;
+    pointBonus += getPointLevel("pureLuck") * 40;
+    pointBonus += getPointLevel("holyGrail") * 100;
+
+    const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
+    const globalRebirthBonus = state.rebirths * 0.15;
+    const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
+    const legacyBonus = state.legacyMultiplierBonus || 0;
+
+    return Math.max(
+        1,
+        1 +
+        pointBonus +
+        rebirthBonus +
+        globalRebirthBonus +
+        collectionBonus +
+        legacyBonus
+    );
+}
+
+    function recoverOldLuckMultiplier() {
+    const save = localStorage.getItem("infinity_rng_save_v3");
+
+    if (!save) {
+        console.log("No old save found.");
+        return 1;
+    }
+
+    const data = JSON.parse(save);
+
+    const oldUpgradePool = [
+        { id: "clover", multGain: 0.2 },
+        { id: "alignment", multGain: 1.5 },
+        { id: "matrix", multGain: 8.0 },
+        { id: "singularity", multGain: 50.0 }
+    ];
+
+    let oldLuck = 1;
+
+    if (data.upgradeLevels) {
+        oldUpgradePool.forEach(up => {
+            oldLuck += (data.upgradeLevels[up.id] || 0) * up.multGain;
+        });
+    }
+
+    console.log("Recovered old luck:", oldLuck);
+    return oldLuck;
+}
+
+    function getPointMultiplier(){
+      const lens = getPointLevel("pointLens") * 0.10;
+      const grid = getRebirthLevel("collectorGrid") * 0.08;
+      return Math.max(1, 1 + lens + grid);
+    }
+
+    function getCritChance(){
+      return Math.min(0.60, getPointLevel("critCharm") * 0.04);
+    }
+
+    function getAutoDelay(){
+      return Math.max(35, 300 - (getPointLevel("turboMotor") * 15));
+    }
+
+    if (!state.oldLuckMigrated) {
+    state.legacyMultiplierBonus = recoverOldLuckMultiplier() - 1;
+    state.oldLuckMigrated = true;
+    saveGame();
+}
+
+function migrateOldSave() {
+    const oldSave = localStorage.getItem("infinity_rng_save_v3");
+
+    if (!oldSave) return;
+
+    try {
+        const oldData = JSON.parse(oldSave);
+
+        // Keep old stats
+        state.rolls = oldData.rolls || 0;
+        state.points = oldData.luckPoints || 0;
+
+        // Keep inventory/collection
+        if (oldData.inventory) {
+            for (const item in oldData.inventory) {
+                state.inventory[item] = oldData.inventory[item];
+            }
+        }
+
+        // Recover old multiplier
+        let oldLuck = 1;
+
+        const oldUpgradePool = [
+            { id: "clover", multGain: 0.2 },
+            { id: "alignment", multGain: 1.5 },
+            { id: "matrix", multGain: 8.0 },
+            { id: "singularity", multGain: 50.0 }
+        ];
+
+        if (oldData.upgradeLevels) {
+            oldUpgradePool.forEach(up => {
+                oldLuck += (oldData.upgradeLevels[up.id] || 0) * up.multGain;
+            });
+        }
+
+        state.legacyMultiplierBonus = oldLuck - 1;
+
+        state.oldLuckMigrated = true;
+
+        saveGame();
+
+        console.log(
+            "Migration complete:",
+            state.rolls,
+            state.points,
+            state.legacyMultiplierBonus
+        );
+
+    } catch (err) {
+        console.error("Migration failed:", err);
+    }
+}
+
+if (!state.oldLuckMigrated) {
+    migrateOldSave();
+}
+
+    function getRebirthRequirement(){
+      return Math.round(2500 * Math.pow(state.rebirths + 1, 1.65));
+    }
+
+    function getRebirthShardGain(){
+      const base = Math.max(1, Math.floor(Math.sqrt(state.luckPoints / 5000)));
+      const amplified = base + getRebirthLevel("shardPulse");
+      return getRebirthLevel("shardAmplifier") >= 1 ? amplified * 2 : amplified;
+    }
+
+    function getStartingBank(){
+      return getRebirthLevel("startingBank") * 250;
+    }
+
+    function getKeepLPPercent(){
+      return Math.min(0.50, getRebirthLevel("preservationVault") * 0.05);
+    }
+
+    function getShopCost(item, level){
+      return Math.round(item.baseCost * Math.pow(item.scale, level));
+    }
+
+    function setSaveStatus(text){
+      el("saveStatus").textContent = text;
+    }
+
+    function saveGame(){
+      state.version = 9;
+      state.tab = document.querySelector(".tab-btn.active")?.dataset.tab || state.tab || "play";
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      setSaveStatus("Saved locally");
+      lastSaveStamp = Date.now();
+    }
+
+    function recalcDerived(target = state){
+      target.uniqueItems = getUniqueCount();
+    }
+
+    function mergeLoadedState(parsed){
+      const base = defaultState();
+      const merged = {
+        ...base,
+        ...parsed,
+        inventory: { ...base.inventory, ...(parsed.inventory || {}) },
+        pointShopLevels: { ...base.pointShopLevels, ...(parsed.pointShopLevels || {}) },
+        rebirthShopLevels: { ...base.rebirthShopLevels, ...(parsed.rebirthShopLevels || {}) },
+        achievements: { ...base.achievements, ...(parsed.achievements || {}) },
+        recentRolls: Array.isArray(parsed.recentRolls) ? parsed.recentRolls.slice(0, 12) : []
+      };
+
+      merged.autoUnlock = !!merged.autoUnlock || (merged.pointShopLevels.autoRoller || 0) >= 1;
+      merged.autoRolling = !!merged.autoRolling && merged.autoUnlock;
+      merged.legacyMultiplierBonus = typeof merged.legacyMultiplierBonus === "number" ? merged.legacyMultiplierBonus : 0;
+
+      recalcDerived(merged);
+      return merged;
+    }
+
+    function migrateLegacyState(parsed){
+      const base = defaultState();
+      const migrated = {
+        ...base,
+        rolls: parsed.rolls || 0,
+        luckPoints: parsed.luckPoints || 0,
+        rebirths: parsed.rebirths || 0,
+        rebirthShards: parsed.rebirthShards || 0,
+        bestRarity: parsed.bestRarity || 0,
+        lastRoll: parsed.lastRoll || "Tap Roll",
+        lastRarity: parsed.lastRarity || "1 in 0",
+        autoRolling: !!parsed.autoRolling,
+        autoUnlock: !!parsed.autoUnlock,
+        inventory: { ...base.inventory },
+        pointShopLevels: { ...base.pointShopLevels },
+        rebirthShopLevels: { ...base.rebirthShopLevels },
+        achievements: { ...base.achievements },
+        legacyMultiplierBonus: 0,
+        tab: parsed.tab || "play",
+        recentRolls: []
+      };
+
+      if (parsed.inventory){
+        for (const key in parsed.inventory){
+          if (key in migrated.inventory) migrated.inventory[key] = parsed.inventory[key];
+        }
+      }
+
+      if (parsed.pointShopLevels){
+        for (const key in parsed.pointShopLevels){
+          if (key in migrated.pointShopLevels) migrated.pointShopLevels[key] = parsed.pointShopLevels[key];
+        }
+      }
+
+      if (parsed.rebirthShopLevels){
+        for (const key in parsed.rebirthShopLevels){
+          if (key in migrated.rebirthShopLevels) migrated.rebirthShopLevels[key] = parsed.rebirthShopLevels[key];
+        }
+      }
+
+      if (parsed.achievements){
+        for (const key in parsed.achievements){
+          if (key in migrated.achievements) migrated.achievements[key] = parsed.achievements[key];
+        }
+      }
+
+      if (typeof parsed.legacyMultiplierBonus === "number"){
+        migrated.legacyMultiplierBonus = parsed.legacyMultiplierBonus;
+      } else if (parsed.upgradeLevels){
+        for (const key in legacyBonusMap){
+          const lvl = parsed.upgradeLevels[key] || 0;
+          migrated.legacyMultiplierBonus += lvl * legacyBonusMap[key];
+        }
+      } else if (typeof parsed.luckMultiplier === "number"){
+        migrated.legacyMultiplierBonus = Math.max(0, parsed.luckMultiplier - 1);
+      }
+
+      migrated.autoUnlock = migrated.autoUnlock || (migrated.pointShopLevels.autoRoller || 0) >= 1;
+      migrated.autoRolling = migrated.autoRolling && migrated.autoUnlock;
+
+      recalcDerived(migrated);
+      return migrated;
+    }
+
+    function loadGame(){
+      const current = localStorage.getItem(SAVE_KEY);
+      if (current){
+        try{
+          const parsed = JSON.parse(current);
+          state = mergeLoadedState(parsed);
+          return;
+        }catch(err){
+          console.error("Current save parse failed:", err);
+        }
+      }
+
+      for (const key of LEGACY_KEYS){
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try{
+          const parsed = JSON.parse(raw);
+          state = migrateLegacyState(parsed);
+          saveGame();
+          setSaveStatus("Migrated old save");
+          return;
+        }catch(err){
+          console.error("Legacy save migration failed:", err);
+        }
+      }
+
+      state = defaultState();
+    }
+
+    function wipeSave(){
+      if (!confirm("Erase all data? This cannot be undone.")) return;
+      stopAuto();
+      localStorage.removeItem(SAVE_KEY);
+      state = defaultState();
+      renderAll();
+      saveGame();
+    }
+
+    function getRarityTier(rarity){
+      if (rarity >= 1e16) return "divine";
+      if (rarity >= 1e15) return "divine";
+      if (rarity >= 1e12) return "cosmic";
+      if (rarity >= 1e9) return "void";
+      if (rarity >= 1e6) return "mythic";
+      if (rarity >= 1e5) return "legendary";
+      if (rarity >= 1e3) return "epic";
+      if (rarity >= 1e2) return "rare";
+      if (rarity >= 10) return "uncommon";
+      return "common";
+    }
+
+    function rarityFlashClass(tier){
+      if (tier === "divine") return "screen-flash-divine";
+      if (tier === "cosmic" || tier === "void") return "screen-flash-cosmic";
+      if (tier === "mythic") return "screen-flash-mythic";
+      if (tier === "legendary") return "screen-flash-legendary";
+      if (tier === "rare") return "screen-flash-common";
+      return "screen-flash-common";
+    }
+
+    function setHeroTier(item){
+      const hero = el("heroCard");
+      const tier = getRarityTier(item.rarity);
+      hero.dataset.tier = tier;
+
+      if (tier === "divine"){
+        hero.style.boxShadow = "0 0 0 1px rgba(255,255,255,.24), 0 0 60px rgba(255,255,255,.10), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "cosmic" || tier === "void"){
+        hero.style.boxShadow = "0 0 0 1px rgba(34,211,238,.22), 0 0 44px rgba(34,211,238,.14), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "mythic"){
+        hero.style.boxShadow = "0 0 0 1px rgba(244,114,182,.22), 0 0 40px rgba(244,114,182,.12), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "legendary"){
+        hero.style.boxShadow = "0 0 0 1px rgba(245,158,11,.22), 0 0 36px rgba(245,158,11,.10), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "epic"){
+        hero.style.boxShadow = "0 0 0 1px rgba(168,85,247,.16), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "rare"){
+        hero.style.boxShadow = "0 0 0 1px rgba(59,130,246,.16), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "uncommon"){
+        hero.style.boxShadow = "0 0 0 1px rgba(34,197,94,.10), 0 20px 60px rgba(0,0,0,.36)";
+      } else {
+        hero.style.boxShadow = "0 0 0 1px rgba(255,255,255,.04), 0 20px 60px rgba(0,0,0,.36)";
+      }
+    }
+
+    function updateDisplayForItem(item, gain, crit){
+      const nameNode = el("display-name");
+      const rarityNode = el("display-rarity");
+      const badgeNode = el("display-badge");
+
+      nameNode.textContent = item.name;
+      nameNode.style.color = item.color;
+      nameNode.style.textShadow = `0 0 12px ${item.color}22, 0 0 26px ${item.color}16`;
+
+      rarityNode.textContent = `Rarity: 1 in ${item.rarity.toLocaleString()}`;
+      rarityNode.style.color = item.color;
+
+      badgeNode.textContent = crit ? `Critical pull! +${gain.toLocaleString()} LP` : `+${gain.toLocaleString()} LP gained`;
+      badgeNode.style.color = item.color;
+
+      nameNode.classList.remove("name-pop");
+      badgeNode.classList.remove("badge-pop");
+      void nameNode.offsetWidth;
+      nameNode.classList.add("name-pop");
+      badgeNode.classList.add("badge-pop");
+
+      if (item.rarity >= 1000){
+        nameNode.classList.add("rare-glow");
+        if (item.rarity >= 1e5){
+          nameNode.classList.add("rare-shake");
+        }
+      } else {
+        nameNode.classList.remove("rare-glow", "rare-shake");
+      }
+
+      setHeroTier(item);
+    }
+
+    function createParticleBurst(item){
+      const layer = el("particleLayer");
+      layer.innerHTML = "";
+
+      let count = 0;
+      if (item.rarity >= 1e16) count = 220;
+      else if (item.rarity >= 1e12) count = 180;
+      else if (item.rarity >= 1e9) count = 120;
+      else if (item.rarity >= 1e6) count = 80;
+      else if (item.rarity >= 1e5) count = 45;
+      else if (item.rarity >= 1000) count = 24;
+      else count = 10;
+
+      for (let i = 0; i < count; i++){
+        const p = document.createElement("span");
+        p.className = "particle";
+        p.style.setProperty("--pColor", item.color);
+        p.style.setProperty("--dx", `${(Math.random() * 2 - 1) * (80 + Math.random() * 280)}px`);
+        p.style.setProperty("--dy", `${(Math.random() * 2 - 1) * (50 + Math.random() * 220)}px`);
+        p.style.width = `${4 + Math.random() * 8}px`;
+        p.style.height = p.style.width;
+        p.style.left = `${50 + (Math.random() * 18 - 9)}%`;
+        p.style.top = `${50 + (Math.random() * 18 - 9)}%`;
+        p.style.animationDelay = `${Math.random() * 80}ms`;
+        layer.appendChild(p);
+      }
+
+      setTimeout(() => {
+        layer.innerHTML = "";
+      }, 900);
+    }
+
+    function triggerScreenFlash(item){
+      const overlay = el("flashOverlay");
+      const tier = getRarityTier(item.rarity);
+      overlay.className = "";
+      overlay.classList.add(rarityFlashClass(tier));
+      overlay.style.opacity = "1";
+
+      if (tier === "divine"){
+        overlay.style.background = "rgba(255,255,255,.18)";
+      } else if (tier === "cosmic" || tier === "void"){
+        overlay.style.background = "rgba(34,211,238,.16)";
+      } else if (tier === "mythic"){
+        overlay.style.background = "rgba(244,114,182,.16)";
+      } else if (tier === "legendary"){
+        overlay.style.background = "rgba(245,158,11,.14)";
+      } else {
+        overlay.style.background = "rgba(59,130,246,.10)";
+      }
+
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+      }, 180);
+
+      setTimeout(() => {
+        overlay.className = "";
+      }, 480);
+    }
+
+    function selectRolledItem(){
+      const chance = Math.random() / getEffectiveLuck();
+      let rolledItem = itemPool[0];
+
+      for (let i = itemPool.length - 1; i >= 0; i--){
+        if (chance <= (1 / itemPool[i].rarity)){
+          rolledItem = itemPool[i];
+          break;
+        }
+      }
+
+      const rareHunter = getPointLevel("rareHunter");
+      if (rareHunter > 0 && Math.random() < Math.min(0.40, rareHunter * 0.025)){
+        const idx = itemPool.findIndex(x => x.name === rolledItem.name);
+        if (idx >= 0){
+          const bump = Math.min(itemPool.length - 1, idx + 1 + Math.floor(rareHunter / 4));
+          rolledItem = itemPool[bump];
+        }
+      }
+
+      return rolledItem;
+    }
+
+    function pushRecentRoll(item, gain, crit){
+      state.recentRolls.unshift({
+        name: item.name,
+        rarity: item.rarity,
+        color: item.color,
+        points: gain,
+        crit: !!crit,
+        tier: getRarityTier(item.rarity)
+      });
+      state.recentRolls = state.recentRolls.slice(0, 10);
+    }
+
+    function renderRecentRolls(){
+      const box = el("recent-rolls-box");
+      box.innerHTML = "";
+
+      if (!state.recentRolls.length){
+        const empty = document.createElement("div");
+        empty.className = "tiny";
+        empty.textContent = "No rolls yet.";
+        box.appendChild(empty);
+        return;
+      }
+
+      for (const roll of state.recentRolls){
+        const row = document.createElement("div");
+        row.className = "recent-item";
+        row.innerHTML = `
+          <div>
+            <strong style="color:${roll.color};">${roll.name}</strong>
+            <div class="tiny">${roll.crit ? "Critical pull" : "Normal pull"} • ${roll.points.toLocaleString()} LP</div>
+          </div>
+          <small>1 in ${roll.rarity.toLocaleString()}</small>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function startSpinAnimation(finalItem, onDone){
+      const nameNode = el("display-name");
+      const rarityNode = el("display-rarity");
+      const badgeNode = el("display-badge");
+      const hero = el("heroCard");
+
+      const spinCount = 16 + Math.floor(Math.random() * 8);
+      let tick = 0;
+
+      hero.classList.add("rolling");
+      rarityNode.textContent = "Rolling...";
+      badgeNode.textContent = "Shuffling possibilities...";
+      badgeNode.style.color = finalItem.color;
+      nameNode.style.color = "#ffffff";
+
+      if (spinTimer) clearInterval(spinTimer);
+
+      spinTimer = setInterval(() => {
+        const randomItem = itemPool[Math.floor(Math.random() * itemPool.length)];
+        nameNode.textContent = randomItem.name;
+        nameNode.style.color = randomItem.color;
+        rarityNode.textContent = `Rolling... ${tick + 1}/${spinCount}`;
+        tick++;
+
+        if (tick >= spinCount){
+          clearInterval(spinTimer);
+          spinTimer = null;
+          onDone();
+        }
+      }, 45);
+    }
+
+    function roll(){
+      if (isRolling) return;
+      isRolling = true;
+
+      const finalItem = selectRolledItem();
+      const crit = Math.random() < getCritChance();
+      const critMult = getPointLevel("superCrit") >= 1 ? 3 : 2;
+      const gain = Math.round(finalItem.points * getPointMultiplier() * (crit ? critMult : 1));
+
+      startSpinAnimation(finalItem, () => {
+        state.rolls += 1;
+        state.inventory[finalItem.name] = (state.inventory[finalItem.name] || 0) + 1;
+        state.bestRarity = Math.max(state.bestRarity, finalItem.rarity);
+        state.luckPoints += gain;
+        state.lastRoll = finalItem.name;
+        state.lastRarity = `1 in ${finalItem.rarity.toLocaleString()}`;
+        state.uniqueItems = getUniqueCount();
+
+        updateDisplayForItem(finalItem, gain, crit);
+        createParticleBurst(finalItem);
+        triggerScreenFlash(finalItem);
+
+        pushRecentRoll(finalItem, gain, crit);
+        checkAchievements();
+        recalcDerived();
+        renderAll();
+        saveGame();
+
+        el("heroCard").classList.remove("rolling");
+        isRolling = false;
+      });
+    }
+
+    function canRebirth(){
+      return state.luckPoints >= getRebirthRequirement();
+    }
+
+    function rebirth(){
+      const req = getRebirthRequirement();
+      if (state.luckPoints < req) return;
+
+      const shardGain = getRebirthShardGain();
+      const keepPercent = getKeepLPPercent();
+      const keptLP = Math.floor(state.luckPoints * keepPercent);
+
+      state.rebirths += 1;
+      state.rebirthShards += shardGain;
+
+      state.rolls = 0;
+      state.luckPoints = getStartingBank() + keptLP;
+      state.bestRarity = 0;
+      state.lastRoll = "Tap Roll";
+      state.lastRarity = "1 in 0";
+
+      if (getRebirthLevel("museum") < 1){
+        state.inventory = Object.fromEntries(itemPool.map(item => [item.name, 0]));
+      }
+
+      state.autoUnlock = (getPointLevel("autoRoller") >= 1);
+      state.autoRolling = false;
+      stopAuto();
+
+      checkAchievements();
+      recalcDerived();
+      renderAll();
+      saveGame();
+
+      el("display-name").textContent = "Rebirth Complete";
+      el("display-name").style.color = "#0a84ff";
+      el("display-rarity").textContent = `Gained ${shardGain} shard${shardGain === 1 ? "" : "s"}`;
+      el("display-badge").textContent = "Permanent power added.";
+    }
+
+    function buyPointShop(id){
+      const item = pointShop.find(x => x.id === id);
+      if (!item) return;
+
+      const level = getPointLevel(id);
+      if (level >= item.maxLevel) return;
+
+      const cost = getShopCost(item, level);
+      if (state.luckPoints < cost) return;
+
+      state.luckPoints -= cost;
+      state.pointShopLevels[id] = level + 1;
+      if (id === "autoRoller") state.autoUnlock = true;
+      if (state.autoRolling && state.autoUnlock) setAutoTimer();
+      recalcDerived();
+      checkAchievements();
+      renderAll();
+      saveGame();
+    }
+
+    function buyRebirthShop(id){
+      const item = rebirthShop.find(x => x.id === id);
+      if (!item) return;
+
+      const level = getRebirthLevel(id);
+      if (level >= item.maxLevel) return;
+
+      const cost = getShopCost(item, level);
+      if (state.rebirthShards < cost) return;
+
+      state.rebirthShards -= cost;
+      state.rebirthShopLevels[id] = level + 1;
+      recalcDerived();
+      renderAll();
+      saveGame();
+    }
+
+    function checkAchievements(){
+      for (const ach of achievementDefs){
+        if (state.achievements[ach.id]) continue;
+        if (ach.unlocked(state)){
+          state.achievements[ach.id] = true;
+          if (ach.reward?.lp) state.luckPoints += ach.reward.lp;
+          if (ach.reward?.shards) state.rebirthShards += ach.reward.shards;
+        }
+      }
+    }
+
+    function stopAuto(){
+      if (autoTimer) clearInterval(autoTimer);
+      autoTimer = null;
+      state.autoRolling = false;
+      el("btn-auto").textContent = state.autoUnlock ? "Auto Roll: OFF" : "Auto Roll: LOCKED";
+    }
+
+    function setAutoTimer(){
+      if (!state.autoUnlock || !state.autoRolling){
+        stopAuto();
+        return;
+      }
+      if (autoTimer) clearInterval(autoTimer);
+      autoTimer = setInterval(roll, getAutoDelay());
+      el("btn-auto").textContent = "Auto Roll: ON";
+    }
+
+    function toggleAuto(){
+      if (!state.autoUnlock){
+        if (getPointLevel("autoRoller") < 1) return;
+        state.autoUnlock = true;
+      }
+
+      state.autoRolling = !state.autoRolling;
+      if (state.autoRolling) setAutoTimer();
+      else stopAuto();
+
+      renderAll();
+      saveGame();
+    }
+
+    function previewRebirth(){
+      const req = getRebirthRequirement();
+      const gain = getRebirthShardGain();
+      const keepPercent = Math.round(getKeepLPPercent() * 100);
+
+      alert(
+        `Current rebirth requirement: ${req.toLocaleString()} LP\n` +
+        `Estimated shard gain: ${gain}\n` +
+        `LP kept after rebirth: ${keepPercent}%\n\n` +
+        `Rebirth resets your run, but it permanently strengthens future runs.`
+      );
+    }
+
+    function switchTab(tab){
+      state.tab = tab;
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+      });
+      document.querySelectorAll(".panel").forEach(panel => {
+        panel.classList.toggle("active", panel.dataset.panel === tab);
+      });
+
+      const notes = {
+        play: "Roll, collect, and build up enough points to rebirth.",
+        rebirth: "Prestige here to convert progress into permanent power.",
+        collection: "Everything you have pulled lives here.",
+        achievements: "Unlock goals for extra LP and shards.",
+        shop: "Spend LP on run power and shards on permanent upgrades."
+      };
+
+      el("tabNote").textContent = notes[tab] || "";
+      saveGame();
+    }
+
+    function renderStats(){
+      el("stat-rolls").textContent = state.rolls.toLocaleString();
+      el("stat-points").textContent = state.luckPoints.toLocaleString();
+      el("stat-rebirths").textContent = state.rebirths.toLocaleString();
+      el("stat-shards").textContent = state.rebirthShards.toLocaleString();
+      el("stat-luck").textContent = `${getEffectiveLuck().toFixed(2)}x`;
+
+      el("stat-rolls-sub").textContent = state.rolls >= 1000 ? "You are deep into the loop." : "Keep rolling to push milestones.";
+      el("stat-points-sub").textContent = `Point multiplier: ${getPointMultiplier().toFixed(2)}x`;
+      el("stat-rebirths-sub").textContent = `Next rebirth improves your run.`;
+      el("stat-shards-sub").textContent = `Spend shards in the forge.`;
+      el("stat-luck-sub").textContent = `Crit chance: ${(getCritChance() * 100).toFixed(0)}%`;
+    }
+
+    function renderPlay(){
+      el("display-name").textContent = state.lastRoll || "Tap Roll";
+      el("display-name").style.color = state.lastRoll === "Tap Roll" ? "#9ca3af" : "#f8fafc";
+      el("display-rarity").textContent = state.lastRarity || "1 in 0";
+      el("display-badge").textContent = state.lastRoll === "Tap Roll" ? "Nothing rolled yet" : "Ready for another pull.";
+
+      const req = getRebirthRequirement();
+      const pct = Math.min(100, (state.luckPoints / req) * 100);
+
+      el("rebirth-progress-text").textContent = `${state.luckPoints.toLocaleString()} / ${req.toLocaleString()} LP`;
+      el("rebirth-progress-bar").style.width = `${pct}%`;
+      el("rebirth-progress-bar-2").style.width = `${pct}%`;
+
+      el("rebirth-requirement-text").textContent = `Need ${req.toLocaleString()} LP to rebirth.`;
+      el("rebirth-text-2").textContent =
+        `You will gain ${getRebirthShardGain()} shard${getRebirthShardGain() === 1 ? "" : "s"} on rebirth. ` +
+        `You also keep ${Math.round(getKeepLPPercent() * 100)}% of your current LP.`;
+
+      el("state-summary").textContent =
+        `Rolls: ${state.rolls.toLocaleString()} • LP: ${state.luckPoints.toLocaleString()} • Rebirths: ${state.rebirths.toLocaleString()} • Shards: ${state.rebirthShards.toLocaleString()}`;
+
+      const enabled = canRebirth();
+      const rebirthBtn = el("btn-rebirth");
+      const rebirthBtn2 = el("btn-rebirth-2");
+      rebirthBtn.disabled = !enabled;
+      rebirthBtn2.disabled = !enabled;
+      rebirthBtn.textContent = enabled ? "REBIRTH" : "NEED MORE LP";
+      rebirthBtn2.textContent = enabled ? "REBIRTH NOW" : "NEED MORE LP";
+
+      el("btn-auto").textContent = state.autoUnlock ? (state.autoRolling ? "Auto Roll: ON" : "Auto Roll: OFF") : "Auto Roll: LOCKED";
+      el("rebirth-luck-tag").textContent = `+${(state.rebirths * 15).toFixed(0)}%`;
+      el("rebirth-shard-tag").textContent = `${getRebirthShardGain().toLocaleString()} shard${getRebirthShardGain() === 1 ? "" : "s"}`;
+      el("rebirth-milestone-tag").textContent = state.rebirths >= 25 ? "Late game unlocked" : "Keep pushing";
+    }
+
+    function renderInventory(){
+      const box = el("inventory-box");
+      box.innerHTML = "";
+
+      const owned = itemPool.slice().reverse().filter(item => (state.inventory[item.name] || 0) > 0);
+      el("unique-count").textContent = `${owned.length} unique collected`;
+
+      if (!owned.length){
+        const empty = document.createElement("div");
+        empty.className = "tiny";
+        empty.textContent = "Nothing collected yet. Start rolling.";
+        box.appendChild(empty);
+        return;
+      }
+
+      for (const item of owned){
+        const row = document.createElement("div");
+        row.className = "inv-row";
+        row.innerHTML = `
+          <div class="inv-left">
+            <div class="inv-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color};">${item.name}</div>
+            <div class="inv-meta">1 in ${item.rarity.toLocaleString()} • ${item.points.toLocaleString()} LP base</div>
+          </div>
+          <div class="inv-count">x${state.inventory[item.name].toLocaleString()}</div>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function renderAchievements(){
+      const box = el("achievement-box");
+      box.innerHTML = "";
+
+      const unlocked = Object.values(state.achievements).filter(Boolean).length;
+      el("achievement-progress-text").textContent = `${unlocked} / ${achievementDefs.length} unlocked`;
+
+      for (const ach of achievementDefs){
+        const done = !!state.achievements[ach.id];
+        const [cur, goal] = ach.progress(state);
+        const pct = Math.min(100, (cur / goal) * 100);
+        const reward = [];
+        if (ach.reward?.lp) reward.push(`${ach.reward.lp.toLocaleString()} LP`);
+        if (ach.reward?.shards) reward.push(`${ach.reward.shards.toLocaleString()} shard${ach.reward.shards === 1 ? "" : "s"}`);
+
+        const card = document.createElement("div");
+        card.className = `achievement ${done ? "unlocked" : ""}`;
+        card.innerHTML = `
+          <div class="row-top">
+            <div style="font-weight:900;letter-spacing:-.03em">${ach.name}</div>
+            <span class="chip">${done ? "Unlocked" : `${cur.toLocaleString()} / ${goal.toLocaleString()}`}</span>
+          </div>
+          <div class="muted" style="margin-top:6px">${ach.desc}</div>
+          <div class="progress"><span style="width:${pct}%"></span></div>
+          <div class="reward">Reward: ${reward.join(" + ") || "None"}</div>
+        `;
+        box.appendChild(card);
+      }
+    }
+
+    function renderShop(){
+      const pointsBox = el("shop-points");
+      pointsBox.innerHTML = "";
+
+      for (const item of pointShop){
+        const level = getPointLevel(item.id);
+        const cost = getShopCost(item, level);
+
+        const card = document.createElement("div");
+        card.className = "shop-item";
+        card.innerHTML = `
+          <div class="top">
+            <div class="name">${item.name}</div>
+            <span class="chip">Lv. ${level} / ${item.maxLevel}</span>
+          </div>
+          <div class="desc">${item.desc}</div>
+          <div class="meta">
+            <span class="tiny">Cost: ${cost.toLocaleString()} LP</span>
+            <button class="small-btn" data-buy-point="${item.id}" ${state.luckPoints < cost || level >= item.maxLevel ? "disabled" : ""}>
+              ${level >= item.maxLevel ? "MAX" : "Buy"}
+            </button>
+          </div>
+        `;
+        pointsBox.appendChild(card);
+      }
+
+      const shardBox = el("shop-shards");
+      shardBox.innerHTML = "";
+
+      for (const item of rebirthShop){
+        const level = getRebirthLevel(item.id);
+        const cost = getShopCost(item, level);
+
+        const card = document.createElement("div");
+        card.className = "shop-item";
+        card.innerHTML = `
+          <div class="top">
+            <div class="name">${item.name}</div>
+            <span class="chip">Lv. ${level} / ${item.maxLevel}</span>
+          </div>
+          <div class="desc">${item.desc}</div>
+          <div class="meta">
+            <span class="tiny">Cost: ${cost.toLocaleString()} Shard${cost === 1 ? "" : "s"}</span>
+            <button class="small-btn" data-buy-shard="${item.id}" ${state.rebirthShards < cost || level >= item.maxLevel ? "disabled" : ""}>
+              ${level >= item.maxLevel ? "MAX" : "Forge"}
+            </button>
+          </div>
+        `;
+        shardBox.appendChild(card);
+      }
+    }
+
+    function renderRebirthMilestones(){
+      const box = el("rebirth-milestones");
+      box.innerHTML = "";
+
+      for (const m of rebirthMilestones){
+        const achieved = state.rebirths >= m.req;
+        const div = document.createElement("div");
+        div.className = "reboot-item";
+        div.innerHTML = `
+          <div>
+            <b>${achieved ? "✓" : "•"} Rebirth ${m.req}</b>
+            <span>${m.text}</span>
+          </div>
+          <div class="reboot-tag">${achieved ? "Done" : "Locked"}</div>
+        `;
+        box.appendChild(div);
+      }
+    }
+
+    function renderRecentRolls(){
+      const box = el("recent-rolls-box");
+      box.innerHTML = "";
+
+      if (!state.recentRolls.length){
+        const empty = document.createElement("div");
+        empty.className = "tiny";
+        empty.textContent = "No rolls yet.";
+        box.appendChild(empty);
+        return;
+      }
+
+      for (const roll of state.recentRolls){
+        const row = document.createElement("div");
+        row.className = "recent-item";
+        row.innerHTML = `
+          <div>
+            <strong style="color:${roll.color};">${roll.name}</strong>
+            <div class="tiny">${roll.crit ? "Critical pull" : "Normal pull"} • ${roll.points.toLocaleString()} LP</div>
+          </div>
+          <small>1 in ${roll.rarity.toLocaleString()}</small>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function renderAll(){
+      state.uniqueItems = getUniqueCount();
+
+      renderStats();
+      renderPlay();
+      renderInventory();
+      renderAchievements();
+      renderShop();
+      renderRebirthMilestones();
+      renderRecentRolls();
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === state.tab);
+      });
+
+      document.querySelectorAll(".panel").forEach(panel => {
+        panel.classList.toggle("active", panel.dataset.panel === state.tab);
+      });
+
+      const notes = {
+        play: "Roll, collect, and build up enough points to rebirth.",
+        rebirth: "Prestige here to convert progress into permanent power.",
+        collection: "Everything you have pulled lives here.",
+        achievements: "Unlock goals for extra LP and shards.",
+        shop: "Spend LP on run power and shards on permanent upgrades."
+      };
+
+      el("tabNote").textContent = notes[state.tab] || "";
+
+      if (Date.now() - lastSaveStamp > 1000){
+        setSaveStatus("Saved locally");
+      }
+    }
+
+    function initTabs(){
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.tab = btn.dataset.tab;
+          renderAll();
+          saveGame();
+        });
+      });
+    }
+
+    function initButtons(){
+      el("btn-roll").addEventListener("click", roll);
+      el("btn-auto").addEventListener("click", toggleAuto);
+      el("btn-wipe").addEventListener("click", wipeSave);
+      el("btn-rebirth").addEventListener("click", rebirth);
+      el("btn-rebirth-2").addEventListener("click", rebirth);
+      el("btn-preview-2").addEventListener("click", previewRebirth);
+      el("btn-max-rebirth").addEventListener("click", previewRebirth);
+
+      document.addEventListener("click", (e) => {
+        const point = e.target.closest("[data-buy-point]");
+        const shard = e.target.closest("[data-buy-shard]");
+        if (point) buyPointShop(point.dataset.buyPoint);
+        if (shard) buyRebirthShop(shard.dataset.buyShard);
+      });
+    }
+
+    function initAutoRecover(){
+      if (state.autoUnlock && state.autoRolling){
+        state.autoRolling = true;
+        setAutoTimer();
+      } else {
+        stopAuto();
+      }
+    }
+
+    function boot(){
+      loadGame();
+      checkAchievements();
+      recalcDerived();
+      initTabs();
+      initButtons();
+      initAutoRecover();
+      switchTab(state.tab || "play");
+      renderAll();
+      saveGame();
+    }
+
+    window.addEventListener("beforeunload", saveGame);
+
+    setInterval(() => {
+      if (Date.now() - lastSaveStamp > 5000){
+        saveGame();
+      }
+    }, 5000);
+
+    boot();
+  </script>
+</body>
+</html>
