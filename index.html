@@ -53,10 +53,7 @@
                 </div>
                 
                 <button id="headerUpdateBtn" onclick="openChangelog()" class="ml-2 px-3 py-1.5 text-xs font-medium btn-glass text-white rounded-xl">Updates</button>
-                <button onclick="openInstallModal()" class="px-3 py-1.5 text-xs font-semibold bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Install
-                </button>
+                <!--install btn goes here!-->
 
                 <img src="https://api.visitorbadge.io/api/visitors?path=itsmeh1.github.io/flashgames&label=Visitors&labelColor=%230f172a&countColor=%236366f1" alt="Visitor Count" class="ml-3 h-6 opacity-70 hover:opacity-100 transition-opacity rounded shadow-sm hidden sm:block" title="Total Page Views">
             </div>
@@ -768,7 +765,7 @@ const CHANGELOG_DATA = {
         isCurrent: true,
         notes: [
             "<strong>Liquid Glass UI:</strong> The entire hub was rewritten to feel smooth, utilizing heavy backdrop blurring, rich inset shadows, and deep dark-mode panels for a beautiful Apple-style aesthetic.",
-            "<strong>UI Game Installer:</strong> You can now add and install compatible web games offline directly via the new 'Install' button next to updates, skipping the CLI terminal.",
+            "<strong>UI Game Installer:</strong> You can now add and install compatible web games offline directly via the new 'Install' button next to updates, skipping the CLI terminal. Install button still won't be publicly released until v4.5.",
             "<strong>Persistence Anchored:</strong> A massive architectural fix means any games installed offline (CLI or UI) will completely restore themselves on reboot. No more disappearing vault games!",
             "<strong>Homepage Quick-Return:</strong> Click the Flash Games logo from anywhere in the app to instantly reset your search and jump back to the top of the homepage.",
             "<strong>Changelog Redesign:</strong> The version history has been cleaned up. Past versions now sit neatly in a collapsible sidebar drawer to keep the viewport clean."
