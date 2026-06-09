@@ -954,7 +954,10 @@
     ].sort((a, b) => a.rarity - b.rarity);
 
     const pointShop = [
-      { id: "luckyDice", name: "Lucky Dice", desc: "+0.30x effective luck per level.", baseCost: 250, scale: 1.28, maxLevel: 25 },
+      { id: "luckyDice", name: "Lucky Dice", desc: "+0.30x effective luck per level.", baseCost: 250, scale: 1.10, maxLevel: 25 },
+      { id: "luckyClover", name: "Lucky Clover", desc: "+5x effective luck per level.", baseCost: 500, scale: 1.28, maxLevel: 100 },
+      { id: "pureLuck", name: "Pure Luck", desc: "+40x effective luck per level.", baseCost: 2500, scale: 1.45, maxLevel: 100 },
+      { id: "holyGrail", name: "Holy Grail", desc: "+100x effective luck per level.", baseCost: 10000, scale: 1.6, maxLevel: 170 },
       { id: "pointLens", name: "Point Lens", desc: "+10% Luck Points from every roll per level.", baseCost: 400, scale: 1.26, maxLevel: 20 },
       { id: "autoRoller", name: "Auto Roller", desc: "Unlock auto-roll.", baseCost: 600, scale: 1.00, maxLevel: 1 },
       { id: "turboMotor", name: "Turbo Motor", desc: "Reduce auto-roll delay by 15 ms per level.", baseCost: 700, scale: 1.24, maxLevel: 12 },
@@ -1055,7 +1058,11 @@
     }
 
     function getEffectiveLuck(){
-      const pointBonus = getPointLevel("luckyDice") * 0.30;
+      let pointBonus = getPointLevel("luckyDice") * 0.30;
+      pointBonus = pointBonus + getPointLevel("luckyClover") * 5;
+      pointBonus = pointBonus + getPointLevel("pureLuck") * 40;
+      pointBonus = pointBonux + getPointLevel("holyGrail") * 100;
+      
       const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
       const globalRebirthBonus = state.rebirths * 0.15;
       const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
