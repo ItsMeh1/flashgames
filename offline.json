@@ -63,6 +63,13 @@
         "cover": "./offline/rng.png"
     },
     {
+        "name": "Flash Exclusive: Infinity RNG Legacy",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/infinityrnglegacy.html",
+        "cover": "./offline/rng.png"
+    },
+    {
         "name": "Flash Exclusive: Orbital",
         "category": "Standard",
         "zone": "OFFLINE",
