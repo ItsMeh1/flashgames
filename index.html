@@ -123,6 +123,7 @@
             <div id="installStep1">
                 <input id="installUrlInput" type="url" placeholder="https://example.com/game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all mb-4 shadow-inner">
                 <button id="installAnalyzeBtn" onclick="analyzeInstallUrl()" class="w-full py-3.5 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all">Analyze Payload</button>
+                <p class="text-sm text-slate-400 mb-6"><code>You may still install games via the Flash CLI for more advanced settings.</code></p>
             </div>
 
             <div id="installStep2" class="hidden flex-col items-center text-center">
@@ -294,6 +295,8 @@ function pushToSystemLogs(type, args, customOrigin = null) {
     SYSTEM_LOGS.push({ type, message, origin, timestamp });
     renderSystemLogs();
 }
+
+pushToSystemLogs("Boot", "Welcome to Flash Games!\nFlash Games is a passion project to bring many thousand of games together in one, centeralized area.\n\nWhat your version of Flash Games is currently using\n--------------------------------------------------------\n📦flash-pkg v2 \n🎮Flash v4 \n📟flash-cli v2 \n\n\nThanks for using Flash Games!", "Flash's Owner")
 
 console.log = function() { pushToSystemLogs('PRINT', arguments); originalConsole.log.apply(console, arguments); };
 console.warn = function() { pushToSystemLogs('WARN', arguments); originalConsole.warn.apply(console, arguments); };
@@ -894,11 +897,11 @@ function handleNetworkChange() {
 
     if (STATE.isOffline) {
         dot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]";
-        text.textContent = "Offline Mode Active."; zoneFilter.value = 'OFFLINE'; STATE.activeFilters.zone = 'OFFLINE'; zoneFilter.disabled = true;
+        text.textContent = "Offline Mode Active. You can now play saved games directly."; zoneFilter.value = 'OFFLINE'; STATE.activeFilters.zone = 'OFFLINE'; zoneFilter.disabled = true;
         syncToolbox.classList.add('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
     } else {
         dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]";
-        text.textContent = "Connected. Ready to sync local games."; zoneFilter.disabled = false;
+        text.textContent = "Connected. Ready to sync local games for offline use."; zoneFilter.disabled = false;
         syncToolbox.classList.remove('opacity-0', 'pointer-events-none', 'h-0', 'overflow-hidden');
     }
     processAndRenderView();
