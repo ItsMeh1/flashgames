@@ -462,122 +462,6 @@
 
 <script>
 console.log("index core script running")
-
-// --- BAN CHECK SYSTEM ---
-// Assumes you already initialized Firebase like:
-// const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-// const db = getFirestore(app);
-
-let CURRENT_USER_DOC = null;
-let BAN_CHECK_IN_PROGRESS = false;
-
-function showBanOverlay(reason) {
-  const overlay = document.getElementById("banOverlay");
-  const reasonText = document.getElementById("banReasonText");
-  if (!overlay || !reasonText) return;
-
-  reasonText.textContent = reason || "No reason provided.";
-  overlay.classList.remove("hidden");
-
-  // Block the game UI if it is open
-  const portal = document.getElementById("gamePortal");
-  if (portal) {
-    portal.classList.add("hidden");
-    portal.classList.remove("grid");
-    portal.classList.remove("opacity-0");
-  }
-
-  // Optional: disable the rest of the app
-  const app = document.getElementById("app");
-  if (app) app.style.filter = "blur(2px)";
-}
-
-function hideBanOverlay() {
-  const overlay = document.getElementById("banOverlay");
-  const app = document.getElementById("app");
-  if (overlay) overlay.classList.add("hidden");
-  if (app) app.style.filter = "";
-}
-
-async function checkBanStatus(user) {
-  if (!user || BAN_CHECK_IN_PROGRESS) return false;
-  BAN_CHECK_IN_PROGRESS = true;
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      CURRENT_USER_DOC = null;
-      hideBanOverlay();
-      return false;
-    }
-
-    const data = userSnap.data() || {};
-    CURRENT_USER_DOC = data;
-
-    const isBanned = data.banned === true;
-    const banReason = data.banReason || data.ban_reason || "You have been banned from Flash Games.";
-
-    if (isBanned) {
-      showBanOverlay(banReason);
-      return true;
-    } else {
-      hideBanOverlay();
-      return false;
-    }
-  } catch (err) {
-    console.error("Ban check failed:", err);
-    // Safer default is to not hard-block on a transient Firestore failure.
-    // If you want to fail closed instead, change this to true.
-    return false;
-  } finally {
-    BAN_CHECK_IN_PROGRESS = false;
-  }
-}
-
-async function enforceBanBeforeGameLaunch() {
-  const user = auth.currentUser;
-  if (!user) return true;
-
-  const banned = await checkBanStatus(user);
-  return !banned;
-}
-
-// Hook into auth state
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    CURRENT_USER_DOC = null;
-    hideBanOverlay();
-    return;
-  }
-
-  await checkBanStatus(user);
-});
-
-// Block launching games if banned
-const originalExecuteGameLauncher = window.executeGameLauncher;
-window.executeGameLauncher = async function(game) {
-  const ok = await enforceBanBeforeGameLaunch();
-  if (!ok) return;
-
-  return originalExecuteGameLauncher.call(this, game);
-};
-
-// Buttons on the ban overlay
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("banRetryBtn")?.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (user) await checkBanStatus(user);
-  });
-
-  document.getElementById("banLogoutBtn")?.addEventListener("click", async () => {
-    await signOut(auth);
-    location.reload();
-  });
-});
-
 // ==========================================================
 // INTERACTIVE SYSTEM CORE LOGGING & TERMINAL ENGINE (ALT+C)
 // ==========================================================
@@ -1889,6 +1773,121 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.activeFilters.search=e.target.value; processAndRenderView();}); 
 document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); 
 document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
+
+// --- BAN CHECK SYSTEM ---
+// Assumes you already initialized Firebase like:
+// const app = initializeApp(firebaseConfig);
+// const auth = getAuth(app);
+// const db = getFirestore(app);
+
+let CURRENT_USER_DOC = null;
+let BAN_CHECK_IN_PROGRESS = false;
+
+function showBanOverlay(reason) {
+  const overlay = document.getElementById("banOverlay");
+  const reasonText = document.getElementById("banReasonText");
+  if (!overlay || !reasonText) return;
+
+  reasonText.textContent = reason || "No reason provided.";
+  overlay.classList.remove("hidden");
+
+  // Block the game UI if it is open
+  const portal = document.getElementById("gamePortal");
+  if (portal) {
+    portal.classList.add("hidden");
+    portal.classList.remove("grid");
+    portal.classList.remove("opacity-0");
+  }
+
+  // Optional: disable the rest of the app
+  const app = document.getElementById("app");
+  if (app) app.style.filter = "blur(2px)";
+}
+
+function hideBanOverlay() {
+  const overlay = document.getElementById("banOverlay");
+  const app = document.getElementById("app");
+  if (overlay) overlay.classList.add("hidden");
+  if (app) app.style.filter = "";
+}
+
+async function checkBanStatus(user) {
+  if (!user || BAN_CHECK_IN_PROGRESS) return false;
+  BAN_CHECK_IN_PROGRESS = true;
+
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      CURRENT_USER_DOC = null;
+      hideBanOverlay();
+      return false;
+    }
+
+    const data = userSnap.data() || {};
+    CURRENT_USER_DOC = data;
+
+    const isBanned = data.banned === true;
+    const banReason = data.banReason || data.ban_reason || "You have been banned from Flash Games.";
+
+    if (isBanned) {
+      showBanOverlay(banReason);
+      return true;
+    } else {
+      hideBanOverlay();
+      return false;
+    }
+  } catch (err) {
+    console.error("Ban check failed:", err);
+    // Safer default is to not hard-block on a transient Firestore failure.
+    // If you want to fail closed instead, change this to true.
+    return false;
+  } finally {
+    BAN_CHECK_IN_PROGRESS = false;
+  }
+}
+
+async function enforceBanBeforeGameLaunch() {
+  const user = auth.currentUser;
+  if (!user) return true;
+
+  const banned = await checkBanStatus(user);
+  return !banned;
+}
+
+// Hook into auth state
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    CURRENT_USER_DOC = null;
+    hideBanOverlay();
+    return;
+  }
+
+  await checkBanStatus(user);
+});
+
+// Block launching games if banned
+const originalExecuteGameLauncher = window.executeGameLauncher;
+window.executeGameLauncher = async function(game) {
+  const ok = await enforceBanBeforeGameLaunch();
+  if (!ok) return;
+
+  return originalExecuteGameLauncher.call(this, game);
+};
+
+// Buttons on the ban overlay
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("banRetryBtn")?.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (user) await checkBanStatus(user);
+  });
+
+  document.getElementById("banLogoutBtn")?.addEventListener("click", async () => {
+    await signOut(auth);
+    location.reload();
+  });
+});
 
 bootFlashApp();
 </script>
