@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 selection:bg-indigo-500/30">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+          },
+          boxShadow: {
+            soft: '0 20px 50px rgba(0,0,0,.35)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    html, body {
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.16), transparent 24%),
+        radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.12), transparent 26%),
+        radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.08), transparent 24%),
+        #020617;
+    }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,.22); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.28); }
+
+    .glass-panel {
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 18px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .glass-panel-strong {
+      background: rgba(10, 12, 24, .72);
+      backdrop-filter: blur(36px);
+      -webkit-backdrop-filter: blur(36px);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .glass-card {
+      background: rgba(255,255,255,.035);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+      transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.055);
+      border-color: rgba(255,255,255,.11);
+      box-shadow: 0 18px 34px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .btn-glass {
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+      transition: all .18s ease;
+    }
+    .btn-glass:hover {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.18);
+      transform: translateY(-1px);
+    }
+    .btn-glass:active { transform: translateY(1px); }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .35rem .7rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .nav-link {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .8rem 1rem;
+      border-radius: 1rem;
+      color: rgb(148 163 184);
+      border: 1px solid transparent;
+      transition: all .18s ease;
+      text-align: left;
+    }
+    .nav-link:hover {
+      color: white;
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.08);
+    }
+    .nav-link.active {
+      color: rgb(191 219 254);
+      background: rgba(99,102,241,.16);
+      border-color: rgba(99,102,241,.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .field {
+      width: 100%;
+      border-radius: 1rem;
+      background: rgba(0,0,0,.32);
+      border: 1px solid rgba(255,255,255,.09);
+      padding: .85rem 1rem;
+      color: rgb(241 245 249);
+      outline: none;
+      transition: all .18s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .field:focus {
+      border-color: rgba(99,102,241,.55);
+      background: rgba(255,255,255,.05);
+    }
+    .table-wrap {
+      overflow: auto;
+      border-radius: 1.5rem;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+    }
+    .table-row {
+      transition: background .15s ease, transform .15s ease;
+    }
+    .table-row:hover {
+      background: rgba(255,255,255,.03);
+    }
+    .modal-backdrop {
+      background: rgba(2,6,23,.66);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,.05);
+    }
+    .skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
+      animation: shimmer 1.25s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+  </style>
+</head>
+<body class="h-full antialiased overflow-x-hidden">
+  <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+    <div class="absolute -top-[12%] -left-[12%] w-[48vw] h-[48vw] rounded-full bg-indigo-900/20 blur-[120px]"></div>
+    <div class="absolute top-[18%] -right-[14%] w-[42vw] h-[42vw] rounded-full bg-purple-900/15 blur-[120px]"></div>
+    <div class="absolute bottom-[0%] left-[22%] w-[38vw] h-[38vw] rounded-full bg-sky-900/12 blur-[120px]"></div>
+  </div>
+
+  <!-- AUTH VIEW -->
+  <section id="authView" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass-panel-strong w-full max-w-5xl rounded-[2rem] overflow-hidden grid lg:grid-cols-[1.1fr_0.9fr] shadow-soft">
+      <div class="p-8 md:p-12 flex flex-col justify-between gap-8 relative">
+        <div class="flex items-center gap-3">
+          <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden">
+            <span class="text-white text-lg font-black">F</span>
+          </div>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Flash Admin</h1>
+            <p class="text-slate-400 text-sm">Liquid-glass control center for account moderation</p>
+          </div>
+        </div>
+
+        <div class="space-y-6 max-w-xl">
+          <div>
+            <span class="chip text-indigo-200 border-indigo-500/25 bg-indigo-500/10">Admin access only</span>
+            <h2 class="mt-4 text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+              Ban, mute, verify, and inspect every account from one clean panel.
+            </h2>
+            <p class="mt-4 text-slate-400 text-base leading-relaxed">
+              Sign in with an account whose Firestore profile role is set to <span class="text-slate-200 font-semibold">Owner</span> or <span class="text-slate-200 font-semibold">Administrator</span>.
+            </p>
+          </div>
+
+          <div class="grid sm:grid-cols-3 gap-3 text-sm">
+            <div class="glass-card rounded-2xl p-4">
+              <div class="text-slate-400 text-xs uppercase tracking-wider">Users</div>
+              <div class="mt-1 text-white text-xl font-bold" id="authStatUsers">—</div>
+            </div>
+            <div class="glass-card rounded-2xl p-4">
+              <div class="text-slate-400 text-xs uppercase tracking-wider">Banned</div>
+              <div class="mt-1 text-white text-xl font-bold" id="authStatBanned">—</div>
+            </div>
+            <div class="glass-card rounded-2xl p-4">
+              <div class="text-slate-400 text-xs uppercase tracking-wider">Online</div>
+              <div class="mt-1 text-white text-xl font-bold" id="authStatOnline">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-500 leading-relaxed">
+          Firebase Auth + Firestore. Profile data is read from <code class="text-slate-300">users/{uid}</code>.
+        </div>
+      </div>
+
+      <div class="p-6 md:p-10 border-t lg:border-t-0 lg:border-l border-white/10 bg-white/[0.02]">
+        <div class="max-w-md mx-auto">
+          <div class="mb-6">
+            <h3 class="text-2xl font-bold text-white">Sign in</h3>
+            <p class="text-sm text-slate-400 mt-1">Use your admin email and password.</p>
+          </div>
+
+          <form id="loginForm" class="space-y-4">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Email</label>
+              <input id="emailInput" type="email" class="field" placeholder="admin@example.com" autocomplete="email" required>
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Password</label>
+              <input id="passwordInput" type="password" class="field" placeholder="••••••••" autocomplete="current-password" required>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold shadow-[0_0_24px_rgba(99,102,241,0.28)] transition-all">
+              Sign in to Admin
+            </button>
+          </form>
+
+          <div class="mt-4 flex items-start gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-slate-400">
+            <svg class="w-5 h-5 text-amber-300 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M8.257 3.099c.366-.446 1.12-.446 1.486 0l6.518 7.95c.509.62.07 1.551-.743 1.551H2.482c-.813 0-1.252-.932-.743-1.551l6.518-7.95zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-7a1 1 0 011 1v3a1 1 0 11-2 0V8a1 1 0 011-1z"></path></svg>
+            <div>
+              <div class="font-semibold text-slate-200">Security note</div>
+              <div class="mt-1 text-slate-400">
+                Front-end checks are only the UI gate. Firestore rules and trusted backend actions must still enforce admin permissions.
+              </div>
+            </div>
+          </div>
+
+          <div id="authError" class="hidden mt-4 rounded-2xl border border-rose-500/25 bg-rose-500/10 p-4 text-sm text-rose-200"></div>
+          <div id="authSuccess" class="hidden mt-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-4 text-sm text-emerald-200"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP VIEW -->
+  <section id="appView" class="hidden min-h-screen">
+    <header class="sticky top-0 z-40 border-b border-white/8 glass-panel px-4 md:px-6 py-4">
+      <div class="max-w-[1800px] mx-auto flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden">
+            <span class="text-white text-lg font-black">F</span>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="text-xl md:text-2xl font-bold tracking-tight">Flash Admin</h1>
+              <span class="chip text-emerald-200 border-emerald-500/20 bg-emerald-500/10">Live</span>
+              <span id="connectionChip" class="chip text-slate-200">Connected</span>
+            </div>
+            <p class="text-xs md:text-sm text-slate-400 mt-1">
+              Signed in as <span id="signedInEmail" class="text-slate-200 font-semibold">—</span>
+              <span class="mx-2 text-slate-600">•</span>
+              Role: <span id="signedInRole" class="text-slate-200 font-semibold">—</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="refreshBtn" class="btn-glass px-4 py-2 rounded-xl text-sm font-semibold">Refresh</button>
+          <button id="broadcastBtn" class="btn-glass px-4 py-2 rounded-xl text-sm font-semibold">Broadcast</button>
+          <button id="exportBtn" class="btn-glass px-4 py-2 rounded-xl text-sm font-semibold">Export JSON</button>
+          <button id="logoutBtn" class="px-4 py-2 rounded-xl bg-rose-500/15 border border-rose-500/25 text-rose-200 hover:bg-rose-500/20 font-semibold text-sm transition-all">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-[1800px] mx-auto p-4 md:p-6">
+      <div class="grid gap-4 xl:grid-cols-[280px_1fr_400px]">
+        <!-- sidebar -->
+        <aside class="glass-panel-strong rounded-[1.75rem] p-4 md:p-5 h-fit xl:sticky xl:top-[104px]">
+          <div class="mb-4">
+            <div class="text-xs uppercase tracking-[0.24em] text-slate-500 font-bold">Navigation</div>
+          </div>
+          <nav class="space-y-2">
+            <button class="nav-link active" data-panel="dashboardPanel">Dashboard <span class="text-xs text-slate-500">Overview</span></button>
+            <button class="nav-link" data-panel="usersPanel">Users <span class="text-xs text-slate-500">Search</span></button>
+            <button class="nav-link" data-panel="rolesPanel">Roles <span class="text-xs text-slate-500">Grant</span></button>
+            <button class="nav-link" data-panel="logsPanel">Audit log <span class="text-xs text-slate-500">History</span></button>
+            <button class="nav-link" data-panel="settingsPanel">Settings <span class="text-xs text-slate-500">System</span></button>
+          </nav>
+
+          <div class="mt-5 grid grid-cols-2 gap-3">
+            <div class="glass-card rounded-2xl p-4">
+              <div class="text-[11px] uppercase tracking-wider text-slate-500">Admin users</div>
+              <div id="statAdmins" class="text-2xl font-bold mt-1">—</div>
+            </div>
+            <div class="glass-card rounded-2xl p-4">
+              <div class="text-[11px] uppercase tracking-wider text-slate-500">Muted</div>
+              <div id="statMuted" class="text-2xl font-bold mt-1">—</div>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs text-slate-400 leading-relaxed">
+            <div class="font-semibold text-slate-200 mb-1">Expected schema</div>
+            <code class="block text-[11px] text-slate-300 whitespace-pre-wrap">users/{uid}: name, email, pfp, role, banned, muted, verified, banReason, bio, createdAt, status</code>
+          </div>
+        </aside>
+
+        <!-- main content -->
+        <section class="space-y-4">
+          <div id="dashboardPanel" class="space-y-4">
+            <div class="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
+              <div class="glass-panel-strong rounded-[1.75rem] p-5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-500 font-bold">Total users</div>
+                    <div id="statTotal" class="mt-2 text-3xl font-black">—</div>
+                  </div>
+                  <div class="h-12 w-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center text-indigo-200 text-xl">◌</div>
+                </div>
+              </div>
+              <div class="glass-panel-strong rounded-[1.75rem] p-5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-500 font-bold">Online</div>
+                    <div id="statOnline" class="mt-2 text-3xl font-black">—</div>
+                  </div>
+                  <div class="h-12 w-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-200 text-xl">●</div>
+                </div>
+              </div>
+              <div class="glass-panel-strong rounded-[1.75rem] p-5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-500 font-bold">Banned</div>
+                    <div id="statBanned" class="mt-2 text-3xl font-black">—</div>
+                  </div>
+                  <div class="h-12 w-12 rounded-2xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center text-rose-200 text-xl">⛔</div>
+                </div>
+              </div>
+              <div class="glass-panel-strong rounded-[1.75rem] p-5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-500 font-bold">Verified</div>
+                    <div id="statVerified" class="mt-2 text-3xl font-black">—</div>
+                  </div>
+                  <div class="h-12 w-12 rounded-2xl bg-sky-500/15 border border-sky-500/20 flex items-center justify-center text-sky-200 text-xl">✓</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-panel-strong rounded-[1.75rem] p-5">
+              <div class="flex flex-col md:flex-row md:items-end gap-3 justify-between">
+                <div>
+                  <h2 class="text-xl font-bold">Account overview</h2>
+                  <p class="text-sm text-slate-400 mt-1">Search, filter, and manage accounts in real time.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                  <input id="searchInput" class="field md:w-[320px]" placeholder="Search name, email, UID, bio...">
+                  <select id="filterRole" class="field md:w-[180px]">
+                    <option value="all">All roles</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Administrator">Administrator</option>
+                    <option value="Moderator">Moderator</option>
+                    <option value="Member">Member</option>
+                  </select>
+                  <select id="filterStatus" class="field md:w-[180px]">
+                    <option value="all">All status</option>
+                    <option value="online">Online</option>
+                    <option value="offline">Offline</option>
+                    <option value="banned">Banned</option>
+                    <option value="muted">Muted</option>
+                    <option value="verified">Verified</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="usersPanel" class="hidden space-y-4">
+            <div class="glass-panel-strong rounded-[1.75rem] p-5">
+              <div class="flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h2 class="text-xl font-bold">Users</h2>
+                  <p class="text-sm text-slate-400 mt-1">Click a row to inspect and modify the account.</p>
+                </div>
+                <div class="text-sm text-slate-400">
+                  Showing <span id="visibleCount" class="text-slate-100 font-semibold">0</span> of <span id="totalCount" class="text-slate-100 font-semibold">0</span>
+                </div>
+              </div>
+
+              <div class="table-wrap mt-4">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="sticky top-0 bg-slate-950/80 backdrop-blur-xl text-slate-400">
+                    <tr>
+                      <th class="px-4 py-3 font-semibold">User</th>
+                      <th class="px-4 py-3 font-semibold">Email</th>
+                      <th class="px-4 py-3 font-semibold">Role</th>
+                      <th class="px-4 py-3 font-semibold">Status</th>
+                      <th class="px-4 py-3 font-semibold">Flags</th>
+                      <th class="px-4 py-3 font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody" class="divide-y divide-white/6"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="rolesPanel" class="hidden space-y-4">
+            <div class="glass-panel-strong rounded-[1.75rem] p-5">
+              <h2 class="text-xl font-bold">Role controls</h2>
+              <p class="text-sm text-slate-400 mt-1">Use this for quick promotion and demotion without opening the detail drawer.</p>
+              <div id="roleTiles" class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+            </div>
+          </div>
+
+          <div id="logsPanel" class="hidden space-y-4">
+            <div class="glass-panel-strong rounded-[1.75rem] p-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-xl font-bold">Audit log</h2>
+                  <p class="text-sm text-slate-400 mt-1">Recent moderation actions and system events.</p>
+                </div>
+                <button id="clearLogsBtn" class="btn-glass px-4 py-2 rounded-xl text-sm font-semibold">Clear view</button>
+              </div>
+              <div id="auditLogList" class="mt-4 space-y-2 max-h-[560px] overflow-auto pr-1"></div>
+            </div>
+          </div>
+
+          <div id="settingsPanel" class="hidden space-y-4">
+            <div class="glass-panel-strong rounded-[1.75rem] p-5">
+              <h2 class="text-xl font-bold">System settings</h2>
+              <p class="text-sm text-slate-400 mt-1">Optional convenience tools for admins.</p>
+              <div class="mt-4 grid gap-4 md:grid-cols-2">
+                <div class="glass-card rounded-2xl p-4">
+                  <div class="text-sm font-semibold">Default ban reason</div>
+                  <input id="defaultBanReason" class="field mt-3" placeholder="Rule violation">
+                  <button id="saveBanReasonBtn" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-semibold">Save locally</button>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                  <div class="text-sm font-semibold">Admin note</div>
+                  <textarea id="adminNote" class="field mt-3 min-h-[120px]" placeholder="Internal note..."></textarea>
+                  <button id="saveNoteBtn" class="mt-3 btn-glass px-4 py-2 rounded-xl text-sm font-semibold">Save locally</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="emptyState" class="hidden glass-panel-strong rounded-[1.75rem] p-8 text-center">
+            <div class="mx-auto h-16 w-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl text-slate-300">◎</div>
+            <h3 class="mt-4 text-2xl font-bold">No accounts found</h3>
+            <p class="mt-2 text-slate-400">Once the users collection loads, the dashboard will appear here.</p>
+          </div>
+        </section>
+
+        <!-- detail drawer -->
+        <aside class="glass-panel-strong rounded-[1.75rem] p-5 h-fit xl:sticky xl:top-[104px]">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-xs uppercase tracking-[0.24em] text-slate-500 font-bold">Selected account</div>
+              <h2 id="detailName" class="mt-1 text-2xl font-bold">None</h2>
+            </div>
+            <button id="copyUidBtn" class="btn-glass px-3 py-2 rounded-xl text-xs font-semibold">Copy UID</button>
+          </div>
+
+          <div class="mt-5 rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+            <div class="flex items-center gap-4">
+              <div class="h-18 w-18 rounded-3xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center shrink-0" style="width:72px;height:72px;">
+                <img id="detailPfp" alt="Profile picture" class="w-full h-full object-cover hidden">
+                <div id="detailPfpFallback" class="text-xl font-black text-slate-300">—</div>
+              </div>
+              <div class="min-w-0">
+                <div id="detailRole" class="chip">—</div>
+                <div id="detailStatus" class="mt-2 text-sm text-slate-400">Select a user to inspect.</div>
+                <div id="detailUid" class="mt-2 text-[11px] font-mono text-slate-500 break-all"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <button id="banBtn" class="px-4 py-3 rounded-2xl bg-rose-500/15 border border-rose-500/25 text-rose-100 font-semibold">Ban</button>
+              <button id="unbanBtn" class="px-4 py-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-100 font-semibold">Unban</button>
+              <button id="muteBtn" class="px-4 py-3 rounded-2xl bg-amber-500/15 border border-amber-500/25 text-amber-100 font-semibold">Mute</button>
+              <button id="unmuteBtn" class="px-4 py-3 rounded-2xl bg-sky-500/15 border border-sky-500/25 text-sky-100 font-semibold">Unmute</button>
+              <button id="verifyBtn" class="px-4 py-3 rounded-2xl bg-indigo-500/15 border border-indigo-500/25 text-indigo-100 font-semibold">Verify</button>
+              <button id="unverifyBtn" class="px-4 py-3 rounded-2xl bg-slate-500/15 border border-slate-500/25 text-slate-100 font-semibold">Unverify</button>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 space-y-3">
+              <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold">Role</label>
+              <select id="roleSelect" class="field">
+                <option>Owner</option>
+                <option>Administrator</option>
+                <option>Moderator</option>
+                <option>Member</option>
+                <option>Verified</option>
+                <option>Tester</option>
+                <option>VIP</option>
+              </select>
+              <button id="saveRoleBtn" class="btn-glass w-full px-4 py-2.5 rounded-xl text-sm font-semibold">Save role</button>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 space-y-3">
+              <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold">Ban reason</label>
+              <textarea id="banReasonInput" class="field min-h-[92px]" placeholder="Reason for ban / moderation notes"></textarea>
+              <button id="saveBanReasonRemoteBtn" class="btn-glass w-full px-4 py-2.5 rounded-xl text-sm font-semibold">Save reason</button>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 space-y-3">
+              <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold">Edit name / bio / pfp</label>
+              <input id="editNameInput" class="field" placeholder="Display name">
+              <textarea id="editBioInput" class="field min-h-[96px]" placeholder="Bio"></textarea>
+              <input id="editPfpInput" class="field" placeholder="PFP URL or data:image/...">
+              <div class="flex gap-2">
+                <button id="saveProfileBtn" class="btn-glass flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold">Save profile</button>
+                <button id="resetPfpBtn" class="btn-glass px-4 py-2.5 rounded-xl text-sm font-semibold">Reset PFP</button>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 space-y-3">
+              <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold">Status</label>
+              <select id="statusSelect" class="field">
+                <option>Online</option>
+                <option>Offline</option>
+                <option>Away</option>
+                <option>Busy</option>
+                <option>Banned</option>
+                <option>Hidden</option>
+              </select>
+              <button id="saveStatusBtn" class="btn-glass w-full px-4 py-2.5 rounded-xl text-sm font-semibold">Save status</button>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-bold">Danger zone</div>
+              <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+                Firestore profile deletion is supported here. Auth user deletion should be routed through a privileged backend callable function.
+              </p>
+              <button id="deleteProfileBtn" class="mt-3 w-full px-4 py-3 rounded-2xl bg-rose-500/15 border border-rose-500/25 text-rose-100 font-semibold">Delete Firestore profile</button>
+            </div>
+          </div>
+
+          <div class="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-xs text-slate-400 leading-relaxed">
+            Changes save directly into <code class="text-slate-200">users/{uid}</code>. Every action writes an audit log entry.
+          </div>
+        </aside>
+      </div>
+    </main>
+  </section>
+
+  <!-- BROADCAST MODAL -->
+  <div id="broadcastModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200">
+    <div class="min-h-full flex items-center justify-center p-4">
+      <div class="glass-panel-strong w-full max-w-2xl rounded-[2rem] p-6 md:p-8 shadow-soft transform scale-95 transition-transform duration-200" id="broadcastInner">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-2xl font-bold">Broadcast message</h3>
+            <p class="mt-1 text-sm text-slate-400">Send a global announcement into Firestore.</p>
+          </div>
+          <button class="btn-glass w-9 h-9 rounded-full" id="closeBroadcastBtn">✕</button>
+        </div>
+        <div class="mt-5 space-y-4">
+          <input id="broadcastTitle" class="field" placeholder="Title">
+          <textarea id="broadcastBody" class="field min-h-[150px]" placeholder="Message"></textarea>
+          <div class="grid md:grid-cols-2 gap-3">
+            <input id="broadcastAudience" class="field" placeholder="Audience label, e.g. all-users">
+            <input id="broadcastExpiry" type="datetime-local" class="field">
+          </div>
+          <div class="flex gap-3">
+            <button id="sendBroadcastBtn" class="flex-1 py-3.5 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold">Send</button>
+            <button id="cancelBroadcastBtn" class="flex-1 py-3.5 rounded-2xl btn-glass font-semibold">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div id="confirmModal" class="hidden fixed inset-0 z-[90] modal-backdrop opacity-0 transition-opacity duration-200">
+    <div class="min-h-full flex items-center justify-center p-4">
+      <div class="glass-panel-strong w-full max-w-md rounded-[2rem] p-6 shadow-soft transform scale-95 transition-transform duration-200" id="confirmInner">
+        <h3 id="confirmTitle" class="text-2xl font-bold">Confirm</h3>
+        <p id="confirmMessage" class="mt-2 text-sm text-slate-400 leading-relaxed"></p>
+        <div class="mt-6 flex gap-3">
+          <button id="confirmCancelBtn" class="flex-1 py-3 rounded-2xl btn-glass font-semibold">Cancel</button>
+          <button id="confirmOkBtn" class="flex-1 py-3 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-bold">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <template id="userCardTemplate">
+    <tr class="table-row cursor-pointer">
+      <td class="px-4 py-4">
+        <div class="flex items-center gap-3">
+          <div class="h-11 w-11 rounded-2xl bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
+            <img class="row-pfp w-full h-full object-cover hidden" alt="">
+            <div class="row-fallback text-sm font-black text-slate-300">—</div>
+          </div>
+          <div class="min-w-0">
+            <div class="row-name font-semibold text-white truncate">—</div>
+            <div class="row-uid text-xs font-mono text-slate-500 truncate">—</div>
+          </div>
+        </div>
+      </td>
+      <td class="px-4 py-4 row-email text-slate-300 truncate">—</td>
+      <td class="px-4 py-4"><span class="row-role chip">—</span></td>
+      <td class="px-4 py-4"><span class="row-status chip">—</span></td>
+      <td class="px-4 py-4">
+        <div class="row-flags flex flex-wrap gap-2"></div>
+      </td>
+      <td class="px-4 py-4">
+        <div class="flex flex-wrap gap-2">
+          <button class="row-open btn-glass px-3 py-2 rounded-xl text-xs font-semibold">Open</button>
+          <button class="row-ban btn-glass px-3 py-2 rounded-xl text-xs font-semibold">Ban</button>
+        </div>
+      </td>
+    </tr>
+  </template>
+
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-[120] flex flex-col gap-3"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      addDoc,
+      query,
+      orderBy,
+      limit,
+      serverTimestamp,
+      onSnapshot,
+      where
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBprG8pYZ1WQNh2wt0kih3P7Z3nIxhnU5k",
+      authDomain: "mobify-5b3c9.firebaseapp.com",
+      projectId: "mobify-5b3c9",
+      storageBucket: "mobify-5b3c9.firebasestorage.app",
+      messagingSenderId: "454093361079",
+      appId: "1:454093361079:web:ab1e1093a91a705be3a232"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    await setPersistence(auth, browserLocalPersistence);
+
+    const ALLOWED_ROLES = new Set(["Owner", "Administrator"]);
+    const ROLE_ORDER = ["Owner", "Administrator", "Moderator", "Verified", "Member", "Tester", "VIP"];
+
+    const els = {
+      authView: document.getElementById("authView"),
+      appView: document.getElementById("appView"),
+      loginForm: document.getElementById("loginForm"),
+      emailInput: document.getElementById("emailInput"),
+      passwordInput: document.getElementById("passwordInput"),
+      authError: document.getElementById("authError"),
+      authSuccess: document.getElementById("authSuccess"),
+      connectionChip: document.getElementById("connectionChip"),
+      signedInEmail: document.getElementById("signedInEmail"),
+      signedInRole: document.getElementById("signedInRole"),
+      usersTableBody: document.getElementById("usersTableBody"),
+      visibleCount: document.getElementById("visibleCount"),
+      totalCount: document.getElementById("totalCount"),
+      searchInput: document.getElementById("searchInput"),
+      filterRole: document.getElementById("filterRole"),
+      filterStatus: document.getElementById("filterStatus"),
+      statTotal: document.getElementById("statTotal"),
+      statOnline: document.getElementById("statOnline"),
+      statBanned: document.getElementById("statBanned"),
+      statVerified: document.getElementById("statVerified"),
+      statAdmins: document.getElementById("statAdmins"),
+      statMuted: document.getElementById("statMuted"),
+      authStatUsers: document.getElementById("authStatUsers"),
+      authStatBanned: document.getElementById("authStatBanned"),
+      authStatOnline: document.getElementById("authStatOnline"),
+      detailName: document.getElementById("detailName"),
+      detailRole: document.getElementById("detailRole"),
+      detailStatus: document.getElementById("detailStatus"),
+      detailUid: document.getElementById("detailUid"),
+      detailPfp: document.getElementById("detailPfp"),
+      detailPfpFallback: document.getElementById("detailPfpFallback"),
+      roleSelect: document.getElementById("roleSelect"),
+      statusSelect: document.getElementById("statusSelect"),
+      banReasonInput: document.getElementById("banReasonInput"),
+      editNameInput: document.getElementById("editNameInput"),
+      editBioInput: document.getElementById("editBioInput"),
+      editPfpInput: document.getElementById("editPfpInput"),
+      auditLogList: document.getElementById("auditLogList"),
+      roleTiles: document.getElementById("roleTiles"),
+      defaultBanReason: document.getElementById("defaultBanReason"),
+      adminNote: document.getElementById("adminNote"),
+      toastContainer: document.getElementById("toastContainer"),
+      broadcastModal: document.getElementById("broadcastModal"),
+      broadcastInner: document.getElementById("broadcastInner"),
+      confirmModal: document.getElementById("confirmModal"),
+      confirmInner: document.getElementById("confirmInner"),
+    };
+
+    const state = {
+      currentUser: null,
+      currentProfile: null,
+      users: [],
+      usersById: new Map(),
+      selectedUid: null,
+      selectedDoc: null,
+      auditLogs: [],
+      loadingUsers: true,
+      unsubs: []
+    };
+
+    function escapeHTML(str = "") {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function userDisplayName(user) {
+      return user?.name || user?.displayName || user?.email || user?.uid || "Unknown";
+    }
+
+    function getInitials(name = "") {
+      const parts = String(name).trim().split(/\s+/).filter(Boolean).slice(0, 2);
+      if (!parts.length) return "—";
+      return parts.map(p => p[0]?.toUpperCase()).join("");
+    }
+
+    function toDate(value) {
+      if (!value) return null;
+      if (typeof value === "number") return new Date(value > 1e12 ? value : value * 1000);
+      if (typeof value === "string") {
+        const n = Number(value);
+        if (!Number.isNaN(n)) return new Date(n > 1e12 ? n : n * 1000);
+        const d = new Date(value);
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+      if (value?.toDate) return value.toDate();
+      if (value?.seconds) return new Date(value.seconds * 1000);
+      return null;
+    }
+
+    function formatDate(value) {
+      const d = toDate(value);
+      if (!d) return "—";
+      return new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(d);
+    }
+
+    function todayKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function isToday(value) {
+      const d = toDate(value);
+      if (!d) return false;
+      return d.toISOString().slice(0, 10) === todayKey();
+    }
+
+    function statusBadgeClass(status = "") {
+      const s = String(status).toLowerCase();
+      if (s.includes("online")) return "text-emerald-200 bg-emerald-500/10 border-emerald-500/25";
+      if (s.includes("away")) return "text-amber-200 bg-amber-500/10 border-amber-500/25";
+      if (s.includes("busy")) return "text-rose-200 bg-rose-500/10 border-rose-500/25";
+      if (s.includes("banned")) return "text-rose-200 bg-rose-500/10 border-rose-500/25";
+      if (s.includes("offline")) return "text-slate-200 bg-slate-500/10 border-slate-500/25";
+      return "text-sky-200 bg-sky-500/10 border-sky-500/25";
+    }
+
+    function roleBadgeClass(role = "") {
+      const r = String(role);
+      if (r === "Owner") return "text-indigo-200 bg-indigo-500/10 border-indigo-500/25";
+      if (r === "Administrator") return "text-purple-200 bg-purple-500/10 border-purple-500/25";
+      if (r === "Moderator") return "text-cyan-200 bg-cyan-500/10 border-cyan-500/25";
+      if (r === "Verified") return "text-emerald-200 bg-emerald-500/10 border-emerald-500/25";
+      return "text-slate-200 bg-slate-500/10 border-slate-500/25";
+    }
+
+    function flagsForUser(user) {
+      const flags = [];
+      if (user?.banned) flags.push(["Banned", "text-rose-200 bg-rose-500/10 border-rose-500/25"]);
+      if (user?.muted) flags.push(["Muted", "text-amber-200 bg-amber-500/10 border-amber-500/25"]);
+      if (user?.verified) flags.push(["Verified", "text-emerald-200 bg-emerald-500/10 border-emerald-500/25"]);
+      if (user?.status) flags.push([String(user.status), "text-sky-200 bg-sky-500/10 border-sky-500/25"]);
+      return flags;
+    }
+
+    function toast(title, message, tone = "info") {
+      const colors = {
+        info: "border-sky-500/25 bg-sky-500/10 text-sky-100",
+        success: "border-emerald-500/25 bg-emerald-500/10 text-emerald-100",
+        warn: "border-amber-500/25 bg-amber-500/10 text-amber-100",
+        error: "border-rose-500/25 bg-rose-500/10 text-rose-100"
+      };
+      const el = document.createElement("div");
+      el.className = `glass-panel-strong rounded-2xl p-4 max-w-sm shadow-soft ${colors[tone] || colors.info}`;
+      el.innerHTML = `
+        <div class="font-bold">${escapeHTML(title)}</div>
+        <div class="mt-1 text-sm opacity-90">${escapeHTML(message)}</div>
+      `;
+      els.toastContainer.appendChild(el);
+      setTimeout(() => {
+        el.style.transition = "all .25s ease";
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+        setTimeout(() => el.remove(), 250);
+      }, 3200);
+    }
+
+    function showAuthError(message) {
+      els.authError.textContent = message;
+      els.authError.classList.remove("hidden");
+      els.authSuccess.classList.add("hidden");
+    }
+
+    function showAuthSuccess(message) {
+      els.authSuccess.textContent = message;
+      els.authSuccess.classList.remove("hidden");
+      els.authError.classList.add("hidden");
+    }
+
+    function hideAuthMessages() {
+      els.authError.classList.add("hidden");
+      els.authSuccess.classList.add("hidden");
+      els.authError.textContent = "";
+      els.authSuccess.textContent = "";
+    }
+
+    function setView(mode) {
+      if (mode === "auth") {
+        els.authView.classList.remove("hidden");
+        els.appView.classList.add("hidden");
+      } else {
+        els.authView.classList.add("hidden");
+        els.appView.classList.remove("hidden");
+      }
+    }
+
+    function openModal(modal, inner) {
+      modal.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        modal.classList.remove("opacity-0");
+        inner.classList.remove("scale-95");
+      });
+    }
+
+    function closeModal(modal, inner) {
+      modal.classList.add("opacity-0");
+      inner.classList.add("scale-95");
+      setTimeout(() => modal.classList.add("hidden"), 200);
+    }
+
+    async function loadCurrentProfile(uid) {
+      const snap = await getDoc(doc(db, "users", uid));
+      if (!snap.exists()) return null;
+      return { id: uid, ...snap.data() };
+    }
+
+    async function ensureAdminAccess(user) {
+      if (!user) return false;
+      const profile = await loadCurrentProfile(user.uid);
+      state.currentProfile = profile;
+
+      if (!profile) {
+        return false;
+      }
+
+      const role = profile.role || "Member";
+      els.signedInEmail.textContent = profile.email || user.email || "—";
+      els.signedInRole.textContent = role;
+
+      if (!ALLOWED_ROLES.has(role)) {
+        return false;
+      }
+      return true;
+    }
+
+    function renderSelection(user) {
+      state.selectedDoc = user || null;
+      state.selectedUid = user?.id || null;
+
+      if (!user) {
+        els.detailName.textContent = "None";
+        els.detailRole.textContent = "—";
+        els.detailStatus.textContent = "Select a user to inspect.";
+        els.detailUid.textContent = "";
+        els.detailPfp.classList.add("hidden");
+        els.detailPfpFallback.classList.remove("hidden");
+        els.detailPfpFallback.textContent = "—";
+        els.roleSelect.value = "Member";
+        els.statusSelect.value = "Online";
+        els.banReasonInput.value = "";
+        els.editNameInput.value = "";
+        els.editBioInput.value = "";
+        els.editPfpInput.value = "";
+        return;
+      }
+
+      const name = userDisplayName(user);
+      els.detailName.textContent = name;
+      els.detailRole.textContent = user.role || "Member";
+      els.detailRole.className = `chip ${roleBadgeClass(user.role || "Member")}`;
+      els.detailStatus.textContent = `${user.status || "Unknown"}${user.banned ? " • banned" : ""}${user.muted ? " • muted" : ""}${user.verified ? " • verified" : ""}`;
+      els.detailUid.textContent = user.id;
+
+      els.roleSelect.value = user.role || "Member";
+      els.statusSelect.value = user.status || "Online";
+      els.banReasonInput.value = user.banReason || "";
+      els.editNameInput.value = user.name || "";
+      els.editBioInput.value = user.bio || "";
+      els.editPfpInput.value = user.pfp || "";
+
+      const src = user.pfp || "";
+      if (src) {
+        els.detailPfp.src = src;
+        els.detailPfp.onload = () => {
+          els.detailPfp.classList.remove("hidden");
+          els.detailPfpFallback.classList.add("hidden");
+        };
+        els.detailPfp.onerror = () => {
+          els.detailPfp.classList.add("hidden");
+          els.detailPfpFallback.classList.remove("hidden");
+          els.detailPfpFallback.textContent = getInitials(name);
+        };
+      } else {
+        els.detailPfp.classList.add("hidden");
+        els.detailPfpFallback.classList.remove("hidden");
+        els.detailPfpFallback.textContent = getInitials(name);
+      }
+    }
+
+    function filteredUsers() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const role = els.filterRole.value;
+      const status = els.filterStatus.value;
+
+      return state.users.filter(user => {
+        const blob = [
+          user.id,
+          user.name,
+          user.email,
+          user.bio,
+          user.role,
+          user.status,
+          user.banReason
+        ].join(" ").toLowerCase();
+
+        if (q && !blob.includes(q)) return false;
+        if (role !== "all" && (user.role || "Member") !== role) return false;
+
+        if (status !== "all") {
+          if (status === "online" && String(user.status || "").toLowerCase() !== "online") return false;
+          if (status === "offline" && String(user.status || "").toLowerCase() !== "offline") return false;
+          if (status === "banned" && !user.banned) return false;
+          if (status === "muted" && !user.muted) return false;
+          if (status === "verified" && !user.verified) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function renderUsers() {
+      const visible = filteredUsers();
+      els.usersTableBody.innerHTML = "";
+
+      visible.forEach(user => {
+        const tpl = document.getElementById("userCardTemplate");
+        const row = tpl.content.firstElementChild.cloneNode(true);
+
+        const name = userDisplayName(user);
+        const pfp = row.querySelector(".row-pfp");
+        const fallback = row.querySelector(".row-fallback");
+        row.querySelector(".row-name").textContent = name;
+        row.querySelector(".row-uid").textContent = user.id;
+        row.querySelector(".row-email").textContent = user.email || "—";
+        const roleChip = row.querySelector(".row-role");
+        roleChip.textContent = user.role || "Member";
+        roleChip.className = `row-role chip ${roleBadgeClass(user.role || "Member")}`;
+
+        const statusChip = row.querySelector(".row-status");
+        statusChip.textContent = user.status || "Unknown";
+        statusChip.className = `row-status chip ${statusBadgeClass(user.status || "")}`;
+
+        const flagsWrap = row.querySelector(".row-flags");
+        const flags = flagsForUser(user);
+        flagsWrap.innerHTML = flags.map(([label, cls]) => `<span class="chip ${cls}">${escapeHTML(label)}</span>`).join("");
+
+        if (user.pfp) {
+          pfp.src = user.pfp;
+          pfp.classList.remove("hidden");
+          fallback.classList.add("hidden");
+          pfp.onerror = () => {
+            pfp.classList.add("hidden");
+            fallback.classList.remove("hidden");
+            fallback.textContent = getInitials(name);
+          };
+        } else {
+          pfp.classList.add("hidden");
+          fallback.classList.remove("hidden");
+          fallback.textContent = getInitials(name);
+        }
+
+        row.addEventListener("click", () => {
+          renderSelection(user);
+          toast("Selected account", `${name} opened in the detail panel`, "info");
+        });
+
+        row.querySelector(".row-open").addEventListener("click", (e) => {
+          e.stopPropagation();
+          renderSelection(user);
+        });
+
+        row.querySelector(".row-ban").addEventListener("click", async (e) => {
+          e.stopPropagation();
+          renderSelection(user);
+          await promptBan(user);
+        });
+
+        els.usersTableBody.appendChild(row);
+      });
+
+      els.visibleCount.textContent = visible.length;
+      els.totalCount.textContent = state.users.length;
+      updateOverview(visible);
+      renderRoleTiles();
+      renderEmptyState();
+    }
+
+    function updateOverview(list = state.users) {
+      const total = state.users.length;
+      const online = state.users.filter(u => String(u.status || "").toLowerCase() === "online").length;
+      const banned = state.users.filter(u => u.banned).length;
+      const verified = state.users.filter(u => u.verified).length;
+      const admins = state.users.filter(u => ["Owner", "Administrator"].includes(u.role)).length;
+      const muted = state.users.filter(u => u.muted).length;
+
+      els.statTotal.textContent = total;
+      els.statOnline.textContent = online;
+      els.statBanned.textContent = banned;
+      els.statVerified.textContent = verified;
+      els.statAdmins.textContent = admins;
+      els.statMuted.textContent = muted;
+
+      els.authStatUsers.textContent = total;
+      els.authStatBanned.textContent = banned;
+      els.authStatOnline.textContent = online;
+    }
+
+    function renderEmptyState() {
+      const empty = state.loadingUsers || state.users.length === 0;
+      document.getElementById("emptyState").classList.toggle("hidden", !empty);
+    }
+
+    function renderRoleTiles() {
+      const counts = new Map(ROLE_ORDER.map(r => [r, 0]));
+      for (const user of state.users) {
+        counts.set(user.role || "Member", (counts.get(user.role || "Member") || 0) + 1);
+      }
+
+      els.roleTiles.innerHTML = ROLE_ORDER.map(role => {
+        const count = counts.get(role) || 0;
+        return `
+          <div class="glass-card rounded-2xl p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-lg font-bold">${escapeHTML(role)}</div>
+                <div class="text-xs text-slate-500 mt-1">${count} account${count === 1 ? "" : "s"}</div>
+              </div>
+              <select class="field !py-2 !rounded-xl !w-[130px]" data-role-tile="${escapeHTML(role)}">
+                <option value="${escapeHTML(role)}">Keep role</option>
+                <option value="Member">Set member</option>
+                <option value="Verified">Set verified</option>
+                <option value="Moderator">Set moderator</option>
+                <option value="Administrator">Set administrator</option>
+                <option value="Owner">Set owner</option>
+              </select>
+            </div>
+            <p class="mt-4 text-sm text-slate-400">Quickly apply a role to the selected account.</p>
+          </div>
+        `;
+      }).join("");
+
+      els.roleTiles.querySelectorAll("select[data-role-tile]").forEach(sel => {
+        sel.addEventListener("change", async () => {
+          if (!state.selectedDoc) {
+            toast("No selection", "Pick a user before changing roles.", "warn");
+            sel.value = sel.dataset.roleTile;
+            return;
+          }
+          const nextRole = sel.value;
+          sel.value = sel.dataset.roleTile;
+          await updateUser(state.selectedUid, { role: nextRole });
+          toast("Role updated", `${userDisplayName(state.selectedDoc)} → ${nextRole}`, "success");
+        });
+      });
+    }
+
+    function renderAuditLogs() {
+      const logs = state.auditLogs.slice(0, 50);
+      els.auditLogList.innerHTML = logs.length ? logs.map(log => {
+        const time = formatDate(log.createdAt || log.timestamp || Date.now());
+        return `
+          <div class="glass-card rounded-2xl p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="font-semibold text-white">${escapeHTML(log.action || "Action")}</div>
+                <div class="mt-1 text-sm text-slate-400">${escapeHTML(log.message || "")}</div>
+              </div>
+              <div class="text-[11px] font-mono text-slate-500">${escapeHTML(time)}</div>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="chip text-slate-200">${escapeHTML(log.actorEmail || log.actor || "system")}</span>
+              <span class="chip text-slate-200">${escapeHTML(log.targetName || log.targetUid || "—")}</span>
+            </div>
+          </div>
+        `;
+      }).join("") : `
+        <div class="rounded-2xl border border-dashed border-white/10 p-8 text-center text-slate-400">
+          No audit logs yet.
+        </div>
+      `;
+    }
+
+    async function writeAudit(action, message, extra = {}) {
+      try {
+        const payload = {
+          action,
+          message,
+          actorUid: state.currentUser?.uid || null,
+          actorEmail: state.currentProfile?.email || state.currentUser?.email || null,
+          createdAt: serverTimestamp(),
+          ...extra
+        };
+        await addDoc(collection(db, "adminAuditLogs"), payload);
+      } catch (err) {
+        console.warn("Failed to write audit log:", err);
+      }
+    }
+
+    async function updateUser(uid, data) {
+      if (!uid) throw new Error("No user selected");
+      await updateDoc(doc(db, "users", uid), {
+        ...data,
+        updatedAt: serverTimestamp()
+      });
+
+      const target = state.usersById.get(uid);
+      const merged = { ...target, ...data };
+      state.usersById.set(uid, merged);
+      state.users = state.users.map(u => u.id === uid ? merged : u);
+      if (state.selectedUid === uid) renderSelection(merged);
+      renderUsers();
+      return merged;
+    }
+
+    async function promptBan(user) {
+      renderSelection(user);
+      const reason = (els.banReasonInput.value || localStorage.getItem("flash_admin_default_ban_reason") || "Violation of rules").trim();
+      const confirmed = await confirmDialog(
+        "Ban account",
+        `Ban ${userDisplayName(user)}? This will flag the account as banned and save the reason.`,
+        "Ban account"
+      );
+      if (!confirmed) return;
+      await updateUser(user.id, { banned: true, banReason: reason, status: "Banned" });
+      await writeAudit("ban_user", `Banned ${userDisplayName(user)}`, { targetUid: user.id, targetName: userDisplayName(user), reason });
+      toast("User banned", `${userDisplayName(user)} was marked banned`, "success");
+    }
+
+    async function promptUnban(user) {
+      const confirmed = await confirmDialog("Unban account", `Unban ${userDisplayName(user)}?`, "Unban");
+      if (!confirmed) return;
+      await updateUser(user.id, { banned: false, banReason: "", status: "Online" });
+      await writeAudit("unban_user", `Unbanned ${userDisplayName(user)}`, { targetUid: user.id, targetName: userDisplayName(user) });
+      toast("User unbanned", `${userDisplayName(user)} is active again`, "success");
+    }
+
+    async function promptMute(user) {
+      const confirmed = await confirmDialog("Mute account", `Mute ${userDisplayName(user)}?`, "Mute");
+      if (!confirmed) return;
+      await updateUser(user.id, { muted: true });
+      await writeAudit("mute_user", `Muted ${userDisplayName(user)}`, { targetUid: user.id, targetName: userDisplayName(user) });
+      toast("User muted", `${userDisplayName(user)} is muted`, "success");
+    }
+
+    async function promptUnmute(user) {
+      const confirmed = await confirmDialog("Unmute account", `Unmute ${userDisplayName(user)}?`, "Unmute");
+      if (!confirmed) return;
+      await updateUser(user.id, { muted: false });
+      await writeAudit("unmute_user", `Unmuted ${userDisplayName(user)}`, { targetUid: user.id, targetName: userDisplayName(user) });
+      toast("User unmuted", `${userDisplayName(user)} can speak again`, "success");
+    }
+
+    async function promptVerify(user) {
+      await updateUser(user.id, { verified: true });
+      await writeAudit("verify_user", `Verified ${userDisplayName(user)}`, { targetUid: user.id, targetName: userDisplayName(user) });
+      toast("Verified", `${userDisplayName(user)} is now verified`, "success");
+    }
+
+    async function promptUnverify(user) {
+      await updateUser(user.id, { verified: false });
+      await writeAudit("unverify_user", `Unverified ${userDisplayName(user)}`, { targetUid: user.id, targetName: userDisplayName(user) });
+      toast("Unverified", `${userDisplayName(user)} is no longer verified`, "warn");
+    }
+
+    async function promptSaveRole() {
+      if (!state.selectedDoc) return toast("No selection", "Choose a user first.", "warn");
+      const nextRole = els.roleSelect.value;
+      await updateUser(state.selectedUid, { role: nextRole });
+      await writeAudit("set_role", `Set role for ${userDisplayName(state.selectedDoc)} to ${nextRole}`, { targetUid: state.selectedUid, targetName: userDisplayName(state.selectedDoc), role: nextRole });
+      toast("Role saved", `${userDisplayName(state.selectedDoc)} → ${nextRole}`, "success");
+    }
+
+    async function promptSaveProfile() {
+      if (!state.selectedDoc) return toast("No selection", "Choose a user first.", "warn");
+      const patch = {
+        name: els.editNameInput.value.trim() || state.selectedDoc.name || "",
+        bio: els.editBioInput.value.trim() || "",
+        pfp: els.editPfpInput.value.trim() || ""
+      };
+      await updateUser(state.selectedUid, patch);
+      await writeAudit("edit_profile", `Edited profile for ${userDisplayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: userDisplayName(state.selectedDoc) });
+      toast("Profile saved", `${userDisplayName(state.selectedDoc)} updated`, "success");
+    }
+
+    async function promptSaveStatus() {
+      if (!state.selectedDoc) return toast("No selection", "Choose a user first.", "warn");
+      const status = els.statusSelect.value;
+      await updateUser(state.selectedUid, { status });
+      await writeAudit("set_status", `Set status for ${userDisplayName(state.selectedDoc)} to ${status}`, { targetUid: state.selectedUid, targetName: userDisplayName(state.selectedDoc), status });
+      toast("Status saved", `${userDisplayName(state.selectedDoc)} → ${status}`, "success");
+    }
+
+    async function promptSaveBanReason() {
+      if (!state.selectedDoc) return toast("No selection", "Choose a user first.", "warn");
+      const banReason = els.banReasonInput.value.trim();
+      await updateUser(state.selectedUid, { banReason });
+      await writeAudit("set_ban_reason", `Updated ban reason for ${userDisplayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: userDisplayName(state.selectedDoc) });
+      toast("Ban reason saved", "The moderation note was updated", "success");
+    }
+
+    async function promptResetPfp() {
+      if (!state.selectedDoc) return toast("No selection", "Choose a user first.", "warn");
+      const confirmed = await confirmDialog("Reset profile picture", `Clear the PFP for ${userDisplayName(state.selectedDoc)}?`, "Reset");
+      if (!confirmed) return;
+      await updateUser(state.selectedUid, { pfp: "" });
+      await writeAudit("reset_pfp", `Reset avatar for ${userDisplayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: userDisplayName(state.selectedDoc) });
+      toast("Profile picture reset", "Avatar cleared", "success");
+    }
+
+    async function promptDeleteProfile() {
+      if (!state.selectedDoc) return toast("No selection", "Choose a user first.", "warn");
+      const confirmed = await confirmDialog(
+        "Delete Firestore profile",
+        `Delete the Firestore profile document for ${userDisplayName(state.selectedDoc)}? This cannot be undone from the panel.`,
+        "Delete profile"
+      );
+      if (!confirmed) return;
+      const uid = state.selectedUid;
+      await deleteDoc(doc(db, "users", uid));
+      await writeAudit("delete_profile", `Deleted Firestore profile for ${userDisplayName(state.selectedDoc)}`, { targetUid: uid, targetName: userDisplayName(state.selectedDoc) });
+      toast("Profile deleted", "The Firestore document was removed", "warn");
+      state.selectedDoc = null;
+      state.selectedUid = null;
+      renderSelection(null);
+    }
+
+    function confirmDialog(title, message, okText = "Confirm") {
+      return new Promise(resolve => {
+        document.getElementById("confirmTitle").textContent = title;
+        document.getElementById("confirmMessage").textContent = message;
+        document.getElementById("confirmOkBtn").textContent = okText;
+        openModal(els.confirmModal, els.confirmInner);
+
+        const cleanup = () => {
+          document.getElementById("confirmOkBtn").onclick = null;
+          document.getElementById("confirmCancelBtn").onclick = null;
+        };
+
+        document.getElementById("confirmOkBtn").onclick = () => {
+          cleanup();
+          closeModal(els.confirmModal, els.confirmInner);
+          resolve(true);
+        };
+        document.getElementById("confirmCancelBtn").onclick = () => {
+          cleanup();
+          closeModal(els.confirmModal, els.confirmInner);
+          resolve(false);
+        };
+      });
+    }
+
+    async function openBroadcastModal() {
+      document.getElementById("broadcastTitle").value = "";
+      document.getElementById("broadcastBody").value = "";
+      document.getElementById("broadcastAudience").value = "all-users";
+      document.getElementById("broadcastExpiry").value = "";
+      openModal(els.broadcastModal, els.broadcastInner);
+    }
+
+    async function sendBroadcast() {
+      const title = document.getElementById("broadcastTitle").value.trim();
+      const body = document.getElementById("broadcastBody").value.trim();
+      const audience = document.getElementById("broadcastAudience").value.trim() || "all-users";
+      const expiry = document.getElementById("broadcastExpiry").value ? new Date(document.getElementById("broadcastExpiry").value).toISOString() : null;
+
+      if (!title || !body) return toast("Missing fields", "Title and message are required.", "warn");
+
+      await addDoc(collection(db, "announcements"), {
+        title,
+        body,
+        audience,
+        expiresAt: expiry,
+        createdByUid: state.currentUser?.uid || null,
+        createdByEmail: state.currentProfile?.email || state.currentUser?.email || null,
+        createdAt: serverTimestamp()
+      });
+
+      await writeAudit("broadcast", `Broadcast sent: ${title}`, { audience, title });
+      closeModal(els.broadcastModal, els.broadcastInner);
+      toast("Broadcast sent", "Announcement saved to Firestore", "success");
+    }
+
+    async function loadAuditLogs() {
+      const q = query(collection(db, "adminAuditLogs"), orderBy("createdAt", "desc"), limit(50));
+      const snap = await getDocs(q);
+      state.auditLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderAuditLogs();
+    }
+
+    function attachRealtimeUsers() {
+      state.loadingUsers = true;
+      renderEmptyState();
+
+      const unsubscribe = onSnapshot(collection(db, "users"), snap => {
+        state.users = snap.docs.map(d => {
+          const data = d.data();
+          return {
+            id: d.id,
+            ...data,
+            role: data.role || "Member",
+            status: data.status || "Offline"
+          };
+        });
+
+        state.users.sort((a, b) => (toDate(b.createdAt)?.getTime() || 0) - (toDate(a.createdAt)?.getTime() || 0));
+        state.users.sort((a, b) => (toDate(b.createdAt)?.getTime() || 0) - (toDate(a.createdAt)?.getTime() || 0));
+        state.usersById = new Map(state.users.map(u => [u.id, u]));
+        state.loadingUsers = false;
+
+        if (!state.selectedUid && state.users.length) {
+          renderSelection(state.users[0]);
+        } else if (state.selectedUid) {
+          const refreshed = state.usersById.get(state.selectedUid);
+          if (refreshed) renderSelection(refreshed);
+        }
+
+        renderUsers();
+      }, err => {
+        console.error(err);
+        toast("Users load failed", err.message || "Unknown error", "error");
+        state.loadingUsers = false;
+        renderEmptyState();
+      });
+
+      state.unsubs.push(unsubscribe);
+    }
+
+    async function refreshAll() {
+      try {
+        state.loadingUsers = true;
+        renderEmptyState();
+        const snap = await getDocs(collection(db, "users"));
+        state.users = snap.docs.map(d => {
+          const data = d.data();
+          return { id: d.id, ...data, role: data.role || "Member", status: data.status || "Offline" };
+        });
+        state.usersById = new Map(state.users.map(u => [u.id, u]));
+        state.loadingUsers = false;
+        renderUsers();
+        await loadAuditLogs();
+        toast("Refreshed", "Latest data loaded", "success");
+      } catch (err) {
+        console.error(err);
+        toast("Refresh failed", err.message || "Unknown error", "error");
+      }
+    }
+
+    function exportUsers() {
+      const data = JSON.stringify(state.users, null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `flash-admin-users-${todayKey()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast("Exported", "Downloaded JSON snapshot", "success");
+    }
+
+    async function login(email, password) {
+      hideAuthMessages();
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const allowed = await ensureAdminAccess(cred.user);
+        if (!allowed) {
+          await signOut(auth);
+          showAuthError("Access denied. This account does not have Owner or Administrator role.");
+          return;
+        }
+
+        showAuthSuccess("Signed in successfully. Loading admin console...");
+        toast("Welcome back", email, "success");
+      } catch (err) {
+        console.error(err);
+        showAuthError(err.message || "Login failed.");
+      }
+    }
+
+    async function bootForUser(user) {
+      if (!user) {
+        setView("auth");
+        return;
+      }
+
+      state.currentUser = user;
+      const allowed = await ensureAdminAccess(user);
+      if (!allowed) {
+        await signOut(auth);
+        setView("auth");
+        showAuthError("Access denied. This account is not marked as Owner or Administrator.");
+        return;
+      }
+
+      setView("app");
+      attachRealtimeUsers();
+      await loadAuditLogs();
+      renderSelection(state.usersById.get(state.users[0]?.id) || null);
+
+      // restore preferences
+      els.defaultBanReason.value = localStorage.getItem("flash_admin_default_ban_reason") || "";
+      els.adminNote.value = localStorage.getItem("flash_admin_note") || "";
+      updateOverview();
+      renderUsers();
+      toast("Admin loaded", "Liquid glass control center is ready", "success");
+    }
+
+    async function wireCurrentProfileStats() {
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        const users = snap.docs.map(d => d.data());
+        els.authStatUsers.textContent = users.length;
+        els.authStatBanned.textContent = users.filter(u => u.banned).length;
+        els.authStatOnline.textContent = users.filter(u => String(u.status || "").toLowerCase() === "online").length;
+      } catch {
+        els.authStatUsers.textContent = "—";
+        els.authStatBanned.textContent = "—";
+        els.authStatOnline.textContent = "—";
+      }
+    }
+
+    // UI wiring
+    document.querySelectorAll(".nav-link").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav-link").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const panel = btn.dataset.panel;
+        ["dashboardPanel", "usersPanel", "rolesPanel", "logsPanel", "settingsPanel"].forEach(id => {
+          document.getElementById(id).classList.toggle("hidden", id !== panel);
+        });
+      });
+    });
+
+    els.searchInput?.addEventListener("input", renderUsers);
+    els.filterRole?.addEventListener("change", renderUsers);
+    els.filterStatus?.addEventListener("change", renderUsers);
+
+    document.getElementById("refreshBtn").addEventListener("click", refreshAll);
+    document.getElementById("broadcastBtn").addEventListener("click", openBroadcastModal);
+    document.getElementById("exportBtn").addEventListener("click", exportUsers);
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      toast("Signed out", "See you next time", "info");
+    });
+    document.getElementById("closeBroadcastBtn").addEventListener("click", () => closeModal(els.broadcastModal, els.broadcastInner));
+    document.getElementById("cancelBroadcastBtn").addEventListener("click", () => closeModal(els.broadcastModal, els.broadcastInner));
+    document.getElementById("sendBroadcastBtn").addEventListener("click", sendBroadcast);
+    document.getElementById("clearLogsBtn").addEventListener("click", () => { els.auditLogList.innerHTML = ""; });
+    document.getElementById("copyUidBtn").addEventListener("click", async () => {
+      if (!state.selectedUid) return toast("No selection", "Pick a user first.", "warn");
+      await navigator.clipboard.writeText(state.selectedUid);
+      toast("UID copied", state.selectedUid, "success");
+    });
+
+    document.getElementById("banBtn").addEventListener("click", async () => {
+      if (!state.selectedDoc) return toast("No selection", "Pick a user first.", "warn");
+      await promptBan(state.selectedDoc);
+    });
+    document.getElementById("unbanBtn").addEventListener("click", async () => {
+      if (!state.selectedDoc) return toast("No selection", "Pick a user first.", "warn");
+      await promptUnban(state.selectedDoc);
+    });
+    document.getElementById("muteBtn").addEventListener("click", async () => {
+      if (!state.selectedDoc) return toast("No selection", "Pick a user first.", "warn");
+      await promptMute(state.selectedDoc);
+    });
+    document.getElementById("unmuteBtn").addEventListener("click", async () => {
+      if (!state.selectedDoc) return toast("No selection", "Pick a user first.", "warn");
+      await promptUnmute(state.selectedDoc);
+    });
+    document.getElementById("verifyBtn").addEventListener("click", async () => {
+      if (!state.selectedDoc) return toast("No selection", "Pick a user first.", "warn");
+      await promptVerify(state.selectedDoc);
+    });
+    document.getElementById("unverifyBtn").addEventListener("click", async () => {
+      if (!state.selectedDoc) return toast("No selection", "Pick a user first.", "warn");
+      await promptUnverify(state.selectedDoc);
+    });
+    document.getElementById("saveRoleBtn").addEventListener("click", promptSaveRole);
+    document.getElementById("saveProfileBtn").addEventListener("click", promptSaveProfile);
+    document.getElementById("saveStatusBtn").addEventListener("click", promptSaveStatus);
+    document.getElementById("saveBanReasonRemoteBtn").addEventListener("click", promptSaveBanReason);
+    document.getElementById("resetPfpBtn").addEventListener("click", promptResetPfp);
+    document.getElementById("deleteProfileBtn").addEventListener("click", promptDeleteProfile);
+
+    document.getElementById("saveBanReasonBtn").addEventListener("click", () => {
+      localStorage.setItem("flash_admin_default_ban_reason", els.defaultBanReason.value.trim());
+      toast("Saved locally", "Default ban reason stored in this browser", "success");
+    });
+    document.getElementById("saveNoteBtn").addEventListener("click", () => {
+      localStorage.setItem("flash_admin_note", els.adminNote.value.trim());
+      toast("Saved locally", "Admin note stored in this browser", "success");
+    });
+
+    document.getElementById("confirmModal").addEventListener("click", (e) => {
+      if (e.target === els.confirmModal) closeModal(els.confirmModal, els.confirmInner);
+    });
+    document.getElementById("broadcastModal").addEventListener("click", (e) => {
+      if (e.target === els.broadcastModal) closeModal(els.broadcastModal, els.broadcastInner);
+    });
+
+    els.loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      login(els.emailInput.value.trim(), els.passwordInput.value);
+    });
+
+    window.addEventListener("online", () => {
+      els.connectionChip.textContent = "Connected";
+      els.connectionChip.className = "chip text-emerald-200 border-emerald-500/20 bg-emerald-500/10";
+    });
+    window.addEventListener("offline", () => {
+      els.connectionChip.textContent = "Offline";
+      els.connectionChip.className = "chip text-rose-200 border-rose-500/20 bg-rose-500/10";
+    });
+
+    // Initial boot
+    wireCurrentProfileStats();
+
+    onAuthStateChanged(auth, async (user) => {
+      state.currentUser = user;
+      state.currentProfile = null;
+
+      // cleanup prior listeners
+      state.unsubs.forEach(unsub => {
+        try { unsub(); } catch {}
+      });
+      state.unsubs = [];
+      state.users = [];
+      state.usersById = new Map();
+      state.auditLogs = [];
+      state.loadingUsers = true;
+
+      if (!user) {
+        setView("auth");
+        return;
+      }
+
+      const allowed = await ensureAdminAccess(user);
+      if (!allowed) {
+        await signOut(auth);
+        setView("auth");
+        showAuthError("Access denied. Your account must be Owner or Administrator.");
+        return;
+      }
+
+      els.signedInEmail.textContent = state.currentProfile?.email || user.email || "—";
+      els.signedInRole.textContent = state.currentProfile?.role || "—";
+      setView("app");
+      attachRealtimeUsers();
+      await loadAuditLogs();
+      renderSelection(null);
+    });
+
+    // bootstrap list cards from static roles
+    renderRoleTiles();
+    renderAuditLogs();
+    renderSelection(null);
+  </script>
+</body>
+</html>
