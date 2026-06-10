@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100 selection:bg-indigo-500/30">
+<html lang="en" class="h-full bg-zinc-950 text-zinc-50 selection:bg-indigo-500/30">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flash Admin Pro</title>
+  <title>Flash Admin Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-            mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
           },
         }
       }
@@ -19,232 +19,208 @@
   </script>
   <style>
     :root { color-scheme: dark; }
-    html, body {
+    body {
       min-height: 100%;
-      background:
-        radial-gradient(circle at 15% 10%, rgba(99,102,241,.15), transparent 24%),
-        radial-gradient(circle at 85% 0%, rgba(168,85,247,.12), transparent 26%),
-        radial-gradient(circle at 50% 100%, rgba(14,165,233,.08), transparent 24%),
-        #020617;
+      background-color: #09090b;
     }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,.20); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.24); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
     .glass-panel {
-      background: rgba(13, 18, 35, 0.45);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,.06);
-      box-shadow: 0 18px 50px rgba(0,0,0,.3);
+      background: rgba(20, 20, 23, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     }
     .glass-panel-strong {
-      background: rgba(10,12,24,.8);
-      backdrop-filter: blur(34px);
-      -webkit-backdrop-filter: blur(34px);
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 30px 80px rgba(0,0,0,.45);
+      background: #121214;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     }
     .glass-card {
-      background: rgba(255,255,255,.02);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,.04);
-      transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all .2s ease;
     }
-    .glass-card:hover { transform: translateY(-2px); background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+    .glass-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.08); }
     
     .btn-glass {
-      background: rgba(255,255,255,.04);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       transition: all .15s ease;
     }
-    .btn-glass:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.14); transform: translateY(-1px); }
-    .btn-glass:active { transform: translateY(1px); }
+    .btn-glass:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.14); }
+    .btn-glass:active { transform: scale(0.98); }
 
     .field {
       width: 100%;
-      border-radius: 12px;
-      background: rgba(0,0,0,.4);
-      border: 1px solid rgba(255,255,255,.08);
-      padding: .65rem .85rem;
-      color: rgb(241 245 249);
+      border-radius: 8px;
+      background: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: .6rem .8rem;
+      color: #f4f4f5;
       outline: none;
       transition: all .15s ease;
     }
-    .field:focus { border-color: rgba(99,102,241,.6); background: rgba(255,255,255,.04); }
+    .field:focus { border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1; }
 
     .chip {
       display: inline-flex;
       align-items: center;
       gap: .35rem;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(255,255,255,.04);
-      padding: .25rem .5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      padding: .2rem .5rem;
       font-size: 11px;
       font-weight: 600;
+      white-space: nowrap;
     }
     .table-wrap {
       overflow: auto;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.15);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.1);
     }
+    .table-row { transition: background .1s ease; border-b: 1px solid rgba(255,255,255,0.02); }
+    .table-row:hover { background: rgba(255, 255, 255, 0.01); }
 
     .nav-btn {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: .7rem .85rem;
-      border-radius: 12px;
-      color: rgb(148 163 184);
+      gap: .75rem;
+      padding: .6rem .8rem;
+      border-radius: 8px;
+      color: #a1a1aa;
       transition: all .15s ease;
+      text-align: left;
+      font-size: .9rem;
     }
-    .nav-btn:hover { color: white; background: rgba(255,255,255,.04); }
-    .nav-btn.active { color: rgb(191 219 254); background: rgba(99,102,241,.14); border-color: rgba(99,102,241,.2); }
+    .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .nav-btn.active { color: #fff; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.25); }
 
-    .modal-backdrop { background: rgba(2,6,23,.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    .pulse-dot { box-shadow: 0 0 0 0 rgba(52,211,153,.55); animation: pulse 2s infinite; }
-    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(52,211,153,0);} 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0);} }
+    .modal-backdrop { background: rgba(9, 9, 11, 0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   </style>
 </head>
-<body class="h-full antialiased overflow-x-hidden text-slate-200">
-
+<body class="h-full antialiased overflow-x-hidden">
   <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-    <div class="absolute -top-[12%] -left-[12%] w-[45vw] h-[45vw] rounded-full bg-indigo-900/15 blur-[120px]"></div>
-    <div class="absolute top-[16%] -right-[14%] w-[40vw] h-[40vw] rounded-full bg-purple-900/10 blur-[120px]"></div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[350px] bg-gradient-to-b from-indigo-500/5 to-transparent blur-3xl"></div>
   </div>
 
   <section id="authView" class="min-h-screen flex items-center justify-center p-4">
-    <div class="glass-panel-strong w-full max-w-4xl rounded-[24px] overflow-hidden grid lg:grid-cols-[1.05fr_.95fr]">
-      <div class="p-8 md:p-12 flex flex-col justify-between gap-10">
+    <div class="glass-panel-strong w-full max-w-4xl rounded-2xl overflow-hidden grid lg:grid-cols-[1.1fr_.9fr]">
+      <div class="p-8 md:p-12 flex flex-col justify-between gap-12">
         <div class="flex items-center gap-3">
-          <div class="h-11 w-11 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg">
-            <span class="font-black text-white text-lg">F</span>
+          <div class="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md">
+            <span class="font-bold text-white text-md">F</span>
           </div>
           <div>
-            <h1 class="text-2xl font-bold tracking-tight text-white">Flash Admin Pro</h1>
-            <p class="text-xs text-slate-400">Enterprise Account Operations Center</p>
+            <h1 class="text-xl font-bold tracking-tight">Flash Admin Portal</h1>
+            <p class="text-xs text-zinc-400">Enterprise Identity & Governance Console</p>
           </div>
         </div>
 
-        <div class="space-y-5">
+        <div class="space-y-6">
           <div>
-            <span class="chip text-indigo-200 border-indigo-500/20 bg-indigo-500/10">Access Restrictions Active</span>
-            <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-white leading-tight">
-              Manage infrastructure accounts securely.
+            <span class="chip text-indigo-300 border-indigo-500/20 bg-indigo-500/5">Privileged Authorization Required</span>
+            <h2 class="mt-4 text-3xl font-bold tracking-tight text-white leading-tight">
+              Centralized Account Security Operations Control Workspace.
             </h2>
-            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
-              Sign in with administrative privileges verified against the securely isolated database layout.
+            <p class="mt-3 text-sm text-zinc-400 leading-relaxed">
+              Access is strictly limited to users whose profile credentials match authorized security classifications. System tracking tracks all administrative activities into a permanent audit matrix.
             </p>
           </div>
 
           <div class="grid grid-cols-3 gap-3 text-sm">
             <div class="glass-card rounded-xl p-4">
-              <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Users</div>
-              <div id="authStatUsers" class="mt-1 text-xl font-bold text-white">—</div>
+              <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Managed Core</div>
+              <div id="authStatUsers" class="mt-1 text-xl font-semibold">—</div>
             </div>
             <div class="glass-card rounded-xl p-4">
-              <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Suspended</div>
-              <div id="authStatBanned" class="mt-1 text-xl font-bold text-white">—</div>
+              <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Suspended</div>
+              <div id="authStatBanned" class="mt-1 text-xl font-semibold text-zinc-400">—</div>
             </div>
             <div class="glass-card rounded-xl p-4">
-              <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Active Sessions</div>
-              <div id="authStatOnline" class="mt-1 text-xl font-bold text-white">—</div>
+              <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Active Sessions</div>
+              <div id="authStatOnline" class="mt-1 text-xl font-semibold text-emerald-400">—</div>
             </div>
           </div>
         </div>
-        <div class="text-[11px] text-slate-500">Security Cleared Admin Node Interface v2.4</div>
+
+        <div class="text-[11px] text-zinc-500 max-w-md">
+          Identity management enforces strict data minimization principles. PII scopes are masked except where operational necessity overrides default posture metrics.
+        </div>
       </div>
 
-      <div class="p-8 border-t lg:border-t-0 lg:border-l border-white/5 bg-white/[0.01]">
-        <div class="max-w-md mx-auto h-full flex flex-col justify-center">
-          <h3 class="text-xl font-bold text-white">Sign In</h3>
-          <p class="text-xs text-slate-400 mt-1">Provide trusted operator credentials.</p>
+      <div class="p-8 border-t lg:border-t-0 lg:border-l border-zinc-800 bg-zinc-900/30 flex flex-col justify-center">
+        <div class="max-w-sm w-full mx-auto">
+          <h3 class="text-xl font-semibold text-zinc-100">Portal Authentication</h3>
+          <p class="text-xs text-zinc-400 mt-1">Provide credentials associated with administrator configurations.</p>
 
           <form id="loginForm" class="mt-6 space-y-4">
             <div>
-              <label class="block text-[11px] uppercase tracking-wider text-slate-400 mb-2">Email Identity</label>
-              <input id="emailInput" type="email" class="field" placeholder="operator@domain.com" autocomplete="email" required />
+              <label class="block text-[11px] uppercase tracking-wider text-zinc-400 mb-1.5 font-medium">Administrative Email</label>
+              <input id="emailInput" type="email" class="field" placeholder="admin@domain.internal" autocomplete="email" required />
             </div>
             <div>
-              <label class="block text-[11px] uppercase tracking-wider text-slate-400 mb-2">Password Key</label>
+              <label class="block text-[11px] uppercase tracking-wider text-zinc-400 mb-1.5 font-medium">Security Key / Password</label>
               <input id="passwordInput" type="password" class="field" placeholder="••••••••" autocomplete="current-password" required />
             </div>
-            <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white transition shadow-lg shadow-indigo-600/10">
-              Authenticate Node
+            <button type="submit" class="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition duration-150 shadow-md">
+              Authenticate Portal Session
             </button>
           </form>
 
-          <div id="authError" class="hidden mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-200"></div>
-          <div id="authSuccess" class="hidden mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs text-emerald-200"></div>
+          <div class="mt-6 rounded-lg border border-zinc-800 bg-zinc-950 p-3.5 text-xs text-zinc-400">
+            <div class="font-medium text-zinc-300 mb-1">Architecture Warning</div>
+            Interface nodes only configure the presentation tier. Server-side Firestore operational controls execute final verification for execution states.
+          </div>
+
+          <div id="authError" class="hidden mt-4 rounded-lg border border-rose-500/20 bg-rose-500/5 p-3.5 text-xs text-rose-300"></div>
+          <div id="authSuccess" class="hidden mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3.5 text-xs text-emerald-300"></div>
         </div>
       </div>
     </div>
   </section>
 
   <section id="appView" class="hidden min-h-screen flex flex-col">
-    <header class="sticky top-0 z-40 glass-panel border-b border-white/5 px-4 lg:px-8 py-4">
-      <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shrink-0">
-            <span class="font-black text-white">F</span>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-lg font-bold text-white tracking-tight">Flash Admin</h1>
-              <span id="connectionChip" class="chip text-emerald-400 bg-emerald-500/10 border-emerald-500/20">Connected</span>
+    <header class="sticky top-0 z-40 glass-panel border-b border-zinc-800 px-6 py-4">
+      <div class="max-w-[1600px] mx-auto flex flex-col gap-4">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center shadow shrink-0">
+              <span class="font-bold text-white text-sm">F</span>
             </div>
-            <p class="text-xs text-slate-400 mt-0.5">Role Authorization Status: <span id="signedInRole" class="text-indigo-400 font-semibold">—</span></p>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h1 class="text-base font-semibold tracking-tight truncate">Flash Administration Workspace</h1>
+                <span id="connectionChip" class="chip text-emerald-400 border-emerald-500/20 bg-emerald-500/5 text-[10px]">Connected</span>
+              </div>
+              <p class="mt-0.5 text-xs text-zinc-400">
+                Authorized Role: <span id="signedInRole" class="text-zinc-200 font-medium">—</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="refreshBtn" class="btn-glass px-3 py-1.5 rounded-lg text-xs font-medium">Sync State</button>
+            <button id="broadcastBtn" class="btn-glass px-3 py-1.5 rounded-lg text-xs font-medium">System Broadcast</button>
+            <button id="exportBtn" class="btn-glass px-3 py-1.5 rounded-lg text-xs font-medium">Export Ledger</button>
+            <button id="logoutBtn" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-medium transition">Terminate Session</button>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <button id="refreshBtn" class="btn-glass px-4 py-2 rounded-xl text-xs font-semibold">Sync Controls</button>
-          <button id="broadcastBtn" class="btn-glass px-4 py-2 rounded-xl text-xs font-semibold text-indigo-300 border-indigo-500/20 bg-indigo-500/5">System Broadcast</button>
-          <button id="exportBtn" class="btn-glass px-4 py-2 rounded-xl text-xs font-semibold">Snapshot Export</button>
-          <button id="logoutBtn" class="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 font-semibold text-xs transition">Disconnect Node</button>
-        </div>
-      </div>
-    </header>
-
-    <main class="max-w-[1600px] w-full mx-auto p-4 lg:p-8 flex-1 grid gap-6 xl:grid-cols-[260px_1fr_340px]">
-      
-      <aside class="space-y-4">
-        <div class="glass-panel-strong rounded-[20px] p-4">
-          <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-3 px-1">Navigation Node</div>
-          <div class="space-y-1">
-            <button class="nav-btn active text-xs font-medium" data-panel="dashboardPanel"><span>Dashboard Overview</span> 📊</button>
-            <button class="nav-btn text-xs font-medium" data-panel="usersPanel"><span>Account Registers</span> 👥</button>
-            <button class="nav-btn text-xs font-medium" data-panel="rolesPanel"><span>Privilege Index</span> 🔑</button>
-            <button class="nav-btn text-xs font-medium" data-panel="logsPanel"><span>System Audits</span> 📜</button>
-            <button class="nav-btn text-xs font-medium" data-panel="settingsPanel"><span>Preferences</span> ⚙️</button>
-          </div>
-        </div>
-
-        <div class="glass-panel-strong rounded-[20px] p-4 grid grid-cols-2 gap-3">
-          <div class="glass-card rounded-xl p-3">
-            <div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Controllers</div>
-            <div id="statAdmins" class="mt-1 text-xl font-bold text-white">—</div>
-          </div>
-          <div class="glass-card rounded-xl p-3">
-            <div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Silenced</div>
-            <div id="statMuted" class="mt-1 text-xl font-bold text-white">—</div>
-          </div>
-        </div>
-      </aside>
-
-      <section class="min-w-0 space-y-6">
-        
-        <div class="glass-panel-strong rounded-[20px] p-4 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+        <div class="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
           <div class="relative">
-            <input id="searchInput" class="field !py-2 pl-9 text-xs" placeholder="Filter identities, UIDs, metadata strings..." />
-            <svg class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.2-4.2m1.7-4.3a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+            <input id="searchInput" class="field !py-2 pl-9 text-xs" placeholder="Filter directories via name, UID, bio markers, metadata..." />
+            <svg class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.2-4.2m1.7-4.3a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
           </div>
           <select id="filterRole" class="field sm:w-[150px] !py-2 text-xs">
             <option value="all">All Roles</option>
@@ -253,293 +229,352 @@
             <option value="Moderator">Moderator</option>
             <option value="Verified">Verified</option>
             <option value="Member">Member</option>
+            <option value="Tester">Tester</option>
+            <option value="VIP">VIP</option>
           </select>
           <select id="filterStatus" class="field sm:w-[150px] !py-2 text-xs">
-            <option value="all">All States</option>
+            <option value="all">All Status Profiles</option>
             <option value="online">Online</option>
             <option value="offline">Offline</option>
             <option value="banned">Suspended</option>
-            <option value="muted">Silenced</option>
+            <option value="muted">Restricted</option>
+            <option value="verified">Verified</option>
           </select>
         </div>
+      </div>
+    </header>
 
-        <div id="dashboardPanel" class="space-y-6">
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="glass-panel-strong rounded-[20px] p-5 flex items-center justify-between">
-              <div>
-                <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Total Accounts</div>
-                <div id="statTotal" class="mt-2 text-2xl font-bold text-white">—</div>
-              </div>
-              <div class="text-xl opacity-40">📁</div>
-            </div>
-            <div class="glass-panel-strong rounded-[20px] p-5 flex items-center justify-between">
-              <div>
-                <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Connected Channels</div>
-                <div id="statOnline" class="mt-2 text-2xl font-bold text-emerald-400">—</div>
-              </div>
-              <div class="h-2.5 w-2.5 rounded-full bg-emerald-400 pulse-dot"></div>
-            </div>
-            <div class="glass-panel-strong rounded-[20px] p-5 flex items-center justify-between">
-              <div>
-                <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Banned Entities</div>
-                <div id="statBanned" class="mt-2 text-2xl font-bold text-rose-400">—</div>
-              </div>
-              <div class="text-xl opacity-40">⛔</div>
-            </div>
-            <div class="glass-panel-strong rounded-[20px] p-5 flex items-center justify-between">
-              <div>
-                <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Verified Nodes</div>
-                <div id="statVerified" class="mt-2 text-2xl font-bold text-sky-400">—</div>
-              </div>
-              <div class="text-xl opacity-40">✓</div>
-            </div>
-          </div>
-
-          <div class="glass-panel-strong rounded-[20px] p-6">
-            <h2 class="text-base font-bold text-white">Administrative Summary Workspace</h2>
-            <p class="text-xs text-slate-400 mt-1 leading-relaxed">Select specialized views from the menu node to handle deep account manipulation, authorization privilege mapping schedules, and tracking immutable audit records across the backend array configuration.</p>
-          </div>
-        </div>
-
-        <div id="usersPanel" class="space-y-4 hidden">
-          <div class="glass-panel-strong rounded-[20px] p-4">
-            <div class="flex justify-between items-center mb-3 px-1">
-              <div class="text-xs text-slate-400">Match Manifest: <span id="visibleCount" class="text-white font-bold">0</span> / <span id="totalCount" class="text-slate-400">0</span></div>
-            </div>
-            <div class="table-wrap">
-              <table class="min-w-full text-left text-xs">
-                <thead class="bg-slate-900/80 border-b border-white/5 text-slate-400">
-                  <tr>
-                    <th class="px-4 py-3 font-semibold">User Identity String</th>
-                    <th class="px-4 py-3 font-semibold">Privilege Class</th>
-                    <th class="px-4 py-3 font-semibold">Network State</th>
-                    <th class="px-4 py-3 font-semibold">Runtime Flags</th>
-                    <th class="px-4 py-3 font-semibold text-right">Context Execution</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTableBody" class="divide-y divide-white/5"></tbody>
-              </table>
-            </div>
-            <div id="emptyState" class="hidden py-12 text-center text-xs text-slate-500">No matching registry snapshots found.</div>
-          </div>
-        </div>
-
-        <div id="rolesPanel" class="hidden">
-          <div class="glass-panel-strong rounded-[20px] p-5">
-            <h2 class="text-base font-bold text-white">System Level Allocation Matrix</h2>
-            <p class="text-xs text-slate-400 mt-1 mb-4">Realtime configuration metric overview across available structural node classifications.</p>
-            <div id="roleTiles" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-          </div>
-        </div>
-
-        <div id="logsPanel" class="hidden">
-          <div class="glass-panel-strong rounded-[20px] p-5">
-            <div class="flex items-center justify-between border-b border-white/5 pb-3 mb-4">
-              <div>
-                <h2 class="text-base font-bold text-white">System Ledger Audit Output</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Immutable transactional moderation telemetry log stacks.</p>
-              </div>
-              <button id="clearLogsBtn" class="btn-glass px-3 py-1.5 rounded-lg text-xs font-semibold">Flush Display</button>
-            </div>
-            <div id="auditLogList" class="space-y-2 max-h-[500px] overflow-auto pr-1"></div>
-          </div>
-        </div>
-
-        <div id="settingsPanel" class="hidden">
-          <div class="glass-panel-strong rounded-[20px] p-5">
-            <h2 class="text-base font-bold text-white">Local Endpoint Preferences</h2>
-            <p class="text-xs text-slate-400 mt-0.5 mb-4">Runtime variables mapped to local memory cache matrices.</p>
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div class="glass-card rounded-xl p-4 space-y-3">
-                <div class="text-xs font-semibold text-white">Default Restriction Reason</div>
-                <input id="defaultBanReason" class="field text-xs" placeholder="Terms of Service Infraction Token" />
-                <button id="saveBanReasonBtn" class="btn-glass px-3 py-2 rounded-lg text-xs font-semibold">Store Locally</button>
-              </div>
-              <div class="glass-card rounded-xl p-4 space-y-3">
-                <div class="text-xs font-semibold text-white">Local Internal Scratchpad Memo</div>
-                <textarea id="adminNote" class="field text-xs min-h-[80px]" placeholder="Volatile workspace context logs..."></textarea>
-                <button id="saveNoteBtn" class="btn-glass px-3 py-2 rounded-lg text-xs font-semibold">Store Locally</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <aside class="space-y-4">
-        <div class="glass-panel-strong rounded-[20px] p-4 sticky top-[96px] space-y-4">
-          <div class="flex items-center justify-between border-b border-white/5 pb-3">
-            <div>
-              <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Selected Record</div>
-              <h2 id="detailName" class="mt-0.5 text-base font-bold text-white truncate">None Selected</h2>
-            </div>
-            <button id="copyUidBtn" class="btn-glass px-2.5 py-1.5 rounded-lg text-[11px] font-medium">Copy ID</button>
-          </div>
-
-          <div class="glass-card rounded-xl p-3 flex items-center gap-3 bg-black/20">
-            <div class="h-12 w-12 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-              <img id="detailPfp" alt="" class="w-full h-full object-cover hidden" />
-              <div id="detailPfpFallback" class="text-xs font-black text-slate-400">—</div>
-            </div>
-            <div class="min-w-0 space-y-1">
-              <div id="detailRole" class="chip text-[10px] py-0.5 px-1.5">—</div>
-              <div id="detailStatus" class="text-[11px] text-slate-400 truncate">No reference loaded.</div>
-              <div id="detailUid" class="text-[10px] font-mono text-slate-500 truncate select-all"></div>
+    <main class="max-w-[1600px] w-full mx-auto p-6 flex-1">
+      <div class="grid gap-6 xl:grid-cols-[240px_1fr_320px]">
+        
+        <aside class="space-y-4 h-fit xl:sticky xl:top-[128px]">
+          <div class="glass-panel-strong rounded-xl p-3">
+            <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold px-2 mb-2">Workspace Navigation</div>
+            <div class="space-y-1">
+              <button class="nav-btn active" data-panel="dashboardPanel">Core Diagnostic <span class="text-[10px] opacity-60">Overview</span></button>
+              <button class="nav-btn" data-panel="usersPanel">Identity Catalog <span class="text-[10px] opacity-60">Registry</span></button>
+              <button class="nav-btn" data-panel="rolesPanel">Authorization Registry <span class="text-[10px] opacity-60">Matrix</span></button>
+              <button class="nav-btn" data-panel="logsPanel">Security Audit Ledger <span class="text-[10px] opacity-60">Logs</span></button>
+              <button class="nav-btn" data-panel="settingsPanel">Portal Adjustments <span class="text-[10px] opacity-60">Local</span></button>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button id="banBtn" class="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20 text-xs font-medium transition">Suspend</button>
-            <button id="unbanBtn" class="px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/20 text-xs font-medium transition">Reinstate</button>
-            <button id="muteBtn" class="px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500/20 text-xs font-medium transition">Silence</button>
-            <button id="unmuteBtn" class="px-3 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-300 hover:bg-sky-500/20 text-xs font-medium transition">Unsilence</button>
-            <button id="verifyBtn" class="px-3 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 hover:bg-indigo-500/20 text-xs font-medium transition">Verify</button>
-            <button id="unverifyBtn" class="px-3 py-2 rounded-xl bg-slate-500/10 border border-slate-500/20 text-slate-300 hover:bg-slate-500/20 text-xs font-medium transition">Unverify</button>
+            <div class="glass-card rounded-xl p-3.5">
+              <div class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Privileged</div>
+              <div id="statAdmins" class="mt-1 text-xl font-semibold">—</div>
+            </div>
+            <div class="glass-card rounded-xl p-3.5">
+              <div class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Restricted</div>
+              <div id="statMuted" class="mt-1 text-xl font-semibold text-amber-500">—</div>
+            </div>
           </div>
 
-          <div class="space-y-2 pt-2 border-t border-white/5">
-            <button id="triggerRoleModal" class="w-full py-2 rounded-xl btn-glass text-xs font-medium text-slate-200">Modify Authorization Privileges...</button>
-            <button id="triggerProfileModal" class="w-full py-2 rounded-xl btn-glass text-xs font-medium text-slate-200">Edit Structural Metadata Profile...</button>
-            <button id="triggerStatusModal" class="w-full py-2 rounded-xl btn-glass text-xs font-medium text-slate-200">Override State Classification...</button>
-            <button id="triggerReasonModal" class="w-full py-2 rounded-xl btn-glass text-xs font-medium text-slate-200">Log Administrative Notation...</button>
+          <div class="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-[11px] text-zinc-400 space-y-1.5">
+            <div class="font-medium text-zinc-300">Database Context Model</div>
+            <code class="block whitespace-pre-wrap font-mono text-[10px] text-zinc-500 bg-black/40 p-2 rounded border border-zinc-900">users/{uid} ➜ name, pfp, role, banned, banExpiresAt, muted, verified, banReason, status</code>
+          </div>
+        </aside>
+
+        <section class="space-y-4 min-w-0">
+          
+          <div id="dashboardPanel" class="space-y-4">
+            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div class="glass-panel-strong rounded-xl p-4 flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Total Directory</div>
+                  <div id="statTotal" class="mt-1 text-2xl font-bold tracking-tight">—</div>
+                </div>
+              </div>
+              <div class="glass-panel-strong rounded-xl p-4 flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Active Sessions</div>
+                  <div id="statOnline" class="mt-1 text-2xl font-bold tracking-tight text-emerald-400">—</div>
+                </div>
+              </div>
+              <div class="glass-panel-strong rounded-xl p-4 flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Suspended Accounts</div>
+                  <div id="statBanned" class="mt-1 text-2xl font-bold tracking-tight text-rose-400">—</div>
+                </div>
+              </div>
+              <div class="glass-panel-strong rounded-xl p-4 flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Verified Channels</div>
+                  <div id="statVerified" class="mt-1 text-2xl font-bold tracking-tight text-indigo-400">—</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-panel-strong rounded-xl p-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-base font-semibold">Account State Diagnostics Overview</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Use structural view metrics to query status distributions.</p>
+                </div>
+                <div class="text-xs text-zinc-400">
+                  Indexing <span id="visibleCount" class="text-zinc-100 font-medium">0</span> of <span id="totalCount" class="text-zinc-100 font-medium">0</span> elements
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="pt-2 border-t border-white/5">
-            <button id="deleteProfileBtn" class="w-full py-2 rounded-xl bg-rose-950/30 border border-rose-500/30 text-rose-200 hover:bg-rose-900/40 text-xs font-bold transition">Purge Profile Snapshot Document</button>
+          <div id="usersPanel" class="space-y-4 hidden">
+            <div class="glass-panel-strong rounded-xl p-4">
+              <div class="table-wrap">
+                <table class="min-w-full text-left text-xs">
+                  <thead class="sticky top-0 bg-zinc-900 text-zinc-400 border-b border-zinc-800">
+                    <tr>
+                      <th class="px-4 py-3 font-medium">User Profile Context</th>
+                      <th class="px-4 py-3 font-medium">Access Matrix Role</th>
+                      <th class="px-4 py-3 font-medium">Network Signal</th>
+                      <th class="px-4 py-3 font-medium">System State Flags</th>
+                      <th class="px-4 py-3 font-medium text-right">Operations</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody" class="divide-y divide-zinc-900"></tbody>
+                </table>
+              </div>
+            </div>
+            <div id="emptyState" class="hidden glass-panel-strong rounded-xl p-12 text-center text-zinc-500 text-xs">
+              No matching profiles found inside the indexed partition.
+            </div>
           </div>
-        </div>
-      </aside>
+
+          <div id="rolesPanel" class="hidden">
+            <div class="glass-panel-strong rounded-xl p-5">
+              <h2 class="text-base font-semibold">Authorization Shortcuts</h2>
+              <p class="text-xs text-zinc-400 mt-0.5">Live distribution analysis across available system classifications.</p>
+              <div id="roleTiles" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+            </div>
+          </div>
+
+          <div id="logsPanel" class="hidden">
+            <div class="glass-panel-strong rounded-xl p-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-base font-semibold">Security Audit Ledger</h2>
+                  <p class="text-xs text-zinc-400 mt-0.5">Immutable runtime capture of administrative system state modifications.</p>
+                </div>
+                <button id="clearLogsBtn" class="btn-glass px-2.5 py-1.5 rounded-lg text-xs font-medium">Clear Local Visualizer</button>
+              </div>
+              <div id="auditLogList" class="mt-4 space-y-2 max-h-[550px] overflow-auto pr-1"></div>
+            </div>
+          </div>
+
+          <div id="settingsPanel" class="hidden">
+            <div class="glass-panel-strong rounded-xl p-5">
+              <h2 class="text-base font-semibold">Local Storage Configuration Configurations</h2>
+              <p class="text-xs text-zinc-400 mt-0.5">Ephemeral local storage preferences stored in current secure container context.</p>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="glass-card rounded-lg p-4 space-y-3">
+                  <div class="text-xs font-medium text-zinc-200">Default System Suspension Clause</div>
+                  <input id="defaultBanReason" class="field text-xs" placeholder="Violation of network operations guidelines." />
+                  <button id="saveBanReasonBtn" class="btn-glass px-3 py-1.5 rounded-lg text-xs font-medium">Save to Sandbox</button>
+                </div>
+                <div class="glass-card rounded-lg p-4 space-y-3">
+                  <div class="text-xs font-medium text-zinc-200">Administrative Workspace Sandbox Memo</div>
+                  <textarea id="adminNote" class="field text-xs min-h-[100px]" placeholder="Write isolated console tracking annotations..."></textarea>
+                  <button id="saveNoteBtn" class="btn-glass px-3 py-1.5 rounded-lg text-xs font-medium">Save to Sandbox</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="space-y-4 h-fit xl:sticky xl:top-[128px]">
+          <div class="glass-panel-strong rounded-xl p-4 space-y-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Inspecting Profile</div>
+                <h2 id="detailName" class="text-base font-semibold tracking-tight truncate mt-0.5">Unselected</h2>
+              </div>
+              <button id="copyUidBtn" class="btn-glass px-2 py-1 rounded text-[10px] font-medium tracking-wide">Copy UID</button>
+            </div>
+
+            <div class="rounded-lg border border-zinc-800 bg-zinc-950 p-3 flex items-center gap-3">
+              <div class="h-11 w-11 rounded-lg overflow-hidden bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                <img id="detailPfp" alt="Context Graphic" class="w-full h-full object-cover hidden" />
+                <div id="detailPfpFallback" class="text-xs font-bold text-zinc-500">—</div>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div id="detailRole" class="chip text-[10px] font-medium">—</div>
+                <div id="detailStatus" class="mt-1 text-[11px] text-zinc-400 truncate">Awaiting matrix input query selection.</div>
+                <div id="detailUid" class="mt-0.5 text-[10px] font-mono text-zinc-600 truncate break-all"></div>
+              </div>
+            </div>
+
+            <div class="space-y-3 border-t border-zinc-800 pt-3">
+              <div class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Operational Interventions Framework</div>
+              <div class="grid grid-cols-2 gap-2">
+                <button id="banBtn" class="px-2.5 py-1.5 rounded-lg bg-rose-950/40 border border-rose-800/60 text-rose-300 hover:bg-rose-900/60 text-xs font-medium transition">Issue Ban</button>
+                <button id="unbanBtn" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 hover:bg-emerald-900/60 text-xs font-medium transition">Pardon Suspension</button>
+                <button id="muteBtn" class="px-2.5 py-1.5 rounded-lg bg-amber-950/40 border border-amber-800/60 text-amber-300 hover:bg-amber-900/60 text-xs font-medium transition">Restrict Communications</button>
+                <button id="unmuteBtn" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 text-xs font-medium transition">Lift Restrictions</button>
+                <button id="verifyBtn" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/40 border border-indigo-800/60 text-indigo-300 hover:bg-indigo-900/60 text-xs font-medium transition">Affirm Credentials</button>
+                <button id="unverifyBtn" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800 text-xs font-medium transition">Strip Verification</button>
+              </div>
+            </div>
+
+            <div class="space-y-3 border-t border-zinc-800 pt-3 text-xs">
+              <div class="space-y-1.5">
+                <label class="block text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Access Scope Role Classification</label>
+                <select id="roleSelect" class="field text-xs">
+                  <option>Owner</option>
+                  <option>Administrator</option>
+                  <option>Moderator</option>
+                  <option>Verified</option>
+                  <option>Member</option>
+                  <option>Tester</option>
+                  <option>VIP</option>
+                </select>
+                <button id="saveRoleBtn" class="btn-glass w-full py-1.5 rounded-lg text-xs font-medium">Commit Scope Changes</button>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Suspension Execution Strategy</label>
+                <textarea id="banReasonInput" class="field text-xs min-h-[50px]" placeholder="Append operational cause logs..."></textarea>
+                
+                <label class="block text-[10px] uppercase tracking-wider text-zinc-500 font-bold mt-2">Suspension Timeline Duration</label>
+                <select id="banDurationSelect" class="field text-xs">
+                  <option value="permanent">Indefinite / Permanent Clause</option>
+                  <option value="1">Temporary: 1 Operational Day</option>
+                  <option value="3">Temporary: 3 Operational Days</option>
+                  <option value="7">Temporary: 1 Calendar Week</option>
+                  <option value="30">Temporary: 30 Calendar Days</option>
+                </select>
+                <button id="saveBanReasonRemoteBtn" class="btn-glass w-full py-1.5 rounded-lg text-xs font-medium">Commit Operational Metrics</button>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Metadata / Directory Properties Modification</label>
+                <input id="editNameInput" class="field text-xs" placeholder="Directory Display Identifier" />
+                <textarea id="editBioInput" class="field text-xs min-h-[50px]" placeholder="Identity Payload Bio Metadata"></textarea>
+                <input id="editPfpInput" class="field text-xs" placeholder="Profile Graphic Content URL Reference" />
+                <div class="grid grid-cols-2 gap-2">
+                  <button id="saveProfileBtn" class="btn-glass py-1.5 rounded-lg text-xs font-medium">Commit Matrix Details</button>
+                  <button id="resetPfpBtn" class="btn-glass py-1.5 rounded-lg text-xs font-medium">Purge Graphic Element</button>
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Assigned Signal State</label>
+                <select id="statusSelect" class="field text-xs">
+                  <option>Online</option>
+                  <option>Offline</option>
+                  <option>Away</option>
+                  <option>Busy</option>
+                  <option>Banned</option>
+                  <option>Hidden</option>
+                </select>
+                <button id="saveStatusBtn" class="btn-glass w-full py-1.5 rounded-lg text-xs font-medium">Force State Marker</button>
+              </div>
+
+              <div class="space-y-2 border-t border-zinc-800 pt-3">
+                <div class="text-[10px] uppercase tracking-wider text-rose-500 font-bold">Destructive Clearance Matrix</div>
+                <p class="text-[11px] text-zinc-400 leading-relaxed">Deletes the active user directory reference payload record completely from the indexing engine.</p>
+                <button id="deleteProfileBtn" class="w-full py-1.5 rounded-lg bg-rose-950/20 border border-rose-900/40 text-rose-300 hover:bg-rose-950/50 text-xs font-medium transition">Purge Record Payload</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </main>
   </section>
 
-  <div id="roleModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
-    <div id="roleInner" class="glass-panel-strong w-full max-w-sm rounded-[20px] p-5 transform scale-95 transition-transform duration-200 space-y-4">
-      <h3 class="text-md font-bold text-white">Adjust Privilege Level Assignment</h3>
-      <select id="roleSelect" class="field text-xs">
-        <option>Owner</option><option>Administrator</option><option>Moderator</option>
-        <option>Verified</option><option>Member</option><option>Tester</option><option>VIP</option>
-      </select>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="cancelRoleBtn" class="py-2 rounded-xl btn-glass text-xs">Abort</button>
-        <button id="saveRoleBtn" class="py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">Commit Privilege</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="profileModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
-    <div id="profileInner" class="glass-panel-strong w-full max-w-md rounded-[20px] p-5 transform scale-95 transition-transform duration-200 space-y-3">
-      <h3 class="text-md font-bold text-white">Modify Registration Document Structure</h3>
-      <div>
-        <label class="block text-[10px] uppercase text-slate-400 mb-1">Display Alias Identification</label>
-        <input id="editNameInput" class="field text-xs" />
-      </div>
-      <div>
-        <label class="block text-[10px] uppercase text-slate-400 mb-1">Biographical Account Annotation Meta</label>
-        <textarea id="editBioInput" class="field text-xs min-h-[60px]"></textarea>
-      </div>
-      <div>
-        <label class="block text-[10px] uppercase text-slate-400 mb-1">PFP Reference Resource URL Address</label>
-        <input id="editPfpInput" class="field text-xs" />
-      </div>
-      <div class="grid grid-cols-3 gap-2 pt-2">
-        <button id="cancelProfileBtn" class="py-2 rounded-xl btn-glass text-xs">Abort</button>
-        <button id="resetPfpBtn" class="py-2 rounded-xl btn-glass text-xs text-amber-300 border-amber-500/10">Wipe PFP</button>
-        <button id="saveProfileBtn" class="py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">Commit Document</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="statusModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
-    <div id="statusInner" class="glass-panel-strong w-full max-w-sm rounded-[20px] p-5 transform scale-95 transition-transform duration-200 space-y-4">
-      <h3 class="text-md font-bold text-white">Override System Registry Status Matrix</h3>
-      <select id="statusSelect" class="field text-xs">
-        <option>Online</option><option>Offline</option><option>Away</option>
-        <option>Busy</option><option>Banned</option><option>Hidden</option>
-      </select>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="cancelStatusBtn" class="py-2 rounded-xl btn-glass text-xs">Abort</button>
-        <button id="saveStatusBtn" class="py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">Commit Status State</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="reasonModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
-    <div id="reasonInner" class="glass-panel-strong w-full max-w-sm rounded-[20px] p-5 transform scale-95 transition-transform duration-200 space-y-4">
-      <h3 class="text-md font-bold text-white">Administrative Disciplinary Restriction Context</h3>
-      <textarea id="banReasonInput" class="field text-xs min-h-[90px]" placeholder="Explicitly note operational justification parameters..."></textarea>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="cancelReasonBtn" class="py-2 rounded-xl btn-glass text-xs">Abort</button>
-        <button id="saveBanReasonRemoteBtn" class="py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">Commit Protocol Log</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="broadcastModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
-    <div id="broadcastInner" class="glass-panel-strong w-full max-w-lg rounded-[20px] p-6 transform scale-95 transition-transform duration-200 space-y-4">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <h3 class="text-base font-bold text-white">Global Deployment Broadcaster Payload</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Inject dynamic layout alerts into client arrays.</p>
+  <div id="broadcastModal" class="hidden fixed inset-0 z-[80] modal-backdrop opacity-0 transition-opacity duration-200">
+    <div class="min-h-full flex items-center justify-center p-4">
+      <div id="broadcastInner" class="glass-panel-strong w-full max-w-xl rounded-xl p-6 transform scale-95 transition-transform duration-200">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-base font-semibold text-zinc-100">Publish Global Enterprise Broadcast</h3>
+            <p class="mt-0.5 text-xs text-zinc-400">Inject an operational notification record directly down into the Firestore pipeline.</p>
+          </div>
+          <button id="closeBroadcastBtn" class="text-zinc-400 hover:text-white text-xs p-1">✕</button>
         </div>
-        <button id="closeBroadcastBtn" class="btn-glass w-7 h-7 rounded-full flex items-center justify-center text-xs">✕</button>
-      </div>
-      <div class="space-y-3">
-        <input id="broadcastTitle" class="field text-xs" placeholder="Payload Header Token Summary" />
-        <textarea id="broadcastBody" class="field text-xs min-h-[100px]" placeholder="Comprehensive global system alert structural copy..."></textarea>
-        <div class="grid sm:grid-cols-2 gap-3">
-          <input id="broadcastAudience" class="field text-xs" placeholder="Target Array Filter (e.g. all-users)" />
-          <input id="broadcastExpiry" type="datetime-local" class="field text-xs" />
-        </div>
-        <div class="grid grid-cols-2 gap-3 pt-2">
-          <button id="cancelBroadcastBtn" class="py-2.5 rounded-xl btn-glass text-xs font-semibold">Abort Inject</button>
-          <button id="sendBroadcastBtn" class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs tracking-wider transition">Deploy Broadcaster</button>
+        <div class="mt-4 space-y-3.5 text-xs">
+          <input id="broadcastTitle" class="field" placeholder="Broadcast Title Header Descriptor" />
+          <textarea id="broadcastBody" class="field min-h-[120px]" placeholder="Broadcast core payload description strings..."></textarea>
+          <div class="grid md:grid-cols-2 gap-3">
+            <input id="broadcastAudience" class="field" placeholder="Target Scope Directive (e.g. all-accounts)" />
+            <input id="broadcastExpiry" type="datetime-local" class="field" />
+          </div>
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <button id="sendBroadcastBtn" class="py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition">Transmit Broadcast payload</button>
+            <button id="cancelBroadcastBtn" class="py-2 rounded-lg btn-glass text-zinc-300 font-medium">Cancel Pipeline</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div id="confirmModal" class="hidden fixed inset-0 z-[90] modal-backdrop opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
-    <div id="confirmInner" class="glass-panel-strong w-full max-w-sm rounded-[20px] p-5 transform scale-95 transition-transform duration-200 space-y-4">
-      <h3 id="confirmTitle" class="text-base font-bold text-white">Execution Approvals Required</h3>
-      <p id="confirmMessage" class="text-xs text-slate-400 leading-relaxed"></p>
-      <div class="grid grid-cols-2 gap-3">
-        <button id="confirmCancelBtn" class="py-2 rounded-xl btn-glass text-xs">Decline Execution</button>
-        <button id="confirmOkBtn" class="py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition">Confirm Protocol</button>
+  <div id="confirmModal" class="hidden fixed inset-0 z-[90] modal-backdrop opacity-0 transition-opacity duration-200">
+    <div class="min-h-full flex items-center justify-center p-4">
+      <div id="confirmInner" class="glass-panel-strong w-full max-w-md rounded-xl p-5 transform scale-95 transition-transform duration-200">
+        <h3 id="confirmTitle" class="text-base font-semibold text-zinc-100">Required System Confirmation</h3>
+        <p id="confirmMessage" class="mt-2 text-xs text-zinc-400 leading-relaxed"></p>
+        <div class="mt-5 grid grid-cols-2 gap-3 text-xs">
+          <button id="confirmCancelBtn" class="py-2 rounded-lg btn-glass text-zinc-300 font-medium">Abort Change</button>
+          <button id="confirmOkBtn" class="py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold transition">Execute Operation</button>
+        </div>
       </div>
     </div>
   </div>
 
   <template id="userRowTemplate">
-    <tr class="hover:bg-white/[0.02] cursor-pointer transition duration-150">
+    <tr class="table-row cursor-pointer text-xs">
       <td class="px-4 py-3">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="h-8 w-8 rounded-lg bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
+          <div class="h-8 w-8 rounded bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
             <img class="row-pfp w-full h-full object-cover hidden" alt="" />
-            <div class="row-fallback text-[10px] font-black text-slate-400">—</div>
+            <div class="row-fallback text-[10px] font-bold text-zinc-500">—</div>
           </div>
           <div class="min-w-0">
-            <div class="row-name font-semibold text-white truncate text-xs">—</div>
-            <div class="row-uid text-[10px] font-mono text-slate-500 truncate">—</div>
+            <div class="row-name font-medium text-zinc-200 truncate">—</div>
+            <div class="row-uid text-[10px] font-mono text-zinc-600 truncate">—</div>
           </div>
         </div>
       </td>
-      <td class="px-4 py-3"><span class="row-role chip text-[10px] py-0.5 px-2">—</span></td>
-      <td class="px-4 py-3"><span class="row-status chip text-[10px] py-0.5 px-2">—</span></td>
-      <td class="px-4 py-3"><div class="row-flags flex flex-wrap gap-1"></div></td>
+      <td class="px-4 py-3"><span class="row-role chip text-[10px]">—</span></td>
+      <td class="px-4 py-3"><span class="row-status chip text-[10px]">—</span></td>
+      <td class="px-4 py-3"><div class="row-flags flex flex-wrap gap-1.5"></div></td>
       <td class="px-4 py-3 text-right">
-        <div class="flex items-center justify-end gap-1.5">
-          <button class="row-open btn-glass px-2.5 py-1 rounded-lg text-[11px] font-medium">Inspect</button>
-          <button class="row-ban btn-glass px-2.5 py-1 rounded-lg text-[11px] font-medium text-rose-400 border-rose-500/10">Ban</button>
+        <div class="inline-flex gap-1.5">
+          <button class="row-open btn-glass px-2 py-1 rounded text-[10px] font-medium">Inspect</button>
+          <button class="row-ban btn-glass px-2 py-1 rounded text-[10px] font-medium text-rose-400">Suspend</button>
         </div>
       </td>
     </tr>
   </template>
 
-  <div id="toastContainer" class="fixed bottom-4 right-4 z-[120] flex flex-col gap-2 max-w-sm w-full"></div>
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-[120] flex flex-col gap-2"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, addDoc, query, orderBy, limit, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      addDoc,
+      query,
+      orderBy,
+      limit,
+      serverTimestamp,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBprG8pYZ1WQNh2wt0kih3P7Z3nIxhnU5k",
@@ -594,6 +629,7 @@
       roleSelect: document.getElementById("roleSelect"),
       statusSelect: document.getElementById("statusSelect"),
       banReasonInput: document.getElementById("banReasonInput"),
+      banDurationSelect: document.getElementById("banDurationSelect"),
       editNameInput: document.getElementById("editNameInput"),
       editBioInput: document.getElementById("editBioInput"),
       editPfpInput: document.getElementById("editPfpInput"),
@@ -603,18 +639,7 @@
       broadcastModal: document.getElementById("broadcastModal"),
       broadcastInner: document.getElementById("broadcastInner"),
       confirmModal: document.getElementById("confirmModal"),
-      confirmInner: document.getElementById("confirmInner"),
-      emptyState: document.getElementById("emptyState"), // Fixed: missing mapping that caused runtime crashes
-
-      // Modal Triggers & Subpanels Mapping Elements
-      roleModal: document.getElementById("roleModal"),
-      roleInner: document.getElementById("roleInner"),
-      profileModal: document.getElementById("profileModal"),
-      profileInner: document.getElementById("profileInner"),
-      statusModal: document.getElementById("statusModal"),
-      statusInner: document.getElementById("statusInner"),
-      reasonModal: document.getElementById("reasonModal"),
-      reasonInner: document.getElementById("reasonInner")
+      confirmInner: document.getElementById("confirmInner")
     };
 
     const state = {
@@ -630,12 +655,18 @@
     };
 
     function escapeHTML(value = "") {
-      return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
     function getInitials(name = "") {
       const parts = String(name).trim().split(/\s+/).filter(Boolean).slice(0, 2);
-      return parts.length ? parts.map(p => p[0]?.toUpperCase()).join("") : "—";
+      if (!parts.length) return "—";
+      return parts.map(p => p[0]?.toUpperCase()).join("");
     }
 
     function displayName(user) {
@@ -658,49 +689,71 @@
 
     function formatDate(value) {
       const d = toDate(value);
-      return d ? new Intl.DateTimeFormat(undefined, { dateStyle: "short", timeStyle: "short" }).format(d) : "—";
+      if (!d) return "—";
+      return new Intl.DateTimeFormat(undefined, { dateStyle: "short", timeStyle: "short" }).format(d);
     }
 
-    function statusClass(status = "") {
+    function isCurrentlyBanned(user) {
+      if (!user?.banned) return false;
+      if (!user.banExpiresAt) return true; // Permanent
+      const expiry = toDate(user.banExpiresAt);
+      if (!expiry) return true;
+      return expiry.getTime() > Date.now();
+    }
+
+    function statusClass(status = "", user = null) {
+      if (user && isCurrentlyBanned(user)) return "text-rose-400 bg-rose-500/5 border-rose-500/20";
       const s = String(status).toLowerCase();
-      if (s.includes("online")) return "text-emerald-400 bg-emerald-500/5 border-emerald-500/15";
-      if (s.includes("away")) return "text-amber-400 bg-amber-500/5 border-amber-500/15";
-      if (s.includes("busy") || s.includes("banned")) return "text-rose-400 bg-rose-500/5 border-rose-500/15";
-      return "text-sky-400 bg-sky-500/5 border-sky-500/15";
+      if (s.includes("online")) return "text-emerald-400 bg-emerald-500/5 border-emerald-500/20";
+      if (s.includes("away")) return "text-amber-400 bg-amber-500/5 border-amber-500/20";
+      if (s.includes("busy") || s.includes("banned")) return "text-rose-400 bg-rose-500/5 border-rose-500/20";
+      return "text-zinc-400 bg-zinc-500/5 border-zinc-500/20";
     }
 
     function roleClass(role = "") {
-      if (role === "Owner") return "text-indigo-400 bg-indigo-500/10 border-indigo-500/20";
-      if (role === "Administrator") return "text-purple-400 bg-purple-500/10 border-purple-500/20";
-      if (role === "Moderator") return "text-cyan-400 bg-cyan-500/10 border-cyan-500/20";
-      if (role === "Verified") return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-      return "text-slate-400 bg-slate-500/10 border-slate-500/20";
+      if (role === "Owner") return "text-indigo-400 bg-indigo-500/5 border-indigo-500/20";
+      if (role === "Administrator") return "text-purple-400 bg-purple-500/5 border-purple-500/20";
+      if (role === "Moderator") return "text-cyan-400 bg-cyan-500/5 border-cyan-500/20";
+      if (role === "Verified") return "text-emerald-400 bg-emerald-500/5 border-emerald-500/20";
+      return "text-zinc-400 bg-zinc-500/5 border-zinc-500/20";
     }
 
     function flagsForUser(user) {
       const flags = [];
-      if (user?.banned) flags.push(["Suspended", "text-rose-400 bg-rose-500/5 border-rose-500/15"]);
-      if (user?.muted) flags.push(["Silenced", "text-amber-400 bg-amber-500/5 border-amber-500/15"]);
-      if (user?.verified) flags.push(["Verified", "text-emerald-400 bg-emerald-500/5 border-emerald-500/15"]);
+      if (user?.banned) {
+        if (isCurrentlyBanned(user)) {
+          if (user.banExpiresAt) {
+            flags.push([`Suspended (Until ${formatDate(user.banExpiresAt)})`, "text-rose-400 bg-rose-500/5 border-rose-500/20"]);
+          } else {
+            flags.push(["Suspended (Permanent)", "text-rose-400 bg-rose-500/5 border-rose-500/20"]);
+          }
+        } else {
+          flags.push(["Suspension Expired", "text-zinc-500 bg-zinc-500/5 border-zinc-500/20"]);
+        }
+      }
+      if (user?.muted) flags.push(["Muted", "text-amber-400 bg-amber-500/5 border-amber-500/20"]);
+      if (user?.verified) flags.push(["Verified", "text-emerald-400 bg-emerald-500/5 border-emerald-500/20"]);
+      if (user?.status) flags.push([String(user.status), "text-zinc-400 bg-zinc-500/5 border-zinc-500/20"]);
       return flags;
     }
 
     function showToast(title, message, tone = "info") {
       const tones = {
-        info: "border-sky-500/20 bg-slate-900/90 text-sky-300",
-        success: "border-emerald-500/20 bg-slate-900/90 text-emerald-300",
-        warn: "border-amber-500/20 bg-slate-900/90 text-amber-300",
-        error: "border-rose-500/20 bg-slate-900/90 text-rose-300"
+        info: "border-zinc-800 bg-zinc-900 text-zinc-200",
+        success: "border-emerald-800 bg-zinc-900 text-emerald-400",
+        warn: "border-amber-800 bg-zinc-900 text-amber-400",
+        error: "border-rose-800 bg-zinc-900 text-rose-400"
       };
       const node = document.createElement("div");
-      node.className = `glass-panel border px-4 py-3 rounded-xl flex flex-col shadow-2xl transition duration-300 transform translate-y-2 opacity-0 ${tones[tone] || tones.info}`;
-      node.innerHTML = `<div class="font-bold text-xs">${escapeHTML(title)}</div><div class="text-[11px] opacity-80 mt-0.5">${escapeHTML(message)}</div>`;
+      node.className = `glass-panel-strong rounded-lg p-3 max-w-xs border text-xs shadow-xl ${tones[tone] || tones.info}`;
+      node.innerHTML = `<div class="font-semibold">${escapeHTML(title)}</div><div class="mt-0.5 opacity-80">${escapeHTML(message)}</div>`;
       els.toastContainer.appendChild(node);
-      requestAnimationFrame(() => { node.classList.remove("opacity-0", "translate-y-2"); });
       setTimeout(() => {
-        node.classList.add("opacity-0", "translate-y-1");
-        setTimeout(() => node.remove(), 300);
-      }, 3500);
+        node.style.transition = "all .24s ease";
+        node.style.opacity = "0";
+        node.style.transform = "translateY(4px)";
+        setTimeout(() => node.remove(), 240);
+      }, 3000);
     }
 
     function openModal(modal, inner) {
@@ -741,14 +794,21 @@
       state.selectedUid = user?.id || null;
 
       if (!user) {
-        els.detailName.textContent = "None Selected";
+        els.detailName.textContent = "Unselected Context";
         els.detailRole.textContent = "—";
         els.detailRole.className = "chip";
-        els.detailStatus.textContent = "No baseline configuration reference loaded.";
+        els.detailStatus.textContent = "Awaiting entry query inputs.";
         els.detailUid.textContent = "";
         els.detailPfp.classList.add("hidden");
         els.detailPfpFallback.classList.remove("hidden");
         els.detailPfpFallback.textContent = "—";
+        els.roleSelect.value = "Member";
+        els.statusSelect.value = "Online";
+        els.banReasonInput.value = "";
+        els.banDurationSelect.value = "permanent";
+        els.editNameInput.value = "";
+        els.editBioInput.value = "";
+        els.editPfpInput.value = "";
         return;
       }
 
@@ -756,19 +816,31 @@
       els.detailName.textContent = name;
       els.detailRole.textContent = user.role || "Member";
       els.detailRole.className = `chip ${roleClass(user.role || "Member")}`;
-      els.detailStatus.textContent = `${user.status || "Offline"}${user.banned ? " • Suspended" : ""}${user.muted ? " • Silenced" : ""}`;
+      
+      let statusString = `${user.status || "Unknown State"}`;
+      if (user.banned) {
+        if (isCurrentlyBanned(user)) {
+          statusString += user.banExpiresAt ? ` • Suspended until ${formatDate(user.banExpiresAt)}` : " • Suspended Permanently";
+        } else {
+          statusString += " • Suspension Timeline Cleared";
+        }
+      }
+      if (user.muted) statusString += " • Communications Restricted";
+      if (user.verified) statusString += " • Channel Verified";
+      
+      els.detailStatus.textContent = statusString;
       els.detailUid.textContent = user.id;
-
-      // Map current operational state array configurations directly to modal target value elements
       els.roleSelect.value = user.role || "Member";
       els.statusSelect.value = user.status || "Online";
       els.banReasonInput.value = user.banReason || "";
+      els.banDurationSelect.value = "permanent"; 
       els.editNameInput.value = user.name || "";
       els.editBioInput.value = user.bio || "";
       els.editPfpInput.value = user.pfp || "";
 
-      if (user.pfp) {
-        els.detailPfp.src = user.pfp;
+      const src = user.pfp || "";
+      if (src) {
+        els.detailPfp.src = src;
         els.detailPfp.onload = () => {
           els.detailPfp.classList.remove("hidden");
           els.detailPfpFallback.classList.add("hidden");
@@ -791,15 +863,16 @@
       const status = els.filterStatus.value;
 
       return state.users.filter(user => {
-        const blob = [user.id, user.name, user.bio, user.role, user.status].join(" ").toLowerCase();
+        const blob = [user.id, user.name, user.bio, user.role, user.status, user.banReason].join(" ").toLowerCase();
         if (q && !blob.includes(q)) return false;
         if (role !== "all" && (user.role || "Member") !== role) return false;
         if (status !== "all") {
           const s = String(user.status || "").toLowerCase();
           if (status === "online" && s !== "online") return false;
           if (status === "offline" && s !== "offline") return false;
-          if (status === "banned" && !user.banned) return false;
+          if (status === "banned" && !isCurrentlyBanned(user)) return false;
           if (status === "muted" && !user.muted) return false;
+          if (status === "verified" && !user.verified) return false;
         }
         return true;
       });
@@ -808,7 +881,7 @@
     function updateDashboard() {
       const total = state.users.length;
       const online = state.users.filter(u => String(u.status || "").toLowerCase() === "online").length;
-      const banned = state.users.filter(u => u.banned).length;
+      const banned = state.users.filter(u => isCurrentlyBanned(u)).length;
       const verified = state.users.filter(u => u.verified).length;
       const admins = state.users.filter(u => ["Owner", "Administrator"].includes(u.role)).length;
       const muted = state.users.filter(u => u.muted).length;
@@ -830,12 +903,14 @@
       for (const user of state.users) counts.set(user.role || "Member", (counts.get(user.role || "Member") || 0) + 1);
 
       els.roleTiles.innerHTML = ROLE_ORDER.map(role => `
-        <div class="glass-card rounded-xl p-4 flex flex-col justify-between gap-2">
-          <div class="flex items-center justify-between">
-            <div class="font-bold text-xs text-white">${escapeHTML(role)}</div>
-            <span class="chip text-[10px] py-0.5 px-1.5 ${roleClass(role)}">${counts.get(role) || 0}</span>
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between border border-zinc-900">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="font-semibold text-xs text-zinc-200">${escapeHTML(role)}</div>
+              <div class="text-[11px] text-zinc-500 mt-0.5">${counts.get(role) || 0} Account Allocation References</div>
+            </div>
+            <span class="chip text-[10px] ${roleClass(role)}">${escapeHTML(role)}</span>
           </div>
-          <p class="text-[11px] text-slate-400 leading-normal">System clearance tier matrix allocation index profile.</p>
         </div>
       `).join("");
     }
@@ -843,25 +918,28 @@
     function renderLogs() {
       const logs = state.auditLogs.slice(0, 50);
       els.auditLogList.innerHTML = logs.length ? logs.map(log => `
-        <div class="glass-card rounded-xl p-3 text-xs space-y-1.5">
+        <div class="glass-card rounded-lg p-3 border border-zinc-900 text-xs">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <div class="font-bold text-white">${escapeHTML(log.action || "Action Pipeline")}</div>
-              <div class="text-slate-400 mt-0.5 text-[11px]">${escapeHTML(log.message || "")}</div>
+              <div class="font-medium text-zinc-200">${escapeHTML(log.action || "State Adjustment Action")}</div>
+              <div class="mt-0.5 text-zinc-400 text-[11px]">${escapeHTML(log.message || "")}</div>
             </div>
-            <div class="text-[10px] font-mono text-slate-500">${escapeHTML(formatDate(log.createdAt || log.timestamp || Date.now()))}</div>
+            <div class="text-[10px] font-mono text-zinc-600">${escapeHTML(formatDate(log.createdAt || log.timestamp || Date.now()))}</div>
           </div>
-          <div class="flex flex-wrap gap-1.5 pt-1">
-            <span class="chip text-[10px] py-0 px-1 bg-white/5 text-slate-300">Operator: ${escapeHTML(log.actorEmail || "System Root")}</span>
-            <span class="chip text-[10px] py-0 px-1 bg-white/5 text-slate-300">Target: ${escapeHTML(log.targetName || "—")}</span>
+          <div class="mt-2 flex flex-wrap gap-2 text-[10px]">
+            <span class="chip text-zinc-400">${escapeHTML(log.actorEmail || log.actor || "system-context")}</span>
+            <span class="chip text-zinc-400">Target: ${escapeHTML(log.targetName || log.targetUid || "—")}</span>
           </div>
         </div>
-      `).join("") : `<div class="rounded-xl border border-dashed border-white/5 p-6 text-center text-xs text-slate-500">No telemetry actions recorded.</div>`;
+      `).join("") : `
+        <div class="rounded-lg border border-dashed border-zinc-800 p-6 text-center text-zinc-500 text-xs">No active runtime ledger frames caught yet.</div>
+      `;
     }
 
     function renderUsers() {
       const list = filteredUsers();
       els.usersTableBody.innerHTML = "";
+
       const tpl = document.getElementById("userRowTemplate");
 
       list.forEach(user => {
@@ -877,11 +955,11 @@
         roleChip.className = `row-role chip ${roleClass(user.role || "Member")}`;
 
         const statusChip = row.querySelector(".row-status");
-        statusChip.textContent = user.status || "Offline";
-        statusChip.className = `row-status chip ${statusClass(user.status || "")}`;
+        statusChip.textContent = user.status || "Unknown State";
+        statusChip.className = `row-status chip ${statusClass(user.status || "", user)}`;
 
         const flags = row.querySelector(".row-flags");
-        flags.innerHTML = flagsForUser(user).map(([label, cls]) => `<span class="chip text-[9px] py-0 px-1.5 ${cls}">${escapeHTML(label)}</span>`).join("");
+        flags.innerHTML = flagsForUser(user).map(([label, cls]) => `<span class="chip ${cls}">${escapeHTML(label)}</span>`).join("");
 
         if (user.pfp) {
           pfp.src = user.pfp;
@@ -914,9 +992,7 @@
 
       els.visibleCount.textContent = list.length;
       els.totalCount.textContent = state.users.length;
-      if (els.emptyState) {
-        els.emptyState.classList.toggle("hidden", !(state.users.length === 0));
-      }
+      els.emptyState.classList.toggle("hidden", !(state.loadingUsers || state.users.length === 0));
       updateDashboard();
       renderRoleTiles();
     }
@@ -924,17 +1000,20 @@
     async function writeAudit(action, message, extra = {}) {
       try {
         await addDoc(collection(db, "adminAuditLogs"), {
-          action, message,
+          action,
+          message,
           actorUid: state.currentUser?.uid || null,
           actorEmail: state.currentProfile?.email || state.currentUser?.email || null,
           createdAt: serverTimestamp(),
           ...extra
         });
-      } catch (err) { console.warn("ledger deployment exception", err); }
+      } catch (err) {
+        console.warn("Audit persistence breakdown", err);
+      }
     }
 
     async function updateUser(uid, data) {
-      if (!uid) throw new Error("Null operational execution parameters provided");
+      if (!uid) throw new Error("Null pointer mutation argument");
       await updateDoc(doc(db, "users", uid), { ...data, updatedAt: serverTimestamp() });
       const merged = { ...(state.usersById.get(uid) || {}), ...data };
       state.usersById.set(uid, merged);
@@ -944,7 +1023,7 @@
       return merged;
     }
 
-    function confirmDialog(title, message, okText = "Execute Action") {
+    function confirmDialog(title, message, okText = "Confirm Parameters") {
       return new Promise(resolve => {
         document.getElementById("confirmTitle").textContent = title;
         document.getElementById("confirmMessage").textContent = message;
@@ -955,118 +1034,154 @@
           document.getElementById("confirmOkBtn").onclick = null;
           document.getElementById("confirmCancelBtn").onclick = null;
         };
+
         document.getElementById("confirmOkBtn").onclick = () => {
-          cleanup(); closeModal(els.confirmModal, els.confirmInner); resolve(true);
+          cleanup();
+          closeModal(els.confirmModal, els.confirmInner);
+          resolve(true);
         };
         document.getElementById("confirmCancelBtn").onclick = () => {
-          cleanup(); closeModal(els.confirmModal, els.confirmInner); resolve(false);
+          cleanup();
+          closeModal(els.confirmModal, els.confirmInner);
+          resolve(false);
         };
       });
     }
 
     async function promptBan(user) {
-      const reason = (els.banReasonInput.value || localStorage.getItem("flash_admin_default_ban_reason") || "Violation of rules").trim();
-      const ok = await confirmDialog("Execute Node Suspension Protocol", `Suspend system entity alignment for ${displayName(user)}?`, "Confirm Suspend");
+      const reason = (els.banReasonInput.value || localStorage.getItem("flash_admin_default_ban_reason") || "Violation of operations standards").trim();
+      const duration = els.banDurationSelect.value;
+      
+      let banExpiresAt = null;
+      let logClauseText = "permanently";
+      
+      if (duration !== "permanent") {
+        const days = parseInt(duration, 10);
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + days);
+        banExpiresAt = targetDate.toISOString();
+        logClauseText = `temporarily for ${days} operational day(s)`;
+      }
+
+      const ok = await confirmDialog("Enforce Suspension", `Execute account suspension against ${displayName(user)} ${logClauseText}?`, "Confirm Suspension");
       if (!ok) return;
-      await updateUser(user.id, { banned: true, banReason: reason, status: "Banned" });
-      await writeAudit("ban_user", `Suspended profile node registry for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user), reason });
-      showToast("Protocol Cleared", `Suspended ${displayName(user)} matching current node scope`, "success");
+      
+      await updateUser(user.id, { 
+        banned: true, 
+        banReason: reason, 
+        banExpiresAt: banExpiresAt, 
+        status: "Banned" 
+      });
+      await writeAudit("ban_user", `Suspended identity entry ${displayName(user)} ${logClauseText}`, { 
+        targetUid: user.id, 
+        targetName: displayName(user), 
+        reason,
+        banExpiresAt 
+      });
+      showToast("Suspension Commited", `Target record locked ${logClauseText}`, "success");
     }
 
     async function promptUnban(user) {
-      const ok = await confirmDialog("Reinstate System Registry Node", `Restore functional operational parameters for ${displayName(user)}?`, "Confirm Alignment");
+      const ok = await confirmDialog("Pardon Suspension Clause", `Lift suspension rules for ${displayName(user)}?`, "Lift Restriction");
       if (!ok) return;
-      await updateUser(user.id, { banned: false, banReason: "", status: "Online" });
-      await writeAudit("unban_user", `Restored profile execution rules for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
-      showToast("Protocol Cleared", `Reinstated active channel map for ${displayName(user)}`, "success");
+      await updateUser(user.id, { banned: false, banReason: "", banExpiresAt: null, status: "Online" });
+      await writeAudit("unban_user", `Pardoned suspended account matrix for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
+      showToast("Suspension Dismissed", `${displayName(user)} state returned to active metrics`, "success");
     }
 
     async function promptMute(user) {
-      const ok = await confirmDialog("Mute Account Registry", `Restrict communications access payload arrays for ${displayName(user)}?`, "Confirm Mute");
+      const ok = await confirmDialog("Restrict Communications", `Mute communication streams for ${displayName(user)}?`, "Execute Mute");
       if (!ok) return;
       await updateUser(user.id, { muted: true });
-      await writeAudit("mute_user", `Muted operational payload access for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
-      showToast("Access Restricted", `Silenced ${displayName(user)} transmission pathways`, "warn");
+      await writeAudit("mute_user", `Restricted transmission access for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
+      showToast("Access Restricted", "Channel transmission stream muted", "warn");
     }
 
     async function promptUnmute(user) {
-      const ok = await confirmDialog("Unmute Account Registry", `Restore stream privileges for ${displayName(user)}?`, "Confirm Unmute");
+      const ok = await confirmDialog("Lift Communications Restriction", `Restore data transmission streams for ${displayName(user)}?`, "Lift Restriction");
       if (!ok) return;
       await updateUser(user.id, { muted: false });
-      await writeAudit("unmute_user", `Restored communication channels for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
-      showToast("Access Restored", `Active channels reconnected for ${displayName(user)}`, "success");
+      await writeAudit("unmute_user", `Restored communication access channel for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
+      showToast("Restrictions Cleaned", "Channel streams restored", "success");
     }
 
     async function promptVerify(user) {
       await updateUser(user.id, { verified: true });
-      await writeAudit("verify_user", `Verified system structural integrity profile for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
-      showToast("Validation Complete", `${displayName(user)} flag updated to active verification state`, "success");
+      await writeAudit("verify_user", `Affirmed credential signatures for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
+      showToast("Credentials Affirmed", "Verified telemetry tag assigned", "success");
     }
 
     async function promptUnverify(user) {
       await updateUser(user.id, { verified: false });
-      await writeAudit("unverify_user", `Revoked verified classification tags from ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
-      showToast("Validation Dropped", `${displayName(user)} status signature set back to standard member rules`, "warn");
+      await writeAudit("unverify_user", `Revoked verification signatures for ${displayName(user)}`, { targetUid: user.id, targetName: displayName(user) });
+      showToast("Signatures Purged", "Telemetry token dropped from entry context", "warn");
     }
 
     async function promptSaveRole() {
-      if (!state.selectedDoc) return showToast("Target Reference Null", "Select execution alignment mapping context first", "warn");
+      if (!state.selectedDoc) return showToast("Target Missing", "Select directory element first.", "warn");
       const nextRole = els.roleSelect.value;
       await updateUser(state.selectedUid, { role: nextRole });
-      await writeAudit("set_role", `Mapped clearance level for ${displayName(state.selectedDoc)} to ${nextRole}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc), role: nextRole });
-      closeModal(els.roleModal, els.roleInner);
-      showToast("Privileges Updated", `Successfully saved updated roles to secure server configuration array`, "success");
+      await writeAudit("set_role", `Re-assigned system authorization boundary role for ${displayName(state.selectedDoc)} to ${nextRole}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc), role: nextRole });
+      showToast("Scope Permutated", `Boundary remapped ➜ ${nextRole}`, "success");
     }
 
     async function promptSaveProfile() {
-      if (!state.selectedDoc) return showToast("Target Reference Null", "Select execution alignment mapping context first", "warn");
+      if (!state.selectedDoc) return showToast("Target Missing", "Select directory element first.", "warn");
       const patch = {
         name: els.editNameInput.value.trim() || state.selectedDoc.name || "",
         bio: els.editBioInput.value.trim() || "",
         pfp: els.editPfpInput.value.trim() || ""
       };
       await updateUser(state.selectedUid, patch);
-      await writeAudit("edit_profile", `Injected manual profile schema overrides into ${displayName(state.selectedDoc)} registry`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc) });
-      closeModal(els.profileModal, els.profileInner);
-      showToast("Document Modified", `Successfully committed dynamic payload revisions to remote snapshot reference`, "success");
+      await writeAudit("edit_profile", `Mutated base layer description profile maps for ${displayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc) });
+      showToast("Record Updated", "Entity schema mutations written", "success");
     }
 
     async function promptSaveStatus() {
-      if (!state.selectedDoc) return showToast("Target Reference Null", "Select execution alignment mapping context first", "warn");
+      if (!state.selectedDoc) return showToast("Target Missing", "Select directory element first.", "warn");
       const status = els.statusSelect.value;
       await updateUser(state.selectedUid, { status });
-      await writeAudit("set_status", `Overrode core system status classifications for ${displayName(state.selectedDoc)} to ${status}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc), status });
-      closeModal(els.statusModal, els.statusInner);
-      showToast("State Modified", `Committed status tracking profile updates`, "success");
+      await writeAudit("set_status", `Forced virtual tracking state flag for ${displayName(state.selectedDoc)} to ${status}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc), status });
+      showToast("State Fixed", `Signal adjusted ➜ ${status}`, "success");
     }
 
     async function promptSaveBanReason() {
-      if (!state.selectedDoc) return showToast("Target Reference Null", "Select execution alignment mapping context first", "warn");
+      if (!state.selectedDoc) return showToast("Target Missing", "Select directory element first.", "warn");
       const banReason = els.banReasonInput.value.trim();
-      await updateUser(state.selectedUid, { banReason });
-      await writeAudit("set_ban_reason", `Updated contextual database restriction logs for ${displayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc) });
-      closeModal(els.reasonModal, els.reasonInner);
-      showToast("Notations Stored", `Logged contextual entry rules notes onto target object arrays`, "success");
+      const duration = els.banDurationSelect.value;
+      
+      let banExpiresAt = state.selectedDoc.banExpiresAt || null;
+      if (duration !== "permanent") {
+        const days = parseInt(duration, 10);
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + days);
+        banExpiresAt = targetDate.toISOString();
+      }
+
+      await updateUser(state.selectedUid, { banReason, banExpiresAt });
+      await writeAudit("set_ban_reason", `Altered explicit suspension telemetry conditions parameters for ${displayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc) });
+      showToast("Intervention Metrics Written", "Security reason tracking parameters committed", "success");
     }
 
     async function promptResetPfp() {
-      if (!state.selectedDoc) return showToast("Target Reference Null", "Select execution alignment mapping context first", "warn");
-      const ok = await confirmDialog("Purge Profile Avatar Reference Address", `Wipe structural image asset maps associated with ${displayName(state.selectedDoc)}?`, "Wipe Content Mapping");
+      if (!state.selectedDoc) return showToast("Target Missing", "Select directory element first.", "warn");
+      const ok = await confirmDialog("Purge Graphic Element Reference", `Clear active binary reference route link strings for ${displayName(state.selectedDoc)}?`, "Execute Purge");
       if (!ok) return;
       await updateUser(state.selectedUid, { pfp: "" });
-      await writeAudit("reset_pfp", `Cleared graphic indicator avatar allocations pointing to ${displayName(state.selectedDoc)} records`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc) });
-      closeModal(els.profileModal, els.profileInner);
-      showToast("Asset Terminated", `Cleaned graphic profile schema elements`, "success");
+      await writeAudit("reset_pfp", `Dropped graphic content layout asset route for ${displayName(state.selectedDoc)}`, { targetUid: state.selectedUid, targetName: displayName(state.selectedDoc) });
+      showToast("Asset Purged", "Graphic address nullified", "success");
     }
 
     async function promptDeleteProfile() {
-      if (!state.selectedDoc) return showToast("Target Reference Null", "Select execution alignment mapping context first", "warn");
-      const ok = await confirmDialog("Purge Remote Document Structure Block", `Permanently destroy database registry layout values for ${displayName(state.selectedDoc)}? This leaves core authorization fields isolated.`, "Purge Record");
+      if (!state.selectedDoc) return showToast("Target Missing", "Select directory element first.", "warn");
+      const ok = await confirmDialog("Destructive Directory Record Purge", `Execute permanent destructive document extraction against profile reference payload data for ${displayName(state.selectedDoc)}?`, "Execute Destruction");
       if (!ok) return;
       const uid = state.selectedUid;
       await deleteDoc(doc(db, "users", uid));
-      await writeAudit("delete_profile", `Executed core structural table document deletion against ${displayName(state.selectedDoc)}`, { targetUid: uid, targetName: displayName(state.selectedDoc) });
-      showToast("Record Destroyed", `Database layout references truncated successfully`, "warn");
+      await writeAudit("delete_profile", `Executed absolute Firestore document row collection clear for user payload: ${displayName(state.selectedDoc)}`, { targetUid: uid, targetName: displayName(state.selectedDoc) });
+      showToast("Payload Destroyed", "Record object extracted and truncated", "warn");
+      state.selectedDoc = null;
+      state.selectedUid = null;
       renderSelection(null);
     }
 
@@ -1092,10 +1207,11 @@
         } else if (!state.selectedUid && state.users.length) {
           renderSelection(state.users[0]);
         }
+
         renderUsers();
       }, err => {
         console.error(err);
-        showToast("Synchronize Engine Failure", err.message || "Unknown schema sync exception", "error");
+        showToast("Synchronization Blocked", err.message || "Unknown secure connection error", "error");
         state.loadingUsers = false;
         renderUsers();
       });
@@ -1116,10 +1232,10 @@
         updateDashboard();
         renderUsers();
         await loadAuditLogs();
-        showToast("Synchronization Complete", "Latest remote engine changes loaded", "success");
+        showToast("Synchronized", "Latest ledger data pulled", "success");
       } catch (err) {
         console.error(err);
-        showToast("Sync Pipeline Interrupted", err.message || "Unknown engine error", "error");
+        showToast("Pipeline Synchronize Aborted", err.message || "Unknown error", "error");
       }
     }
 
@@ -1128,9 +1244,10 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `flash-admin-snapshot-${new Date().toISOString().slice(0,10)}.json`;
-      a.click(); URL.revokeObjectURL(url);
-      showToast("Export Dispatched", "Downloaded storage manifest snapshot snapshot data packet", "success");
+      a.download = `enterprise-catalog-snapshot-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Ledger Exported", "Catalog JSON binary snapshot downloaded", "success");
     }
 
     async function sendBroadcast() {
@@ -1138,18 +1255,20 @@
       const body = document.getElementById("broadcastBody").value.trim();
       const audience = document.getElementById("broadcastAudience").value.trim() || "all-users";
       const expiryValue = document.getElementById("broadcastExpiry").value;
-      if (!title || !body) return showToast("Validation Drop", "All core layout description fields required", "warn");
+      if (!title || !body) return showToast("Parameters Mismatched", "Validation requires core header and payload fields filled.", "warn");
 
       await addDoc(collection(db, "announcements"), {
-        title, body, audience,
+        title,
+        body,
+        audience,
         expiresAt: expiryValue ? new Date(expiryValue).toISOString() : null,
         createdByUid: state.currentUser?.uid || null,
         createdAt: serverTimestamp()
       });
 
-      await writeAudit("broadcast", `Deployed network payload warning system notifications: ${title}`, { audience, title });
+      await writeAudit("broadcast", `Transmitted system broadcast packet stream payload: ${title}`, { audience, title });
       closeModal(els.broadcastModal, els.broadcastInner);
-      showToast("Broadcast Deployed", "Live broadcast notifications posted into remote arrays", "success");
+      showToast("Broadcast Delivered", "Notification record committed across downstream shards", "success");
     }
 
     async function login(email, password) {
@@ -1160,22 +1279,24 @@
         const allowed = await isAllowed(cred.user);
         if (!allowed) {
           await signOut(auth);
-          els.authError.textContent = "Security clearance level insufficient. Authorized access paths only.";
+          els.authError.textContent = "Security Clearance Exception: Present account profile holds insufficient privileges.";
           els.authError.classList.remove("hidden");
           return;
         }
-        els.authSuccess.textContent = "Authorization confirmed. Granting dashboard console session runtime permissions...";
+        els.authSuccess.textContent = "Session authorized. Initializing security workspace interface modules...";
         els.authSuccess.classList.remove("hidden");
-        showToast("Authentication Verified", "Operational dashboard tracking access unlocked", "success");
+        showToast("Session Opened", "Administrative console context established", "success");
       } catch (err) {
         console.error(err);
-        els.authError.textContent = err.message || "Security authorization process threw unhandled exception failure logs.";
+        els.authError.textContent = err.message || "Authentication layer communication breakdown.";
         els.authError.classList.remove("hidden");
       }
     }
 
     function cleanupListeners() {
-      for (const unsub of state.unsubs) { try { unsub(); } catch {} }
+      for (const unsub of state.unsubs) {
+        try { unsub(); } catch {}
+      }
       state.unsubs = [];
     }
 
@@ -1205,36 +1326,22 @@
       });
       document.getElementById("exportBtn").addEventListener("click", exportUsers);
       document.getElementById("logoutBtn").addEventListener("click", async () => {
-        await signOut(auth); showToast("Node Terminated", "Security connection severed correctly", "info");
+        await signOut(auth);
+        showToast("Session Closed", "Security container discarded safely", "info");
       });
 
-      // Modular Popup Modals Trigger Architecture Wiring Maps
-      document.getElementById("triggerRoleModal").addEventListener("click", () => state.selectedUid && openModal(els.roleModal, els.roleInner));
-      document.getElementById("triggerProfileModal").addEventListener("click", () => state.selectedUid && openModal(els.profileModal, els.profileInner));
-      document.getElementById("triggerStatusModal").addEventListener("click", () => state.selectedUid && openModal(els.statusModal, els.statusInner));
-      document.getElementById("triggerReasonModal").addEventListener("click", () => state.selectedUid && openModal(els.reasonModal, els.reasonInner));
-
-      // Close / Abort Execution Button Interface Hooks
-      document.getElementById("cancelRoleBtn").addEventListener("click", () => closeModal(els.roleModal, els.roleInner));
-      document.getElementById("cancelProfileBtn").addEventListener("click", () => closeModal(els.profileModal, els.profileInner));
-      document.getElementById("cancelStatusBtn").addEventListener("click", () => closeModal(els.statusModal, els.statusInner));
-      document.getElementById("cancelReasonBtn").addEventListener("click", () => closeModal(els.reasonModal, els.reasonInner));
       document.getElementById("closeBroadcastBtn").addEventListener("click", () => closeModal(els.broadcastModal, els.broadcastInner));
       document.getElementById("cancelBroadcastBtn").addEventListener("click", () => closeModal(els.broadcastModal, els.broadcastInner));
-
-      // Actions Commit Execution Processing Bindings
       document.getElementById("sendBroadcastBtn").addEventListener("click", sendBroadcast);
-      document.getElementById("saveRoleBtn").addEventListener("click", promptSaveRole);
-      document.getElementById("saveProfileBtn").addEventListener("click", promptSaveProfile);
-      document.getElementById("saveStatusBtn").addEventListener("click", promptSaveStatus);
-      document.getElementById("saveBanReasonRemoteBtn").addEventListener("click", promptSaveBanReason);
-      document.getElementById("resetPfpBtn").addEventListener("click", promptResetPfp);
-      document.getElementById("deleteProfileBtn").addEventListener("click", promptDeleteProfile);
 
-      document.getElementById("clearLogsBtn").addEventListener("click", () => { els.auditLogList.innerHTML = ""; });
+      document.getElementById("clearLogsBtn").addEventListener("click", () => {
+        els.auditLogList.innerHTML = "";
+      });
+
       document.getElementById("copyUidBtn").addEventListener("click", async () => {
-        if (!state.selectedUid) return showToast("Null Context", "Select data row structure alignment target tracking profiles", "warn");
-        await navigator.clipboard.writeText(state.selectedUid); showToast("Identity Copied", state.selectedUid, "success");
+        if (!state.selectedUid) return showToast("Target Missing", "Select directory element first.", "warn");
+        await navigator.clipboard.writeText(state.selectedUid);
+        showToast("Clipboard Modified", "UID data tracking sequence copied", "success");
       });
 
       document.getElementById("banBtn").addEventListener("click", () => state.selectedDoc && promptBan(state.selectedDoc));
@@ -1243,49 +1350,64 @@
       document.getElementById("unmuteBtn").addEventListener("click", () => state.selectedDoc && promptUnmute(state.selectedDoc));
       document.getElementById("verifyBtn").addEventListener("click", () => state.selectedDoc && promptVerify(state.selectedDoc));
       document.getElementById("unverifyBtn").addEventListener("click", () => state.selectedDoc && promptUnverify(state.selectedDoc));
+      document.getElementById("saveRoleBtn").addEventListener("click", promptSaveRole);
+      document.getElementById("saveProfileBtn").addEventListener("click", promptSaveProfile);
+      document.getElementById("saveStatusBtn").addEventListener("click", promptSaveStatus);
+      document.getElementById("saveBanReasonRemoteBtn").addEventListener("click", promptSaveBanReason);
+      document.getElementById("resetPfpBtn").addEventListener("click", promptResetPfp);
+      document.getElementById("deleteProfileBtn").addEventListener("click", promptDeleteProfile);
 
       document.getElementById("saveBanReasonBtn").addEventListener("click", () => {
         localStorage.setItem("flash_admin_default_ban_reason", els.defaultBanReason.value.trim());
-        showToast("Storage Mapping Added", "Internal memory mapping array caching rules updated successfully", "success");
+        showToast("Preferences Written", "Default suspension reason written into device container", "success");
       });
       document.getElementById("saveNoteBtn").addEventListener("click", () => {
         localStorage.setItem("flash_admin_note", els.adminNote.value.trim());
-        showToast("Storage Mapping Added", "Internal scratchpad text elements updated in local cache memory storage systems", "success");
+        showToast("Preferences Written", "Isolated workspace annotation written into device container", "success");
       });
 
       els.loginForm.addEventListener("submit", e => {
-        e.preventDefault(); login(els.emailInput.value.trim(), els.passwordInput.value);
+        e.preventDefault();
+        login(els.emailInput.value.trim(), els.passwordInput.value);
       });
 
       window.addEventListener("online", () => {
-        els.connectionChip.textContent = "Connected";
-        els.connectionChip.className = "chip text-emerald-400 border-emerald-500/20 bg-emerald-500/10";
+        els.connectionChip.textContent = "Network Stable";
+        els.connectionChip.className = "chip text-emerald-400 border-emerald-500/20 bg-emerald-500/5 text-[10px]";
       });
       window.addEventListener("offline", () => {
-        els.connectionChip.textContent = "Offline Network Error";
-        els.connectionChip.className = "chip text-rose-400 border-rose-500/20 bg-rose-500/10";
+        els.connectionChip.textContent = "Network Dropped";
+        els.connectionChip.className = "chip text-rose-400 border-rose-500/20 bg-rose-500/5 text-[10px]";
       });
 
-      // Clicking modal backdrops aborts operations cleanly
-      document.getElementById("broadcastModal").addEventListener("click", e => { if (e.target === els.broadcastModal) closeModal(els.broadcastModal, els.broadcastInner); });
-      document.getElementById("confirmModal").addEventListener("click", e => { if (e.target === els.confirmModal) closeModal(els.confirmModal, els.confirmInner); });
-      document.getElementById("roleModal").addEventListener("click", e => { if (e.target === els.roleModal) closeModal(els.roleModal, els.roleInner); });
-      document.getElementById("profileModal").addEventListener("click", e => { if (e.target === els.profileModal) closeModal(els.profileModal, els.profileInner); });
-      document.getElementById("statusModal").addEventListener("click", e => { if (e.target === els.statusModal) closeModal(els.statusModal, els.statusInner); });
-      document.getElementById("reasonModal").addEventListener("click", e => { if (e.target === els.reasonModal) closeModal(els.reasonModal, els.reasonInner); });
+      document.getElementById("broadcastModal").addEventListener("click", e => {
+        if (e.target === els.broadcastModal) closeModal(els.broadcastModal, els.broadcastInner);
+      });
+      document.getElementById("confirmModal").addEventListener("click", e => {
+        if (e.target === els.confirmModal) closeModal(els.confirmModal, els.confirmInner);
+      });
     }
 
     async function boot(user) {
       cleanupListeners();
-      state.users = []; state.usersById = new Map(); state.auditLogs = [];
-      state.loadingUsers = true; state.selectedUid = null; state.selectedDoc = null;
+      state.users = [];
+      state.usersById = new Map();
+      state.auditLogs = [];
+      state.loadingUsers = true;
+      state.selectedUid = null;
+      state.selectedDoc = null;
 
-      if (!user) { setView("auth"); return; }
+      if (!user) {
+        setView("auth");
+        return;
+      }
+
       state.currentUser = user;
       const allowed = await isAllowed(user);
       if (!allowed) {
-        await signOut(auth); setView("auth");
-        els.authError.textContent = "Access Denied. Operational credentials validation step failed constraints test checklists.";
+        await signOut(auth);
+        setView("auth");
+        els.authError.textContent = "Security Clearance Exception: Access denied. Privileged authorization parameters unverified.";
         els.authError.classList.remove("hidden");
         return;
       }
@@ -1299,13 +1421,14 @@
       updateDashboard();
       renderUsers();
       renderLogs();
-      showToast("Access Active", "Secure liquid glass workspace environment node is operational", "success");
+      showToast("Workspace Loaded", "System interface diagnostics running nominal operations", "success");
     }
 
     wireUI();
     renderSelection(null);
     renderRoleTiles();
     renderLogs();
+
     onAuthStateChanged(auth, boot);
   </script>
 </body>
