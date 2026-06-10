@@ -64,6 +64,35 @@
 </head>
 <body class="h-full overflow-x-hidden antialiased bg-slate-950">
 
+    <!-- Ban overlay -->
+<div id="banOverlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4">
+  <div class="w-full max-w-lg rounded-[2rem] border border-rose-500/20 bg-slate-900/90 shadow-2xl p-6 md:p-8">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="h-12 w-12 rounded-2xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center text-2xl">
+        ⛔
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white">You are banned from Flash Games</h2>
+        <p class="text-sm text-slate-400">Access to gameplay has been disabled.</p>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-white/10 bg-black/30 p-4 mb-5">
+      <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 mb-2">Reason</div>
+      <p id="banReasonText" class="text-sm text-slate-200 leading-relaxed">No reason provided.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <button id="banRetryBtn" class="px-4 py-2 rounded-2xl bg-white/10 border border-white/10 text-white text-sm font-semibold hover:bg-white/15 transition">
+        Retry
+      </button>
+      <button id="banLogoutBtn" class="px-4 py-2 rounded-2xl bg-rose-500/15 border border-rose-500/20 text-rose-300 text-sm font-semibold hover:bg-rose-500/25 transition">
+        Sign out
+      </button>
+    </div>
+  </div>
+</div>
+
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div class="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[120px]"></div>
         <div class="absolute top-[30%] -right-[10%] w-[45vw] h-[45vw] rounded-full bg-purple-900/10 blur-[100px]"></div>
@@ -94,10 +123,6 @@
                             <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Account first. Games second.</h2>
                             <p id="authGateStatus" class="text-sm text-slate-400 mt-2">Create an account or log in to continue.</p>
                         </div>
-                    </div>
-                    <div class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-400">
-                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-indigo-400 pulse-dot"></span>
-                        Liquid glass account access
                     </div>
                 </div>
 
@@ -143,12 +168,16 @@
                             <div>Flash Games and Mobify share the same users collection, so your profile picture, username, and bio stay in sync.</div>
                         </div>
                         <div class="p-4 rounded-2xl bg-black/20 border border-white/8">
-                            <div class="font-semibold text-white mb-1">Liquid glass profile shell</div>
+                            <div class="font-semibold text-white mb-1">Account Accessibility</div>
                             <div>Your account chip lives in the header. Tap it to open your profile and update your picture, username, and bio.</div>
                         </div>
                         <div class="p-4 rounded-2xl bg-black/20 border border-white/8">
                             <div class="font-semibold text-white mb-1">CLI support too</div>
-                            <div>Use flash account, flash login, flash signup, flash profile, and flash logout from the terminal.</div>
+                            <div>Built in Flash-CLI for all your needs.</div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-black/20 border border-white/8">
+                            <div class="font-semibold text-white mb-1">Anytime Gaming</div>
+                            <div>Thousands of on-demand games & many downloadables.</div>
                         </div>
                     </div>
                 </div>
@@ -433,6 +462,121 @@
 
 <script>
 console.log("index core script running")
+
+// --- BAN CHECK SYSTEM ---
+// Assumes you already initialized Firebase like:
+// const app = initializeApp(firebaseConfig);
+// const auth = getAuth(app);
+// const db = getFirestore(app);
+
+let CURRENT_USER_DOC = null;
+let BAN_CHECK_IN_PROGRESS = false;
+
+function showBanOverlay(reason) {
+  const overlay = document.getElementById("banOverlay");
+  const reasonText = document.getElementById("banReasonText");
+  if (!overlay || !reasonText) return;
+
+  reasonText.textContent = reason || "No reason provided.";
+  overlay.classList.remove("hidden");
+
+  // Block the game UI if it is open
+  const portal = document.getElementById("gamePortal");
+  if (portal) {
+    portal.classList.add("hidden");
+    portal.classList.remove("grid");
+    portal.classList.remove("opacity-0");
+  }
+
+  // Optional: disable the rest of the app
+  const app = document.getElementById("app");
+  if (app) app.style.filter = "blur(2px)";
+}
+
+function hideBanOverlay() {
+  const overlay = document.getElementById("banOverlay");
+  const app = document.getElementById("app");
+  if (overlay) overlay.classList.add("hidden");
+  if (app) app.style.filter = "";
+}
+
+async function checkBanStatus(user) {
+  if (!user || BAN_CHECK_IN_PROGRESS) return false;
+  BAN_CHECK_IN_PROGRESS = true;
+
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      CURRENT_USER_DOC = null;
+      hideBanOverlay();
+      return false;
+    }
+
+    const data = userSnap.data() || {};
+    CURRENT_USER_DOC = data;
+
+    const isBanned = data.banned === true;
+    const banReason = data.banReason || data.ban_reason || "You have been banned from Flash Games.";
+
+    if (isBanned) {
+      showBanOverlay(banReason);
+      return true;
+    } else {
+      hideBanOverlay();
+      return false;
+    }
+  } catch (err) {
+    console.error("Ban check failed:", err);
+    // Safer default is to not hard-block on a transient Firestore failure.
+    // If you want to fail closed instead, change this to true.
+    return false;
+  } finally {
+    BAN_CHECK_IN_PROGRESS = false;
+  }
+}
+
+async function enforceBanBeforeGameLaunch() {
+  const user = auth.currentUser;
+  if (!user) return true;
+
+  const banned = await checkBanStatus(user);
+  return !banned;
+}
+
+// Hook into auth state
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    CURRENT_USER_DOC = null;
+    hideBanOverlay();
+    return;
+  }
+
+  await checkBanStatus(user);
+});
+
+// Block launching games if banned
+const originalExecuteGameLauncher = window.executeGameLauncher;
+window.executeGameLauncher = async function(game) {
+  const ok = await enforceBanBeforeGameLaunch();
+  if (!ok) return;
+
+  return originalExecuteGameLauncher.call(this, game);
+};
+
+// Buttons on the ban overlay
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("banRetryBtn")?.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (user) await checkBanStatus(user);
+  });
+
+  document.getElementById("banLogoutBtn")?.addEventListener("click", async () => {
+    await signOut(auth);
+    location.reload();
+  });
+});
 
 // ==========================================================
 // INTERACTIVE SYSTEM CORE LOGGING & TERMINAL ENGINE (ALT+C)
