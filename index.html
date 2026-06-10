@@ -1476,11 +1476,14 @@ async function commitInstallGame() {
 }
 
 function resetInstallModal() {
-    pendingInstallData = null;
-    document.getElementById('installUrlInput').value = '';
-    document.getElementById('installStep1').classList.remove('hidden');
-    document.getElementById('installStep2').classList.add('hidden');
-    document.getElementById('installStep2').classList.remove('flex');
+    const urlInput = document.getElementById("installUrlInput");
+
+    if (urlInput) {
+        urlInput.value = "";
+    }
+
+    document.getElementById("installStep1")?.classList.remove("hidden");
+    document.getElementById("installStep2")?.classList.add("hidden");
 }
 
 function openInstallModal() {
@@ -2762,7 +2765,7 @@ async function checkBanStatus(user) {
   try {
       const userSnap = await db.collection("users").doc(user.uid).get();
 
-    if (!userSnap.exists()) {
+    if (!userSnap.exists) {
       CURRENT_USER_DOC = null;
       hideBanOverlay();
       return false;
