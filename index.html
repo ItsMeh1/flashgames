@@ -13,6 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+    
     <script>
         window.__flashFirebase = null;
         (function initFlashFirebase() {
@@ -264,33 +265,154 @@
             <div id="collectionsContainer" class="space-y-10"></div>
         </main>
     </div>
-
-    <div id="installModal" class="hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-        <div class="glass-panel-dark max-w-md w-full rounded-3xl p-6 md:p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="installModalInner">
-            <button onclick="closeInstallModal()" class="absolute top-5 right-5 btn-glass w-8 h-8 rounded-full flex items-center justify-center text-slate-400">✕</button>
-            <h2 class="text-2xl font-bold text-white mb-1">Install Custom Game</h2>
-            <p class="text-sm text-slate-400 mb-6">Enter the URL of any compatible HTML game to download and save it directly to your device.</p>
-            
-            <div id="installStep1">
-                <input id="installUrlInput" type="url" placeholder="https://example.com/game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-indigo-500 focus:bg-white/5 transition-all mb-4 shadow-inner">
-                <button id="installAnalyzeBtn" onclick="analyzeInstallUrl()" class="w-full py-3.5 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all">Analyze Payload</button>
-                <p class="text-sm text-slate-400 mb-6"><code>You may still install games via the Flash CLI for more advanced settings.</code></p>
-            </div>
-
-            <div id="installStep2" class="hidden flex-col items-center text-center">
-                <div class="w-20 h-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center mb-4 overflow-hidden shadow-inner p-2">
-                    <img id="installPreviewIcon" src="" class="w-full h-full object-contain rounded-xl" onerror="this.src='offline/logo.png'">
-                </div>
-                <h3 id="installPreviewTitle" class="text-xl text-white font-bold mb-1">Game Title</h3>
-                <p id="installPreviewSize" class="text-xs text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full mb-6 font-mono font-medium">Size: -- KB</p>
-                
-                <div class="flex gap-3 w-full">
-                    <button onclick="resetInstallModal()" class="flex-1 py-3.5 btn-glass rounded-2xl text-white font-semibold">Cancel</button>
-                    <button id="installConfirmBtn" onclick="commitInstallGame()" class="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.3)] transition-all">Install Offline</button>
-                </div>
-            </div>
+    <div id="installModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-xl flex items-center justify-center p-3 md:p-4 transition-opacity duration-300 opacity-0">
+  <div id="installModalInner" class="glass-panel-dark w-full max-w-6xl h-[88vh] rounded-[2rem] shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300 border border-white/10 flex flex-col">
+    
+    <!-- Top bar -->
+    <div class="px-4 md:px-5 py-4 border-b border-white/10 bg-white/[0.03] flex items-center justify-between gap-3 shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden">
+          <span class="text-white font-black text-lg">+</span>
         </div>
+        <div class="min-w-0">
+          <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight truncate">Flash Store</h2>
+          <p class="text-xs md:text-sm text-slate-400 truncate">Browse, search, and install custom games</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="openStoreImportTab()" class="btn-glass px-3 md:px-4 py-2 rounded-2xl text-xs md:text-sm text-white font-semibold">
+          Import Link
+        </button>
+        <button onclick="closeInstallModal()" class="btn-glass w-9 h-9 rounded-2xl flex items-center justify-center text-slate-300">
+          ✕
+        </button>
+      </div>
     </div>
+
+    <!-- Tabs -->
+    <div class="px-3 md:px-5 pt-4 shrink-0">
+      <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+        <button data-store-tab="featured" onclick="switchStoreTab('featured')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/10 text-white whitespace-nowrap">
+          Featured
+        </button>
+        <button data-store-tab="all" onclick="switchStoreTab('all')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-black/20 text-slate-300 whitespace-nowrap">
+          All Games
+        </button>
+        <button data-store-tab="installed" onclick="switchStoreTab('installed')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-black/20 text-slate-300 whitespace-nowrap">
+          Installed
+        </button>
+        <button data-store-tab="import" onclick="switchStoreTab('import')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-black/20 text-slate-300 whitespace-nowrap">
+          Import URL
+        </button>
+      </div>
+    </div>
+
+    <!-- Search / filters -->
+    <div class="px-3 md:px-5 pt-2 pb-3 shrink-0">
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-2">
+        <div class="relative">
+          <input id="storeSearchInput" type="text" placeholder="Search store..." oninput="renderStore()" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 pl-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.05] transition-all shadow-inner">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">⌕</span>
+        </div>
+
+        <select id="storeCategoryFilter" onchange="renderStore()" class="bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
+          <option value="all" class="bg-slate-900">All Categories</option>
+          <option value="arcade" class="bg-slate-900">Arcade</option>
+          <option value="puzzle" class="bg-slate-900">Puzzle</option>
+          <option value="action" class="bg-slate-900">Action</option>
+          <option value="platformer" class="bg-slate-900">Platformer</option>
+          <option value="classic" class="bg-slate-900">Classic</option>
+        </select>
+
+        <select id="storeSortOrder" onchange="renderStore()" class="bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
+          <option value="featured" class="bg-slate-900">Featured</option>
+          <option value="az" class="bg-slate-900">Name A-Z</option>
+          <option value="za" class="bg-slate-900">Name Z-A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[1.6fr_0.9fr] gap-0 border-t border-white/10">
+      
+      <!-- Left side: store feed -->
+      <div class="min-h-0 flex flex-col border-r border-white/10">
+        <div id="storeContent" class="min-h-0 flex-1 overflow-y-auto p-3 md:p-5">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Right side: detail / import panel -->
+      <div class="min-h-0 flex flex-col bg-black/20">
+        <div class="p-3 md:p-5 border-b border-white/10 shrink-0">
+          <h3 class="text-sm font-bold text-white tracking-tight">Selected Game</h3>
+          <p class="text-xs text-slate-400">Quick details and install actions</p>
+        </div>
+
+        <div id="storeDetailPanel" class="min-h-0 flex-1 overflow-y-auto p-3 md:p-5">
+          <div class="glass-card rounded-3xl p-4 md:p-5">
+            <div class="h-20 w-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center overflow-hidden mb-4">
+              <img id="storeDetailIcon" src="offline/logo.png" class="h-full w-full object-contain p-2" alt="Icon">
+            </div>
+            <h4 id="storeDetailTitle" class="text-lg font-bold text-white">Choose a game</h4>
+            <p id="storeDetailDesc" class="text-sm text-slate-400 mt-1 leading-relaxed">Pick a title from the store to see more info, preview links, and install options.</p>
+
+            <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+              <div class="rounded-2xl border border-white/10 bg-black/25 p-3">
+                <div class="text-slate-500 uppercase tracking-wider text-[10px]">Source</div>
+                <div id="storeDetailSource" class="text-slate-200 mt-1 font-medium">—</div>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-black/25 p-3">
+                <div class="text-slate-500 uppercase tracking-wider text-[10px]">Size</div>
+                <div id="storeDetailSize" class="text-slate-200 mt-1 font-medium">—</div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+              <button id="storeDetailInstallBtn" onclick="installSelectedStoreGame()" class="flex-1 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold transition-all">
+                Install
+              </button>
+              <button id="storeDetailCopyBtn" onclick="copySelectedStoreLink()" class="px-4 py-3 rounded-2xl btn-glass text-white text-sm font-semibold">
+                Copy Link
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-4 glass-card rounded-3xl p-4 md:p-5">
+            <h4 class="text-sm font-bold text-white mb-3">Add games to the store easily</h4>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Put all store items in one JSON file or one JavaScript array. Then you only edit one place when you want to add more games.
+            </p>
+            <div class="mt-3 rounded-2xl bg-black/35 border border-white/10 p-3 overflow-auto">
+              <code class="text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap" id="storeDataHint"></code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import tab -->
+        <div id="storeImportPanel" class="hidden min-h-0 flex-1 overflow-y-auto p-3 md:p-5">
+          <div class="glass-card rounded-3xl p-4 md:p-5">
+            <h4 class="text-lg font-bold text-white">Import a game</h4>
+            <p class="text-sm text-slate-400 mt-1">Paste a direct HTML game URL, or add one item to your store source list.</p>
+
+            <div class="mt-4 space-y-3">
+              <input id="storeImportUrl" type="url" placeholder="https://example.com/game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.05] transition-all">
+              <button onclick="importGameFromStoreUrl()" class="w-full py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold transition-all">
+                Analyze and Add to Store
+              </button>
+            </div>
+
+            <div class="mt-4 rounded-2xl bg-black/35 border border-white/10 p-4">
+              <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Store source example</div>
+              <pre class="text-[11px] text-slate-300 overflow-auto whitespace-pre-wrap" id="storeJsonExample"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
     <div id="profileModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-xl flex items-center justify-center p-4 md:p-6 transition-opacity opacity-0 duration-300">
         <div class="glass-panel-dark max-w-2xl w-full rounded-3xl shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300" id="profileModalInner">
@@ -462,6 +584,8 @@
 
 <script>
 console.log("index core script running")
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 // ==========================================================
 // INTERACTIVE SYSTEM CORE LOGGING & TERMINAL ENGINE (ALT+C)
 // ==========================================================
@@ -1774,12 +1898,31 @@ document.getElementById('searchInput').addEventListener('input', (e)=>{STATE.act
 document.getElementById('zoneFilter').addEventListener('change', (e)=>{STATE.activeFilters.zone=e.target.value; processAndRenderView();}); 
 document.getElementById('sortOrder').addEventListener('change', (e)=>{STATE.activeFilters.sort=e.target.value; processAndRenderView();});
 
-// --- BAN CHECK SYSTEM ---
-// Assumes you already initialized Firebase like:
-// const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-// const db = getFirestore(app);
+const STORE_BASE_URL =
+  "https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/";
 
+function repoGame(name, options = {}) {
+  return {
+    id: name.toLowerCase().replace(/\s+/g, "-"),
+    title: options.title || name,
+    url: `${STORE_BASE_URL}${encodeURIComponent(name)}.html`,
+    image: options.image || "offline/logo.png",
+    category: options.category || "classic",
+    featured: options.featured || false,
+    source: "Offline Games Pack"
+  };
+}
+
+const STORE_GAMES = [
+  repoGame("1.12", {
+    title: "Eaglercraft 1.12",
+    category: "sandbox",
+    featured: true
+  }),
+];
+
+
+// banning system
 let CURRENT_USER_DOC = null;
 let BAN_CHECK_IN_PROGRESS = false;
 
@@ -1791,7 +1934,6 @@ function showBanOverlay(reason) {
   reasonText.textContent = reason || "No reason provided.";
   overlay.classList.remove("hidden");
 
-  // Block the game UI if it is open
   const portal = document.getElementById("gamePortal");
   if (portal) {
     portal.classList.add("hidden");
@@ -1799,7 +1941,6 @@ function showBanOverlay(reason) {
     portal.classList.remove("opacity-0");
   }
 
-  // Optional: disable the rest of the app
   const app = document.getElementById("app");
   if (app) app.style.filter = "blur(2px)";
 }
@@ -1816,8 +1957,7 @@ async function checkBanStatus(user) {
   BAN_CHECK_IN_PROGRESS = true;
 
   try {
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+      const userSnap = await db.collection("users").doc(user.uid).get();
 
     if (!userSnap.exists()) {
       CURRENT_USER_DOC = null;
@@ -1834,14 +1974,12 @@ async function checkBanStatus(user) {
     if (isBanned) {
       showBanOverlay(banReason);
       return true;
-    } else {
-      hideBanOverlay();
-      return false;
     }
+
+    hideBanOverlay();
+    return false;
   } catch (err) {
     console.error("Ban check failed:", err);
-    // Safer default is to not hard-block on a transient Firestore failure.
-    // If you want to fail closed instead, change this to true.
     return false;
   } finally {
     BAN_CHECK_IN_PROGRESS = false;
@@ -1856,8 +1994,7 @@ async function enforceBanBeforeGameLaunch() {
   return !banned;
 }
 
-// Hook into auth state
-onAuthStateChanged(auth, async (user) => {
+auth.onAuthStateChanged(async (user) => {
   if (!user) {
     CURRENT_USER_DOC = null;
     hideBanOverlay();
@@ -1867,16 +2004,13 @@ onAuthStateChanged(auth, async (user) => {
   await checkBanStatus(user);
 });
 
-// Block launching games if banned
 const originalExecuteGameLauncher = window.executeGameLauncher;
 window.executeGameLauncher = async function(game) {
   const ok = await enforceBanBeforeGameLaunch();
   if (!ok) return;
-
   return originalExecuteGameLauncher.call(this, game);
 };
 
-// Buttons on the ban overlay
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("banRetryBtn")?.addEventListener("click", async () => {
     const user = auth.currentUser;
@@ -1884,7 +2018,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("banLogoutBtn")?.addEventListener("click", async () => {
-    await signOut(auth);
+    await auth.signOut();
     location.reload();
   });
 });
