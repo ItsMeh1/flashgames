@@ -734,7 +734,8 @@ let FLASH_PROFILE_AVATAR_FILE = null;
 let FLASH_PROFILE_AVATAR_DATA = '';
 let FLASH_AUTH_GATED = true;
 let FLASH_LIBRARY_READY = false;
-
+const auth = FLASH_AUTH; 
+const db = FLASH_DB;
 function safeText(v, fallback = '') {
     return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
 }
@@ -2796,7 +2797,7 @@ async function enforceBanBeforeGameLaunch() {
   return !banned;
 }
 
-auth.onAuthStateChanged(async (user) => {
+FLASH_AUTH.onAuthStateChanged(async (user) => {
   if (!user) {
     CURRENT_USER_DOC = null;
     hideBanOverlay();
