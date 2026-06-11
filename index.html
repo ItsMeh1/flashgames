@@ -2728,36 +2728,25 @@ const STORE_GAMES = [
 ];
 
 async function importGameFromStoreUrl(url) {
+    const input = document.getElementById("storeImportUrl");
+    if (input) input.value = url;
+
     try {
-        const response = await fetch(url, {
-            method: "HEAD"
-        });
+        const response = await fetch(url, { cache: "no-store" });
 
         if (!response.ok) {
-            if (response.status === 404) {
-                alert("❌ Game not found (404).\n\nThis game does not exist in the repository.");
-            } else {
-                alert(`❌ Failed to access game.\n\nHTTP ${response.status}`);
-            }
-            return;
-        }
-
-        const input = document.getElementById("storeImportUrl");
-
-        if (input) {
-            input.value = url;
+            throw new Error(
+                response.status === 404
+                    ? "404 Not Found"
+                    : `HTTP ${response.status}`
+            );
         }
 
         CURRENT_INSTALL_URL = url;
-
         await analyzeInstallUrl();
-
     } catch (err) {
         console.error("Store import failed:", err);
-
-        alert(
-            "❌ Unable to reach the repository.\n\nCheck your internet connection and try again."
-        );
+        alert(`❌ Could not load game.\n\n${err.message}`);
     }
 }
 
