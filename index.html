@@ -1401,15 +1401,9 @@ document.addEventListener('keydown', (e) => {
 let pendingInstallData = null;
 
 async function analyzeInstallUrl() {
-    const targetUrl =
-    window.CURRENT_INSTALL_URL ||
-    document.getElementById('storeImportUrl')?.value?.trim() ||
-    document.getElementById('installUrlInput')?.value?.trim();
-
-if (!targetUrl) {
-    alert("No URL specified.");
-    return;
-}
+    const urlInput = document.getElementById('installUrlInput');
+    const targetUrl = urlInput.value.trim();
+    if (!targetUrl) return;
     
     const btn = document.getElementById('installAnalyzeBtn');
     btn.textContent = 'Analyzing...'; btn.disabled = true;
@@ -2734,16 +2728,19 @@ const STORE_GAMES = [
 ];
 
 async function importGameFromStoreUrl(url) {
-    if (!url) {
-        alert("Invalid game URL.");
+    const storeInput = document.getElementById("storeImportUrl");
+
+    const finalUrl = url || storeInput?.value;
+
+    if (!finalUrl) {
+        alert("No URL supplied.");
         return;
     }
 
-    window.CURRENT_INSTALL_URL = url;
+    const oldInput = document.getElementById("installUrlInput");
 
-    const storeInput = document.getElementById("storeImportUrl");
-    if (storeInput) {
-        storeInput.value = url;
+    if (oldInput) {
+        oldInput.value = finalUrl;
     }
 
     await analyzeInstallUrl();
