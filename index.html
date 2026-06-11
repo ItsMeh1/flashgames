@@ -2728,27 +2728,22 @@ const STORE_GAMES = [
 ];
 
 async function importGameFromStoreUrl(url) {
-    console.log("Installing URL:", url);
-    const input = document.getElementById("storeImportUrl");
-    if (input) input.value = url;
+    const storeInput = document.getElementById("storeImportUrl");
 
-    try {
-        const response = await fetch(url, { cache: "no-store" });
+    const finalUrl = url || storeInput?.value;
 
-        if (!response.ok) {
-            throw new Error(
-                response.status === 404
-                    ? "404 Not Found"
-                    : `HTTP ${response.status}`
-            );
-        }
-
-        CURRENT_INSTALL_URL = url;
-        await analyzeInstallUrl();
-    } catch (err) {
-        console.error("Store import failed:", err);
-        alert(`❌ Could not load game.\n\n${err.message}`);
+    if (!finalUrl) {
+        alert("No URL supplied.");
+        return;
     }
+
+    const oldInput = document.getElementById("installUrlInput");
+
+    if (oldInput) {
+        oldInput.value = finalUrl;
+    }
+
+    await analyzeInstallUrl();
 }
 
 let STORE_ACTIVE_TAB = "featured";
