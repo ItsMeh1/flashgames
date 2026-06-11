@@ -2727,6 +2727,18 @@ const STORE_GAMES = [
   })
 ];
 
+async function importGameFromStoreUrl(url) {
+    const input = document.getElementById("storeImportUrl");
+
+    if (input) {
+        input.value = url;
+    }
+
+    CURRENT_INSTALL_URL = url;
+
+    await analyzeInstallUrl();
+}
+
 let STORE_ACTIVE_TAB = "featured";
 
 function switchStoreTab(tab) {
