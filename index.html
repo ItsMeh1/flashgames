@@ -2464,824 +2464,212 @@ function repoGame(name, options = {}) {
   return {
     id: name.toLowerCase().replace(/\s+/g, "-"),
     title: options.title || name,
-    url: `${STORE_BASE_URL}${encodeURIComponent(name)}.html`,
+    url: `${STORE_BASE_URL}${encodeURIComponent(name)}`,
     image: options.image || "offline/logo.png",
     category: options.category || "classic",
     featured: options.featured || false,
-    source: "Offline Games Pack"
+    source: "Unknown"
   };
 }
 
 const STORE_GAMES = [
-  // ==========================================
-  // SANDBOX & SIMULATION
-  // ==========================================
-  repoGame("1.12", {
-    title: "Eaglercraft 1.12",
-    category: "sandbox",
-    featured: true
-  }),
-  repoGame("1.5.2", {
-    title: "Eaglercraft 1.5.2",
-    category: "sandbox",
-    featured: false
-  }),
-  repoGame("1.8.8", {
-    title: "Eaglercraft 1.8.8",
-    category: "sandbox",
-    featured: false
-  }),
-  repoGame("precision-client", {
-    title: "Precision Client (Minecraft)",
-    category: "sandbox",
-    featured: false
-  }),
-  repoGame("paper-minecraft", {
-    title: "Paper Minecraft (2D Clone)",
-    category: "sandbox",
-    featured: true
-  }),
-  repoGame("minecraft-classic", {
-    title: "Minecraft Classic 0.30",
-    category: "sandbox",
-    featured: false
-  }),
-  repoGame("worldbox", {
-    title: "WorldBox Sandbox Simulation",
-    category: "sandbox",
-    featured: false
-  }),
-  repoGame("resandbox", {
-    title: "ReSandbox Physics",
-    category: "sandbox",
-    featured: false
-  }),
+  // --- SANDBOX / MINECRAFT ---
+  repoGame("1.12.html", { title: "Eaglercraft 1.12", category: "Sandbox", featured: true }),
+  repoGame("1.5.html", { title: "Eaglercraft 1.5", category: "Sandbox", featured: false }),
+  repoGame("1.8.html", { title: "Eaglercraft 1.8", category: "Sandbox", featured: true }),
+  repoGame("Alpha_1.2.6.html", { title: "Minecraft Alpha 1.2.6", category: "Sandbox", featured: false }),
+  repoGame("Beta_1.3.html", { title: "Minecraft Beta 1.3", category: "Sandbox", featured: false }),
+  repoGame("Indev.html", { title: "Minecraft Indev", category: "Sandbox", featured: false }),
+  repoGame("melonplayground.html", { title: "Melon Playground", category: "Sandbox", featured: false }),
 
-  // ==========================================
-  // ARCADE & ENDLESS RUNNERS
-  // ==========================================
-  repoGame("slope", {
-    title: "Slope",
-    category: "arcade",
-    featured: true
-  }),
-  repoGame("slope-2", {
-    title: "Slope 2",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("subwaysurfers", {
-    title: "Subway Surfers",
-    category: "arcade",
-    featured: true
-  }),
-  repoGame("tunnelrush", {
-    title: "Tunnel Rush",
-    category: "arcade",
-    featured: true
-  }),
-  repoGame("tunnelrush2", {
-    title: "Tunnel Rush 2",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("crossyroad", {
-    title: "Crossy Road",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("doodlejump", {
-    title: "Doodle Jump",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("run2", {
-    title: "Run 2",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("run3", {
-    title: "Run 3",
-    category: "arcade",
-    featured: true
-  }),
-  repoGame("cubefield", {
-    title: "Cubefield",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("jetpack-joyride", {
-    title: "Jetpack Joyride",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("temple-run-2", {
-    title: "Temple Run 2",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("flappybird", {
-    title: "Flappy Bird",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("timberman", {
-    title: "Timberman",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("pacman", {
-    title: "Google Pac-Man Arcade",
-    category: "arcade",
-    featured: false
-  }),
-  repoGame("snake", {
-    title: "Google Snake Game",
-    category: "arcade",
-    featured: false
-  }),
+  // --- ARCADE & CASUAL ---
+  repoGame("12minibattles.html", { title: "12 Mini Battles", category: "Arcade", featured: false }),
+  repoGame("agariolite.html", { title: "Agar.io Lite", category: "Arcade", featured: true }),
+  repoGame("badicecream.html", { title: "Bad Ice-Cream", category: "Arcade", featured: false }),
+  repoGame("badicecream2.html", { title: "Bad Ice-Cream 2", category: "Arcade", featured: false }),
+  repoGame("badicecream3.html", { title: "Bad Ice-Cream 3", category: "Arcade", featured: false }),
+  repoGame("bitplanes.html", { title: "Bit Planes", category: "Arcade", featured: false }),
+  repoGame("blockysnakes.html", { title: "Blocky Snakes", category: "Arcade", featured: false }),
+  repoGame("blumgirocket.html", { title: "Blumgi Rocket", category: "Arcade", featured: false }),
+  repoGame("capybaraclicker.html", { title: "Capybara Clicker", category: "Casual", featured: false }),
+  repoGame("cleanupio.html", { title: "Cleanup.io", category: "Arcade", featured: false }),
+  repoGame("cookieclicker.htm", { title: "Cookie Clicker", category: "Casual", featured: true }),
+  repoGame("crazycattle3D.html", { title: "Crazy Cattle 3D", category: "Arcade", featured: false }),
+  repoGame("crazycrashlanding.html", { title: "Crazy Crash Landing", category: "Arcade", featured: false }),
+  repoGame("crossyroad.html", { title: "Crossy Road", category: "Arcade", featured: true }),
+  repoGame("doodlejump.html", { title: "Doodle Jump", category: "Arcade", featured: true }),
+  repoGame("ducklingsio.html", { title: "Ducklings.io", category: "Arcade", featured: false }),
+  repoGame("eagleride.html", { title: "Eagle Ride", category: "Arcade", featured: false }),
+  repoGame("flappybird.html", { title: "Flappy Bird", category: "Arcade", featured: true }),
+  repoGame("floodrunner2.html", { title: "Flood Runner 2", category: "Arcade", featured: false }),
+  repoGame("floodrunner3.html", { title: "Flood Runner 3", category: "Arcade", featured: false }),
+  repoGame("floodrunner4.html", { title: "Flood Runner 4", category: "Arcade", featured: false }),
+  repoGame("fruitninja.html", { title: "Fruit Ninja", category: "Arcade", featured: true }),
+  repoGame("googledino.html", { title: "Google Dino", category: "Arcade", featured: false }),
+  repoGame("hanger2.html", { title: "Hanger 2", category: "Arcade", featured: false }),
+  repoGame("helixjump.html", { title: "Helix Jump", category: "Arcade", featured: false }),
+  repoGame("holeio.html", { title: "Hole.io", category: "Arcade", featured: true }),
+  repoGame("houseofhazards.html", { title: "House of Hazards", category: "Arcade", featured: false }),
+  repoGame("idlebreakout.html", { title: "Idle Breakout", category: "Casual", featured: false }),
+  repoGame("jetpackjoyride.html", { title: "Jetpack Joyride", category: "Arcade", featured: true }),
+  repoGame("learntofly.html", { title: "Learn to Fly", category: "Arcade", featured: false }),
+  repoGame("learntofly2.html", { title: "Learn to Fly 2", category: "Arcade", featured: true }),
+  repoGame("learntofly3.html", { title: "Learn to Fly 3", category: "Arcade", featured: false }),
+  repoGame("learntoflyidle.html", { title: "Learn to Fly Idle", category: "Casual", featured: false }),
+  repoGame("pacman.html", { title: "Pac-Man", category: "Arcade", featured: true }),
 
-  // ==========================================
-  // DRIVING & RACING
-  // ==========================================
-  repoGame("drivemad", {
-    title: "Drive Mad",
-    category: "driving",
-    featured: true
-  }),
-  repoGame("monster-tracks", {
-    title: "Monster Tracks",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("drifthunters", {
-    title: "Drift Hunters",
-    category: "driving",
-    featured: true
-  }),
-  repoGame("polytrack", {
-    title: "Polytrack",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("moto-x3m", {
-    title: "Moto X3M",
-    category: "driving",
-    featured: true
-  }),
-  repoGame("moto-x3m-winter", {
-    title: "Moto X3M Winter",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("moto-x3m-spooky", {
-    title: "Moto X3M Spooky Land",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("moto-x3m-poolparty", {
-    title: "Moto X3M Pool Party",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("smash-karts", {
-    title: "Smash Karts",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("madalin-stunt-cars-2", {
-    title: "Madalin Stunt Cars 2",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("madalin-stunt-cars-3", {
-    title: "Madalin Stunt Cars 3",
-    category: "driving",
-    featured: false
-  }),
-  repoGame("line-rider", {
-    title: "Line Rider Classic",
-    category: "driving",
-    featured: false
-  }),
+  // --- ACTION ---
+  repoGame("10minutestilldawn.html", { title: "10 Minutes Till Dawn", category: "Action", featured: false }),
+  repoGame("1v1.lol.html", { title: "1v1.LOL", category: "Action", featured: true }),
+  repoGame("awesometanks.html", { title: "Awesome Tanks", category: "Action", featured: false }),
+  repoGame("awesometanks2.html", { title: "Awesome Tanks 2", category: "Action", featured: true }),
+  repoGame("baconmaydie.html", { title: "Bacon May Die", category: "Action", featured: false }),
+  repoGame("bowmasters.html", { title: "Bowmasters", category: "Action", featured: false }),
+  repoGame("deathrun3D.html", { title: "Death Run 3D", category: "Action", featured: false }),
+  repoGame("evilglitch.html", { title: "Evil Glitch", category: "Action", featured: false }),
+  repoGame("funnyshooter2.html", { title: "Funny Shooter 2", category: "Action", featured: false }),
+  repoGame("getawayshootout.html", { title: "Getaway Shootout", category: "Action", featured: false }),
+  repoGame("getontop.html", { title: "Get On Top", category: "Action", featured: false }),
+  repoGame("gladihoppers.html", { title: "Gladihoppers", category: "Action", featured: false }),
+  repoGame("ironsnout.html", { title: "Iron Snout", category: "Action", featured: false }),
+  repoGame("johnnytrigger.html", { title: "Johnny Trigger", category: "Action", featured: false }),
+  repoGame("karatebros.html", { title: "Karate Bros", category: "Action", featured: false }),
 
-  // ==========================================
-  // ACTION & PLATFORMER
-  // ==========================================
-  repoGame("ovo", {
-    title: "OvO",
-    category: "action",
-    featured: true
-  }),
-  repoGame("ovo-2", {
-    title: "OvO 2: Dimensions",
-    category: "action",
-    featured: false
-  }),
-  repoGame("geometry-dash", {
-    title: "Geometry Dash",
-    category: "action",
-    featured: true
-  }),
-  repoGame("geometry-dash-meltdown", {
-    title: "Geometry Dash Meltdown",
-    category: "action",
-    featured: false
-  }),
-  repoGame("stickman-hook", {
-    title: "Stickman Hook",
-    category: "action",
-    featured: false
-  }),
-  repoGame("clusterrush", {
-    title: "Cluster Rush",
-    category: "action",
-    featured: false
-  }),
-  repoGame("vex3", {
-    title: "Vex 3",
-    category: "action",
-    featured: false
-  }),
-  repoGame("vex4", {
-    title: "Vex 4",
-    category: "action",
-    featured: false
-  }),
-  repoGame("vex5", {
-    title: "Vex 5",
-    category: "action",
-    featured: false
-  }),
-  repoGame("vex6", {
-    title: "Vex 6",
-    category: "action",
-    featured: false
-  }),
-  repoGame("vex7", {
-    title: "Vex 7",
-    category: "action",
-    featured: false
-  }),
-  repoGame("vex8", {
-    title: "Vex 8",
-    category: "action",
-    featured: false
-  }),
-  repoGame("fancypants", {
-    title: "Fancy Pants Adventures",
-    category: "action",
-    featured: false
-  }),
-  repoGame("fancypants2", {
-    title: "Fancy Pants Adventures: World 2",
-    category: "action",
-    featured: false
-  }),
-  repoGame("happywheels", {
-    title: "Happy Wheels (HTML5 Portal)",
-    category: "action",
-    featured: true
-  }),
-  repoGame("supermarioflash", {
-    title: "Super Mario Flash",
-    category: "action",
-    featured: false
-  }),
-  repoGame("supermarioflash2", {
-    title: "Super Mario Flash 2",
-    category: "action",
-    featured: false
-  }),
-  repoGame("sonicflash", {
-    title: "Sonic the Hedgehog Flash",
-    category: "action",
-    featured: false
-  }),
-  repoGame("fireboy-watergirl", {
-    title: "Fireboy and Watergirl 1: Forest Temple",
-    category: "action",
-    featured: false
-  }),
-  repoGame("fireboy-watergirl-2", {
-    title: "Fireboy and Watergirl 2: Light Temple",
-    category: "action",
-    featured: false
-  }),
-  repoGame("fireboy-watergirl-3", {
-    title: "Fireboy and Watergirl 3: Ice Temple",
-    category: "action",
-    featured: false
-  }),
-  repoGame("fireboy-watergirl-4", {
-    title: "Fireboy and Watergirl 4: Crystal Temple",
-    category: "action",
-    featured: false
-  }),
-  repoGame("badicecream", {
-    title: "Bad Ice Cream",
-    category: "action",
-    featured: false
-  }),
-  repoGame("badicecream2", {
-    title: "Bad Ice Cream 2",
-    category: "action",
-    featured: false
-  }),
-  repoGame("badicecream3", {
-    title: "Bad Ice Cream 3",
-    category: "action",
-    featured: false
-  }),
-  repoGame("iron-snout", {
-    title: "Iron Snout",
-    category: "action",
-    featured: false
-  }),
+  // --- PUZZLE & LOGIC ---
+  repoGame("2048.html", { title: "2048", category: "Puzzle", featured: true }),
+  repoGame("2048cupcakes.html", { title: "2048 Cupcakes", category: "Puzzle", featured: false }),
+  repoGame("angrybirds.html", { title: "Angry Birds", category: "Puzzle", featured: true }),
+  repoGame("angrybirdsshowdown.html", { title: "Angry Birds Showdown", category: "Puzzle", featured: false }),
+  repoGame("angrybirdsspace.html", { title: "Angry Birds Space", category: "Puzzle", featured: false }),
+  repoGame("badpiggies.html", { title: "Bad Piggies", category: "Puzzle", featured: false }),
+  repoGame("bloxorz.html", { title: "Bloxorz", category: "Puzzle", featured: true }),
+  repoGame("bobtherobber.html", { title: "Bob The Robber", category: "Puzzle", featured: false }),
+  repoGame("bobtherobber2.html", { title: "Bob The Robber 2", category: "Puzzle", featured: false }),
+  repoGame("bobtherobber5.html", { title: "Bob The Robber 5", category: "Puzzle", featured: false }),
+  repoGame("breakingthebank.html", { title: "Breaking the Bank", category: "Puzzle", featured: false }),
+  repoGame("bubbleshooter.html", { title: "Bubble Shooter", category: "Puzzle", featured: false }),
+  repoGame("candycrush.html", { title: "Candy Crush", category: "Puzzle", featured: true }),
+  repoGame("cardrawing.html", { title: "Car Drawing", category: "Puzzle", featured: false }),
+  repoGame("circloO.html", { title: "CircloO", category: "Puzzle", featured: false }),
+  repoGame("circloO2.html", { title: "CircloO 2", category: "Puzzle", featured: false }),
+  repoGame("cuttherope.html", { title: "Cut the Rope", category: "Puzzle", featured: true }),
+  repoGame("drawclimber.html", { title: "Draw Climber", category: "Puzzle", featured: false }),
+  repoGame("escapingtheprison.html", { title: "Escaping the Prison", category: "Puzzle", featured: false }),
+  repoGame("fireboyandwatergirl.html", { title: "Fireboy & Watergirl", category: "Puzzle", featured: true }),
+  repoGame("fireboyandwatergirl2.html", { title: "Fireboy & Watergirl 2", category: "Puzzle", featured: false }),
+  repoGame("fireboyandwatergirl3.html", { title: "Fireboy & Watergirl 3", category: "Puzzle", featured: false }),
+  repoGame("fireboyandwatergirl4.html", { title: "Fireboy & Watergirl 4", category: "Puzzle", featured: false }),
+  repoGame("guesstheiranswer.html", { title: "Guess Their Answer", category: "Casual", featured: false }),
+  repoGame("jumpingshell.html", { title: "Jumping Shell", category: "Puzzle", featured: false }),
+  repoGame("minesweeper.html", { title: "Minesweeper", category: "Puzzle", featured: false }),
+  repoGame("oppositeday.html", { title: "Opposite Day", category: "Puzzle", featured: false }),
 
-  // ==========================================
-  // SPORTS
-  // ==========================================
-  repoGame("retrobowl", {
-    title: "Retro Bowl",
-    category: "sports",
-    featured: true
-  }),
-  repoGame("retro-bowl-college", {
-    title: "Retro Bowl College",
-    category: "sports",
-    featured: true
-  }),
-  repoGame("basket-random", {
-    title: "Basket Random",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("soccer-random", {
-    title: "Soccer Random",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("boxing-random", {
-    title: "Boxing Random",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("volleyball-random", {
-    title: "Volleyball Random",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("basketball-stars", {
-    title: "Basketball Stars",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("football-legends", {
-    title: "Football Legends",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("tennis-masters", {
-    title: "Tennis Masters",
-    category: "sports",
-    featured: false
-  }),
-  repoGame("8-ball-pool", {
-    title: "8 Ball Pool Mini",
-    category: "sports",
-    featured: false
-  }),
+  // --- STRATEGY ---
+  repoGame("ageofwar.html", { title: "Age of War", category: "Strategy", featured: true }),
+  repoGame("ageofwar2.html", { title: "Age of War 2", category: "Strategy", featured: false }),
+  repoGame("agesofconflict.html", { title: "Ages of Conflict", category: "Strategy", featured: false }),
+  repoGame("amongus.html", { title: "Among Us", category: "Strategy", featured: true }),
+  repoGame("bloonsTD.html", { title: "Bloons TD", category: "Strategy", featured: false }),
+  repoGame("bloonsTD2.html", { title: "Bloons TD 2", category: "Strategy", featured: false }),
+  repoGame("bloonsTD3.html", { title: "Bloons TD 3", category: "Strategy", featured: false }),
+  repoGame("bloonsTD4.html", { title: "Bloons TD 4", category: "Strategy", featured: false }),
+  repoGame("bloonsTD5.html", { title: "Bloons TD 5", category: "Strategy", featured: true }),
+  repoGame("chess.html", { title: "Chess", category: "Strategy", featured: false }),
+  repoGame("clashofvikings.html", { title: "Clash of Vikings", category: "Strategy", featured: false }),
 
-  // ==========================================
-  // SHOOTERS & FIGHTING
-  // ==========================================
-  repoGame("1v1lol", {
-    title: "1v1.lol",
-    category: "shooter",
-    featured: true
-  }),
-  repoGame("getaway-shootout", {
-    title: "Getaway Shootout",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("rooftop-snipers", {
-    title: "Rooftop Snipers",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("super-smash-flash", {
-    title: "Super Smash Flash",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("super-smash-flash-2", {
-    title: "Super Smash Flash 2",
-    category: "shooter",
-    featured: true
-  }),
-  repoGame("raze", {
-    title: "Raze",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("raze2", {
-    title: "Raze 2",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("raze3", {
-    title: "Raze 3",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("strike-force-heroes", {
-    title: "Strike Force Heroes",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("strike-force-heroes-2", {
-    title: "Strike Force Heroes 2",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("plazmaburst", {
-    title: "Plazma Burst",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("plazmaburst2", {
-    title: "Plazma Burst 2",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("gun-mayhem", {
-    title: "Gun Mayhem",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("gun-mayhem-2", {
-    title: "Gun Mayhem 2",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("chaos-faction-2", {
-    title: "Chaos Faction 2",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("alien-hominid", {
-    title: "Alien Hominid",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("dad-and-me", {
-    title: "Dad 'N Me",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("madness-combat", {
-    title: "Madness Interactive",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("time-shooter", {
-    title: "Time Shooter",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("time-shooter-2", {
-    title: "Time Shooter 2: Southpole",
-    category: "shooter",
-    featured: false
-  }),
-  repoGame("funny-shooter-2", {
-    title: "Funny Shooter 2",
-    category: "shooter",
-    featured: false
-  }),
+  // --- SPORTS ---
+  repoGame("1on1soccer.html", { title: "1 on 1 Soccer", category: "Sports", featured: false }),
+  repoGame("1on1tennis.html", { title: "1 on 1 Tennis", category: "Sports", featured: false }),
+  repoGame("8ballclassic.html", { title: "8 Ball Classic", category: "Sports", featured: true }),
+  repoGame("baseballbros.html", { title: "Baseball Bros", category: "Sports", featured: false }),
+  repoGame("basketballlegends.html", { title: "Basketball Legends", category: "Sports", featured: true }),
+  repoGame("basketballstars.html", { title: "Basketball Stars", category: "Sports", featured: false }),
+  repoGame("basketbros.html", { title: "BasketBros", category: "Sports", featured: false }),
+  repoGame("basketrandom.html", { title: "Basket Random", category: "Sports", featured: false }),
+  repoGame("boxingrandom.html", { title: "Boxing Random", category: "Sports", featured: false }),
+  repoGame("footballbros.html", { title: "Football Bros", category: "Sports", featured: false }),
+  repoGame("footballlegends.html", { title: "Football Legends", category: "Sports", featured: false }),
+  repoGame("googlebaseball.html", { title: "Google Baseball", category: "Sports", featured: false }),
 
-  // ==========================================
-  // STRATEGY & TOWER DEFENSE
-  // ==========================================
-  repoGame("bloonstd", {
-    title: "Bloons Tower Defense 1",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("bloonstd3", {
-    title: "Bloons Tower Defense 3",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("bloonstd4", {
-    title: "Bloons Tower Defense 4",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("bloonstd5", {
-    title: "Bloons Tower Defense 5",
-    category: "strategy",
-    featured: true
-  }),
-  repoGame("ageofwar", {
-    title: "Age of War",
-    category: "strategy",
-    featured: true
-  }),
-  repoGame("ageofwar2", {
-    title: "Age of War 2",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("stickwar", {
-    title: "Stick War",
-    category: "strategy",
-    featured: true
-  }),
-  repoGame("stickwar2", {
-    title: "Stick War 2",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("kingdom-rush", {
-    title: "Kingdom Rush",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("defend-your-castle", {
-    title: "Defend Your Castle",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("territory-war", {
-    title: "Territory War",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("feudalism", {
-    title: "Feudalism RPG",
-    category: "strategy",
-    featured: false
-  }),
-  repoGame("epic-war-5", {
-    title: "Epic War 5",
-    category: "strategy",
-    featured: false
-  }),
+  // --- RACING & DRIVING ---
+  repoGame("blumgiracers.html", { title: "Blumgi Racers", category: "Racing", featured: false }),
+  repoGame("bouncymotors.html", { title: "Bouncy Motors", category: "Racing", featured: false }),
+  repoGame("carkingarena.html", { title: "Car King Arena", category: "Racing", featured: false }),
+  repoGame("crazycars.html", { title: "Crazy Cars", category: "Racing", featured: false }),
+  repoGame("crazymotorcycle.html", { title: "Crazy Motorcycle", category: "Racing", featured: false }),
+  repoGame("deathchase.html", { title: "Death Chase", category: "Racing", featured: false }),
+  repoGame("demolitionderbycrashracing.html", { title: "Demolition Derby", category: "Racing", featured: false }),
+  repoGame("driftboss.htm", { title: "Drift Boss", category: "Racing", featured: true }),
+  repoGame("drivemad.html", { title: "Drive Mad", category: "Racing", featured: false }),
+  repoGame("earntodie.html", { title: "Earn to Die", category: "Racing", featured: true }),
+  repoGame("earntodie2.html", { title: "Earn to Die 2", category: "Racing", featured: false }),
+  repoGame("eggycar.html", { title: "Eggy Car", category: "Racing", featured: false }),
+  repoGame("escaperoad.html", { title: "Escape Road", category: "Racing", featured: false }),
+  repoGame("escaperoad2.html", { title: "Escape Road 2", category: "Racing", featured: false }),
+  repoGame("freerider3.html", { title: "Free Rider 3", category: "Racing", featured: false }),
+  repoGame("funnymadracing.html", { title: "Funny Mad Racing", category: "Racing", featured: false }),
+  repoGame("happywheels.html", { title: "Happy Wheels", category: "Racing", featured: true }),
+  repoGame("highwaytraffic.html", { title: "Highway Traffic", category: "Racing", featured: false }),
+  repoGame("hillclimbracinglite.html", { title: "Hill Climb Racing", category: "Racing", featured: true }),
+  repoGame("hoverracerdrive.html", { title: "Hover Racer Drive", category: "Racing", featured: false }),
+  repoGame("kartbros.html", { title: "Kart Bros", category: "Racing", featured: false }),
+  repoGame("madalinstuntcars2.html", { title: "Madalin Stunt Cars 2", category: "Racing", featured: false }),
+  repoGame("mergeroundracers.html", { title: "Merge Round Racers", category: "Racing", featured: false }),
+  repoGame("monstertracks.html", { title: "Monster Tracks", category: "Racing", featured: false }),
+  repoGame("motox3m.html", { title: "Moto X3M", category: "Racing", featured: true }),
+  repoGame("motox3m2.html", { title: "Moto X3M 2", category: "Racing", featured: false }),
+  repoGame("motox3m3.html", { title: "Moto X3M 3", category: "Racing", featured: false }),
+  repoGame("motox3mpoolparty.html", { title: "Moto X3M Pool Party", category: "Racing", featured: false }),
+  repoGame("motox3mspookyland.html", { title: "Moto X3M Spooky Land", category: "Racing", featured: false }),
+  repoGame("motox3mwinter.html", { title: "Moto X3M Winter", category: "Racing", featured: false }),
 
-  // ==========================================
-  // PUZZLE & LOGIC
-  // ==========================================
-  repoGame("bloxorz", {
-    title: "Bloxorz",
-    category: "puzzle",
-    featured: true
-  }),
-  repoGame("sugar-sugar", {
-    title: "Sugar, Sugar",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("sugar-sugar-2", {
-    title: "Sugar, Sugar 2",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("impossiblequiz", {
-    title: "The Impossible Quiz",
-    category: "puzzle",
-    featured: true
-  }),
-  repoGame("impossiblequiz2", {
-    title: "The Impossible Quiz 2",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("worlds-hardest-game", {
-    title: "The World's Hardest Game",
-    category: "puzzle",
-    featured: true
-  }),
-  repoGame("worlds-hardest-game-2", {
-    title: "The World's Hardest Game 2",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("cut-the-rope", {
-    title: "Cut the Rope",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("2048", {
-    title: "2048 Classic",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("redball4", {
-    title: "Red Ball 4",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("snailbob", {
-    title: "Snail Bob Adventures",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("wheely", {
-    title: "Wheely Physics Puzzle",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("civiballs", {
-    title: "Civiballs",
-    category: "puzzle",
-    featured: false
-  }),
-  repoGame("minesweeper", {
-    title: "Classic Minesweeper",
-    category: "puzzle",
-    featured: false
-  }),
+  // --- SIMULATION & MANAGEMENT ---
+  repoGame("3Dflightsimulator.html", { title: "3D Flight Simulator", category: "Simulation", featured: false }),
+  repoGame("bitlife.html", { title: "BitLife", category: "Simulation", featured: true }),
+  repoGame("ducklife.html", { title: "Duck Life", category: "Simulation", featured: true }),
+  repoGame("ducklife2.html", { title: "Duck Life 2", category: "Simulation", featured: false }),
+  repoGame("ducklife3.html", { title: "Duck Life 3", category: "Simulation", featured: false }),
+  repoGame("ducklife4.html", { title: "Duck Life 4", category: "Simulation", featured: false }),
+  repoGame("ducklife5.html", { title: "Duck Life 5", category: "Simulation", featured: false }),
+  repoGame("elasticface.html", { title: "Elastic Face", category: "Simulation", featured: false }),
+  repoGame("funnybattle.html", { title: "Funny Battle", category: "Simulation", featured: false }),
+  repoGame("funnybattle2.html", { title: "Funny Battle 2", category: "Simulation", featured: false }),
+  repoGame("monkeymart.html", { title: "Monkey Mart", category: "Simulation", featured: false }),
+  repoGame("noobminer.html", { title: "Noob Miner", category: "Simulation", featured: false }),
+  repoGame("papasbakeria.html", { title: "Papa's Bakeria", category: "Simulation", featured: false }),
+  repoGame("papasburgeria.html", { title: "Papa's Burgeria", category: "Simulation", featured: true }),
+  repoGame("papascheeseria.html", { title: "Papa's Cheeseria", category: "Simulation", featured: false }),
+  repoGame("papascupcakeria.html", { title: "Papa's Cupcakeria", category: "Simulation", featured: false }),
+  repoGame("papasdonuteria.html", { title: "Papa's Donuteria", category: "Simulation", featured: false }),
+  repoGame("papasfreezeria.html", { title: "Papa's Freezeria", category: "Simulation", featured: true }),
 
-  // ==========================================
-  // CASUAL, RESTAURANT & IDLE
-  // ==========================================
-  repoGame("cookieclicker", {
-    title: "Cookie Clicker",
-    category: "casual",
-    featured: true
-  }),
-  repoGame("bitlife", {
-    title: "BitLife Simulator",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("thereisnogame", {
-    title: "There Is No Game",
-    category: "casual",
-    featured: true
-  }),
-  repoGame("95", {
-    title: "Windows 95 Simulator",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("doge-miner", {
-    title: "Doge Miner",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("doge-miner-2", {
-    title: "Doge Miner 2",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("clicker-heroes", {
-    title: "Clicker Heroes",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("papas-pizzeria", {
-    title: "Papa's Pizzeria",
-    category: "casual",
-    featured: true
-  }),
-  repoGame("papas-burgeria", {
-    title: "Papa's Burgeria",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("papas-freezeria", {
-    title: "Papa's Freezeria",
-    category: "casual",
-    featured: true
-  }),
-  repoGame("papas-taco-mia", {
-    title: "Papa's Taco Mia",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("papas-scooperia", {
-    title: "Papa's Scooperia",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("interactive-buddy", {
-    title: "Interactive Buddy",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("whack-your-boss", {
-    title: "Whack Your Boss",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("ducklife", {
-    title: "Duck Life 1",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("ducklife2", {
-    title: "Duck Life 2: World Champion",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("ducklife3", {
-    title: "Duck Life 3: Evolution",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("ducklife4", {
-    title: "Duck Life 4",
-    category: "casual",
-    featured: true
-  }),
-  repoGame("ducklife-space", {
-    title: "Duck Life: Space",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("burrito-bison", {
-    title: "Burrito Bison",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("burrito-bison-revenge", {
-    title: "Burrito Bison Revenge",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("flight", {
-    title: "Flight (Paper Airplane Journey)",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("learn-2-fly", {
-    title: "Learn 2 Fly",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("potty-racers", {
-    title: "Potty Racers",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("shopping-cart-hero", {
-    title: "Shopping Cart Hero",
-    category: "casual",
-    featured: false
-  }),
-  repoGame("toss-the-turtle", {
-    title: "Toss the Turtle",
-    category: "casual",
-    featured: false
-  }),
+  // --- PLATFORMERS ---
+  repoGame("choppyorc.html", { title: "Choppy Orc", category: "Platformer", featured: false }),
+  repoGame("clusterrush.html", { title: "Cluster Rush", category: "Platformer", featured: false }),
+  repoGame("dadish.html", { title: "Dadish", category: "Platformer", featured: false }),
+  repoGame("dadish2.html", { title: "Dadish 2", category: "Platformer", featured: false }),
+  repoGame("dadish3.html", { title: "Dadish 3", category: "Platformer", featured: false }),
+  repoGame("dreadheadparkour.html", { title: "Dreadhead Parkour", category: "Platformer", featured: false }),
+  repoGame("fancypantsadventure.html", { title: "Fancy Pants Adventure", category: "Platformer", featured: true }),
+  repoGame("fancypantsadventure2.html", { title: "Fancy Pants Adventure 2", category: "Platformer", featured: false }),
+  repoGame("geometrydash.html", { title: "Geometry Dash", category: "Platformer", featured: true }),
+  repoGame("geometrydashlite.html", { title: "Geometry Dash Lite", category: "Platformer", featured: false }),
+  repoGame("geometryvibes.html", { title: "Geometry Vibes", category: "Platformer", featured: false }),
+  repoGame("leveldevil.html", { title: "Level Devil", category: "Platformer", featured: false }),
+  repoGame("ovo.html", { title: "OvO", category: "Platformer", featured: true }),
+  repoGame("ovo2.html", { title: "OvO 2", category: "Platformer", featured: false }),
+  repoGame("ovo3dimensions.html", { title: "OvO 3 Dimensions", category: "Platformer", featured: false }),
 
-  // ==========================================
-  // RETRO EMULATED CLASSICS (WASM/JS Emulators)
-  // ==========================================
-  repoGame("sm64", {
-    title: "Super Mario 64",
-    category: "retro",
-    featured: true
-  }),
-  repoGame("pokemon-fire-red", {
-    title: "Pokémon FireRed Edition",
-    category: "retro",
-    featured: true
-  }),
-  repoGame("pokemon-emerald", {
-    title: "Pokémon Emerald Edition",
-    category: "retro",
-    featured: false
-  }),
-  repoGame("mario-kart-super-circuit", {
-    title: "Mario Kart: Super Circuit",
-    category: "retro",
-    featured: false
-  }),
-  repoGame("sonic-advance", {
-    title: "Sonic Advance",
-    category: "retro",
-    featured: false
-  }),
-  repoGame("doom", {
-    title: "DOOM Classic (1993)",
-    category: "retro",
-    featured: false
-  }),
-  repoGame("tetris", {
-    title: "Classic Tetris Game",
-    category: "retro",
-    featured: false
-  }),
-  repoGame("donkey-kong", {
-    title: "Donkey Kong Arcade",
-    category: "retro",
-    featured: false
-  })
+  // --- HORROR ---
+  repoGame("backrooms.html", { title: "The Backrooms", category: "Horror", featured: false }),
+  repoGame("badparenting.html", { title: "Bad Parenting", category: "Horror", featured: false }),
+  repoGame("baldisbasics.html", { title: "Baldi's Basics", category: "Horror", featured: true }),
+  repoGame("fnaf.html", { title: "Five Nights at Freddy's", category: "Horror", featured: true }),
+  repoGame("fnaf2.html", { title: "Five Nights at Freddy's 2", category: "Horror", featured: false }),
+  repoGame("fnaf3.html", { title: "Five Nights at Freddy's 3", category: "Horror", featured: false }),
+  repoGame("fnaf4.html", { title: "Five Nights at Freddy's 4", category: "Horror", featured: false }),
+  repoGame("granny.html", { title: "Granny", category: "Horror", featured: false }),
+  repoGame("granny2.html", { title: "Granny 2", category: "Horror", featured: false })
 ];
 
 function escapeHtml(str) {
