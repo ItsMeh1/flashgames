@@ -2728,6 +2728,7 @@ const STORE_GAMES = [
 ];
 
 async function importGameFromStoreUrl(url) {
+    console.log("Installing URL:", url);
     const input = document.getElementById("storeImportUrl");
     if (input) input.value = url;
 
