@@ -2727,6 +2727,267 @@ const STORE_GAMES = [
   })
 ];
 
+let STORE_ACTIVE_TAB = "featured";
+
+function switchStoreTab(tab) {
+    STORE_ACTIVE_TAB = tab;
+
+    // Update tab button styling
+    document.querySelectorAll("[data-store-tab]").forEach(btn => {
+        btn.classList.remove(
+            "bg-white/10",
+            "text-white"
+        );
+
+        btn.classList.add(
+            "bg-black/20",
+            "text-slate-300"
+        );
+    });
+
+    const activeBtn = document.querySelector(
+        `[data-store-tab="${tab}"]`
+    );
+
+    if (activeBtn) {
+        activeBtn.classList.remove(
+            "bg-black/20",
+            "text-slate-300"
+        );
+
+        activeBtn.classList.add(
+            "bg-white/10",
+            "text-white"
+        );
+    }
+
+    // Main panels
+    const storeContent = document.getElementById("storeContent");
+    const storeDetailPanel = document.getElementById("storeDetailPanel");
+    const storeImportPanel = document.getElementById("storeImportPanel");
+
+    if (tab === "import") {
+
+        storeContent?.classList.add("hidden");
+        storeDetailPanel?.classList.add("hidden");
+        storeImportPanel?.classList.remove("hidden");
+
+    } else {
+
+        storeContent?.classList.remove("hidden");
+        storeDetailPanel?.classList.remove("hidden");
+        storeImportPanel?.classList.add("hidden");
+
+    }
+
+    // Re-render store if your renderer exists
+    if (typeof renderStore === "function") {
+        renderStore();
+    }
+}
+
+let STORE_SELECTED_GAME = null;
+
+function escapeHtml(str) {
+    return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+}
+
+function isGameInstalledInFlashStore(game) {
+    if (!game || typeof STATE === "undefined" || !STATE.rawGamesList) return false;
+    return STATE.rawGamesList.some(g => g.url === game.url || g.id === game.id);
+}
+
+function renderStore() {
+    const content = document.getElementById("storeContent");
+    const detailIcon = document.getElementById("storeDetailIcon");
+    const detailTitle = document.getElementById("storeDetailTitle");
+    const detailDesc = document.getElementById("storeDetailDesc");
+    const detailSource = document.getElementById("storeDetailSource");
+    const detailSize = document.getElementById("storeDetailSize");
+    const installBtn = document.getElementById("storeDetailInstallBtn");
+    const copyBtn = document.getElementById("storeDetailCopyBtn");
+
+    if (!content) return;
+
+    const search = (document.getElementById("storeSearchInput")?.value || "").toLowerCase().trim();
+    const category = document.getElementById("storeCategoryFilter")?.value || "all";
+    const sortOrder = document.getElementById("storeSortOrder")?.value || "featured";
+
+    let games = [...STORE_GAMES];
+
+    if (STORE_ACTIVE_TAB === "featured") {
+        games = games.filter(game => game.featured);
+    } else if (STORE_ACTIVE_TAB === "installed") {
+        games = games.filter(game => isGameInstalledInFlashStore(game));
+    }
+
+    if (category !== "all") {
+        games = games.filter(game => (game.category || "classic").toLowerCase() === category.toLowerCase());
+    }
+
+    if (search) {
+        games = games.filter(game =>
+            (game.title || "").toLowerCase().includes(search) ||
+            (game.category || "").toLowerCase().includes(search) ||
+            (game.source || "").toLowerCase().includes(search)
+        );
+    }
+
+    if (sortOrder === "az") {
+        games.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else if (sortOrder === "za") {
+        games.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+    } else {
+        games.sort((a, b) => (b.featured === true) - (a.featured === true));
+    }
+
+    if (!games.length) {
+        content.innerHTML = `
+            <div class="h-full min-h-[40vh] flex items-center justify-center">
+                <div class="text-center max-w-sm mx-auto p-8">
+                    <div class="text-4xl mb-3">🔎</div>
+                    <h3 class="text-lg font-bold text-white mb-2">No games found</h3>
+                    <p class="text-sm text-slate-400">Try another search or category.</p>
+                </div>
+            </div>
+        `;
+        STORE_SELECTED_GAME = null;
+        updateStoreDetails(null);
+        return;
+    }
+
+    content.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            ${games.map(game => {
+                const installed = isGameInstalledInFlashStore(game);
+                return `
+                    <button onclick="selectStoreGame('${escapeHtml(game.id)}')" class="text-left glass-card rounded-3xl p-3 md:p-4 hover:scale-[1.01] transition-all border border-white/10">
+                        <div class="flex items-center gap-3">
+                            <div class="h-14 w-14 rounded-2xl bg-black/35 border border-white/10 overflow-hidden flex-shrink-0">
+                                <img src="${escapeHtml(game.image || "offline/logo.png")}" class="w-full h-full object-contain p-2" onerror="this.src='offline/logo.png'">
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-start justify-between gap-2">
+                                    <h4 class="font-bold text-white text-sm leading-tight truncate">${escapeHtml(game.title || "Untitled")}</h4>
+                                    ${game.featured ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/20">Featured</span>` : ""}
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1 truncate">${escapeHtml(game.category || "classic")} • ${escapeHtml(game.source || "Store")}</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full border ${installed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" : "bg-white/5 text-slate-300 border-white/10"}">
+                                        ${installed ? "Installed" : "Ready"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </button>
+                `;
+            }).join("")}
+        </div>
+    `;
+
+    if (!STORE_SELECTED_GAME || !games.some(g => g.id === STORE_SELECTED_GAME.id)) {
+        selectStoreGame(games[0].id);
+    }
+
+    function updateStoreDetails(game) {
+        if (!detailIcon || !detailTitle || !detailDesc || !detailSource || !detailSize || !installBtn || !copyBtn) return;
+
+        if (!game) {
+            detailIcon.src = "offline/logo.png";
+            detailTitle.textContent = "Choose a game";
+            detailDesc.textContent = "Pick a title from the store to see more info, preview links, and install options.";
+            detailSource.textContent = "—";
+            detailSize.textContent = "—";
+            installBtn.textContent = "Install";
+            installBtn.disabled = true;
+            copyBtn.disabled = true;
+            return;
+        }
+
+        detailIcon.src = game.image || "offline/logo.png";
+        detailTitle.textContent = game.title || "Untitled";
+        detailDesc.textContent = game.description || "A compatible installable game from your store list.";
+        detailSource.textContent = game.source || "Store";
+        detailSize.textContent = game.sizeHint || "Unknown";
+        installBtn.disabled = false;
+        copyBtn.disabled = false;
+        installBtn.textContent = isGameInstalledInFlashStore(game) ? "Reinstall" : "Install";
+    }
+
+    updateStoreDetails(STORE_SELECTED_GAME);
+}
+
+function selectStoreGame(id) {
+    const game = STORE_GAMES.find(g => g.id === id);
+    if (!game) return;
+
+    STORE_SELECTED_GAME = game;
+
+    const detailIcon = document.getElementById("storeDetailIcon");
+    const detailTitle = document.getElementById("storeDetailTitle");
+    const detailDesc = document.getElementById("storeDetailDesc");
+    const detailSource = document.getElementById("storeDetailSource");
+    const detailSize = document.getElementById("storeDetailSize");
+    const installBtn = document.getElementById("storeDetailInstallBtn");
+    const copyBtn = document.getElementById("storeDetailCopyBtn");
+
+    if (detailIcon) detailIcon.src = game.image || "offline/logo.png";
+    if (detailTitle) detailTitle.textContent = game.title || "Untitled";
+    if (detailDesc) detailDesc.textContent = game.description || "A compatible installable game from your store list.";
+    if (detailSource) detailSource.textContent = game.source || "Store";
+    if (detailSize) detailSize.textContent = game.sizeHint || "Unknown";
+
+    if (installBtn) {
+        installBtn.textContent = isGameInstalledInFlashStore(game) ? "Reinstall" : "Install";
+        installBtn.disabled = false;
+        installBtn.onclick = () => {
+            const importUrl = document.getElementById("storeImportUrl");
+            if (importUrl) importUrl.value = game.url;
+
+            switchStoreTab("import");
+            const tabBtn = document.querySelector('[data-store-tab="import"]');
+            tabBtn?.click();
+        };
+    }
+
+    if (copyBtn) {
+        copyBtn.disabled = false;
+        copyBtn.onclick = async () => {
+            try { await navigator.clipboard.writeText(game.url); } catch (e) {}
+        };
+    }
+}
+
+function openInstallModal() {
+    const modal = document.getElementById("installModal");
+    const inner = document.getElementById("installModalInner");
+    if (!modal || !inner) return;
+
+    modal.classList.remove("hidden");
+    requestAnimationFrame(() => {
+        modal.classList.remove("opacity-0");
+        inner.classList.remove("scale-95");
+    });
+
+    switchStoreTab("featured");
+    renderStore();
+}
+
+function closeInstallModal() {
+    const modal = document.getElementById("installModal");
+    const inner = document.getElementById("installModalInner");
+    if (!modal || !inner) return;
+
+    modal.classList.add("opacity-0");
+    inner.classList.add("scale-95");
+    setTimeout(() => modal.classList.add("hidden"), 300);
+}
+
 
 // banning system
 let CURRENT_USER_DOC = null;
