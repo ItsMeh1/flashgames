@@ -265,67 +265,65 @@
             <div id="collectionsContainer" class="space-y-10"></div>
         </main>
     </div>
-    <div id="installModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-xl flex items-center justify-center p-3 md:p-4 transition-opacity duration-300 opacity-0">
-  <div id="installModalInner" class="glass-panel-dark w-full max-w-6xl h-[88vh] rounded-[2rem] shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300 border border-white/10 flex flex-col">
-    
-    <!-- Top bar -->
-    <div class="px-4 md:px-5 py-4 border-b border-white/10 bg-white/[0.03] flex items-center justify-between gap-3 shrink-0">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden">
-          <span class="text-white font-black text-lg">+</span>
-        </div>
-        <div class="min-w-0">
-          <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight truncate">Flash Store</h2>
-          <p class="text-xs md:text-sm text-slate-400 truncate">Browse, search, and install custom games</p>
-        </div>
-      </div>
 
-      <div class="flex items-center gap-2">
-        <button onclick="openStoreImportTab()" class="btn-glass px-3 md:px-4 py-2 rounded-2xl text-xs md:text-sm text-white font-semibold">
-          Import Link
-        </button>
-        <button onclick="closeInstallModal()" class="btn-glass w-9 h-9 rounded-2xl flex items-center justify-center text-slate-300">
-          ✕
-        </button>
+<!-- ========================= -->
+<!-- FLASH APP STORE SECTION   -->
+<!-- Replace the existing installModal + GUI installer pipeline only -->
+<!-- ========================= -->
+
+<div id="installModal" class="hidden fixed inset-0 z-[100] bg-slate-950/75 backdrop-blur-2xl flex items-center justify-center p-3 md:p-4 opacity-0 transition-opacity duration-300">
+  <div id="installModalInner" class="w-full max-w-7xl h-[88vh] rounded-[2rem] overflow-hidden border border-white/10 bg-slate-950/85 shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col">
+    <div class="relative shrink-0 border-b border-white/10">
+      <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent"></div>
+      <div class="relative px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg border border-white/10">
+            <span class="text-white font-black text-lg"></span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight">Flash App Store</h2>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-slate-300">v4.5</span>
+            </div>
+            <p class="text-xs md:text-sm text-slate-400 truncate">Browse, preview, and install compatible offline games</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openStoreImportTab()" class="px-3 md:px-4 py-2 rounded-2xl text-xs md:text-sm font-semibold btn-glass text-white border border-white/10">
+            Import URL
+          </button>
+          <button onclick="closeInstallModal()" class="w-9 h-9 rounded-2xl btn-glass text-slate-300 border border-white/10 flex items-center justify-center">
+            ✕
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="px-3 md:px-5 pt-4 shrink-0">
-      <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-        <button data-store-tab="featured" onclick="switchStoreTab('featured')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/10 text-white whitespace-nowrap">
-          Featured
-        </button>
-        <button data-store-tab="all" onclick="switchStoreTab('all')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-black/20 text-slate-300 whitespace-nowrap">
-          All Games
-        </button>
-        <button data-store-tab="installed" onclick="switchStoreTab('installed')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-black/20 text-slate-300 whitespace-nowrap">
-          Installed
-        </button>
-        <button data-store-tab="import" onclick="switchStoreTab('import')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-black/20 text-slate-300 whitespace-nowrap">
-          Import URL
-        </button>
-      </div>
-    </div>
-
-    <!-- Search / filters -->
-    <div class="px-3 md:px-5 pt-2 pb-3 shrink-0">
-      <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-2">
+    <div class="px-4 md:px-6 pt-4 md:pt-5 shrink-0">
+      <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_auto_auto] gap-2">
         <div class="relative">
-          <input id="storeSearchInput" type="text" placeholder="Search store..." oninput="renderStore()" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 pl-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.05] transition-all shadow-inner">
+          <input id="storeSearchInput" type="text" placeholder="Search app store" oninput="renderStore()" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 pl-11 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.08] transition-all shadow-inner">
           <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">⌕</span>
         </div>
 
-        <select id="storeCategoryFilter" onchange="renderStore()" class="bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
+        <select id="storeCategoryFilter" onchange="renderStore()" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
           <option value="all" class="bg-slate-900">All Categories</option>
           <option value="arcade" class="bg-slate-900">Arcade</option>
           <option value="puzzle" class="bg-slate-900">Puzzle</option>
           <option value="action" class="bg-slate-900">Action</option>
           <option value="platformer" class="bg-slate-900">Platformer</option>
+          <option value="sandbox" class="bg-slate-900">Sandbox</option>
+          <option value="driving" class="bg-slate-900">Driving</option>
+          <option value="sports" class="bg-slate-900">Sports</option>
+          <option value="shooter" class="bg-slate-900">Shooter</option>
+          <option value="strategy" class="bg-slate-900">Strategy</option>
+          <option value="casual" class="bg-slate-900">Casual</option>
+          <option value="retro" class="bg-slate-900">Retro</option>
           <option value="classic" class="bg-slate-900">Classic</option>
         </select>
 
-        <select id="storeSortOrder" onchange="renderStore()" class="bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
+        <select id="storeSortOrder" onchange="renderStore()" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-inner">
           <option value="featured" class="bg-slate-900">Featured</option>
           <option value="az" class="bg-slate-900">Name A-Z</option>
           <option value="za" class="bg-slate-900">Name Z-A</option>
@@ -333,78 +331,133 @@
       </div>
     </div>
 
-    <!-- Main content -->
-    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[1.6fr_0.9fr] gap-0 border-t border-white/10">
-      
-      <!-- Left side: store feed -->
+    <div class="px-4 md:px-6 pt-4">
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        <button data-store-tab="featured" onclick="switchStoreTab('featured')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/10 text-white whitespace-nowrap">
+          Featured
+        </button>
+        <button data-store-tab="all" onclick="switchStoreTab('all')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/5 text-slate-300 whitespace-nowrap">
+          All Games
+        </button>
+        <button data-store-tab="installed" onclick="switchStoreTab('installed')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/5 text-slate-300 whitespace-nowrap">
+          Installed
+        </button>
+        <button data-store-tab="import" onclick="switchStoreTab('import')" class="store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/5 text-slate-300 whitespace-nowrap">
+          Import
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-[1.45fr_0.9fr] gap-0 border-t border-white/10 mt-4">
       <div class="min-h-0 flex flex-col border-r border-white/10">
-        <div id="storeContent" class="min-h-0 flex-1 overflow-y-auto p-3 md:p-5">
-          <!-- Rendered by JS -->
+        <div class="px-4 md:px-6 pt-5 pb-3">
+          <div class="rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-white/8 to-white/4 p-5 md:p-6">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div class="max-w-2xl">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/15 text-indigo-200 border border-indigo-500/20 uppercase tracking-wider mb-3">Apple-style app store</span>
+                <h3 class="text-2xl md:text-4xl font-bold text-white tracking-tight">Clean cards, quick installs, simple browsing.</h3>
+                <p class="text-sm md:text-base text-slate-400 mt-2 leading-relaxed">
+                  Pick a game, inspect it in the detail pane, then install it without touching the CLI.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 text-xs md:text-sm shrink-0">
+                <div class="rounded-2xl bg-black/30 border border-white/10 px-4 py-3">
+                  <div class="text-slate-500 uppercase tracking-wider text-[10px]">Library</div>
+                  <div id="storeLibraryCount" class="text-white font-semibold mt-1">0 games</div>
+                </div>
+                <div class="rounded-2xl bg-black/30 border border-white/10 px-4 py-3">
+                  <div class="text-slate-500 uppercase tracking-wider text-[10px]">Selection</div>
+                  <div id="storeSelectedCount" class="text-white font-semibold mt-1">0 selected</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="storeContent" class="min-h-0 flex-1 overflow-y-auto px-4 md:px-6 pb-6">
+          <!-- rendered by JS -->
         </div>
       </div>
 
-      <!-- Right side: detail / import panel -->
       <div class="min-h-0 flex flex-col bg-black/20">
-        <div class="p-3 md:p-5 border-b border-white/10 shrink-0">
-          <h3 class="text-sm font-bold text-white tracking-tight">Selected Game</h3>
-          <p class="text-xs text-slate-400">Quick details and install actions</p>
+        <div class="p-4 md:p-5 border-b border-white/10 shrink-0">
+          <h3 class="text-sm font-bold text-white tracking-tight">Selected App</h3>
+          <p class="text-xs text-slate-400">Preview, install, or copy the link</p>
         </div>
 
-        <div id="storeDetailPanel" class="min-h-0 flex-1 overflow-y-auto p-3 md:p-5">
-          <div class="glass-card rounded-3xl p-4 md:p-5">
-            <div class="h-20 w-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center overflow-hidden mb-4">
-              <img id="storeDetailIcon" src="offline/logo.png" class="h-full w-full object-contain p-2" alt="Icon">
-            </div>
-            <h4 id="storeDetailTitle" class="text-lg font-bold text-white">Choose a game</h4>
-            <p id="storeDetailDesc" class="text-sm text-slate-400 mt-1 leading-relaxed">Pick a title from the store to see more info, preview links, and install options.</p>
-
-            <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-              <div class="rounded-2xl border border-white/10 bg-black/25 p-3">
-                <div class="text-slate-500 uppercase tracking-wider text-[10px]">Source</div>
-                <div id="storeDetailSource" class="text-slate-200 mt-1 font-medium">—</div>
+        <div id="storeDetailPanel" class="min-h-0 flex-1 overflow-y-auto p-4 md:p-5">
+          <div class="rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-white/8 to-black/20 p-4 md:p-5">
+            <div class="flex items-start gap-4">
+              <div class="h-20 w-20 rounded-[1.25rem] bg-black/40 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <img id="storeDetailIcon" src="offline/logo.png" class="w-full h-full object-contain p-2" alt="Icon" onerror="this.src='offline/logo.png'">
               </div>
-              <div class="rounded-2xl border border-white/10 bg-black/25 p-3">
-                <div class="text-slate-500 uppercase tracking-wider text-[10px]">Size</div>
-                <div id="storeDetailSize" class="text-slate-200 mt-1 font-medium">—</div>
-              </div>
-            </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <h4 id="storeDetailTitle" class="text-xl font-bold text-white tracking-tight truncate">Choose a game</h4>
+                    <p id="storeDetailDesc" class="text-sm text-slate-400 mt-1 leading-relaxed">Pick a title from the store to see details, tags, and install actions.</p>
+                  </div>
+                  <span id="storeDetailFeatured" class="hidden text-[10px] px-2 py-1 rounded-full bg-indigo-500/15 text-indigo-200 border border-indigo-500/20">Featured</span>
+                </div>
 
-            <div class="mt-4 flex gap-2">
-              <button id="storeDetailInstallBtn" onclick="installSelectedStoreGame()" class="flex-1 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold transition-all">
-                Install
-              </button>
-              <button id="storeDetailCopyBtn" onclick="copySelectedStoreLink()" class="px-4 py-3 rounded-2xl btn-glass text-white text-sm font-semibold">
-                Copy Link
-              </button>
+                <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
+                  <div class="rounded-2xl border border-white/10 bg-black/25 p-3">
+                    <div class="text-slate-500 uppercase tracking-wider text-[10px]">Source</div>
+                    <div id="storeDetailSource" class="text-slate-200 mt-1 font-medium">—</div>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-black/25 p-3">
+                    <div class="text-slate-500 uppercase tracking-wider text-[10px]">Size</div>
+                    <div id="storeDetailSize" class="text-slate-200 mt-1 font-medium">—</div>
+                  </div>
+                </div>
+
+                <div id="storeDetailTags" class="flex flex-wrap gap-2 mt-4"></div>
+
+                <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                  <button id="storeDetailInstallBtn" onclick="installSelectedStoreGame()" class="flex-1 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold transition-all shadow-[0_0_20px_rgba(52,211,153,0.18)]">
+                    Install
+                  </button>
+                  <button id="storeDetailCopyBtn" onclick="copySelectedStoreLink()" class="px-4 py-3 rounded-2xl btn-glass text-white text-sm font-semibold border border-white/10">
+                    Copy Link
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="mt-4 glass-card rounded-3xl p-4 md:p-5">
-            <h4 class="text-sm font-bold text-white mb-3">Add games to the store easily</h4>
-            <p class="text-sm text-slate-400 leading-relaxed">
-              Put all store items in one JSON file or one JavaScript array. Then you only edit one place when you want to add more games.
+          <div class="mt-4 rounded-[1.75rem] border border-white/10 bg-black/20 p-4 md:p-5">
+            <h4 class="text-sm font-bold text-white">Add games fast</h4>
+            <p class="text-sm text-slate-400 mt-1 leading-relaxed">
+              Your current game list stays the same. Just keep adding entries to your existing <code>STORE_GAMES</code> array with <code>repoGame("name")</code>.
             </p>
             <div class="mt-3 rounded-2xl bg-black/35 border border-white/10 p-3 overflow-auto">
-              <code class="text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap" id="storeDataHint"></code>
+              <code class="text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed" id="storeDataHint"></code>
             </div>
           </div>
         </div>
 
-        <!-- Import tab -->
-        <div id="storeImportPanel" class="hidden min-h-0 flex-1 overflow-y-auto p-3 md:p-5">
-          <div class="glass-card rounded-3xl p-4 md:p-5">
-            <h4 class="text-lg font-bold text-white">Import a game</h4>
-            <p class="text-sm text-slate-400 mt-1">Paste a direct HTML game URL, or add one item to your store source list.</p>
+        <div id="storeImportPanel" class="hidden min-h-0 flex-1 overflow-y-auto p-4 md:p-5">
+          <div class="rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-white/8 to-black/20 p-4 md:p-5">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <h4 class="text-lg font-bold text-white">Import from URL</h4>
+                <p class="text-sm text-slate-400 mt-1">Paste a direct raw GitHub HTML link or use the selected game.</p>
+              </div>
+              <span class="text-[10px] px-2 py-1 rounded-full bg-white/10 text-slate-300 border border-white/10">Safe mode</span>
+            </div>
 
             <div class="mt-4 space-y-3">
-              <input id="storeImportUrl" type="url" placeholder="https://example.com/game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.05] transition-all">
-              <button onclick="importGameFromStoreUrl()" class="w-full py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold transition-all">
-                Analyze and Add to Store
+              <input id="storeImportUrl" type="url" placeholder="https://raw.githubusercontent.com/.../game.html" class="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.08] transition-all">
+              <button onclick="importGameFromStoreUrl()" class="w-full py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                Analyze and Install
               </button>
             </div>
 
+            <div id="storeNotice" class="hidden mt-4 rounded-2xl border px-4 py-3 text-sm"></div>
+
             <div class="mt-4 rounded-2xl bg-black/35 border border-white/10 p-4">
-              <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Store source example</div>
+              <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Manual add example</div>
               <pre class="text-[11px] text-slate-300 overflow-auto whitespace-pre-wrap" id="storeJsonExample"></pre>
             </div>
           </div>
@@ -413,6 +466,511 @@
     </div>
   </div>
 </div>
+
+<script>
+let pendingInstallData = null;
+let STORE_ACTIVE_TAB = "featured";
+let STORE_SELECTED_GAME = null;
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeForJs(str) {
+  return String(str ?? "").replaceAll("\\", "\\\\").replaceAll("'", "\\'");
+}
+
+function getStoreGames() {
+  return Array.isArray(STORE_GAMES) ? STORE_GAMES : [];
+}
+
+function getInstalledStoreGames() {
+  return Array.isArray(window.STATE?.rawGamesList)
+    ? window.STATE.rawGamesList.filter(g => g && g.isOfflinePackage)
+    : [];
+}
+
+function isGameInstalledInFlashStore(game) {
+  if (!game || !Array.isArray(window.STATE?.rawGamesList)) return false;
+  return window.STATE.rawGamesList.some(g => g?.url === game.url || g?.id === game.id);
+}
+
+function setStoreNotice(message, tone = "info") {
+  const notice = document.getElementById("storeNotice");
+  if (!notice) return;
+
+  const styles = {
+    info: "border-indigo-500/20 bg-indigo-500/10 text-indigo-100",
+    success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-100",
+    warning: "border-amber-500/20 bg-amber-500/10 text-amber-100",
+    error: "border-rose-500/20 bg-rose-500/10 text-rose-100"
+  };
+
+  notice.className = `mt-4 rounded-2xl border px-4 py-3 text-sm ${styles[tone] || styles.info}`;
+  notice.textContent = message;
+  notice.classList.remove("hidden");
+}
+
+function clearStoreNotice() {
+  const notice = document.getElementById("storeNotice");
+  if (notice) {
+    notice.textContent = "";
+    notice.classList.add("hidden");
+  }
+}
+
+function switchStoreTab(tab) {
+  STORE_ACTIVE_TAB = tab;
+
+  document.querySelectorAll("[data-store-tab]").forEach(btn => {
+    const active = btn.dataset.storeTab === tab;
+    btn.className = active
+      ? "store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/10 text-white whitespace-nowrap"
+      : "store-tab px-4 py-2 rounded-2xl text-sm font-semibold border border-white/10 bg-white/5 text-slate-300 whitespace-nowrap";
+  });
+
+  const importPanel = document.getElementById("storeImportPanel");
+  const detailPanel = document.getElementById("storeDetailPanel");
+  const content = document.getElementById("storeContent");
+
+  if (tab === "import") {
+    importPanel?.classList.remove("hidden");
+    detailPanel?.classList.add("hidden");
+    content?.classList.add("hidden");
+  } else {
+    importPanel?.classList.add("hidden");
+    detailPanel?.classList.remove("hidden");
+    content?.classList.remove("hidden");
+  }
+
+  renderStore();
+}
+
+function openStoreImportTab() {
+  openInstallModal();
+  switchStoreTab("import");
+}
+
+function renderStore() {
+  const content = document.getElementById("storeContent");
+  if (!content) return;
+
+  const search = (document.getElementById("storeSearchInput")?.value || "").toLowerCase().trim();
+  const category = document.getElementById("storeCategoryFilter")?.value || "all";
+  const sortOrder = document.getElementById("storeSortOrder")?.value || "featured";
+
+  let games = [...getStoreGames()];
+
+  if (STORE_ACTIVE_TAB === "featured") {
+    games = games.filter(game => !!game.featured);
+  } else if (STORE_ACTIVE_TAB === "installed") {
+    games = games.filter(game => isGameInstalledInFlashStore(game));
+  }
+
+  if (category !== "all") {
+    games = games.filter(game => (game.category || "classic").toLowerCase() === category.toLowerCase());
+  }
+
+  if (search) {
+    games = games.filter(game => {
+      const haystack = `${game.title || ""} ${game.category || ""} ${game.source || ""}`.toLowerCase();
+      return haystack.includes(search);
+    });
+  }
+
+  if (sortOrder === "az") {
+    games.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+  } else if (sortOrder === "za") {
+    games.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+  } else {
+    games.sort((a, b) => (b.featured === true) - (a.featured === true));
+  }
+
+  const libraryCount = document.getElementById("storeLibraryCount");
+  const selectedCount = document.getElementById("storeSelectedCount");
+  if (libraryCount) libraryCount.textContent = `${getStoreGames().length} games`;
+  if (selectedCount) selectedCount.textContent = `${games.length} shown`;
+
+  if (!games.length) {
+    content.innerHTML = `
+      <div class="h-full min-h-[40vh] flex items-center justify-center">
+        <div class="text-center max-w-sm mx-auto p-8">
+          <div class="text-4xl mb-3">🔎</div>
+          <h3 class="text-lg font-bold text-white mb-2">No apps found</h3>
+          <p class="text-sm text-slate-400">Try another search or category.</p>
+        </div>
+      </div>
+    `;
+    updateStoreDetail(null);
+    STORE_SELECTED_GAME = null;
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
+      ${games.map(game => {
+        const installed = isGameInstalledInFlashStore(game);
+        const selected = STORE_SELECTED_GAME?.id === game.id;
+        return `
+          <button onclick="selectStoreGame('${escapeForJs(game.id)}')" class="text-left rounded-[1.5rem] border transition-all p-3 md:p-4 ${selected ? "border-indigo-500/40 bg-indigo-500/10" : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/15"}">
+            <div class="flex items-center gap-3">
+              <div class="h-14 w-14 rounded-2xl bg-black/35 border border-white/10 overflow-hidden flex-shrink-0">
+                <img src="${escapeHtml(game.image || "offline/logo.png")}" class="w-full h-full object-contain p-2" onerror="this.src='offline/logo.png'">
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-2">
+                  <h4 class="font-bold text-white text-sm leading-tight truncate">${escapeHtml(game.title || "Untitled")}</h4>
+                  ${game.featured ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-200 border border-indigo-500/20">Featured</span>` : ""}
+                </div>
+                <p class="text-xs text-slate-400 mt-1 truncate">${escapeHtml(game.category || "classic")} • ${escapeHtml(game.source || "Store")}</p>
+                <div class="mt-2 flex items-center gap-2">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full border ${installed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" : "bg-white/5 text-slate-300 border-white/10"}">
+                    ${installed ? "Installed" : "Ready"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </button>
+        `;
+      }).join("")}
+    </div>
+  `;
+
+  const activeGames = games;
+  if (!STORE_SELECTED_GAME || !activeGames.some(g => g.id === STORE_SELECTED_GAME.id)) {
+    selectStoreGame(activeGames[0].id);
+  }
+
+  updateStoreHints();
+  updateStoreDetail(STORE_SELECTED_GAME);
+}
+
+function updateStoreHints() {
+  const hint = document.getElementById("storeDataHint");
+  const example = document.getElementById("storeJsonExample");
+
+  if (hint) {
+    hint.textContent =
+`Add a game in your existing STORE_GAMES array like this:
+repoGame("ovo", { title: "OvO", category: "action", featured: true })
+
+The store automatically builds:
+https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/refs/heads/master/offline/ovo.html`;
+  }
+
+  if (example) {
+    example.textContent =
+`[
+  repoGame("ovo", { title: "OvO", category: "action", featured: true }),
+  repoGame("subwaysurfers", { title: "Subway Surfers", category: "arcade" })
+]`;
+  }
+}
+
+function updateStoreDetail(game) {
+  const icon = document.getElementById("storeDetailIcon");
+  const title = document.getElementById("storeDetailTitle");
+  const desc = document.getElementById("storeDetailDesc");
+  const source = document.getElementById("storeDetailSource");
+  const size = document.getElementById("storeDetailSize");
+  const featured = document.getElementById("storeDetailFeatured");
+  const tags = document.getElementById("storeDetailTags");
+  const installBtn = document.getElementById("storeDetailInstallBtn");
+  const copyBtn = document.getElementById("storeDetailCopyBtn");
+
+  if (!game) {
+    if (icon) icon.src = "offline/logo.png";
+    if (title) title.textContent = "Choose a game";
+    if (desc) desc.textContent = "Pick a title from the store to see details, tags, and install actions.";
+    if (source) source.textContent = "—";
+    if (size) size.textContent = "—";
+    if (featured) featured.classList.add("hidden");
+    if (tags) tags.innerHTML = "";
+    if (installBtn) {
+      installBtn.textContent = "Install";
+      installBtn.disabled = true;
+    }
+    if (copyBtn) copyBtn.disabled = true;
+    return;
+  }
+
+  if (icon) icon.src = game.image || "offline/logo.png";
+  if (title) title.textContent = game.title || "Untitled";
+  if (desc) desc.textContent = game.description || "A compatible installable game from your store list.";
+  if (source) source.textContent = game.source || "Store";
+  if (size) size.textContent = game.sizeHint || "Unknown";
+  if (featured) featured.classList.toggle("hidden", !game.featured);
+
+  if (tags) {
+    const chips = [
+      game.category || "classic",
+      game.featured ? "featured" : null,
+      isGameInstalledInFlashStore(game) ? "installed" : "ready"
+    ].filter(Boolean);
+
+    tags.innerHTML = chips.map(tag => `
+      <span class="text-[10px] px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-slate-200 uppercase tracking-wide">
+        ${escapeHtml(tag)}
+      </span>
+    `).join("");
+  }
+
+  if (installBtn) {
+    installBtn.disabled = false;
+    installBtn.textContent = isGameInstalledInFlashStore(game) ? "Reinstall" : "Install";
+  }
+
+  if (copyBtn) copyBtn.disabled = false;
+}
+
+function selectStoreGame(id) {
+  const game = getStoreGames().find(g => g.id === id);
+  if (!game) return;
+
+  STORE_SELECTED_GAME = game;
+  updateStoreDetail(game);
+  renderStore();
+}
+
+function openInstallModal() {
+  const modal = document.getElementById("installModal");
+  const inner = document.getElementById("installModalInner");
+  if (!modal || !inner) return;
+
+  modal.classList.remove("hidden");
+  requestAnimationFrame(() => {
+    modal.classList.remove("opacity-0");
+    inner.classList.remove("scale-95");
+  });
+
+  clearStoreNotice();
+  renderStore();
+}
+
+function closeInstallModal() {
+  const modal = document.getElementById("installModal");
+  const inner = document.getElementById("installModalInner");
+  if (!modal || !inner) return;
+
+  modal.classList.add("opacity-0");
+  inner.classList.add("scale-95");
+  setTimeout(() => modal.classList.add("hidden"), 300);
+}
+
+function resetInstallModal() {
+  pendingInstallData = null;
+  clearStoreNotice();
+
+  const importInput = document.getElementById("storeImportUrl");
+  if (importInput) importInput.value = "";
+
+  updateStoreDetail(STORE_SELECTED_GAME);
+}
+
+function installSelectedStoreGame() {
+  if (!STORE_SELECTED_GAME?.url) {
+    setStoreNotice("No game is selected yet.", "warning");
+    return;
+  }
+
+  openInstallModal();
+  switchStoreTab("import");
+
+  const input = document.getElementById("storeImportUrl");
+  if (input) input.value = STORE_SELECTED_GAME.url;
+
+  importGameFromStoreUrl(STORE_SELECTED_GAME.url);
+}
+
+function copySelectedStoreLink() {
+  if (!STORE_SELECTED_GAME?.url) return;
+  navigator.clipboard?.writeText(STORE_SELECTED_GAME.url).catch(() => {});
+}
+
+async function importGameFromStoreUrl(url) {
+  const input = document.getElementById("storeImportUrl");
+  const targetUrl = (url || input?.value || "").trim();
+
+  if (!targetUrl) {
+    setStoreNotice("Paste a valid game URL first.", "warning");
+    return;
+  }
+
+  if (input) input.value = targetUrl;
+  await analyzeInstallUrl(targetUrl);
+}
+
+async function analyzeInstallUrl(urlOverride = null) {
+  const input = document.getElementById("storeImportUrl");
+  const targetUrl = (urlOverride || input?.value || "").trim();
+
+  if (!targetUrl) {
+    setStoreNotice("No URL found to analyze.", "warning");
+    return;
+  }
+
+  const installBtn = document.querySelector('#storeImportPanel button[onclick="importGameFromStoreUrl()"]');
+  const oldLabel = installBtn?.textContent || "";
+
+  if (installBtn) {
+    installBtn.textContent = "Analyzing…";
+    installBtn.disabled = true;
+  }
+
+  clearStoreNotice();
+
+  try {
+    const response = await fetch(targetUrl, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(response.status === 404 ? "404 Not Found" : `HTTP ${response.status}`);
+    }
+
+    const contentType = response.headers.get("content-type") || "text/html";
+    let bytes = parseInt(response.headers.get("content-length"), 10) || 0;
+    const rawTextData = await response.text();
+    if (!bytes) bytes = new Blob([rawTextData]).size;
+
+    const sizeInKB = (bytes / 1024).toFixed(2);
+    const fileName = targetUrl.split("/").pop().split("?")[0] || "custom-game.html";
+    const titleFromFile = fileName.replace(/\.html$/i, "").replace(/[-_]/g, " ").trim();
+    const cleanTitle = titleFromFile ? titleFromFile.replace(/\b\w/g, c => c.toUpperCase()) : "Custom Game";
+
+    let autoIcon = "offline/logo.png";
+    try {
+      const domain = new URL(targetUrl).hostname;
+      autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+    } catch (e) {}
+
+    pendingInstallData = {
+      url: targetUrl,
+      title: cleanTitle,
+      size: sizeInKB,
+      icon: autoIcon,
+      rawText: rawTextData,
+      contentType
+    };
+
+    const icon = document.getElementById("storeDetailIcon");
+    const title = document.getElementById("storeDetailTitle");
+    const desc = document.getElementById("storeDetailDesc");
+    const source = document.getElementById("storeDetailSource");
+    const size = document.getElementById("storeDetailSize");
+
+    if (icon) icon.src = autoIcon;
+    if (title) title.textContent = cleanTitle;
+    if (desc) desc.textContent = `Ready to install from ${targetUrl}`;
+    if (source) source.textContent = "External URL";
+    if (size) size.textContent = `${sizeInKB} KB`;
+
+    setStoreNotice(`Ready to install "${cleanTitle}".`, "success");
+    switchStoreTab("import");
+
+    const previewIcon = document.getElementById("installPreviewIcon");
+    const previewTitle = document.getElementById("installPreviewTitle");
+    const previewSize = document.getElementById("installPreviewSize");
+    if (previewIcon) previewIcon.src = autoIcon;
+    if (previewTitle) previewTitle.textContent = cleanTitle;
+    if (previewSize) previewSize.textContent = `Size: ${sizeInKB} KB`;
+
+    const installConfirmBtn = document.getElementById("installConfirmBtn");
+    if (installConfirmBtn) installConfirmBtn.disabled = false;
+  } catch (err) {
+    console.error(err);
+    pendingInstallData = null;
+    setStoreNotice(`Unable to install this game: ${err.message}`, "error");
+  } finally {
+    if (installBtn) {
+      installBtn.textContent = oldLabel || "Analyze and Install";
+      installBtn.disabled = false;
+    }
+  }
+}
+
+async function commitInstallGame() {
+  if (!pendingInstallData) {
+    setStoreNotice("Analyze a game first.", "warning");
+    return;
+  }
+
+  const btn = document.getElementById("installConfirmBtn");
+  const oldLabel = btn?.textContent || "";
+
+  if (btn) {
+    btn.textContent = "Installing…";
+    btn.disabled = true;
+  }
+
+  try {
+    if ("caches" in window) {
+      const gameCache = await caches.open("flash-games-cache");
+      await gameCache.put(
+        pendingInstallData.url,
+        new Response(pendingInstallData.rawText, {
+          status: 200,
+          statusText: "OK",
+          headers: { "Content-Type": pendingInstallData.contentType }
+        })
+      );
+    }
+
+    if (!window.STATE?.rawGamesList) {
+      throw new Error("Game library is not ready.");
+    }
+
+    const targetZoneCasing = window.STATE.rawGamesList.some(g => g.zone === "offline") ? "offline" : "OFFLINE";
+    const incomingGame = {
+      id: "pkg-" + pendingInstallData.title.toLowerCase().replace(/\s+/g, "-") + "-" + Math.floor(Math.random() * 1000),
+      name: pendingInstallData.title,
+      title: pendingInstallData.title,
+      url: pendingInstallData.url,
+      zone: targetZoneCasing,
+      image: pendingInstallData.icon,
+      icon: pendingInstallData.icon,
+      isOfflinePackage: true
+    };
+
+    const alreadyExists = window.STATE.rawGamesList.findIndex(g => g.url === incomingGame.url);
+    if (alreadyExists > -1) window.STATE.rawGamesList[alreadyExists] = incomingGame;
+    else window.STATE.rawGamesList.push(incomingGame);
+
+    const offlineFolder = window.STATE.rawGamesList.filter(game => game.isOfflinePackage);
+    localStorage.setItem("flash_offline_folder", JSON.stringify(offlineFolder));
+
+    const counter = document.getElementById("totalGamesCounter");
+    if (counter) counter.textContent = `${window.STATE.rawGamesList.length} games`;
+
+    if (typeof processAndRenderView === "function") processAndRenderView();
+    if (typeof renderStore === "function") renderStore();
+
+    setStoreNotice(`Installed "${pendingInstallData.title}" successfully.`, "success");
+    closeInstallModal();
+  } catch (err) {
+    console.error(err);
+    setStoreNotice(`Installation failed: ${err.message}`, "error");
+  } finally {
+    if (btn) {
+      btn.textContent = oldLabel || "Install";
+      btn.disabled = false;
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("storeImportUrl");
+  form?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      importGameFromStoreUrl();
+    }
+  });
+});
+</script>
+    
 
     <div id="profileModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-xl flex items-center justify-center p-4 md:p-6 transition-opacity opacity-0 duration-300">
         <div class="glass-panel-dark max-w-2xl w-full rounded-3xl shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300" id="profileModalInner">
@@ -2727,89 +3285,6 @@ const STORE_GAMES = [
   })
 ];
 
-async function importGameFromStoreUrl(url) {
-    console.log("Installing URL:", url);
-    const input = document.getElementById("storeImportUrl");
-    if (input) input.value = url;
-
-    try {
-        const response = await fetch(url, { cache: "no-store" });
-
-        if (!response.ok) {
-            throw new Error(
-                response.status === 404
-                    ? "404 Not Found"
-                    : `HTTP ${response.status}`
-            );
-        }
-
-        CURRENT_INSTALL_URL = url;
-        await analyzeInstallUrl();
-    } catch (err) {
-        console.error("Store import failed:", err);
-        alert(`❌ Could not load game.\n\n${err.message}`);
-    }
-}
-
-let STORE_ACTIVE_TAB = "featured";
-
-function switchStoreTab(tab) {
-    STORE_ACTIVE_TAB = tab;
-
-    // Update tab button styling
-    document.querySelectorAll("[data-store-tab]").forEach(btn => {
-        btn.classList.remove(
-            "bg-white/10",
-            "text-white"
-        );
-
-        btn.classList.add(
-            "bg-black/20",
-            "text-slate-300"
-        );
-    });
-
-    const activeBtn = document.querySelector(
-        `[data-store-tab="${tab}"]`
-    );
-
-    if (activeBtn) {
-        activeBtn.classList.remove(
-            "bg-black/20",
-            "text-slate-300"
-        );
-
-        activeBtn.classList.add(
-            "bg-white/10",
-            "text-white"
-        );
-    }
-
-    // Main panels
-    const storeContent = document.getElementById("storeContent");
-    const storeDetailPanel = document.getElementById("storeDetailPanel");
-    const storeImportPanel = document.getElementById("storeImportPanel");
-
-    if (tab === "import") {
-
-        storeContent?.classList.add("hidden");
-        storeDetailPanel?.classList.add("hidden");
-        storeImportPanel?.classList.remove("hidden");
-
-    } else {
-
-        storeContent?.classList.remove("hidden");
-        storeDetailPanel?.classList.remove("hidden");
-        storeImportPanel?.classList.add("hidden");
-
-    }
-
-    // Re-render store if your renderer exists
-    if (typeof renderStore === "function") {
-        renderStore();
-    }
-}
-
 let STORE_SELECTED_GAME = null;
 
 function escapeHtml(str) {
@@ -2819,172 +3294,6 @@ function escapeHtml(str) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
-}
-
-function isGameInstalledInFlashStore(game) {
-    if (!game || typeof STATE === "undefined" || !STATE.rawGamesList) return false;
-    return STATE.rawGamesList.some(g => g.url === game.url || g.id === game.id);
-}
-
-function renderStore() {
-    const content = document.getElementById("storeContent");
-    const detailIcon = document.getElementById("storeDetailIcon");
-    const detailTitle = document.getElementById("storeDetailTitle");
-    const detailDesc = document.getElementById("storeDetailDesc");
-    const detailSource = document.getElementById("storeDetailSource");
-    const detailSize = document.getElementById("storeDetailSize");
-    const installBtn = document.getElementById("storeDetailInstallBtn");
-    const copyBtn = document.getElementById("storeDetailCopyBtn");
-
-    if (!content) return;
-
-    const search = (document.getElementById("storeSearchInput")?.value || "").toLowerCase().trim();
-    const category = document.getElementById("storeCategoryFilter")?.value || "all";
-    const sortOrder = document.getElementById("storeSortOrder")?.value || "featured";
-
-    let games = [...STORE_GAMES];
-
-    if (STORE_ACTIVE_TAB === "featured") {
-        games = games.filter(game => game.featured);
-    } else if (STORE_ACTIVE_TAB === "installed") {
-        games = games.filter(game => isGameInstalledInFlashStore(game));
-    }
-
-    if (category !== "all") {
-        games = games.filter(game => (game.category || "classic").toLowerCase() === category.toLowerCase());
-    }
-
-    if (search) {
-        games = games.filter(game =>
-            (game.title || "").toLowerCase().includes(search) ||
-            (game.category || "").toLowerCase().includes(search) ||
-            (game.source || "").toLowerCase().includes(search)
-        );
-    }
-
-    if (sortOrder === "az") {
-        games.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-    } else if (sortOrder === "za") {
-        games.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
-    } else {
-        games.sort((a, b) => (b.featured === true) - (a.featured === true));
-    }
-
-    if (!games.length) {
-        content.innerHTML = `
-            <div class="h-full min-h-[40vh] flex items-center justify-center">
-                <div class="text-center max-w-sm mx-auto p-8">
-                    <div class="text-4xl mb-3">🔎</div>
-                    <h3 class="text-lg font-bold text-white mb-2">No games found</h3>
-                    <p class="text-sm text-slate-400">Try another search or category.</p>
-                </div>
-            </div>
-        `;
-        STORE_SELECTED_GAME = null;
-        updateStoreDetails(null);
-        return;
-    }
-
-    content.innerHTML = `
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-            ${games.map(game => {
-                const installed = isGameInstalledInFlashStore(game);
-                return `
-                    <button onclick="selectStoreGame('${escapeHtml(game.id)}')" class="text-left glass-card rounded-3xl p-3 md:p-4 hover:scale-[1.01] transition-all border border-white/10">
-                        <div class="flex items-center gap-3">
-                            <div class="h-14 w-14 rounded-2xl bg-black/35 border border-white/10 overflow-hidden flex-shrink-0">
-                                <img src="${escapeHtml(game.image || "offline/logo.png")}" class="w-full h-full object-contain p-2" onerror="this.src='offline/logo.png'">
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-start justify-between gap-2">
-                                    <h4 class="font-bold text-white text-sm leading-tight truncate">${escapeHtml(game.title || "Untitled")}</h4>
-                                    ${game.featured ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/20">Featured</span>` : ""}
-                                </div>
-                                <p class="text-xs text-slate-400 mt-1 truncate">${escapeHtml(game.category || "classic")} • ${escapeHtml(game.source || "Store")}</p>
-                                <div class="mt-2 flex items-center gap-2">
-                                    <span class="text-[10px] px-2 py-0.5 rounded-full border ${installed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" : "bg-white/5 text-slate-300 border-white/10"}">
-                                        ${installed ? "Installed" : "Ready"}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </button>
-                `;
-            }).join("")}
-        </div>
-    `;
-
-    if (!STORE_SELECTED_GAME || !games.some(g => g.id === STORE_SELECTED_GAME.id)) {
-        selectStoreGame(games[0].id);
-    }
-
-    function updateStoreDetails(game) {
-        if (!detailIcon || !detailTitle || !detailDesc || !detailSource || !detailSize || !installBtn || !copyBtn) return;
-
-        if (!game) {
-            detailIcon.src = "offline/logo.png";
-            detailTitle.textContent = "Choose a game";
-            detailDesc.textContent = "Pick a title from the store to see more info, preview links, and install options.";
-            detailSource.textContent = "—";
-            detailSize.textContent = "—";
-            installBtn.textContent = "Install";
-            installBtn.disabled = true;
-            copyBtn.disabled = true;
-            return;
-        }
-
-        detailIcon.src = game.image || "offline/logo.png";
-        detailTitle.textContent = game.title || "Untitled";
-        detailDesc.textContent = game.description || "A compatible installable game from your store list.";
-        detailSource.textContent = game.source || "Store";
-        detailSize.textContent = game.sizeHint || "Unknown";
-        installBtn.disabled = false;
-        copyBtn.disabled = false;
-        installBtn.textContent = isGameInstalledInFlashStore(game) ? "Reinstall" : "Install";
-    }
-
-    updateStoreDetails(STORE_SELECTED_GAME);
-}
-
-function selectStoreGame(id) {
-    const game = STORE_GAMES.find(g => g.id === id);
-    if (!game) return;
-
-    STORE_SELECTED_GAME = game;
-
-    const detailIcon = document.getElementById("storeDetailIcon");
-    const detailTitle = document.getElementById("storeDetailTitle");
-    const detailDesc = document.getElementById("storeDetailDesc");
-    const detailSource = document.getElementById("storeDetailSource");
-    const detailSize = document.getElementById("storeDetailSize");
-    const installBtn = document.getElementById("storeDetailInstallBtn");
-    const copyBtn = document.getElementById("storeDetailCopyBtn");
-
-    if (detailIcon) detailIcon.src = game.image || "offline/logo.png";
-    if (detailTitle) detailTitle.textContent = game.title || "Untitled";
-    if (detailDesc) detailDesc.textContent = game.description || "A compatible installable game from your store list.";
-    if (detailSource) detailSource.textContent = game.source || "Store";
-    if (detailSize) detailSize.textContent = game.sizeHint || "Unknown";
-
-    if (installBtn) {
-        installBtn.textContent = isGameInstalledInFlashStore(game) ? "Reinstall" : "Install";
-        installBtn.disabled = false;
-        installBtn.onclick = () => {
-            const importUrl = document.getElementById("storeImportUrl");
-            if (importUrl) importUrl.value = game.url;
-
-            switchStoreTab("import");
-            const tabBtn = document.querySelector('[data-store-tab="import"]');
-            tabBtn?.click();
-        };
-    }
-
-    if (copyBtn) {
-        copyBtn.disabled = false;
-        copyBtn.onclick = async () => {
-            try { await navigator.clipboard.writeText(game.url); } catch (e) {}
-        };
-    }
 }
 
 function openInstallModal() {
