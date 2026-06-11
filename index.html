@@ -1957,48 +1957,6 @@ document.addEventListener('keydown', (e) => {
 // GUI INSTALLER PIPELINE
 // ==========================================
 
-async function analyzeInstallUrl() {
-    const urlInput = document.getElementById('installUrlInput');
-    const targetUrl = urlInput.value.trim();
-    if (!targetUrl) return;
-    
-    const btn = document.getElementById('installAnalyzeBtn');
-    btn.textContent = 'Analyzing...'; btn.disabled = true;
-
-    try {
-        let autoIcon = "";
-        try { const domain = new URL(targetUrl).hostname; autoIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`; } catch(e) {}
-
-        const response = await fetch(targetUrl);
-        if (!response.ok) throw new Error("Bad response from server");
-
-        let bytes = parseInt(response.headers.get('content-length'), 10) || 0;
-        const contentType = response.headers.get("content-type") || "";
-        const rawTextData = await response.text();
-        if (!bytes) { bytes = new Blob([rawTextData]).size; }
-        const sizeInKB = (bytes / 1024).toFixed(2);
-
-        let cleanTitle = "Custom Game";
-        let filename = targetUrl.split('/').pop().split('?')[0];
-        if (filename) {
-            let baseName = filename.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
-            cleanTitle = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-        }
-
-        pendingInstallData = { url: targetUrl, title: cleanTitle, size: sizeInKB, icon: autoIcon, rawText: rawTextData, contentType: contentType };
-
-        document.getElementById('installStep1').classList.add('hidden');
-        document.getElementById('installStep2').classList.remove('hidden');
-        document.getElementById('installStep2').classList.add('flex');
-        
-        document.getElementById('installPreviewIcon').src = autoIcon;
-        document.getElementById('installPreviewTitle').textContent = cleanTitle;
-        document.getElementById('installPreviewSize').textContent = `Size: ${sizeInKB} KB`;
-
-    } catch (err) { alert("Analysis failed: " + err.message); }
-    btn.textContent = 'Analyze Payload'; btn.disabled = false;
-}
-
 async function commitInstallGame() {
     if (!pendingInstallData) return;
     const btn = document.getElementById('installConfirmBtn');
