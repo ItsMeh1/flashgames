@@ -4,6 +4,15 @@
   const CACHE_TTL = 5 * 60 * 1000;
   const configured = () => (localStorage.getItem('flash.v2.apiBase') || window.FLASH_API_BASE || '').replace(/\/$/, '');
 
+  // v2-app expects a build marker for Settings/update information. Keep it
+  // non-invasive: it is created only when the host page does not provide one.
+  if (!document.getElementById('build')) {
+    const build = document.createElement('span');
+    build.id = 'build';
+    build.hidden = true;
+    document.body.appendChild(build);
+  }
+
   async function readJson(url, timeout = 8000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
@@ -70,6 +79,33 @@
     }
   }
 
+  // update.json is now the single source of truth for the changelog. v2-app
+  // still renders its initial fallback immediately; this replaces that view
+  // with the remotely editable JSON once the page is ready.
+  async function loadUpdates() {
+    try {
+      const response = await fetch('./update.json', { cache: 'no-store', headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json();
+      const releases = Array.isArray(payload) ? payload : (Array.isArray(payload.releases) ? payload.releases : []);
+      const target = document.getElementById('updatesContent');
+      if (!target || !releases.length) return;
+      const escapeHtml = value => String(value ?? '').replace(/[&<>\"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;', "'":'&#39;' }[c]));
+      const icons = {
+        add: '<b class="log-add">+</b>',
+        edit: '<b class="log-edit">⌁</b>',
+        mod: '<b class="log-mod">⚒</b>',
+        stop: '<b class="log-stop">■</b>'
+      };
+      target.innerHTML = `<div class="page-head"><div><div class="eyebrow">CHANGELOG</div><h1>What's new</h1><p>Readable release history for the current build.</p></div></div><div class="timeline">${releases.map(release => `<article class="release"><span class="release-dot"></span><div class="release-head"><strong>v${escapeHtml(release.version)}</strong><span>${escapeHtml(release.date)}</span></div><p>${escapeHtml(release.desc || '')}</p>${(Array.isArray(release.items) ? release.items : []).map(item => `<div class="log-item">${icons[item[0]] || '<b>•</b>'}<span>${escapeHtml(item[1])}</span></div>`).join('')}</article>`).join('')}</div>`;
+    } catch (error) {
+      console.warn('Could not load update.json:', error);
+    }
+  }
+
   window.FlashData = { load, loadGames, clearCache: () => localStorage.removeItem(CACHE_KEY) };
   window.loadGames = loadGames;
+  window.FlashUpdates = { load: loadUpdates };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadUpdates, { once: true });
+  else loadUpdates();
 })();
