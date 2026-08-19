@@ -1,42 +1,31 @@
-console.log("service worker script running")
+const CACHE_NAME = 'flashgames-v2-2.0.0';
+const APP_SHELL = ['./','./index.html','./v2-data.js','./v2-store.js','./offline.json','./offline/logo.png'];
 
-const CACHE_NAME = 'flashgames-cache-v1';
-
-// Install instantly
-self.addEventListener('install', (event) => {
-    self.skipWaiting();
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
 
-// Take control of the page immediately upon activation
-self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
-    console.log("service worker initialized")
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key.startsWith('flashgames-') && key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
 });
 
-// The Traffic Cop: Intercept network requests
-self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') return;
-    if (!event.request.url.startsWith('http')) return;
-
-    event.respondWith(
-        fetch(event.request).catch(async () => {
-            const cache = await caches.open(CACHE_NAME);
-            
-            // NEW: If the browser is trying to load/navigate to the app itself (e.g. from the home screen)
-            if (event.request.mode === 'navigate') {
-                // Ignore the ?query and exact path, just force-feed it index.html
-                const indexMatch = await cache.match('./index.html');
-                if (indexMatch) return indexMatch;
-            }
-            
-            // Standard fallback for everything else (games, images, json)
-            const cachedResponse = await cache.match(event.request, { ignoreSearch: true });
-            
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            
-            throw new Error('Offline and file not cached.');
-        })
-    );
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
+  event.respondWith(
+    fetch(event.request).then(response => {
+      if (response.ok && new URL(event.request.url).origin === self.location.origin) {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(() => {});
+      }
+      return response;
+    }).catch(async () => {
+      const cache = await caches.open(CACHE_NAME);
+      if (event.request.mode === 'navigate') return cache.match('./index.html');
+      return cache.match(event.request, {ignoreSearch:true}) || Promise.reject(new Error('Offline and file not cached.'));
+    })
+  );
 });
