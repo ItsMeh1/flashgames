@@ -43,7 +43,6 @@
   async function load() {
     const cached = readCache();
     if (cached) return { games: cached, source: 'cache', stale: false };
-
     const base = configured();
     if (base) {
       const candidates = [`${base}/games.json`, `${base}/api/games`, base];
@@ -54,12 +53,23 @@
         } catch (_) {}
       }
     }
-
-    // offline.json is always the final deterministic fallback. It is small and static.
     const local = normalize(await readJson('./offline.json'));
     writeCache(local);
     return { games: local, source: 'offline', stale: Boolean(base) };
   }
 
-  window.FlashData = { load, clearCache: () => localStorage.removeItem(CACHE_KEY) };
+  async function loadGames() {
+    try {
+      const result = await load();
+      window.dispatchEvent(new CustomEvent('flash:data-ready', { detail: result }));
+      return result;
+    } catch (error) {
+      const result = { games: [], source: 'unavailable', stale: true, error };
+      window.dispatchEvent(new CustomEvent('flash:data-ready', { detail: result }));
+      return result;
+    }
+  }
+
+  window.FlashData = { load, loadGames, clearCache: () => localStorage.removeItem(CACHE_KEY) };
+  window.loadGames = loadGames;
 })();
