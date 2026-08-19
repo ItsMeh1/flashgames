@@ -1,0 +1,18 @@
+{
+  "releases": [
+    {
+      "version": "2.1.0",
+      "date": "August 19, 2026",
+      "desc": "A real v2 app replaces the old wrapper with a glass-native experience.",
+      "items": [
+        ["add", "New direct home dashboard and game library"],
+        ["add", "Real Store with install and inventory separation"],
+        ["add", "Theme, glass, accessibility and data settings"],
+        ["edit", "Navigation now reveals from a tiny top handle"],
+        ["edit", "Admin workspace rebuilt as a full-width moderation table"],
+        ["mod", "Firebase account restriction state is checked on sign-in"],
+        ["stop", "Removed the legacy iframe from the v2 home experience"]
+      ]
+    }
+  ]
+}
