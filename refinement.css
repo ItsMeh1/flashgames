@@ -1,0 +1,313 @@
+/* Visual refinement layer: intentionally separate from the main theme stylesheet. */
+
+:root {
+  --ui-font: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display-font: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--ui-font);
+}
+
+.hero h1,
+.page-head h1,
+.section-head h2,
+.panel-head h2,
+.search-head h2,
+.confirm-dialog h2,
+.admin-head h1,
+.admin-panel h2,
+.profile-hero h3 {
+  font-family: var(--display-font);
+  font-style: normal;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+}
+
+.brand,
+.brand span,
+.nav-item,
+.dock-item,
+.btn,
+.icon-btn,
+.profile-chip,
+.setting-action,
+.segmented button,
+.admin-role,
+.eyebrow,
+output {
+  font-family: var(--ui-font);
+}
+
+.topbar {
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.desktop-nav {
+  height: 48px;
+  align-self: center;
+  gap: 3px;
+}
+
+.nav-item {
+  min-width: 72px;
+  height: 44px;
+  padding: 0 11px;
+  line-height: 1;
+}
+
+.nav-item svg,
+.dock-item svg {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+}
+
+.nav-indicator {
+  bottom: 1px;
+}
+
+.top-actions {
+  margin-left: auto;
+  gap: 6px;
+}
+
+.profile-chip {
+  padding-right: 9px;
+}
+
+main {
+  padding-top: 30px;
+}
+
+.section-head,
+.page-head,
+.panel-head,
+.admin-head {
+  align-items: flex-end;
+}
+
+.settings-list {
+  gap: 10px;
+}
+
+.setting {
+  min-height: 58px;
+  padding: 12px 13px;
+  border-radius: 15px;
+  border: 1px solid var(--line);
+  background: var(--glass-soft);
+}
+
+.setting + .range,
+.setting + .color-picker {
+  margin-top: -4px;
+}
+
+.segmented {
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented button {
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 9px;
+}
+
+.setting-action {
+  min-height: 58px;
+  padding: 10px 12px;
+  border-radius: 15px;
+}
+
+.setting-action > span:first-child {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.setting-action > span:first-child > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.setting-action small {
+  line-height: 1.35;
+}
+
+.admin-shell {
+  padding: 28px;
+}
+
+.admin-head {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.admin-head > div:first-child {
+  min-width: 0;
+}
+
+.admin-head h1 {
+  margin: 5px 0 4px;
+}
+
+.admin-head p,
+.admin-panel p {
+  line-height: 1.55;
+}
+
+.admin-role {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--glass-soft);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-panel {
+  padding: 20px;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: rgba(255,255,255,.025);
+}
+
+.admin-panel h2 {
+  margin: 5px 0 7px;
+  font-size: 21px;
+}
+
+.admin-panel > p {
+  margin: 0;
+}
+
+.admin-actions {
+  align-items: center;
+  margin-top: 16px;
+}
+
+.admin-actions .btn {
+  min-width: 44px;
+}
+
+.admin-user-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.admin-user-list .setting-action {
+  width: 100%;
+}
+
+.admin-input {
+  width: 100%;
+  min-height: 88px;
+  margin-top: 14px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  resize: vertical;
+}
+
+.maintenance-card {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 15px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--glass-soft);
+}
+
+.maintenance-card > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.maintenance-card small {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-close {
+  z-index: 3;
+}
+
+@media (max-width: 900px) {
+  .desktop-nav .nav-item {
+    min-width: 44px;
+    padding: 0 10px;
+  }
+
+  .desktop-nav .nav-item span {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    width: min(100% - 18px, 1180px);
+    top: 8px;
+    margin-top: 8px;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  .top-actions {
+    gap: 4px;
+  }
+
+  .profile-chip strong,
+  .profile-chip > i {
+    display: none;
+  }
+
+  .admin-shell {
+    padding: 17px;
+  }
+
+  .admin-head {
+    align-items: flex-start;
+  }
+
+  .admin-panel {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
