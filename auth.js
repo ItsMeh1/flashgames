@@ -1,6 +1,20 @@
 (() => {
   'use strict';
 
+  function notify(title, message, type = 'info') {
+    if (window.FlashUI?.toast) {
+      window.FlashUI.toast(title, message, type);
+      return;
+    }
+    const stack = document.getElementById('toastStack');
+    if (!stack) return;
+    const node = document.createElement('article');
+    node.className = 'toast show';
+    node.innerHTML = `<div><strong>${String(title)}</strong><p>${String(message)}</p></div>`;
+    stack.appendChild(node);
+    setTimeout(() => node.remove(), 4200);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     const auth = window.__flashFirebase?.auth;
     const signIn = document.getElementById('signInBtn');
@@ -18,16 +32,16 @@
       const address = email?.value.trim();
       const secret = password?.value || '';
       if (!address || !secret) {
-        window.FlashUI?.toast('Missing information', 'Enter your email and password.', 'error');
+        notify('Missing information', 'Enter your email and password.', 'error');
         return;
       }
       signIn.disabled = true;
       try {
         await auth.signInWithEmailAndPassword(address, secret);
         if (password) password.value = '';
-        window.FlashUI?.toast('Signed in', 'Your Firebase profile has been loaded.', 'success');
+        notify('Signed in', 'Your Firebase profile has been loaded.', 'success');
       } catch (error) {
-        window.FlashUI?.toast('Sign in failed', error.message || 'Firebase rejected the login.', 'error');
+        notify('Sign in failed', error.message || 'Firebase rejected the login.', 'error');
       } finally {
         signIn.disabled = false;
       }
@@ -36,9 +50,9 @@
     signOut?.addEventListener('click', async () => {
       try {
         await auth.signOut();
-        window.FlashUI?.toast('Signed out', 'Your Firebase session has ended.', 'success');
+        notify('Signed out', 'Your Firebase session has ended.', 'success');
       } catch (error) {
-        window.FlashUI?.toast('Sign out failed', error.message || 'Firebase rejected the request.', 'error');
+        notify('Sign out failed', error.message || 'Firebase rejected the request.', 'error');
       }
     });
   }, { once: true });
