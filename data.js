@@ -128,8 +128,7 @@
 
     return htmlFiles.map((path) => {
       const filename = path.slice(path.lastIndexOf('/') + 1);
-      const encoded = encodeURIComponent(filename);
-      const rawUrl = `${SOURCE_ROOT}${encoded}`;
+      const rawUrl = `${SOURCE_ROOT}${encodeURIComponent(filename)}`;
       const name = prettyName(filename);
       return {
         id: `offline-${filename.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
@@ -147,75 +146,16 @@
     });
   }
 
-  function extractEmbeddedArrays(source) {
-    const arrays = [];
-    const markers = ['STORE_GAMES', 'window.STORE_GAMES', 'GAME_LIST', 'games'];
-    for (const marker of markers) {
-      let cursor = 0;
-      while ((cursor = source.indexOf(marker, cursor)) >= 0) {
-        const open = source.indexOf('[', cursor);
-        if (open < 0) break;
-        let depth = 0;
-        let quote = '';
-        let escaped = false;
-        for (let i = open; i < source.length; i += 1) {
-          const char = source[i];
-          if (quote) {
-            if (escaped) escaped = false;
-            else if (char === '\\') escaped = true;
-            else if (char === quote) quote = '';
-            continue;
-          }
-          if (char === '"' || char === "'") quote = char;
-          else if (char === '[') depth += 1;
-          else if (char === ']') depth -= 1;
-          if (depth === 0) {
-            try {
-              const value = Function(`"use strict"; return (${source.slice(open, i + 1)})`)();
-              if (Array.isArray(value)) arrays.push(value);
-            } catch {
-              // Ignore malformed candidates.
-            }
-            break;
-          }
-        }
-        cursor = open + 1;
-      }
-    }
-    return arrays;
-  }
-
-  async function loadLegacyStore() {
-    const urls = ['./legacy.html', './index-legacy.html', 'https://raw.githubusercontent.com/ItsMeh1/flashgames/main/index.html'];
-    for (const url of urls) {
-      try {
-        const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' });
-        if (!response.ok) continue;
-        const source = await response.text();
-        for (const candidate of extractEmbeddedArrays(source)) {
-          const games = mergeGames(candidate);
-          if (games.length >= 20) return games;
-        }
-      } catch {
-        // Continue to the next source.
-      }
-    }
-    return [];
-  }
-
   async function loadGames(force = false) {
     if (cataloguePromise && !force) return cataloguePromise;
     cataloguePromise = (async () => {
       const cached = readCachedCatalogue();
       if (!force && cached.length >= 300) return { games: cached, source: 'cache' };
 
-      const [offline, legacy] = await Promise.all([
-        fetchFullOfflineCatalogue().catch(() => []),
-        loadLegacyStore().catch(() => [])
-      ]);
-      const games = mergeGames(offline, legacy, cached);
+      const offline = await fetchFullOfflineCatalogue().catch(() => []);
+      const games = mergeGames(offline, cached);
       if (games.length) writeCatalogue(games);
-      return { games, source: games.length ? 'offline-pack+legacy+cache' : 'empty' };
+      return { games, source: games.length ? 'offline-pack+cache' : 'empty' };
     })();
     try {
       return await cataloguePromise;
