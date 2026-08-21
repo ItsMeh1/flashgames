@@ -5,11 +5,11 @@
   const esc = (value) => window.FlashData?.esc ? FlashData.esc(value) : String(value ?? '');
   const icon = (name) => `<i data-lucide="${name}"></i>`;
 
-  const isAdmin = (user, profile = {}) => {
+  function isAdmin(user, profile = {}) {
     const role = String(profile.role || profile.accountRole || '').toLowerCase();
     const email = String(user?.email || '').toLowerCase();
-    return ['admin', 'owner'].includes(role) || role.includes('admin') || role.includes('owner') || /admin|owner|itsmeh1/.test(email);
-  };
+    return role === 'admin' || role === 'owner' || role.includes('admin') || role.includes('owner') || /admin|owner|itsmeh1/.test(email);
+  }
 
   async function getProfile(user) {
     const db = window.__flashFirebase?.db;
@@ -33,7 +33,7 @@
     }
   }
 
-  async function setMaintenance(enabled, message, user) {
+  async function saveMaintenance(user, enabled, message) {
     const db = window.__flashFirebase?.db;
     if (!db || !user) throw new Error('Firebase is not available.');
     await db.collection('settings').doc('maintenance').set({ enabled, message, updatedAt: Date.now(), updatedBy: user.uid }, { merge: true });
@@ -57,71 +57,33 @@
       return false;
     }
 
-    const maintenance = await readMaintenance();
-    const users = await loadUsers();
-    const gameCount = (await FlashData.loadGames()).games.length;
-    const version = (await FlashData.loadUpdates()).version;
+    const [maintenance, users, catalogue, updates] = await Promise.all([
+      readMaintenance(),
+      loadUsers(),
+      FlashData.loadGames(),
+      FlashData.loadUpdates()
+    ]);
 
-    target.innerHTML = `
-      <div class="page-head">
-        <div><span class="eyebrow">CONTROL CENTER</span><h1>Admin</h1><p>Manage Flash Games without leaving the app.</p></div>
-      </div>
-      <div class="admin-grid">
-        <section class="admin-card glass">
-          <div class="admin-card-head"><div><span class="eyebrow">OVERVIEW</span><h2>Dashboard</h2></div>${icon('layout-dashboard')}</div>
-          <div class="admin-stats"><div><strong>${gameCount.toLocaleString()}</strong><span>Games</span></div><div><strong>${users.length}</strong><span>Users loaded</span></div><div><strong>${esc(version)}</strong><span>Version</span></div></div>
-        </section>
-        <section class="admin-card glass">
-          <div class="admin-card-head"><div><span class="eyebrow">RELEASE CONTROL</span><h2>Maintenance</h2></div>${icon('wrench')}</div>
-          <label class="admin-toggle"><span><strong>Private update mode</strong><small>When enabled, normal users see a maintenance screen while admins can continue.</small></span><input id="adminMaintenance" type="checkbox" ${maintenance.enabled ? 'checked' : ''}><span class="switch ${maintenance.enabled ? 'on' : ''}"><i></i></span></label>
-          <textarea id="adminMaintenanceMessage" class="admin-textarea" placeholder="Message shown during maintenance">${esc(maintenance.message || 'Flash Games is being updated. Please check back soon.')}</textarea>
-          <button class="btn primary" id="saveMaintenance">${icon('save')} Save maintenance settings</button>
-        </section>
-        <section class="admin-card glass">
-          <div class="admin-card-head"><div><span class="eyebrow">CATALOGUE</span><h2>Games</h2></div>${icon('gamepad-2')}</div>
-          <p class="admin-note">The Store discovers the real HTML catalogue from the Offline HTML Games Pack. No manual 13-game list is used.</p>
-          <div class="admin-actions"><button class="btn" id="refreshCatalogue">${icon('refresh-cw')} Refresh catalogue</button><button class="btn" id="clearGameCacheAdmin">${icon('trash-2')} Clear installed cache</button></div>
-        </section>
-        <section class="admin-card glass admin-users-card">
-          <div class="admin-card-head"><div><span class="eyebrow">USER MANAGEMENT</span><h2>Users</h2></div>${icon('users')}</div>
-          <div class="admin-user-list">${users.map((item) => `<div class="admin-user"><span class="avatar"><img src="${esc(item.photoURL || item.photo || item.pfp || './offline/logo.png')}" alt=""></span><div><strong>${esc(item.username || item.displayName || item.email || item.id)}</strong><small>${esc(item.email || item.role || 'User')}</small></div><span class="admin-role">${esc(item.role || 'user')}</span></div>`).join('') || '<p class="admin-note">No user documents could be loaded.</p>'}</div>
-        </section>
-        <section class="admin-card glass">
-          <div class="admin-card-head"><div><span class="eyebrow">UPDATES</span><h2>Changelog</h2></div>${icon('history')}</div>
-          <p class="admin-note">Edit <code>update.json</code> in the repository for the public release log. The app automatically displays the green plus, yellow hammer and red X change markers.</p>
-          <button class="btn" data-route="updates">${icon('arrow-right')} Open changelog</button>
-        </section>
-      </div>`;
+    target.innerHTML = `<div class="admin-shell glass">
+      <div class="admin-head"><div><span class="eyebrow">CONTROL CENTER</span><h1>Admin</h1><p>Manage Flash Games without leaving the app.</p></div><span class="admin-role">${esc(profile.role || 'admin')}</span></div>
+      <section class="admin-panel"><span class="eyebrow">OVERVIEW</span><h2>Dashboard</h2><p>The live Flash Games data layer currently exposes <strong>${catalogue.games.length.toLocaleString()}</strong> real games. Current release: <strong>${esc(updates.version)}</strong>. Users loaded: <strong>${users.length}</strong>.</p></section>
+      <section class="admin-panel"><span class="eyebrow">RELEASE CONTROL</span><h2>Maintenance mode</h2><p>Enable this before publishing an update. Normal users are blocked from the app while authorized admins can still use the control center.</p><div class="maintenance-card ${maintenance.enabled ? 'locked' : ''}"><div><strong>${maintenance.enabled ? 'Update lock is ON' : 'Site is public'}</strong><small>${esc(maintenance.message || 'No maintenance message set.')}</small></div><span class="switch ${maintenance.enabled ? 'on' : ''}"><i></i></span></div><textarea id="adminMaintenanceMessage" class="admin-input" rows="3" placeholder="Maintenance message">${esc(maintenance.message || 'Flash Games is being updated. Please check back soon.')}</textarea><div class="admin-actions"><button class="btn primary" id="adminMaintenanceOn">${icon('lock')} Lock for update</button><button class="btn" id="adminMaintenanceOff">${icon('lock-open')} Re-open site</button></div></section>
+      <section class="admin-panel"><span class="eyebrow">CATALOGUE</span><h2>Games</h2><p>The Store discovers the real Offline HTML Games Pack instead of maintaining a tiny hard-coded list.</p><div class="admin-actions"><button class="btn" id="refreshCatalogue">${icon('refresh-cw')} Refresh ${catalogue.games.length.toLocaleString()} games</button><button class="btn" id="clearGameCacheAdmin">${icon('trash-2')} Clear installed cache</button></div></section>
+      <section class="admin-panel"><span class="eyebrow">USER MANAGEMENT</span><h2>Users</h2><p>Firebase users are read from the shared Mobify users collection.</p><div class="admin-user-list">${users.map((item) => `<div class="setting-action"><span><span class="avatar"><img src="${esc(item.photoURL || item.photo || item.pfp || './offline/logo.png')}" alt=""></span><span><strong>${esc(item.username || item.displayName || item.email || item.id)}</strong><small>${esc(item.email || item.role || 'User')}</small></span></span><span class="admin-role">${esc(item.role || 'user')}</span></div>`).join('') || '<p>No user documents could be loaded.</p>'}</div></section>
+      <section class="admin-panel"><span class="eyebrow">UPDATES</span><h2>Release history</h2><p>Public changelog data comes from <code>update.json</code>. The release view supports the green plus, yellow hammer, and red X markers.</p><button class="btn" data-route="updates">${icon('history')} Open changelog</button></section>
+    </div>`;
 
-    $('#saveMaintenance', target)?.addEventListener('click', async () => {
-      const enabled = $('#adminMaintenance', target)?.checked === true;
-      const message = $('#adminMaintenanceMessage', target)?.value.trim() || 'Flash Games is being updated. Please check back soon.';
-      try {
-        await setMaintenance(enabled, message, user);
-        toast('Maintenance updated', enabled ? 'Normal users will see the maintenance screen.' : 'The site is public again.', 'success');
-      } catch (error) {
-        toast('Could not save', error.message || 'Firebase rejected the change.', 'error');
-      }
-    });
-
-    $('#refreshCatalogue', target)?.addEventListener('click', async () => {
-      try {
-        const result = await FlashData.loadGames(true);
-        toast('Catalogue refreshed', `${result.games.length.toLocaleString()} real games are available.`, 'success');
-        window.location.hash = 'store';
-      } catch (error) {
-        toast('Refresh failed', error.message || 'The catalogue could not be refreshed.', 'error');
-      }
-    });
-
-    $('#clearGameCacheAdmin', target)?.addEventListener('click', async () => {
-      await FlashGamesStore.clearGameCache();
-      toast('Installed cache cleared', 'The catalogue remains available; installed HTML files were removed.', 'success');
-      window.dispatchEvent(new CustomEvent('flashgames:library-changed'));
-    });
-
-    if (window.lucide?.createIcons) requestAnimationFrame(() => window.lucide.createIcons({ root: target, attrs: { 'stroke-width': 1.5 } }));
+    const message = () => $('#adminMaintenanceMessage', target)?.value.trim() || 'Flash Games is being updated. Please check back soon.';
+    $('#adminMaintenanceOn', target)?.addEventListener('click', async () => { try { await saveMaintenance(user, true, message()); toast('Update lock enabled', 'Normal users are now blocked from the app.', 'success'); await render(target, user, profile, toast); } catch (error) { toast('Could not enable maintenance', error.message || 'Firebase rejected the change.', 'error'); } });
+    $('#adminMaintenanceOff', target)?.addEventListener('click', async () => { try { await saveMaintenance(user, false, message()); toast('Site reopened', 'Normal users can access Flash Games again.', 'success'); await render(target, user, profile, toast); } catch (error) { toast('Could not reopen site', error.message || 'Firebase rejected the change.', 'error'); } });
+    $('#refreshCatalogue', target)?.addEventListener('click', async () => { try { const result = await FlashData.loadGames(true); toast('Catalogue refreshed', `${result.games.length.toLocaleString()} real games are available.`, 'success'); await render(target, user, profile, toast); } catch (error) { toast('Refresh failed', error.message || 'GitHub could not be reached.', 'error'); } });
+    $('#clearGameCacheAdmin', target)?.addEventListener('click', async () => { await FlashGamesStore.clearGameCache(); toast('Installed cache cleared', 'The Store catalogue was left untouched.', 'success'); window.dispatchEvent(new CustomEvent('flashgames:library-changed')); });
+    refreshIcons(target);
     return true;
+  }
+
+  function refreshIcons(root) {
+    if (window.lucide?.createIcons) requestAnimationFrame(() => window.lucide.createIcons({ root, attrs: { 'stroke-width': 1.5 } }));
   }
 
   window.FlashAdmin = { render, isAdmin, getProfile, readMaintenance };
