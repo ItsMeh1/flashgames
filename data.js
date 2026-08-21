@@ -1,10 +1,130 @@
 (() => {
   'use strict';
-  const CACHE='arc.games.cache.v4', TTL=300000;
-  const normalize=items=>Array.isArray(items)?items.filter(Boolean).map((g,i)=>({id:String(g.id??g.slug??g.name??`game-${i}`),name:String(g.name??g.title??'Untitled game'),category:String(g.category??g.genre??'Games'),zone:String(g.zone??g.type??'OFFLINE'),url:String(g.url??g.launchUrl??''),cover:String(g.cover??g.thumbnail??g.image??''),description:String(g.description??'Ready to play.'),tags:Array.isArray(g.tags)?g.tags.map(String):[]})).filter(g=>g.url):[];
-  async function json(url){const c=new AbortController(),t=setTimeout(()=>c.abort(),7000);try{const r=await fetch(url,{signal:c.signal,cache:'no-store',headers:{Accept:'application/json'}});if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json()}finally{clearTimeout(t)}}
-  const read=()=>{try{const x=JSON.parse(localStorage.getItem(CACHE)||'null');return x&&Date.now()-x.time<TTL?normalize(x.games):null}catch{return null}};
-  const write=games=>{try{localStorage.setItem(CACHE,JSON.stringify({time:Date.now(),games}))}catch{}};
-  async function load(force=false){if(!force){const c=read();if(c?.length)return c}let games=[];const base=(localStorage.getItem('arc.api')||window.ARC_API_BASE||'').replace(/\/$/,'');if(base){for(const u of [`${base}/games.json`,`${base}/api/games`,base]){try{games=normalize(await json(u));if(games.length)break}catch{}}}if(!games.length){try{games=normalize(await json('./offline.json'))}catch{games=[]}}write(games);return games}
-  window.ArcData={load,clearCache:()=>localStorage.removeItem(CACHE)};
+  const GAME_CACHE = 'flashgames.catalogue.v3';
+  const PROFILE_CACHE = 'flashgames.profile.v1';
+  const clean = value => String(value ?? '').trim();
+  const esc = value => clean(value).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  const normalizeGame = (g, index) => {
+    if (!g || typeof g !== 'object') return null;
+    const name = clean(g.name || g.title);
+    const url = clean(g.url || g.href || g.link);
+    if (!name || !url) return null;
+    return {
+      id: clean(g.id) || `${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-${index}`,
+      name,
+      title: name,
+      url,
+      zone: clean(g.zone || g.type || (g.isOfflinePackage ? 'OFFLINE' : 'STORE')),
+      category: clean(g.category || g.genre || 'Games'),
+      description: clean(g.description || g.desc),
+      cover: clean(g.cover || g.image || g.thumbnail || g.icon),
+      tags: Array.isArray(g.tags) ? g.tags.map(clean).filter(Boolean) : [],
+      rating: g.rating == null ? null : Number(g.rating)
+    };
+  };
+  const normalize = list => Array.isArray(list) ? list.map(normalizeGame).filter(Boolean) : [];
+  const cacheRead = () => { try { const x = JSON.parse(localStorage.getItem(GAME_CACHE) || 'null'); return Array.isArray(x?.games) ? x.games : []; } catch { return []; } };
+  const cacheWrite = games => { try { localStorage.setItem(GAME_CACHE, JSON.stringify({version:3,time:Date.now(),games})); } catch {} };
+  const fetchJson = async (url, timeout = 9000) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+      const response = await fetch(url, {cache:'no-store', signal:controller.signal, headers:{Accept:'application/json'}});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } finally { clearTimeout(timer); }
+  };
+  const extractArray = source => {
+    const patterns = [
+      /(?:const|let|var)\s+STORE_GAMES\s*=\s*(\[[\s\S]*?\])\s*;/,
+      /STORE_GAMES\s*=\s*(\[[\s\S]*?\])\s*;/,
+      /window\.STORE_GAMES\s*=\s*(\[[\s\S]*?\])\s*;/
+    ];
+    for (const pattern of patterns) {
+      const match = source.match(pattern);
+      if (!match) continue;
+      try {
+        const value = Function(`"use strict";return (${match[1]})`)();
+        if (Array.isArray(value)) return value;
+      } catch {}
+    }
+    return [];
+  };
+  async function legacyStore() {
+    try {
+      const response = await fetch(`./legacy.html?v=${Date.now()}`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`legacy.html HTTP ${response.status}`);
+      const text = await response.text();
+      return normalize(extractArray(text));
+    } catch { return []; }
+  }
+  async function offlineCatalogue() {
+    try {
+      const payload = await fetchJson(`./offline.json?v=${Date.now()}`);
+      return normalize(Array.isArray(payload) ? payload : (payload.games || payload.data || []));
+    } catch { return []; }
+  }
+  async function configuredSource() {
+    const base = clean(localStorage.getItem('flashgames.apiBase') || window.FLASH_API_BASE).replace(/\/$/,'');
+    if (!base) return [];
+    for (const endpoint of [`${base}/games`,`${base}/api/games`,`${base}/info`]) {
+      try {
+        const payload = await fetchJson(endpoint);
+        const list = normalize(payload?.games || payload?.data || payload);
+        if (list.length) return list;
+      } catch {}
+    }
+    return [];
+  }
+  async function loadGames(force = false) {
+    if (!force) {
+      const cached = cacheRead();
+      if (cached.length) return {games:cached, source:'cache'};
+    }
+    const remote = await configuredSource();
+    if (remote.length) { cacheWrite(remote); return {games:remote, source:'configured'}; }
+    const legacy = await legacyStore();
+    const offline = await offlineCatalogue();
+    const merged = [...legacy, ...offline.filter(o => !legacy.some(l => l.url === o.url))];
+    if (merged.length) { cacheWrite(merged); return {games:merged, source:'legacy+offline'}; }
+    const cached = cacheRead();
+    return {games:cached, source:'cache-stale'};
+  }
+  async function loadUpdates() {
+    try {
+      const payload = await fetchJson(`./update.json?v=${Date.now()}`);
+      const releases = Array.isArray(payload) ? payload : (payload.releases || []);
+      return {version:clean(payload.version || releases[0]?.version || '0.0.0'), releases};
+    } catch { return {version:'0.0.0',releases:[]}; }
+  }
+  async function loadLegacyHistory() {
+    try {
+      const response = await fetch(`https://api.github.com/repos/ItsMeh1/flashgames/commits?per_page=100`, {cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
+      if (!response.ok) return [];
+      const commits = await response.json();
+      return Array.isArray(commits) ? commits.map(c => ({version:'legacy',date:new Date(c.commit?.author?.date || c.commit?.committer?.date || Date.now()),title:clean(c.commit?.message || 'Legacy update').split('\n')[0],sha:c.sha})).filter(x=>x.title) : [];
+    } catch { return []; }
+  }
+  async function loadNotifications(uid) {
+    const db = window.__flashFirebase?.db;
+    if (!db) return [];
+    try {
+      let query = db.collection('notifications').orderBy('createdAt','desc').limit(30);
+      if (uid) query = db.collection('notifications').where('uid','in',[uid,'*']).orderBy('createdAt','desc').limit(30);
+      const snap = await query.get();
+      return snap.docs.map(d => ({id:d.id,...d.data()}));
+    } catch { return []; }
+  }
+  async function getPresenceCount() {
+    const db = window.__flashFirebase?.db;
+    if (!db) return null;
+    for (const collection of ['presence','onlineUsers']) {
+      try {
+        const snap = await db.collection(collection).get();
+        if (snap.size) return snap.size;
+      } catch {}
+    }
+    return null;
+  }
+  window.FlashData = {loadGames,loadUpdates,loadLegacyHistory,loadNotifications,getPresenceCount,clearCache:()=>localStorage.removeItem(GAME_CACHE),esc};
 })();
