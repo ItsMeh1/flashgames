@@ -1,17 +1,30 @@
 {
-  "releases": [
+  "version":"2.2.0",
+  "releases":[
     {
-      "version": "2.1.0",
-      "date": "August 19, 2026",
-      "desc": "A real v2 app replaces the old wrapper with a glass-native experience.",
-      "items": [
-        ["add", "New direct home dashboard and game library"],
-        ["add", "Real Store with install and inventory separation"],
-        ["add", "Theme, glass, accessibility and data settings"],
-        ["edit", "Navigation now reveals from a tiny top handle"],
-        ["edit", "Admin workspace rebuilt as a full-width moderation table"],
-        ["mod", "Firebase account restriction state is checked on sign-in"],
-        ["stop", "Removed the legacy iframe from the v2 home experience"]
+      "version":"2.2.0",
+      "date":"August 20, 2026",
+      "desc":"Flash Games is now a real single-page glass interface wired back into the legacy catalogue, Firebase account system, moderation tools, and Confer social experience.",
+      "items":[
+        ["add","Restored the real legacy Store catalogue and offline collection"],
+        ["add","Integrated Firebase profile data, authentication, notifications, and admin moderation"],
+        ["add","Added the Confer social section at its requested endpoint"],
+        ["add","Added migrated repository update history to the Updates view"],
+        ["edit","Replaced the old Arc+ branding with Flash Games"],
+        ["edit","Rebuilt search, library, game launching, settings, and notifications around real data"],
+        ["edit","Added deployment version detection and stale-cache invalidation before reload"],
+        ["remove","Removed fake Player identity, fake catalogue entries, and fake activity messages"]
+      ]
+    },
+    {
+      "version":"2.1.0",
+      "date":"August 19, 2026",
+      "desc":"Initial v2 glass interface migration.",
+      "items":[
+        ["add","Initial direct home dashboard and library"],
+        ["add","Initial Store and local library separation"],
+        ["add","Initial settings and moderation workspace"],
+        ["edit","Introduced the v2 liquid-glass visual system"]
       ]
     }
   ]
