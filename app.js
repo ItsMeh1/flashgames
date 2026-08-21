@@ -9,11 +9,11 @@
   const state = {
     route: location.hash.replace('#', '') || 'home', games: [], installed: [], favourites: new Set(),
     user: null, profile: {}, updates: { version: '0.0.0', releases: [] }, notifications: [],
-    query: '', category: 'All', searchIndex: 0, stats: loadStats(),
+    query: '', category: 'All', sort: localStorage.getItem('flashgames.sort') || 'featured', searchIndex: 0, stats: loadStats(),
     theme: localStorage.getItem('flashgames.theme') || 'dark', accent: localStorage.getItem('flashgames.accent') || '#8b5cf6',
     opacity: Number(localStorage.getItem('flashgames.opacity') || 66), blur: Number(localStorage.getItem('flashgames.blur') || 20),
     motion: localStorage.getItem('flashgames.motion') !== '0', performance: localStorage.getItem('flashgames.performance') === '1',
-    objectUrl: null, gameStartedAt: 0
+    objectUrl: null, gameStartedAt: 0, searchTimer: null
   };
 
   function loadStats() {
@@ -30,6 +30,7 @@
     stack.appendChild(node); requestAnimationFrame(() => node.classList.add('show')); refreshIcons(node);
     setTimeout(() => { node.classList.remove('show'); setTimeout(() => node.remove(), 250); }, 4200);
   }
+  window.FlashUI = { toast };
 
   function confirmDialog(title, text, action, danger = false) {
     const backdrop = $('#dialogBackdrop'), titleNode = $('#dialogTitle'), textNode = $('#dialogText'), iconNode = $('#dialogIcon'), confirm = $('#dialogConfirm'), cancel = $('#dialogCancel');
@@ -49,8 +50,8 @@
 
   function applyPreferences() {
     document.documentElement.style.setProperty('--accent', state.accent);
-    document.documentElement.style.setProperty('--glass-opacity', String(state.opacity / 100));
-    document.documentElement.style.setProperty('--glass-blur', `${state.blur}px`);
+    document.documentElement.style.setProperty('--opacity', String(state.opacity / 100));
+    document.documentElement.style.setProperty('--blur', `${state.blur}px`);
     document.body.classList.toggle('performance-boost', state.performance); document.body.classList.toggle('reduce-motion', !state.motion);
     if ($('#opacityRange')) $('#opacityRange').value = String(state.opacity); if ($('#blurRange')) $('#blurRange').value = String(state.blur);
     if ($('#opacityValue')) $('#opacityValue').textContent = `${state.opacity}%`; if ($('#blurValue')) $('#blurValue').textContent = `${state.blur}px`;
@@ -62,7 +63,8 @@
     const source = String(value || '').trim();
     if (!source) return './offline/logo.png';
     if (/^data:image\//i.test(source) || /^https?:\/\//i.test(source) || /^blob:/i.test(source)) return source;
-    return /^[A-Za-z0-9+/]+={0,2}$/.test(source) ? `data:image/png;base64,${source}` : './offline/logo.png';
+    if (/^[A-Za-z0-9+/]+={0,2}$/.test(source) && source.length > 40) return `data:image/png;base64,${source}`;
+    return './offline/logo.png';
   }
   function setAvatar(element, value) { const image = element && $('img', element); if (!image) return; image.onerror = () => { image.onerror = null; image.src = './offline/logo.png'; }; image.src = avatarSource(value); }
   function currentDisplayName() { return state.profile.username || state.profile.displayName || state.user?.displayName || state.user?.email?.split('@')[0] || 'Sign in'; }
@@ -70,12 +72,27 @@
   function gameCover(game) { return game.cover || './offline/logo.png'; }
   function installedSet() { return new Set(state.installed.map((game) => game.id)); }
 
+  function sortGames(list) {
+    const copy = [...list];
+    const installed = installedSet();
+    const favourites = state.favourites;
+    const compareName = (a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { numeric: true, sensitivity: 'base' });
+    if (state.sort === 'az') return copy.sort(compareName);
+    if (state.sort === 'za') return copy.sort((a, b) => compareName(b, a));
+    if (state.sort === 'rating') return copy.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0) || compareName(a, b));
+    return copy.sort((a, b) => {
+      const priorityA = (installed.has(a.id) ? 2 : 0) + (favourites.has(a.id) ? 1 : 0);
+      const priorityB = (installed.has(b.id) ? 2 : 0) + (favourites.has(b.id) ? 1 : 0);
+      return priorityB - priorityA || (Number(b.rating) || 0) - (Number(a.rating) || 0) || compareName(a, b);
+    });
+  }
+
   function filteredGames(list = state.games) {
     const query = state.query.trim().toLowerCase();
-    return list.filter((game) => {
+    return sortGames(list.filter((game) => {
       const haystack = `${game.name} ${game.category} ${game.zone} ${game.description} ${(game.tags || []).join(' ')}`.toLowerCase();
       return (!query || haystack.includes(query)) && (state.category === 'All' || game.category === state.category);
-    });
+    }));
   }
 
   function gameCard(game, installed = false) {
@@ -85,23 +102,32 @@
   function emptyState(title, text, glyph = 'gamepad-2') { return `<div class="empty glass">${icon(glyph)}<h3>${esc(title)}</h3><p>${esc(text)}</p></div>`; }
 
   function renderHome() {
-    const target = $('#homeView'); if (!target) return; const featured = state.games[0];
-    target.innerHTML = featured ? `<section class="hero glass"><div><span class="eyebrow">FLASH GAMES</span><h1>Play <em>anything.</em></h1><p>Explore the real Offline HTML Games Pack, install games when you want them, and play them from your local browser cache.</p><div class="hero-actions"><button class="btn primary" data-game-action="play" data-game-id="${esc(featured.id)}">${icon('play')} Play Now</button><button class="btn" data-route="store">${icon('store')} Browse Store</button></div></div><div class="hero-art"><img loading="eager" src="${esc(gameCover(featured))}" alt="${esc(featured.name)}" onerror="this.onerror=null;this.src='./offline/logo.png'"><div class="live-pill"><i></i>${state.games.length.toLocaleString()} games available</div></div></section><section class="section"><div class="section-head"><div><span class="eyebrow">YOUR LIBRARY</span><h2>Jump back in</h2><p>${state.installed.length} installed game${state.installed.length === 1 ? '' : 's'}.</p></div><button class="link-btn" data-route="library">Open Library ${icon('arrow-right')}</button></div><div class="game-grid">${state.installed.slice(0, 4).map((game) => gameCard(game, true)).join('') || emptyState('Nothing installed yet', 'Choose a game from the Store and install it here.', 'download')}</div></section>` : emptyState('Loading games', 'Fetching the real catalogue from GitHub.', 'loader-circle');
+    const target = $('#homeView'); if (!target) return; const featured = filteredGames(state.games)[0];
+    target.innerHTML = featured ? `<section class="hero glass"><div><span class="eyebrow">FLASH GAMES</span><h1>Play <em>anything.</em></h1><p>Explore the real Offline HTML Games Pack, install games when you want them, and play them from your local browser cache.</p><div class="hero-actions"><button class="btn primary" data-game-action="play" data-game-id="${esc(featured.id)}">${icon('play')} Play Now</button><button class="btn" data-route="store">${icon('store')} Browse Store</button></div></div><div class="hero-art"><img loading="eager" src="${esc(gameCover(featured))}" alt="${esc(featured.name)}" onerror="this.onerror=null;this.src='./offline/logo.png'"><div class="live-pill"><i></i>${state.games.length.toLocaleString()} games available</div></div></section><section class="section"><div class="section-head"><div><span class="eyebrow">YOUR LIBRARY</span><h2>Jump back in</h2><p>${state.installed.length} installed game${state.installed.length === 1 ? '' : 's'}.</p></div><button class="link-btn" data-route="library">Open Library ${icon('arrow-right')}</button></div><div class="game-grid">${sortGames(state.installed).slice(0, 4).map((game) => gameCard(game, true)).join('') || emptyState('Nothing installed yet', 'Choose a game from the Store and install it here.', 'download')}</div></section>` : emptyState('Loading games', 'Fetching the real catalogue from GitHub.', 'loader-circle');
     refreshIcons(target);
   }
 
   function renderLibrary() {
     const target = $('#libraryView'); if (!target) return;
-    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">LIBRARY</span><h1>Your games</h1><p>Installed HTML files are cached locally and launched from Blob URLs.</p></div><button class="btn" data-route="store">${icon('plus')} Install games</button></div><div class="game-grid">${state.installed.map((game) => gameCard(game, true)).join('') || emptyState('Your library is empty', 'Install a game from the Store to keep it available locally.', 'library')}</div>`;
+    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">LIBRARY</span><h1>Your games</h1><p>Installed HTML files are cached locally and launched from Blob URLs.</p></div><button class="btn" data-route="store">${icon('plus')} Install games</button></div><div class="game-grid">${sortGames(state.installed).map((game) => gameCard(game, true)).join('') || emptyState('Your library is empty', 'Install a game from the Store to keep it available locally.', 'library')}</div>`;
     refreshIcons(target);
   }
 
   function renderStore() {
     const target = $('#storeView'); if (!target) return;
     const categories = ['All', ...new Set(state.games.map((game) => game.category).filter(Boolean))]; const visible = filteredGames(); const installed = installedSet();
-    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">STORE</span><h1>Game collection</h1><p>${state.games.length.toLocaleString()} real games available.</p></div><label class="search-bar">${icon('search')}<input id="storeSearch" value="${esc(state.query)}" placeholder="Search games…"></label></div><div class="filter-row">${categories.map((category) => `<button class="filter ${category === state.category ? 'active' : ''}" data-category="${esc(category)}">${esc(category)}</button>`).join('')}</div><div class="game-grid">${visible.map((game) => gameCard(game, installed.has(game.id))).join('') || emptyState('No games found', 'Try a different search.', 'search-x')}</div>`;
+    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">STORE</span><h1>Game collection</h1><p>${state.games.length.toLocaleString()} real games available.</p></div><div class="store-tools"><label class="search-bar">${icon('search')}<input id="storeSearch" value="${esc(state.query)}" placeholder="Search games…"></label><label class="sort-control"><span>Sort</span><select id="storeSort"><option value="featured" ${state.sort === 'featured' ? 'selected' : ''}>Featured</option><option value="az" ${state.sort === 'az' ? 'selected' : ''}>A–Z</option><option value="za" ${state.sort === 'za' ? 'selected' : ''}>Z–A</option><option value="rating" ${state.sort === 'rating' ? 'selected' : ''}>Rating</option></select></label></div></div><div class="filter-row">${categories.map((category) => `<button class="filter ${category === state.category ? 'active' : ''}" data-category="${esc(category)}">${esc(category)}</button>`).join('')}</div><div class="game-grid">${visible.map((game) => gameCard(game, installed.has(game.id))).join('') || emptyState('No games found', 'Try a different search.', 'search-x')}</div>`;
     const search = $('#storeSearch');
-    if (search) search.oninput = () => { state.query = search.value; renderStore(); const next = $('#storeSearch'); if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); } };
+    if (search) search.oninput = () => {
+      state.query = search.value;
+      clearTimeout(state.searchTimer);
+      state.searchTimer = setTimeout(() => {
+        renderStore();
+        const next = $('#storeSearch');
+        if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); }
+      }, 90);
+    };
+    $('#storeSort')?.addEventListener('change', (event) => { state.sort = event.target.value; localStorage.setItem('flashgames.sort', state.sort); renderStore(); });
     refreshIcons(target);
   }
 
@@ -133,7 +159,6 @@
   }
 
   function renderSettings() { applyPreferences(); refreshIcons($('#settingsPanel') || document); }
-
   async function renderAdmin() { const target = $('#adminView'); if (target) await window.FlashAdmin?.render(target, state.user, state.profile, toast); }
 
   function setRoute(route) {
@@ -143,12 +168,12 @@
     if (state.route === 'home') renderHome(); if (state.route === 'library') renderLibrary(); if (state.route === 'store') renderStore(); if (state.route === 'social') renderSocial(); if (state.route === 'updates') renderUpdates(); if (state.route === 'admin') renderAdmin();
     requestAnimationFrame(refreshNavIndicator);
   }
-  function refreshNavIndicator() { const nav = $('.desktop-nav'), active = $('.desktop-nav .nav-item.active'), indicator = $('.nav-indicator'); if (!nav || !active || !indicator) return; const a = active.getBoundingClientRect(), n = nav.getBoundingClientRect(); indicator.style.transform = `translateX(${a.left - n.left}px)`; indicator.style.width = `${a.width}px`; }
+  function refreshNavIndicator() { const nav = $('.desktop-nav'), active = $('.desktop-nav .nav-item.active'), indicator = $('.nav-indicator'); if (!nav || !active || !indicator) return; const a = active.getBoundingClientRect(), n = nav.getBoundingClientRect(); indicator.style.transform = `translate3d(${a.left - n.left}px,0,0)`; indicator.style.width = `${a.width}px`; }
   function openPanel(id) { const panel = document.getElementById(id); if (panel) panel.hidden = false; if (id === 'profilePanel') { renderProfile(); renderStats(); } if (id === 'settingsPanel') renderSettings(); refreshIcons(panel || document); }
   function closePanel(id) { const panel = document.getElementById(id); if (panel) panel.hidden = true; }
 
   function renderSearchResults() {
-    const target = $('#searchResults'); if (!target) return; const query = state.query.trim().toLowerCase(); const results = query ? state.games.filter((game) => `${game.name} ${game.category} ${(game.tags || []).join(' ')}`.toLowerCase().includes(query)).slice(0, 12) : state.games.slice(0, 12);
+    const target = $('#searchResults'); if (!target) return; const query = state.query.trim().toLowerCase(); const results = query ? sortGames(state.games.filter((game) => `${game.name} ${game.category} ${(game.tags || []).join(' ')}`.toLowerCase().includes(query))).slice(0, 12) : sortGames(state.games).slice(0, 12);
     if (!results.length) { target.innerHTML = emptyState('No games found', 'Try another search.', 'search-x'); refreshIcons(target); return; }
     state.searchIndex = Math.min(state.searchIndex, results.length - 1); target.innerHTML = results.map((game, index) => `<button class="search-result ${index === state.searchIndex ? 'active' : ''}" data-search-game="${esc(game.id)}"><img loading="lazy" src="${esc(gameCover(game))}" alt=""><span><strong>${esc(game.name)}</strong><small>${esc(game.category || 'HTML Game')}</small></span>${icon('arrow-up-right')}</button>`).join(''); refreshIcons(target);
   }
@@ -161,12 +186,12 @@
       let installed = await FlashGamesStore.getCachedGame(game.id);
       if (!installed) { toast('Preparing game', `Downloading ${game.name} for local playback…`); installed = await FlashGamesStore.install(game); state.stats.installs += 1; saveStats(); await loadInstalled(); }
       const url = await FlashGamesStore.launch(installed || game); const frame = $('#gameFrame'), overlay = $('#playerOverlay'); if (!frame || !overlay || !url) return;
-      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl); state.objectUrl = url.startsWith('blob:') ? url : null; frame.src = url; overlay.hidden = false; state.stats.played += 1; state.gameStartedAt = Date.now(); saveStats(); refreshIcons(overlay);
+      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl); state.objectUrl = url.startsWith('blob:') ? url : null; frame.src = url; overlay.hidden = false; document.body.classList.add('player-open'); state.stats.played += 1; state.gameStartedAt = Date.now(); saveStats(); refreshIcons(overlay);
     } catch (error) { toast('Could not open game', error.message || 'The game could not be downloaded.', 'error'); }
   }
-  function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) frame.src = 'about:blank'; if (overlay) overlay.hidden = true; if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; } }
+  function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) frame.src = 'about:blank'; if (overlay) overlay.hidden = true; document.body.classList.remove('player-open'); if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; } }
   async function installGame(game) { try { toast('Installing', `Caching ${game.name} locally…`); await FlashGamesStore.install(game); state.stats.installs += 1; saveStats(); await loadInstalled(); toast('Installed', `${game.name} is now in your Library.`, 'success'); if (state.route === 'store') renderStore(); else renderLibrary(); } catch (error) { toast('Install failed', error.message || 'The game could not be cached.', 'error'); } }
-  async function removeGame(game) { confirmDialog('Remove game?', `${game.name} will be removed from your local library.`, async () => { await FlashGamesStore.deleteCachedGame(game.id); await loadInstalled(); toast('Removed', `${game.name} was removed from your library.`, 'success'); if (state.route === 'library') renderLibrary(); if (state.route === 'home') renderHome(); }, true); }
+  async function removeGame(game) { confirmDialog('Remove game?', `${game.name} will be removed from your local library.`, async () => { await FlashGamesStore.deleteCachedGame(game.id); await loadInstalled(); toast('Removed', `${game.name} was removed from your library.`, 'success'); if (state.route === 'library') renderLibrary(); if (state.route === 'home') renderHome(); if (state.route === 'store') renderStore(); }, true); }
   function toggleFavourite(game) { const enabled = !state.favourites.has(game.id); FlashGamesStore.setFavourite(game.id, enabled); state.favourites = FlashGamesStore.getFavourites(); toast(enabled ? 'Added to favorites' : 'Removed from favorites', game.name, 'success'); if (state.route === 'store') renderStore(); if (state.route === 'library') renderLibrary(); }
 
   async function loadUserProfile(user) {
@@ -213,9 +238,9 @@
 
   function handleSearch() {
     const input = $('#searchInput'); if (!input) return;
-    input.addEventListener('input', () => { state.query = input.value; state.searchIndex = 0; renderSearchResults(); });
+    input.addEventListener('input', () => { state.query = input.value; state.searchIndex = 0; clearTimeout(state.searchTimer); state.searchTimer = setTimeout(renderSearchResults, 80); });
     input.addEventListener('keydown', (event) => {
-      const results = state.games.filter((game) => `${game.name} ${game.category} ${(game.tags || []).join(' ')}`.toLowerCase().includes(state.query.toLowerCase())).slice(0, 12);
+      const results = sortGames(state.games.filter((game) => `${game.name} ${game.category} ${(game.tags || []).join(' ')}`.toLowerCase().includes(state.query.toLowerCase()))).slice(0, 12);
       if (event.key === 'ArrowDown') { event.preventDefault(); state.searchIndex = Math.min(state.searchIndex + 1, Math.max(0, results.length - 1)); renderSearchResults(); }
       if (event.key === 'ArrowUp') { event.preventDefault(); state.searchIndex = Math.max(0, state.searchIndex - 1); renderSearchResults(); }
       if (event.key === 'Enter' && results[state.searchIndex]) { closePanel('searchBackdrop'); playGame(results[state.searchIndex]); }
@@ -223,7 +248,7 @@
     });
   }
 
-  function handleGlobalKeys(event) { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openSearch(); } if (event.key === 'Escape') { closePanel('searchBackdrop'); closePanel('notificationsBackdrop'); closePlayer(); } }
+  function handleGlobalKeys(event) { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openSearch(); } if (event.key === 'Escape') { closePanel('searchBackdrop'); closePanel('notificationsBackdrop'); closePanel('profilePanel'); closePanel('settingsPanel'); closePanel('userManagementBackdrop'); closePlayer(); } }
 
   async function init() {
     document.addEventListener('click', handleClick); document.addEventListener('keydown', handleGlobalKeys); window.addEventListener('hashchange', () => setRoute(location.hash.replace('#', '') || 'home')); window.addEventListener('resize', () => requestAnimationFrame(refreshNavIndicator), { passive: true });
