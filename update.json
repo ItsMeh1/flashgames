@@ -1,30 +1,44 @@
 {
-  "version":"2.2.0",
-  "releases":[
+  "version": "2.2.1",
+  "releases": [
     {
-      "version":"2.2.0",
-      "date":"August 20, 2026",
-      "desc":"Flash Games is now a real single-page glass interface wired back into the legacy catalogue, Firebase account system, moderation tools, and Confer social experience.",
-      "items":[
-        ["add","Restored the real legacy Store catalogue and offline collection"],
-        ["add","Integrated Firebase profile data, authentication, notifications, and admin moderation"],
-        ["add","Added the Confer social section at its requested endpoint"],
-        ["add","Added migrated repository update history to the Updates view"],
-        ["edit","Replaced the old Arc+ branding with Flash Games"],
-        ["edit","Rebuilt search, library, game launching, settings, and notifications around real data"],
-        ["edit","Added deployment version detection and stale-cache invalidation before reload"],
-        ["remove","Removed fake Player identity, fake catalogue entries, and fake activity messages"]
+      "version": "2.2.1",
+      "date": "August 21, 2026",
+      "description": "Stability repair: restored the full real game catalogue, safe local game caching, Firebase profiles, and the in-app admin workspace.",
+      "changes": [
+        {"type": "add", "text": "Restored discovery of the complete Offline HTML Games Pack catalogue instead of a truncated store."},
+        {"type": "add", "text": "Restored on-demand raw HTML installation, IndexedDB caching, and Blob URL playback."},
+        {"type": "add", "text": "Restored Firebase authentication and real profile data with URL and base64 avatar support."},
+        {"type": "add", "text": "Added the in-app admin control center with maintenance mode, catalogue tools, users, and release controls."},
+        {"type": "edit", "text": "Made IndexedDB upgrades create missing object stores instead of throwing transaction errors."},
+        {"type": "edit", "text": "Removed fake game-cover placeholders and use supplied catalogue covers or the Flash Games logo fallback."},
+        {"type": "edit", "text": "Reworked the runtime to use targeted rendering and delegated events instead of repeated whole-app work."},
+        {"type": "edit", "text": "Added themes, cleaner preferences, performance controls, stats, favorites, and custom notifications."}
       ]
     },
     {
-      "version":"2.1.0",
-      "date":"August 19, 2026",
-      "desc":"Initial v2 glass interface migration.",
-      "items":[
-        ["add","Initial direct home dashboard and library"],
-        ["add","Initial Store and local library separation"],
-        ["add","Initial settings and moderation workspace"],
-        ["edit","Introduced the v2 liquid-glass visual system"]
+      "version": "2.2.0",
+      "date": "August 20, 2026",
+      "description": "Flash Games is now a real single-page glass interface wired back into the legacy catalogue, Firebase account system, moderation tools, and Confer social experience.",
+      "changes": [
+        {"type": "add", "text": "Restored the real legacy Store catalogue and offline collection."},
+        {"type": "add", "text": "Integrated Firebase profile data, authentication, notifications, and admin moderation."},
+        {"type": "add", "text": "Added the Confer social section at its requested endpoint."},
+        {"type": "add", "text": "Added migrated repository update history to the Updates view."},
+        {"type": "edit", "text": "Replaced the old Arc+ branding with Flash Games."},
+        {"type": "edit", "text": "Rebuilt search, library, game launching, settings, and notifications around real data."},
+        {"type": "remove", "text": "Removed fake Player identity, fake catalogue entries, and fake activity messages."}
+      ]
+    },
+    {
+      "version": "2.1.0",
+      "date": "August 19, 2026",
+      "description": "Initial v2 glass interface migration.",
+      "changes": [
+        {"type": "add", "text": "Initial direct home dashboard and library."},
+        {"type": "add", "text": "Initial Store and local library separation."},
+        {"type": "add", "text": "Initial settings and moderation workspace."},
+        {"type": "edit", "text": "Introduced the v2 liquid-glass visual system."}
       ]
     }
   ]
