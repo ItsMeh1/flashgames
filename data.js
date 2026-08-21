@@ -1,68 +1,109 @@
 (() => {
   'use strict';
 
-  const GAME_CACHE = 'flashgames.catalogue.v6';
-  const LEGACY_CACHES = ['flashgames.catalogue.v5', 'flashgames.catalogue.v4', 'flashgames.catalogue.v3'];
+  const GAME_CACHE = 'flashgames.catalogue.v7';
+  const LEGACY_CACHES = [
+    'flashgames.catalogue.v6',
+    'flashgames.catalogue.v5',
+    'flashgames.catalogue.v4',
+    'flashgames.catalogue.v3'
+  ];
+  const DB_NAME = 'flashgames-library';
+  const DB_VERSION = 4;
+  const STORE_NAME = 'games';
+  const SOURCE_ROOT = 'https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/offline/';
+  const TREE_URL = 'https://api.github.com/repos/CoolDude2349/Offline-HTML-Games-Pack/git/trees/master?recursive=1';
+  const FAVOURITES_KEY = 'flashgames.favourites.v1';
+
+  let dbPromise = null;
+  let cataloguePromise = null;
+
   const clean = (value) => String(value ?? '').trim();
-  const escapeHtml = (value) => clean(value).replace(/[&<>\"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' })[char]);
+
+  function escapeHtml(value) {
+    return clean(value).replace(/[&<>\"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '\"': '&quot;',
+      "'": '&#39;'
+    })[char]);
+  }
 
   function readCache(key) {
     try {
       const value = JSON.parse(localStorage.getItem(key) || 'null');
-      return Array.isArray(value?.games) ? value.games : [];
+      return Array.isArray(value?.games) ? value.games : Array.isArray(value) ? value : [];
     } catch {
       return [];
     }
   }
 
-  function normalizeGame(game, index) {
+  function normalizeGame(game, index = 0) {
     if (!game || typeof game !== 'object') return null;
     const name = clean(game.name || game.title);
-    const url = clean(game.url || game.href || game.link);
+    const url = clean(game.rawUrl || game.url || game.href || game.link);
     if (!name || !url) return null;
     const rating = game.rating == null ? null : Number(game.rating);
     return {
-      id: clean(game.id) || url || `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${index}`,
+      id: clean(game.id) || `game-${index}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
       name,
       title: name,
       url,
-      rawUrl: clean(game.rawUrl || url),
+      rawUrl: url,
       zone: clean(game.zone || game.type || 'STORE'),
-      category: clean(game.category || game.genre || 'Games'),
-      description: clean(game.description || game.desc),
+      category: clean(game.category || game.genre || 'HTML Games'),
+      description: clean(game.description || game.desc || 'Single-file HTML game.'),
       cover: clean(game.cover || game.image || game.thumbnail || game.icon),
       tags: Array.isArray(game.tags) ? game.tags.map(clean).filter(Boolean) : [],
-      rating: Number.isFinite(rating) ? rating : null
+      rating: Number.isFinite(rating) ? rating : null,
+      source: clean(game.source || '')
     };
   }
 
-  function readAllCaches() {
+  function mergeGames(...lists) {
+    const result = [];
     const seen = new Set();
-    return [GAME_CACHE, ...LEGACY_CACHES]
-      .flatMap(readCache)
-      .map(normalizeGame)
-      .filter(Boolean)
-      .filter((game) => {
-        const key = game.rawUrl || game.url;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
+    lists.flat().forEach((raw, index) => {
+      const game = normalizeGame(raw, index);
+      if (!game) return;
+      const key = game.rawUrl || game.url || game.id;
+      if (seen.has(key)) return;
+      seen.add(key);
+      result.push(game);
+    });
+    return result;
   }
 
-  function writeCache(games) {
+  function readAllCaches() {
+    return mergeGames(GAME_CACHE, ...LEGACY_CACHES);
+  }
+
+  function readCachedCatalogue() {
+    return mergeGames(...[GAME_CACHE, ...LEGACY_CACHES].map(readCache));
+  }
+
+  function writeCatalogue(games) {
     try {
-      localStorage.setItem(GAME_CACHE, JSON.stringify({ version: 6, time: Date.now(), games }));
+      localStorage.setItem(GAME_CACHE, JSON.stringify({
+        version: 7,
+        generatedAt: Date.now(),
+        games
+      }));
     } catch {
-      // Browser storage can be unavailable or full.
+      // Catalogue remains usable in memory when storage is unavailable.
     }
   }
 
-  async function fetchJson(url, timeout = 12000) {
+  async function fetchJson(url, timeout = 15000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
     try {
-      const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+      const response = await fetch(url, {
+        cache: 'no-store',
+        signal: controller.signal,
+        headers: { Accept: 'application/json' }
+      });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return await response.json();
     } finally {
@@ -70,84 +111,266 @@
     }
   }
 
-  function extractArrays(source) {
-    const results = [];
-    for (const marker of ['STORE_GAMES', 'window.STORE_GAMES', 'GAME_LIST']) {
-      let cursor = 0;
-      while ((cursor = source.indexOf(marker, cursor)) !== -1) {
-        const open = source.indexOf('[', cursor);
-        if (open < 0) break;
-        let depth = 0;
-        let quote = '';
-        let escaped = false;
-        for (let i = open; i < source.length; i += 1) {
-          const character = source[i];
-          if (quote) {
-            if (escaped) escaped = false;
-            else if (character === '\\') escaped = true;
-            else if (character === quote) quote = '';
-            continue;
-          }
-          if (character === '"' || character === "'") quote = character;
-          else if (character === '[') depth += 1;
-          else if (character === ']') depth -= 1;
-          if (depth === 0) {
-            try {
-              const value = Function(`"use strict"; return (${source.slice(open, i + 1)})`)();
-              if (Array.isArray(value)) results.push(value);
-            } catch {
-              // Continue searching for another real catalogue.
-            }
-            break;
-          }
-        }
-        cursor = open + 1;
-      }
-    }
-    return results;
+  function prettifyFilename(filename) {
+    return clean(filename)
+      .replace(/\.html?$/i, '')
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, (letter) => letter.toUpperCase())
+      .replace(/\bFnaf\b/gi, 'FNAF')
+      .replace(/\bLol\b/gi, 'LoL')
+      .replace(/\bAgar Io\b/gi, 'Agar.io');
+  }
+
+  function chooseCover(htmlPath, imagePaths) {
+    const directory = htmlPath.slice(0, htmlPath.lastIndexOf('/') + 1);
+    const filename = htmlPath.slice(htmlPath.lastIndexOf('/') + 1);
+    const stem = filename.replace(/\.html?$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const candidates = imagePaths
+      .filter((path) => path.startsWith(directory))
+      .map((path) => {
+        const imageName = path.slice(path.lastIndexOf('/') + 1);
+        const imageStem = imageName.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        let score = 0;
+        if (imageStem === stem) score += 100;
+        if (imageStem.includes(stem) || stem.includes(imageStem)) score += 45;
+        if (/cover|thumbnail|thumb|preview|icon/i.test(imageName)) score += 25;
+        return { path, score };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    if (!candidates.length || candidates[0].score < 25) return '';
+    return `https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/${candidates[0].path}`;
+  }
+
+  async function fetchFullOfflineCatalogue() {
+    const tree = await fetchJson(TREE_URL, 20000);
+    const entries = Array.isArray(tree?.tree) ? tree.tree : [];
+    const htmlFiles = entries
+      .filter((entry) => entry.type === 'blob' && /^offline\/.*\.html?$/i.test(entry.path))
+      .map((entry) => entry.path)
+      .sort((a, b) => a.localeCompare(b));
+    const imageFiles = entries
+      .filter((entry) => entry.type === 'blob' && /^offline\/.*\.(png|jpe?g|webp|gif|svg)$/i.test(entry.path))
+      .map((entry) => entry.path);
+
+    return htmlFiles.map((path) => {
+      const filename = path.slice(path.lastIndexOf('/') + 1);
+      const rawUrl = `${SOURCE_ROOT}${encodeURIComponent(filename).replace(/%2F/g, '/')}`;
+      return {
+        id: `offline-${filename.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+        name: prettifyFilename(filename),
+        title: prettifyFilename(filename),
+        url: rawUrl,
+        rawUrl,
+        zone: 'OFFLINE PACK',
+        category: 'HTML Games',
+        description: 'Single-file HTML game from the Offline HTML Games Pack.',
+        cover: chooseCover(path, imageFiles),
+        tags: ['HTML', 'Offline'],
+        source: 'CoolDude2349/Offline-HTML-Games-Pack'
+      };
+    });
   }
 
   async function loadLegacyStore() {
-    const urls = ['./legacy.html', './index-legacy.html', 'https://raw.githubusercontent.com/ItsMeh1/flashgames/main/index.html'];
+    const urls = [
+      './legacy.html',
+      './index-legacy.html',
+      'https://raw.githubusercontent.com/ItsMeh1/flashgames/main/index.html'
+    ];
+
     for (const url of urls) {
       try {
         const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) continue;
         const source = await response.text();
-        for (const candidate of extractArrays(source)) {
-          const games = candidate.map(normalizeGame).filter(Boolean);
-          if (games.length) return games;
+        const matches = source.match(/(?:STORE_GAMES|GAME_LIST|games)\s*=\s*\[[\s\S]*?\];/g) || [];
+        for (const match of matches) {
+          const start = match.indexOf('[');
+          const end = match.lastIndexOf(']');
+          if (start < 0 || end <= start) continue;
+          try {
+            const value = Function(`"use strict"; return (${match.slice(start, end + 1)})`)();
+            const games = mergeGames(value);
+            if (games.length) return games;
+          } catch {
+            // Try the next embedded catalogue.
+          }
         }
       } catch {
-        // Continue to the next source.
+        // Continue to the next legacy source.
       }
     }
     return [];
   }
 
-  async function loadOfflineCatalogue() {
+  async function loadGames(force = false) {
+    const cached = readCachedCatalogue();
+
+    if (!force && cached.length >= 50) {
+      return { games: cached, source: 'cache' };
+    }
+
+    if (!force && cached.length) {
+      // Show the real cached games immediately, then allow a full catalogue refresh.
+      const full = await fetchFullOfflineCatalogue().catch(() => []);
+      const legacy = await loadLegacyStore().catch(() => []);
+      const merged = mergeGames(full, legacy, cached);
+      if (merged.length) writeCatalogue(merged);
+      return { games: merged, source: merged.length ? 'offline-pack+legacy+cache' : 'cache' };
+    }
+
+    const [full, legacy] = await Promise.all([
+      fetchFullOfflineCatalogue().catch(() => []),
+      loadLegacyStore().catch(() => [])
+    ]);
+    const merged = mergeGames(full, legacy, cached);
+    if (merged.length) writeCatalogue(merged);
+    return { games: merged, source: merged.length ? 'offline-pack+legacy+cache' : 'empty' };
+  }
+
+  function openDatabase() {
+    if (dbPromise) return dbPromise;
+
+    dbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        }
+      };
+
+      request.onsuccess = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.close();
+          dbPromise = null;
+          reject(new Error('The Flash Games cache store is unavailable.'));
+          return;
+        }
+        db.onversionchange = () => db.close();
+        resolve(db);
+      };
+
+      request.onerror = () => {
+        dbPromise = null;
+        reject(request.error || new Error('Unable to open the game cache.'));
+      };
+    });
+
+    return dbPromise;
+  }
+
+  async function withStore(mode, callback) {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+      let transaction;
+      try {
+        transaction = db.transaction(STORE_NAME, mode);
+      } catch (error) {
+        reject(error);
+        return;
+      }
+      const store = transaction.objectStore(STORE_NAME);
+      let result;
+      try {
+        result = callback(store, transaction);
+      } catch (error) {
+        reject(error);
+        return;
+      }
+      transaction.oncomplete = () => resolve(result);
+      transaction.onerror = () => reject(transaction.error || new Error('Game cache transaction failed.'));
+      transaction.onabort = () => reject(transaction.error || new Error('Game cache transaction aborted.'));
+    });
+  }
+
+  async function getAllCachedGames() {
     try {
-      const data = await fetchJson(`./offline.json?v=${Date.now()}`);
-      return (Array.isArray(data) ? data : data.games || data.data || []).map(normalizeGame).filter(Boolean);
+      const db = await openDatabase();
+      return await new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const request = transaction.objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+      });
     } catch {
       return [];
     }
   }
 
-  async function loadGames(force = false) {
-    const cached = readAllCaches();
-    if (!force && cached.length) return { games: cached, source: 'cache' };
-    const [legacy, offline] = await Promise.all([loadLegacyStore(), loadOfflineCatalogue()]);
-    const merged = [...legacy, ...offline, ...cached];
-    const seen = new Set();
-    const games = merged.filter((game) => {
-      const key = game.rawUrl || game.url;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-    if (games.length) writeCache(games);
-    return { games, source: games.length ? 'legacy+offline+cache' : 'empty' };
+  async function getCachedGame(id) {
+    try {
+      const db = await openDatabase();
+      return await new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const request = transaction.objectStore(STORE_NAME).get(id);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  async function installGame(game) {
+    const rawUrl = clean(game?.rawUrl || game?.url);
+    if (!rawUrl) throw new Error('This game does not have a source URL.');
+    const response = await fetch(rawUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Game download failed (${response.status}).`);
+    const html = await response.text();
+    const cached = {
+      ...normalizeGame(game),
+      html,
+      installedAt: Date.now(),
+      size: html.length
+    };
+    await withStore('readwrite', (store) => store.put(cached));
+    return cached;
+  }
+
+  async function removeGame(id) {
+    try {
+      await withStore('readwrite', (store) => store.delete(id));
+    } catch {
+      // Storage failures should not break the UI.
+    }
+  }
+
+  async function clearGames() {
+    try {
+      await withStore('readwrite', (store) => store.clear());
+    } catch {
+      // Storage failures should not break the UI.
+    }
+  }
+
+  async function launchGame(game) {
+    const cached = await getCachedGame(game.id);
+    if (cached?.html) {
+      return URL.createObjectURL(new Blob([cached.html], { type: 'text/html' }));
+    }
+    return game.rawUrl || game.url || '';
+  }
+
+  function getFavourites() {
+    try {
+      const values = JSON.parse(localStorage.getItem(FAVOURITES_KEY) || '[]');
+      return new Set(Array.isArray(values) ? values : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function setFavourite(id, enabled) {
+    const values = getFavourites();
+    if (enabled) values.add(id);
+    else values.delete(id);
+    localStorage.setItem(FAVOURITES_KEY, JSON.stringify([...values]));
   }
 
   async function loadUpdates() {
@@ -165,12 +388,25 @@
     if (!db) return [];
     try {
       const collection = db.collection('notifications');
-      const snapshot = uid ? await collection.where('uid', '==', uid).limit(30).get().catch(() => collection.limit(30).get()) : await collection.limit(30).get();
+      const snapshot = uid
+        ? await collection.where('uid', '==', uid).limit(30).get().catch(() => collection.limit(30).get())
+        : await collection.limit(30).get();
       return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch {
       return [];
     }
   }
+
+  window.FlashGamesStore = {
+    getFavourites,
+    setFavourite,
+    getAllCachedGames,
+    getCachedGame,
+    install: installGame,
+    launch: launchGame,
+    deleteCachedGame: removeGame,
+    clearGameCache: clearGames
+  };
 
   window.FlashData = {
     loadGames,
@@ -180,7 +416,3 @@
     esc: escapeHtml
   };
 })();
-
-if (!window.FlashGamesStore) {
-  document.write('<script src="./game-store.js"><\\/script>');
-}
