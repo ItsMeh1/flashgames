@@ -129,6 +129,21 @@
 .sync-button.is-syncing svg { animation: syncSpin .8s linear infinite; }
 @keyframes syncSpin { to { transform: rotate(360deg); } }
 
+/* Profile: keep account details focused and move activity into the dedicated stats modal. */
+#profilePanel .profile-stats,
+#profilePanel .stats-card { display: none !important; }
+#profilePanel .profile-hero { padding: 30px 18px 22px; }
+#profilePanel .auth-box:has(#signOutBtn:not([hidden])) .auth-row { display: none; }
+#profilePanel .auth-box:has(#signOutBtn:not([hidden])) .panel-note { margin: 7px 0 0; }
+#profilePanel .auth-actions { margin-top: 0; }
+#flashStatsBackdrop .stats-grid { padding: 18px; }
+#flashStatsBackdrop .stats-grid div { min-height: 96px; display: flex; flex-direction: column; justify-content: center; }
+
+/* The gate owns the screen while authentication is unresolved. */
+body.flash-auth-locked > .topbar,
+body.flash-auth-locked > #app,
+body.flash-auth-locked > .bottom-dock { visibility: hidden; pointer-events: none; }
+
 @media (max-width: 600px) {
   .player-control span { display:none; }
   .player-control { width:40px; padding:0; }
