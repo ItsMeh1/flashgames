@@ -1,0 +1,286 @@
+/* Final precision layer: alignment only, no changes to the existing visual language. */
+
+:root {
+  --ui-control-height: 44px;
+  --ui-control-radius: 13px;
+}
+
+/* Keep every interactive control on the same optical baseline. */
+.nav-item,
+.dock-item,
+.icon-btn,
+.profile-chip,
+.btn,
+.filter,
+.setting-action,
+.expand-action {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.topbar {
+  min-height: 64px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.brand,
+.top-actions,
+.desktop-nav,
+.nav-item,
+.profile-chip {
+  align-self: center;
+}
+
+.brand-mark {
+  flex: 0 0 36px;
+}
+
+.desktop-nav {
+  height: 46px;
+  gap: 4px;
+}
+
+.nav-item {
+  height: 44px;
+  min-height: 44px;
+  padding-inline: 12px;
+  line-height: 44px;
+}
+
+.nav-item svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  display: block;
+}
+
+.nav-item span {
+  display: block;
+  line-height: 1;
+}
+
+.nav-indicator {
+  bottom: 0;
+  height: 3px;
+}
+
+.top-actions {
+  min-height: 44px;
+}
+
+.icon-btn,
+.profile-chip {
+  height: 44px;
+  min-height: 44px;
+}
+
+.profile-chip .avatar {
+  width: 36px;
+  height: 36px;
+}
+
+/* Bottom dock: equal-width cells make the icon centers line up instead of relying on text width. */
+.bottom-dock {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 4px;
+  padding: 7px;
+}
+
+.bottom-dock .dock-item {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  min-height: 52px;
+  padding: 4px 6px;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1;
+}
+
+.bottom-dock .dock-item svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+}
+
+.bottom-dock .dock-item span {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Cards keep the action stack in one predictable column. */
+.game-card .cover {
+  isolation: isolate;
+}
+
+.card-overlay {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.expand-action {
+  min-width: 44px;
+  height: 44px;
+  padding-inline: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.expand-action svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+
+/* Admin stays dense, but all rows share the same left/right rhythm. */
+.admin-shell {
+  border-radius: 24px;
+}
+
+.admin-panel {
+  margin-top: 10px;
+}
+
+.admin-panel + .admin-panel {
+  margin-top: 10px;
+}
+
+.admin-section-head .btn,
+.admin-actions .btn {
+  white-space: nowrap;
+}
+
+/* User manager is always a viewport-level surface. */
+.admin-members-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  z-index: 2000 !important;
+}
+
+.admin-members-modal {
+  width: min(760px, calc(100vw - 32px));
+  height: min(720px, calc(100dvh - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: 0;
+  align-self: center;
+  justify-self: center;
+}
+
+.admin-members-modal .panel-head {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+}
+
+.admin-members-list {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.admin-members-pager {
+  min-height: 58px;
+  flex: 0 0 58px;
+}
+
+.admin-member-row {
+  min-height: 60px;
+  grid-template-columns: 38px minmax(0, 1fr) 92px 18px;
+}
+
+.admin-member-row .avatar {
+  width: 38px;
+  height: 38px;
+}
+
+/* Editor occupies the same modal instead of opening a second nested modal. */
+.admin-user-editor {
+  flex: 1 1 auto;
+}
+
+/* Prevent SVG replacement from changing the control's dimensions after Lucide runs. */
+svg[data-lucide],
+.icon-btn svg,
+.btn svg,
+.nav-item svg,
+.dock-item svg,
+.setting-action svg,
+.filter svg {
+  flex: 0 0 auto;
+  stroke-width: 1.5;
+}
+
+/* Settings rows line up their labels and controls without increasing the panel height. */
+.settings-list .setting,
+.settings-list .setting-action {
+  width: 100%;
+}
+
+.settings-list .setting > div:first-child {
+  min-width: 0;
+}
+
+.settings-list .setting output {
+  flex: 0 0 auto;
+}
+
+/* Avoid accidental horizontal movement when the centered modal opens. */
+body:has(.admin-members-backdrop:not([hidden])) {
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .desktop-nav {
+    gap: 3px;
+  }
+
+  .nav-item {
+    min-width: 44px;
+    padding-inline: 10px;
+  }
+
+  .nav-item span {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    min-height: 60px;
+  }
+
+  .bottom-dock .dock-item {
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .admin-members-backdrop {
+    padding: 10px !important;
+  }
+
+  .admin-members-modal {
+    width: calc(100vw - 20px);
+    height: calc(100dvh - 20px);
+    max-height: calc(100dvh - 20px);
+  }
+
+  .admin-member-row {
+    grid-template-columns: 36px minmax(0, 1fr) 18px;
+  }
+
+  .admin-member-row .admin-role {
+    display: none;
+  }
+}
