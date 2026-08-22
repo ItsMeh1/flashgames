@@ -1,9 +1,10 @@
-const CACHE_NAME = 'flashgames-v2-2.2.3';
+const CACHE_NAME = 'flashgames-v2-2.2.4';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './refinement.css',
+  './precision.css',
   './app.js',
   './data.js',
   './admin.js',
@@ -11,24 +12,6 @@ const APP_SHELL = [
   './update.json',
   './offline/logo.png'
 ];
-
-const stripConflictingFirestoreSetting = async (response) => {
-  if (!response || !response.ok) return response;
-  const type = response.headers.get('content-type') || '';
-  if (!type.includes('text/html')) return response;
-  try {
-    const text = await response.text();
-    const fixed = text
-      .replace(/\s*experimentalAutoDetectLongPolling\s*:\s*(?:true|false)\s*,?/g, '')
-      .replace(/\s*experimentalAutoDetectLongPolling\s*:\s*[^,}]+\s*,?/g, '');
-    if (fixed === text) return new Response(text, { status: response.status, statusText: response.statusText, headers: response.headers });
-    const headers = new Headers(response.headers);
-    headers.delete('content-length');
-    return new Response(fixed, { status: response.status, statusText: response.statusText, headers });
-  } catch {
-    return response;
-  }
-};
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -52,40 +35,45 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  if (request.method !== 'GET') return;
-  if (!request.url.startsWith(self.location.origin)) return;
+  if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) return;
 
   const url = new URL(request.url);
   const isUpdateFile = url.pathname.endsWith('/update.json');
   const isServiceWorker = url.pathname.endsWith('/sw.js');
-  const isIndex = url.pathname === '/' || url.pathname.endsWith('/index.html');
+  const isDocument = request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('/index.html');
 
-  if (isUpdateFile || isServiceWorker) {
-    event.respondWith(fetch(request, { cache: 'no-store' }));
+  if (isUpdateFile || isServiceWorker || isDocument) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then((response) => {
+          if (response.ok && !isUpdateFile && !isServiceWorker) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cache = await caches.open(CACHE_NAME);
+          const fallback = await cache.match('./index.html');
+          return fallback || new Response('Offline and this resource is not cached.', { status: 503 });
+        })
+    );
     return;
   }
 
   event.respondWith(
-    fetch(request, { cache: isIndex ? 'no-store' : 'default' })
-      .then(async (response) => {
-        if (!response.ok) return response;
-        const output = isIndex ? await stripConflictingFirestoreSetting(response) : response;
-        const copy = output.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
-        return output;
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
+        }
+        return response;
       })
       .catch(async () => {
         const cache = await caches.open(CACHE_NAME);
-        if (request.mode === 'navigate' || isIndex) {
-          const fallback = await cache.match('./index.html');
-          if (fallback) return stripConflictingFirestoreSetting(fallback);
-        }
         const cached = await cache.match(request, { ignoreSearch: true });
-        if (cached) return cached;
-        return new Response('Offline and this resource is not cached.', {
-          status: 503,
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-        });
+        return cached || new Response('Offline and this resource is not cached.', { status: 503 });
       })
   );
 });
