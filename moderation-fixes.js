@@ -27,7 +27,7 @@
     backdrop.hidden = false;
     const close = () => { backdrop.hidden = true; confirm.onclick = null; cancel.onclick = null; };
     cancel.onclick = close;
-    confirm.onclick = async () => { try { await action(); } catch (error) { toast('Moderation failed', error.message || 'The change could not be saved.', 'error'); } close(); };
+    confirm.onclick = async () => { try { await action(); } catch (error) { toast('Moderation failed', error.message || 'The change could not be saved.', 'error'); } finally { close(); } };
     window.lucide?.createIcons?.({ root: backdrop, attrs: { 'stroke-width': 1.5 } });
   }
 
@@ -44,22 +44,10 @@
     editor.appendChild(tools);
     tools.querySelector('#moderationBan').onclick = () => confirmAction('Ban member?', `Ban ${name}${email ? ` (${email})` : ''}. They will be blocked from Flash Games.`, async () => { await saveProfile(id, { banned: true, disabled: true, bannedAt: Date.now() }); toast('Member banned', `${name} is now blocked.`, 'success'); });
     tools.querySelector('#moderationUnban').onclick = async () => { try { await saveProfile(id, { banned: false, disabled: false }); toast('Member unbanned', `${name} can access Flash Games again.`, 'success'); } catch (error) { toast('Could not unban member', error.message || 'The change failed.', 'error'); } };
-    tools.querySelector('#moderationSuspend').onclick = async () => {
-      const value = tools.querySelector('#moderationSuspension').value;
-      const until = value ? new Date(value).getTime() : 0;
-      if (!until || until <= Date.now()) { toast('Invalid suspension', 'Choose a future suspension end date.', 'error'); return; }
-      try { await saveProfile(id, { suspendedUntil: until }); toast('Member suspended', `${name} is suspended until ${new Date(until).toLocaleString()}.`, 'success'); } catch (error) { toast('Could not suspend member', error.message || 'The change failed.', 'error'); }
-    };
+    tools.querySelector('#moderationSuspend').onclick = async () => { const value = tools.querySelector('#moderationSuspension').value; const until = value ? new Date(value).getTime() : 0; if (!until || until <= Date.now()) { toast('Invalid suspension', 'Choose a future suspension end date.', 'error'); return; } try { await saveProfile(id, { suspendedUntil: until }); toast('Member suspended', `${name} is suspended until ${new Date(until).toLocaleString()}.`, 'success'); } catch (error) { toast('Could not suspend member', error.message || 'The change failed.', 'error'); } };
     tools.querySelector('#moderationUnsuspend').onclick = async () => { try { await saveProfile(id, { suspendedUntil: 0 }); toast('Suspension removed', `${name} is no longer suspended.`, 'success'); } catch (error) { toast('Could not unsuspend member', error.message || 'The change failed.', 'error'); } };
     tools.querySelector('#moderationDelete').onclick = () => confirmAction('Delete profile data?', `This permanently deletes the Flash Games user document for ${name}. Firebase Authentication accounts cannot be deleted for another user from a browser-only client.`, async () => { const db = window.__flashFirebase?.db; if (!db) throw new Error('Firebase is not available.'); await db.collection('users').doc(id).delete(); toast('Profile data deleted', `${name}'s Flash Games profile was deleted.`, 'success'); document.getElementById('closeAdminUserEditor')?.click(); }, true);
     window.lucide?.createIcons?.({ root: tools, attrs: { 'stroke-width': 1.5 } });
-  }
-
-  function watchEditor() {
-    const editor = document.getElementById('adminUserEditor');
-    if (!editor) return;
-    const observer = new MutationObserver(addTools);
-    observer.observe(editor, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'] });
   }
 
   function captureSelectedUser() {
@@ -71,5 +59,5 @@
     }, true);
   }
 
-  window.addEventListener('DOMContentLoaded', () => { watchEditor(); captureSelectedUser(); }, { once: true });
+  window.addEventListener('DOMContentLoaded', captureSelectedUser, { once: true });
 })();
