@@ -1,6 +1,8 @@
 (() => {
   'use strict';
 
+  let scheduled = false;
+
   function toast(title, message, type = 'info') {
     window.FlashUI?.toast?.(title, message, type);
   }
@@ -30,13 +32,18 @@
     window.lucide?.createIcons?.({ root: button, attrs: { 'stroke-width': 1.5 } });
   }
 
-  function observeStore() {
-    const view = document.getElementById('storeView');
-    if (!view) return;
-    const observer = new MutationObserver(() => addSyncButton());
-    observer.observe(view, { childList: true, subtree: true });
-    addSyncButton();
+  function scheduleStoreCheck() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      addSyncButton();
+    });
   }
 
-  window.addEventListener('DOMContentLoaded', observeStore, { once: true });
+  window.FlashGamesSync = { refresh: addSyncButton };
+  window.addEventListener('DOMContentLoaded', () => {
+    window.setTimeout(addSyncButton, 0);
+    window.addEventListener('hashchange', scheduleStoreCheck, { passive: true });
+  }, { once: true });
 })();
