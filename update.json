@@ -1,44 +1,66 @@
 {
-  "version": "2.2.1",
+  "version": "4.5.4",
   "releases": [
     {
-      "version": "2.2.1",
-      "date": "August 21, 2026",
-      "description": "Stability repair: restored the full real game catalogue, safe local game caching, Firebase profiles, and the in-app admin workspace.",
+      "version": "4.5.4",
+      "date": "August 22, 2026",
+      "description": "Flash Games Redesigned: v2",
       "changes": [
-        {"type": "add", "text": "Restored discovery of the complete Offline HTML Games Pack catalogue instead of a truncated store."},
-        {"type": "add", "text": "Restored on-demand raw HTML installation, IndexedDB caching, and Blob URL playback."},
-        {"type": "add", "text": "Restored Firebase authentication and real profile data with URL and base64 avatar support."},
-        {"type": "add", "text": "Added the in-app admin control center with maintenance mode, catalogue tools, users, and release controls."},
-        {"type": "edit", "text": "Made IndexedDB upgrades create missing object stores instead of throwing transaction errors."},
-        {"type": "edit", "text": "Removed fake game-cover placeholders and use supplied catalogue covers or the Flash Games logo fallback."},
-        {"type": "edit", "text": "Reworked the runtime to use targeted rendering and delegated events instead of repeated whole-app work."},
-        {"type": "edit", "text": "Added themes, cleaner preferences, performance controls, stats, favorites, and custom notifications."}
+        {"type": "add", "text": "Added a new changelog system (this one your seeing!)"},
+        {"type": "add", "text": "Added another 300 offline games for downloadable offline play"},
+        {"type": "add", "text": "All new store for downloading new games"},
+        { "type": "add", "text": "Added Confer to Flash Games in the social tab for video calling, voice calling, screensharing, and messaging with friends while playing. Expect discord functionality in Flash Games later on." },
+        {"type": "add", "text": "New stats page for all players"},
+        {"type": "add", "text": "Themes & preferences"},
+        {"type": "edit", "text": "Fixed a bug where your data wouldn't exactly save & you couldn't enter your account."},
+        {"type": "edit", "text": "Fixed a bug where the page wouldn't load at all & the stylesheet was broken."},
+        {"type": "add", "remove": "Removed a bunch of accounts for testing & from link leaks"},
+        {"type": "add", "remove": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."}
+
+        
       ]
     },
     {
-      "version": "2.2.0",
-      "date": "August 20, 2026",
-      "description": "Flash Games is now a real single-page glass interface wired back into the legacy catalogue, Firebase account system, moderation tools, and Confer social experience.",
+      "version": "4.5.3",
+      "date": "???",
+      "description": "Performance & Bug Patch",
       "changes": [
-        {"type": "add", "text": "Restored the real legacy Store catalogue and offline collection."},
-        {"type": "add", "text": "Integrated Firebase profile data, authentication, notifications, and admin moderation."},
-        {"type": "add", "text": "Added the Confer social section at its requested endpoint."},
-        {"type": "add", "text": "Added migrated repository update history to the Updates view."},
-        {"type": "edit", "text": "Replaced the old Arc+ branding with Flash Games."},
-        {"type": "edit", "text": "Rebuilt search, library, game launching, settings, and notifications around real data."},
-        {"type": "remove", "text": "Removed fake Player identity, fake catalogue entries, and fake activity messages."}
+        {"type": "add", "text": "Added a better system for performance mode, rather the old system."},
+        {"type": "add", "edit": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."},
+        { "type": "add", "remove": "Removed spam accounts & accounts created during link leaks." },
+        {"type": "add", "text": "Lots of bug fixes."}
+        
       ]
     },
     {
-      "version": "2.1.0",
-      "date": "August 19, 2026",
-      "description": "Initial v2 glass interface migration.",
+      "version": "4.5.0",
+      "date": "???",
+      "description": "Accounts",
       "changes": [
-        {"type": "add", "text": "Initial direct home dashboard and library."},
-        {"type": "add", "text": "Initial Store and local library separation."},
-        {"type": "add", "text": "Initial settings and moderation workspace."},
-        {"type": "edit", "text": "Introduced the v2 liquid-glass visual system."}
+        {"type": "add", "text": "Added accounts, profile chips, data saving, and more!"},
+        {"type": "edit", "text": "Lots of bug fixes."}
+      ]
+    },
+    {
+      "version": "4.0.0",
+      "date": "???",
+      "description": "Liquid Glass & Persistence",
+      "changes": [
+        {"type": "add", "text": "Liquid Glass Display"},
+        {"type": "add", "text": "Game Installer"},
+        {"type": "add", "text": "Home-page navigation system"},
+        {"type": "edit", "text": "Changelog redesign"}
+      ]
+    },
+    {
+      "version": "3.2.0",
+      "date": "???",
+      "description": "Flash CLI",
+      "changes": [
+        {"type": "add", "text": "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline."},
+        {"type": "add", "text": "<code>flash health</code> Check your system health."},
+        {"type": "add", "text": "<code>flash init</code> Prepare Flash Games if it hasn't been already."},
+        {"type": "add", "text": "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update. Adding more."}
       ]
     }
   ]
