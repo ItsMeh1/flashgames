@@ -30,15 +30,9 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        // Use one Firestore transport strategy. Do not pass auto-detection at all;
-        // Firebase treats the presence of both settings as a conflict even when
-        // experimentalAutoDetectLongPolling is explicitly false.
-        db.settings({
-          merge: true,
-          cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-          experimentalForceLongPolling: true,
-          useFetchStreams: false
-        });
+        /* Do not configure either long-polling experimental flag here. Firebase 11
+           defaults are mutually compatible and avoid the previous initialization
+           conflict caused by competing transport settings. */
         window.__flashFirebase = { firebase, app: firebase.app(), auth, db };
       } catch (error) {
         console.error('Flash Games Firebase initialization failed:', error);
@@ -48,6 +42,7 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./refinement.css">
   <link rel="stylesheet" href="./precision.css">
+  <link rel="stylesheet" href="./ux.css">
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((registration) => registration.update()).catch(() => {});
@@ -106,5 +101,6 @@
   <script src="./admin.js"></script>
   <script src="./auth.js"></script>
   <script src="./app.js"></script>
+  <script src="./ux.js"></script>
 </body>
 </html>
