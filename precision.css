@@ -1,11 +1,10 @@
-/* Final precision layer: alignment only, no changes to the existing visual language. */
+/* Final precision layer: optical alignment only. Preserve the existing UI; do not redesign it here. */
 
 :root {
   --ui-control-height: 44px;
   --ui-control-radius: 13px;
 }
 
-/* Keep every interactive control on the same optical baseline. */
 .nav-item,
 .dock-item,
 .icon-btn,
@@ -17,10 +16,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Header: keep the existing proportions and center every control against the same 44px row. */
 .topbar {
-  min-height: 64px;
+  height: 62px;
+  min-height: 62px;
   padding-top: 0;
   padding-bottom: 0;
+  align-items: center;
 }
 
 .brand,
@@ -36,15 +38,23 @@
 }
 
 .desktop-nav {
-  height: 46px;
+  position: relative;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
 }
 
 .nav-item {
   height: 44px;
   min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding-inline: 12px;
-  line-height: 44px;
+  line-height: 1;
 }
 
 .nav-item svg {
@@ -52,6 +62,7 @@
   height: 17px;
   flex: 0 0 17px;
   display: block;
+  margin: 0;
 }
 
 .nav-item span {
@@ -62,10 +73,16 @@
 .nav-indicator {
   bottom: 0;
   height: 3px;
+  border-radius: 999px;
+  transform-origin: left center;
+  pointer-events: none;
 }
 
 .top-actions {
   min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .icon-btn,
@@ -74,55 +91,73 @@
   min-height: 44px;
 }
 
+.profile-chip {
+  align-items: center;
+}
+
 .profile-chip .avatar {
   width: 36px;
   height: 36px;
+  flex: 0 0 36px;
 }
 
-/* Bottom dock: equal-width cells make the icon centers line up instead of relying on text width. */
+/* The floating dock is mobile-only. */
 .bottom-dock {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: stretch;
-  gap: 4px;
-  padding: 7px;
+  display: none !important;
 }
 
-.bottom-dock .dock-item {
-  width: 100%;
-  min-width: 0;
-  height: 52px;
-  min-height: 52px;
-  padding: 4px 6px;
-  flex-direction: column;
-  gap: 4px;
-  line-height: 1;
+@media (max-width: 760px) {
+  .bottom-dock {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center;
+    gap: 4px;
+    width: min(calc(100% - 28px), 620px);
+    padding: 7px;
+  }
+
+  .bottom-dock .dock-item {
+    width: 100%;
+    min-width: 0;
+    height: 52px;
+    min-height: 52px;
+    padding: 4px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1;
+  }
+
+  .bottom-dock .dock-item svg {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+    display: block;
+    margin: 0;
+  }
+
+  .bottom-dock .dock-item span {
+    line-height: 1;
+    white-space: nowrap;
+  }
 }
 
-.bottom-dock .dock-item svg {
-  width: 19px;
-  height: 19px;
-  flex: 0 0 19px;
-}
-
-.bottom-dock .dock-item span {
-  line-height: 1;
-  white-space: nowrap;
-}
-
-/* Cards keep the action stack in one predictable column. */
+/* Game overlay controls stay optically aligned. */
 .game-card .cover {
   isolation: isolate;
 }
 
 .card-overlay {
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
 }
 
 .expand-action {
   min-width: 44px;
+  max-width: 44px;
   height: 44px;
   padding-inline: 12px;
   display: inline-flex;
@@ -133,13 +168,17 @@
   overflow: hidden;
 }
 
+.expand-action:hover {
+  max-width: 120px;
+}
+
 .expand-action svg {
   width: 17px;
   height: 17px;
   flex: 0 0 17px;
 }
 
-/* Admin stays dense, but all rows share the same left/right rhythm. */
+/* Admin alignment: compact without shifting the existing hierarchy. */
 .admin-shell {
   border-radius: 24px;
 }
@@ -152,12 +191,17 @@
   margin-top: 10px;
 }
 
+.admin-section-head,
+.admin-actions {
+  align-items: center;
+}
+
 .admin-section-head .btn,
 .admin-actions .btn {
   white-space: nowrap;
 }
 
-/* User manager is always a viewport-level surface. */
+/* User manager is centered to the viewport, never the scroll position of the admin page. */
 .admin-members-backdrop {
   position: fixed !important;
   inset: 0 !important;
@@ -205,12 +249,11 @@
   height: 38px;
 }
 
-/* Editor occupies the same modal instead of opening a second nested modal. */
 .admin-user-editor {
   flex: 1 1 auto;
 }
 
-/* Prevent SVG replacement from changing the control's dimensions after Lucide runs. */
+/* Lock icon geometry after Lucide replaces the <i>. */
 svg[data-lucide],
 .icon-btn svg,
 .btn svg,
@@ -222,7 +265,6 @@ svg[data-lucide],
   stroke-width: 1.5;
 }
 
-/* Settings rows line up their labels and controls without increasing the panel height. */
 .settings-list .setting,
 .settings-list .setting-action {
   width: 100%;
@@ -236,7 +278,6 @@ svg[data-lucide],
   flex: 0 0 auto;
 }
 
-/* Avoid accidental horizontal movement when the centered modal opens. */
 body:has(.admin-members-backdrop:not([hidden])) {
   overflow: hidden;
 }
@@ -258,6 +299,7 @@ body:has(.admin-members-backdrop:not([hidden])) {
 
 @media (max-width: 700px) {
   .topbar {
+    height: 60px;
     min-height: 60px;
   }
 
