@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flashgames-v2-recovery-2';
+const CACHE_NAME = 'flashgames-v2-recovery-3';
 
 const APP_SHELL = [
   './',
@@ -6,10 +6,17 @@ const APP_SHELL = [
   './styles.css',
   './refinement.css',
   './precision.css',
+  './issue-fixes.css',
   './app.js',
   './data.js',
   './admin.js',
   './auth.js',
+  './sync.js',
+  './login-gate.js',
+  './player-fixes.js',
+  './custom-install.js',
+  './moderation-fixes.js',
+  './profile-fixes.js',
   './update.json',
   './offline/logo.png'
 ];
@@ -36,10 +43,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-
-  if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) {
-    return;
-  }
+  if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) return;
 
   const url = new URL(request.url);
   const fresh = request.mode === 'navigate'
@@ -63,16 +67,13 @@ self.addEventListener('fetch', (event) => {
       .then((response) => {
         if (response.ok) {
           const copy = response.clone();
-          caches.open(CACHE_NAME)
-            .then((cache) => cache.put(request, copy))
-            .catch(() => {});
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
         }
         return response;
       })
       .catch(async () => {
         const cache = await caches.open(CACHE_NAME);
-        return cache.match(request, { ignoreSearch: true })
-          || new Response('Offline', { status: 503 });
+        return cache.match(request, { ignoreSearch: true }) || new Response('Offline', { status: 503 });
       })
   );
 });
