@@ -1,0 +1,54 @@
+/* Targeted performance fixes. Preserve the existing visual system while letting the browser skip work for off-screen content. */
+.game-grid {
+  contain: layout paint style;
+}
+.game-card {
+  content-visibility: auto;
+  contain: layout paint style;
+  contain-intrinsic-size: 0 360px;
+}
+.game-card img,
+.search-result img,
+.hero-art img,
+.avatar img {
+  content-visibility: auto;
+}
+.view:not(.active) {
+  content-visibility: hidden;
+  contain: layout paint style;
+}
+.ambient {
+  contain: strict;
+  pointer-events: none;
+}
+.ambient > i {
+  will-change: transform;
+}
+body.performance-boost .ambient,
+body.performance-boost .glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.performance-boost .ambient > i {
+  display: none;
+}
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Keep the large catalogue from forcing every image request at once. */
+.game-card .cover {
+  contain: layout paint;
+}
+
+/* Avoid expensive fixed blur layers on pages that are not visible. */
+.modal-backdrop[hidden],
+.side-panel[hidden],
+.player-overlay[hidden] {
+  display: none !important;
+}
