@@ -15,6 +15,14 @@
     return role === 'admin' || role === 'owner' || role.includes('admin') || role.includes('owner') || /admin|owner|itsmeh1/.test(email);
   }
 
+  function avatarSource(value) {
+    const source = String(value || '').trim();
+    if (!source) return './offline/logo.png';
+    if (/^data:image\//i.test(source) || /^https?:\/\//i.test(source) || /^blob:/i.test(source)) return source;
+    if (/^[A-Za-z0-9+/]+={0,2}$/.test(source) && source.length > 40) return `data:image/png;base64,${source}`;
+    return './offline/logo.png';
+  }
+
   async function getProfile(user) {
     const db = window.__flashFirebase?.db;
     if (!db || !user) return {};
@@ -68,8 +76,9 @@
     const start = (state.page - 1) * PAGE_SIZE; const visible = state.users.slice(start, start + PAGE_SIZE);
     count.textContent = `${state.users.length.toLocaleString()} members · page ${state.page} of ${pages}`;
     list.innerHTML = visible.map((item) => {
-      const name = item.username || item.displayName || item.email || item.id; const photo = item.photoURL || item.photo || item.pfp || './offline/logo.png';
-      return `<button class="admin-member-row" data-member-id="${esc(item.id)}"><span class="avatar"><img src="${esc(photo)}" alt=""></span><span class="admin-member-copy"><strong>${esc(name)}</strong><small>${esc(item.email || item.role || 'Member')}</small></span><span class="admin-role">${esc(item.role || 'user')}</span>${icon('chevron-right')}</button>`;
+      const name = item.username || item.displayName || item.email || item.id;
+      const photo = avatarSource(item.photoURL || item.photo || item.pfp || item.avatar);
+      return `<button class="admin-member-row" data-member-id="${esc(item.id)}"><span class="avatar"><img src="${esc(photo)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='./offline/logo.png'"></span><span class="admin-member-copy"><strong>${esc(name)}</strong><small>${esc(item.email || item.role || 'Member')}</small></span><span class="admin-role">${esc(item.role || 'user')}</span>${icon('chevron-right')}</button>`;
     }).join('') || `<div class="admin-members-empty">${icon('users-round')}<strong>No members found</strong><span>There are no user documents to manage.</span></div>`;
     pager.innerHTML = `<button class="icon-btn" id="adminMembersPrev" aria-label="Previous page" ${state.page <= 1 ? 'disabled' : ''}>${icon('chevron-left')}</button><span>${state.users.length ? start + 1 : 0}-${Math.min(start + PAGE_SIZE, state.users.length)} of ${state.users.length}</span><button class="icon-btn" id="adminMembersNext" aria-label="Next page" ${state.page >= pages ? 'disabled' : ''}>${icon('chevron-right')}</button>`;
     $$('.admin-member-row', list).forEach((row) => row.addEventListener('click', () => { state.selected = state.users.find((item) => item.id === row.dataset.memberId) || null; renderUserEditor(user, toast); }));
@@ -82,7 +91,7 @@
     const editor = $('#adminUserEditor'), item = state.selected;
     if (!editor || !item) return;
     const name = item.username || item.displayName || item.email || item.id;
-    editor.innerHTML = `<div class="admin-editor-head"><button class="icon-btn" id="closeAdminUserEditor" aria-label="Back to members">${icon('arrow-left')}</button><div><span class="eyebrow">MEMBER</span><h3>${esc(name)}</h3><p>${esc(item.email || item.id)}</p></div></div><div class="admin-editor-grid"><label><span>Display name</span><input id="editUserName" value="${esc(item.username || item.displayName || '')}"></label><label><span>Role</span><select id="editUserRole"><option value="user">User</option><option value="moderator">Moderator</option><option value="admin">Admin</option><option value="owner">Owner</option></select></label><label class="admin-editor-wide"><span>Profile photo URL or data URI</span><input id="editUserPhoto" value="${esc(item.pfp || item.photoURL || item.photo || '')}"></label><label class="admin-editor-toggle"><span><strong>App access</strong><small>Use this flag for your app's own access controls.</small></span><input id="editUserDisabled" type="checkbox" ${item.disabled === true ? 'checked' : ''}><i class="switch ${item.disabled ? 'on' : ''}"><i></i></i></label></div><div class="admin-editor-actions"><button class="btn" id="cancelAdminUserEdit">${icon('x')} Cancel</button><button class="btn primary" id="saveAdminUserEdit">${icon('save')} Save changes</button></div>`;
+    editor.innerHTML = `<div class="admin-editor-head"><button class="icon-btn" id="closeAdminUserEditor" aria-label="Back to members">${icon('arrow-left')}</button><div><span class="eyebrow">MEMBER</span><h3>${esc(name)}</h3><p>${esc(item.email || item.id)}</p></div></div><div class="admin-editor-grid"><label><span>Display name</span><input id="editUserName" value="${esc(item.username || item.displayName || '')}"></label><label><span>Role</span><select id="editUserRole"><option value="user">User</option><option value="moderator">Moderator</option><option value="admin">Admin</option><option value="owner">Owner</option></select></label><label class="admin-editor-wide"><span>Profile photo URL or data URI</span><input id="editUserPhoto" value="${esc(item.pfp || item.photoURL || item.photo || item.avatar || '')}"></label><label class="admin-editor-toggle"><span><strong>App access</strong><small>Use this flag for your app's own access controls.</small></span><input id="editUserDisabled" type="checkbox" ${item.disabled === true ? 'checked' : ''}><i class="switch ${item.disabled ? 'on' : ''}"><i></i></i></label></div><div class="admin-editor-actions"><button class="btn" id="cancelAdminUserEdit">${icon('x')} Cancel</button><button class="btn primary" id="saveAdminUserEdit">${icon('save')} Save changes</button></div>`;
     $('#editUserRole').value = String(item.role || 'user').toLowerCase();
     $('#editUserDisabled')?.addEventListener('change', (event) => $('.admin-editor-toggle .switch', editor)?.classList.toggle('on', event.target.checked));
     const close = () => { state.selected = null; editor.hidden = true; $('#adminMembersList')?.removeAttribute('hidden'); $('#adminMembersPager')?.removeAttribute('hidden'); };
