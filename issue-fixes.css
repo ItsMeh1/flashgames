@@ -84,6 +84,8 @@
 .player-control svg { width: 17px; height: 17px; stroke-width: 1.5; }
 .player-control.performance.active { color: var(--accent); background: var(--accent-soft); }
 .player-control.close { background: rgba(227,75,93,.82); color: #fff; }
+body.player-performance .player-overlay { background: #000; backdrop-filter: none; -webkit-backdrop-filter: none; }
+body.player-performance .player-controls { background: rgba(12,14,20,.94); backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: 0 14px 40px rgba(0,0,0,.38); }
 
 .flash-login-gate {
   position: fixed;
@@ -129,7 +131,6 @@
 .sync-button.is-syncing svg { animation: syncSpin .8s linear infinite; }
 @keyframes syncSpin { to { transform: rotate(360deg); } }
 
-/* Profile: keep account details focused and move activity into the dedicated stats modal. */
 #profilePanel .profile-stats,
 #profilePanel .stats-card { display: none !important; }
 #profilePanel .profile-hero { padding: 30px 18px 22px; }
@@ -139,7 +140,6 @@
 #flashStatsBackdrop .stats-grid { padding: 18px; }
 #flashStatsBackdrop .stats-grid div { min-height: 96px; display: flex; flex-direction: column; justify-content: center; }
 
-/* The gate owns the screen while authentication is unresolved. */
 body.flash-auth-locked > .topbar,
 body.flash-auth-locked > #app,
 body.flash-auth-locked > .bottom-dock { visibility: hidden; pointer-events: none; }
