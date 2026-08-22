@@ -1,13 +1,14 @@
 (() => {
   'use strict';
 
-  const GAME_CACHE = 'flashgames.catalogue.v7';
-  const LEGACY_CACHES = ['flashgames.catalogue.v6', 'flashgames.catalogue.v5', 'flashgames.catalogue.v4', 'flashgames.catalogue.v3'];
+  const GAME_CACHE = 'flashgames.catalogue.v8';
+  const LEGACY_CACHES = ['flashgames.catalogue.v7', 'flashgames.catalogue.v6', 'flashgames.catalogue.v5', 'flashgames.catalogue.v4', 'flashgames.catalogue.v3'];
   const DB_NAME = 'flashgames-library';
-  const DB_VERSION = 4;
+  const DB_VERSION = 5;
   const STORE_NAME = 'games';
   const SOURCE_ROOT = 'https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/offline/';
   const TREE_URL = 'https://api.github.com/repos/CoolDude2349/Offline-HTML-Games-Pack/git/trees/master?recursive=1';
+  const OFFLINE_MANIFEST_URL = './offline.json';
   const FAVOURITES_KEY = 'flashgames.favourites.v1';
 
   let dbPromise = null;
@@ -70,7 +71,7 @@
 
   function writeCatalogue(games) {
     try {
-      localStorage.setItem(GAME_CACHE, JSON.stringify({ version: 7, generatedAt: Date.now(), games }));
+      localStorage.setItem(GAME_CACHE, JSON.stringify({ version: 8, generatedAt: Date.now(), games }));
     } catch {
       // Storage can be full; the in-memory catalogue remains usable.
     }
@@ -146,16 +147,33 @@
     });
   }
 
+  async function loadLocalOfflineManifest() {
+    try {
+      const response = await fetch(`${OFFLINE_MANIFEST_URL}?v=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      const list = Array.isArray(data) ? data : data.games || [];
+      return list.map((game, index) => normalizeGame({ ...game, source: game.source || 'Flash Games offline folder' }, index)).filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
   async function loadGames(force = false) {
     if (cataloguePromise && !force) return cataloguePromise;
     cataloguePromise = (async () => {
       const cached = readCachedCatalogue();
-      if (!force && cached.length >= 300) return { games: cached, source: 'cache' };
+      const localOffline = await loadLocalOfflineManifest();
+      if (!force && cached.length >= 300) {
+        const games = mergeGames(localOffline, cached);
+        if (games.length !== cached.length) writeCatalogue(games);
+        return { games, source: 'cache+offline-manifest' };
+      }
 
       const offline = await fetchFullOfflineCatalogue().catch(() => []);
-      const games = mergeGames(offline, cached);
+      const games = mergeGames(localOffline, offline, cached);
       if (games.length) writeCatalogue(games);
-      return { games, source: games.length ? 'offline-pack+cache' : 'empty' };
+      return { games, source: games.length ? 'offline-pack+manifest+cache' : 'empty' };
     })();
     try {
       return await cataloguePromise;
@@ -170,7 +188,26 @@
       const request = indexedDB.open(DB_NAME, DB_VERSION);
       request.onupgradeneeded = () => {
         const db = request.result;
+        const transaction = request.transaction;
         if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        const legacyStores = [...db.objectStoreNames].filter((name) => name !== STORE_NAME);
+        legacyStores.forEach((name) => {
+          try {
+            const oldStore = transaction.objectStore(name);
+            const cursorRequest = oldStore.openCursor();
+            cursorRequest.onsuccess = () => {
+              const cursor = cursorRequest.result;
+              if (!cursor) return;
+              const value = cursor.value;
+              if (value && typeof value === 'object' && (value.id || value.name) && (value.html || value.rawUrl || value.url)) {
+                try { transaction.objectStore(STORE_NAME).put(value); } catch { /* ignore incompatible legacy records */ }
+              }
+              cursor.continue();
+            };
+          } catch {
+            // A legacy store may not be readable during upgrade; the current store remains valid.
+          }
+        });
       };
       request.onsuccess = () => {
         const db = request.result;
@@ -198,17 +235,14 @@
       try {
         transaction = db.transaction(STORE_NAME, mode);
       } catch (error) {
+        db.close();
+        dbPromise = null;
         reject(error);
         return;
       }
       const store = transaction.objectStore(STORE_NAME);
       let result;
-      try {
-        result = operation(store);
-      } catch (error) {
-        reject(error);
-        return;
-      }
+      try { result = operation(store); } catch (error) { reject(error); return; }
       transaction.oncomplete = () => resolve(result);
       transaction.onerror = () => reject(transaction.error || new Error('IndexedDB transaction failed.'));
       transaction.onabort = () => reject(transaction.error || new Error('IndexedDB transaction aborted.'));
@@ -252,6 +286,23 @@
     return cached;
   }
 
+  async function installCustomGame({ url, name, description, cover }) {
+    const rawUrl = clean(url);
+    if (!/^https?:\/\//i.test(rawUrl)) throw new Error('Enter a valid http(s) game URL.');
+    const response = await fetch(rawUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Game download failed (${response.status}).`);
+    const html = await response.text();
+    if (!/<html[\s>]/i.test(html) && !/<body[\s>]/i.test(html)) throw new Error('The URL did not return an HTML game.');
+    const parsedName = clean(name) || prettyName(rawUrl.split('/').pop() || 'Custom Game');
+    const id = `custom-${btoa(unescape(encodeURIComponent(rawUrl))).replace(/[^a-z0-9]/gi, '').slice(0, 48)}`;
+    const cached = normalizeGame({ id, name: parsedName, url: rawUrl, rawUrl, description: clean(description) || 'Custom HTML game.', cover: clean(cover), category: 'Custom', zone: 'CUSTOM', source: 'Custom URL' });
+    cached.html = html;
+    cached.installedAt = Date.now();
+    cached.custom = true;
+    await storeRequest('readwrite', (store) => store.put(cached));
+    return cached;
+  }
+
   async function removeGame(id) {
     try { await storeRequest('readwrite', (store) => store.delete(id)); } catch { /* storage failure is non-fatal */ }
   }
@@ -270,9 +321,7 @@
     try {
       const value = JSON.parse(localStorage.getItem(FAVOURITES_KEY) || '[]');
       return new Set(Array.isArray(value) ? value : []);
-    } catch {
-      return new Set();
-    }
+    } catch { return new Set(); }
   }
 
   function setFavourite(id, enabled) {
@@ -286,9 +335,7 @@
       const data = await fetchJson(`./update.json?v=${Date.now()}`);
       const releases = Array.isArray(data) ? data : data.releases || [];
       return { version: clean(data.version || releases[0]?.version || '0.0.0'), releases };
-    } catch {
-      return { version: '0.0.0', releases: [] };
-    }
+    } catch { return { version: '0.0.0', releases: [] }; }
   }
 
   async function loadNotifications(uid) {
@@ -298,11 +345,9 @@
       const collection = db.collection('notifications');
       const snapshot = uid ? await collection.where('uid', '==', uid).limit(30).get().catch(() => collection.limit(30).get()) : await collection.limit(30).get();
       return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
-  window.FlashGamesStore = { getFavourites, setFavourite, getAllCachedGames, getCachedGame, install: installGame, launch: launchGame, deleteCachedGame: removeGame, clearGameCache: clearGames };
-  window.FlashData = { loadGames, loadUpdates, loadNotifications, clearCache: () => localStorage.removeItem(GAME_CACHE), esc };
+  window.FlashGamesStore = { getFavourites, setFavourite, getAllCachedGames, getCachedGame, install: installGame, installCustom: installCustomGame, launch: launchGame, deleteCachedGame: removeGame, clearGameCache: clearGames };
+  window.FlashData = { loadGames, loadUpdates, loadNotifications, syncGames: () => loadGames(true), clearCache: () => localStorage.removeItem(GAME_CACHE), esc };
 })();
