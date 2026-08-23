@@ -10,7 +10,7 @@
       backdrop = document.createElement('div');
       backdrop.className = 'modal-backdrop';
       backdrop.id = 'customInstallBackdrop';
-      backdrop.innerHTML = `<section class="custom-install-modal glass" role="dialog" aria-modal="true" aria-labelledby="customInstallTitle"><div class="panel-head"><div><span class="eyebrow">CUSTOM GAME</span><h2 id="customInstallTitle">Install from URL</h2></div><button class="icon-btn" data-custom-close aria-label="Close">${icon('x')}</button></div><div class="custom-install-body"><label>Game URL<input id="customGameUrl" type="url" placeholder="https://raw.githubusercontent.com/.../game.html" autocomplete="url"></label><label>Name<input id="customGameName" type="text" placeholder="My Game"></label><label>Description<input id="customGameDescription" type="text" placeholder="A game I added myself"></label><label>Favicon / cover URL or data URI<input id="customGameCover" type="text" placeholder="https://.../icon.png or data:image/png;base64,..."></label><p class="custom-install-help">The HTML is fetched once and stored locally in the same game cache used by the normal Store. The game can then launch offline.</p></div><div class="custom-install-actions"><button class="btn" data-custom-close>Cancel</button><button class="btn primary" id="customInstallSubmit">${icon('download')} Install game</button></div></section>`;
+      backdrop.innerHTML = `<section class="custom-install-modal glass" role="dialog" aria-modal="true" aria-labelledby="customInstallTitle"><div class="panel-head"><div><span class="eyebrow">CUSTOM GAME</span><h2 id="customInstallTitle">Install from URL</h2></div><button class="icon-btn" data-custom-close aria-label="Close">${icon('x')}</button></div><div class="custom-install-body"><label>Game URL<input id="customGameUrl" type="url" placeholder="https://raw.githubusercontent.com/.../game.html" autocomplete="url"></label><label>Name<input id="customGameName" type="text" placeholder="My Game"></label><label>Description<input id="customGameDescription" type="text" placeholder="A game I added myself"></label><label>Favicon / cover URL or data URI<input id="customGameCover" type="text" placeholder="https://.../icon.png or data:image/png;base64,..."></label><p class="custom-install-help">Only this button accepts a manually supplied URL. Store installation remains separate and installs the selected catalogue game.</p></div><div class="custom-install-actions"><button class="btn" data-custom-close>Cancel</button><button class="btn primary" id="customInstallSubmit">${icon('download')} Install from URL</button></div></section>`;
       document.body.appendChild(backdrop);
       backdrop.addEventListener('click', (event) => {
         if (event.target === backdrop || event.target.closest('[data-custom-close]')) closeModal();
@@ -59,17 +59,18 @@
   }
 
   function init() {
-    const observer = new MutationObserver(addLibraryButton);
-    const view = document.getElementById('libraryView');
-    if (view) observer.observe(view, { childList: true, subtree: true });
     addLibraryButton();
     document.addEventListener('click', (event) => {
-      const route = event.target.closest('#libraryView [data-route="store"]');
-      if (!route) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      openModal();
-    }, true);
+      const library = event.target.closest('#libraryView');
+      if (!library) return;
+      if (event.target.closest('[data-route="store"]')) {
+        /* This is the normal Store button. Never hijack it into custom URL install. */
+        requestAnimationFrame(addLibraryButton);
+        return;
+      }
+      if (event.target.closest('.custom-install-trigger')) return;
+      requestAnimationFrame(addLibraryButton);
+    }, { passive: true });
   }
 
   window.addEventListener('DOMContentLoaded', init, { once: true });
