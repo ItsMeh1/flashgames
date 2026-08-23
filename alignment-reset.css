@@ -1,0 +1,28 @@
+/* Shared control geometry rebuilt from scratch. This overrides only icon/button alignment. */
+:root { --fg-icon: 18px; --fg-icon-small: 16px; }
+button, .btn, .icon-btn, .nav-item, .dock-item, .setting-action, .admin-member-row, .profile-chip { font-family: inherit; }
+button > svg, .btn > svg, .icon-btn > svg, .nav-item > svg, .dock-item > svg, .setting-action > svg, .admin-member-row > svg, .profile-chip > svg { width: var(--fg-icon); height: var(--fg-icon); min-width: var(--fg-icon); min-height: var(--fg-icon); stroke-width: 1.5; display: block; flex: 0 0 var(--fg-icon); margin: 0; transform: translateZ(0); }
+.btn, .nav-item, .dock-item, .setting-action, .admin-member-row, .profile-chip, .store-tools, .admin-actions, .library-actions, .custom-install-actions { display: inline-flex; align-items: center; }
+.btn { justify-content: center; gap: 8px; min-height: 44px; line-height: 1; }
+.icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 0; line-height: 0; }
+.icon-btn > svg { width: var(--fg-icon); height: var(--fg-icon); }
+.nav-item { justify-content: center; gap: 7px; min-height: 44px; line-height: 1; white-space: nowrap; }
+.dock-item { justify-content: center; gap: 5px; min-width: 44px; min-height: 44px; line-height: 1; }
+.profile-chip { gap: 9px; min-height: 44px; }
+.profile-chip > svg:last-child { width: var(--fg-icon-small); height: var(--fg-icon-small); }
+.setting-action { width: 100%; min-height: 52px; justify-content: space-between; gap: 12px; }
+.setting-action > span:first-child { min-width: 0; display: inline-flex; align-items: center; gap: 12px; text-align: left; }
+.setting-action > span:first-child > span { min-width: 0; display: grid; gap: 3px; }
+.setting-action > svg:last-child { width: var(--fg-icon-small); height: var(--fg-icon-small); opacity: .72; }
+.admin-member-row { width: 100%; min-height: 56px; gap: 12px; text-align: left; }
+.admin-member-row .admin-member-copy { min-width: 0; flex: 1 1 auto; display: grid; gap: 3px; }
+.admin-member-row .admin-member-copy strong, .admin-member-row .admin-member-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-member-row > svg:last-child { width: var(--fg-icon-small); height: var(--fg-icon-small); margin-left: auto; }
+.admin-actions, .library-actions, .custom-install-actions { gap: 8px; flex-wrap: wrap; }
+.eyebrow + h1, .eyebrow + h2, .eyebrow + h3 { margin-top: 5px; }
+.panel-head, .admin-head, .admin-section-head, .search-head { align-items: center; }
+.panel-head > *, .admin-head > *, .admin-section-head > *, .search-head > * { min-width: 0; }
+.admin-section-head { gap: 18px; }
+.admin-section-head > :last-child { margin-left: auto; }
+.lucide { vertical-align: middle; }
+@media (max-width: 760px) { .desktop-nav .nav-item { min-width: 44px; } .admin-section-head { align-items: flex-start; flex-direction: column; } .admin-section-head > :last-child { margin-left: 0; width: 100%; } .admin-actions .btn { flex: 1 1 auto; } }
