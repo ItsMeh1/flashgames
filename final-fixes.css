@@ -1,0 +1,68 @@
+/* Final targeted UI fixes. Keep existing visual system; only correct stacking and alignment. */
+.modal-backdrop { z-index: 1000; }
+#profilePanel, #settingsPanel { z-index: 1100; }
+#notificationsBackdrop { z-index: 1200; }
+#userManagementBackdrop { z-index: 1300; }
+#dialogBackdrop { z-index: 1500 !important; }
+#customInstallBackdrop { z-index: 1450 !important; }
+#playerOverlay { z-index: 2000 !important; }
+
+#dialogBackdrop .confirm-dialog,
+#customInstallBackdrop .custom-install-modal,
+#userManagementBackdrop .admin-members-modal {
+  position: relative;
+  z-index: 1;
+}
+
+/* Admin confirmation dialogs must be viewport-level, never trapped below the members modal. */
+body:has(#dialogBackdrop:not([hidden])) { overflow: hidden; }
+#dialogBackdrop:not([hidden]) { position: fixed; inset: 0; display: grid; place-items: center; }
+
+.store-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: min(100%, 520px);
+}
+.sort-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--glass-soft);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.sort-control span { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.sort-control select {
+  appearance: none;
+  min-height: 32px;
+  padding: 0 28px 0 10px;
+  border: 0;
+  border-radius: 10px;
+  outline: 0;
+  color: var(--text);
+  background: rgba(255,255,255,.06);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.sort-control select option { background: #11131a; color: #fff; }
+
+.library-actions,
+.custom-install-actions { align-items: center; }
+.custom-install-trigger { margin-left: 0; }
+
+.admin-members-backdrop { z-index: 1300 !important; }
+.admin-members-modal { max-height: min(760px, calc(100dvh - 32px)); }
+
+@media (max-width: 760px) {
+  .store-tools { width: 100%; min-width: 0; flex-direction: column; align-items: stretch; }
+  .store-tools .search-bar { width: 100%; }
+  .sort-control { justify-content: space-between; }
+}
