@@ -1,8 +1,8 @@
-const CACHE_NAME = 'flashgames-v2-recovery-5';
+const CACHE_NAME = 'flashgames-v2-recovery-6';
 
 const APP_SHELL = [
-  './', './index.html', './styles.css', './refinement.css', './precision.css', './issue-fixes.css', './performance.css',
-  './app.js', './data.js', './admin.js', './auth.js', './sync.js', './login-gate.js', './player-fixes.js',
+  './', './index.html', './styles.css', './refinement.css', './precision.css', './issue-fixes.css', './performance.css', './final-fixes.css',
+  './app.js', './data.js', './legacy-cache.js', './admin.js', './auth.js', './sync.js', './login-gate.js', './player-fixes.js',
   './custom-install.js', './moderation-fixes.js', './profile-fixes.js', './update.json', './offline/logo.png'
 ];
 
