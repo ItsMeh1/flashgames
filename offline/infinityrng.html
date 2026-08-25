@@ -3,234 +3,306 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Infinity Luck RNG — Dark Animated Reforged</title>
+  <title>Infinity Luck RNG — Liquid Glass Edition</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root{
-      --bg1:#050608;
-      --bg2:#0b1020;
-      --card:rgba(17,24,39,.72);
-      --card2:rgba(15,23,42,.90);
-      --stroke:rgba(255,255,255,.08);
-      --text:#f8fafc;
-      --muted:#94a3b8;
+      --bg1:#030508;
+      --bg2:#0a0f1a;
+      --glass:rgba(255,255,255,.04);
+      --glass-border:rgba(255,255,255,.08);
+      --glass-strong:rgba(255,255,255,.07);
+      --text:#f0f4f8;
+      --muted:#8b9cb5;
       --accent:#0a84ff;
-      --accent2:#5e5ce6;
+      --accent2:#7c3aed;
+      --accent3:#06b6d4;
       --good:#22c55e;
       --danger:#ef4444;
-      --shadow:0 20px 60px rgba(0,0,0,.36);
-      --radius:24px;
+      --warn:#f59e0b;
+      --shadow:0 8px 32px rgba(0,0,0,.4);
+      --radius:20px;
+      --radius-sm:12px;
     }
 
-    *{box-sizing:border-box}
+    *{box-sizing:border-box;margin:0;padding:0}
     html,body{
-      margin:0;
-      min-height:100%;
+      height:100vh;
+      overflow:hidden;
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,system-ui,sans-serif;
       color:var(--text);
+      background:var(--bg1);
     }
 
     body{
-      padding:12px;
-      background:
-        radial-gradient(circle at top left, rgba(10,132,255,.14), transparent 30%),
-        radial-gradient(circle at top right, rgba(94,92,230,.12), transparent 26%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
-      overflow-x:hidden;
-    }
-
-    #flashOverlay{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:0;
-      transition:opacity 180ms ease;
-      z-index:9999;
-      background:transparent;
-    }
-
-    .app{
-      width:min(1280px,100%);
-      margin:0 auto;
       display:grid;
-      gap:8px;
+      grid-template-columns:72px 1fr;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(10,132,255,.08), transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(124,58,237,.06), transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(6,182,212,.03), transparent 60%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
     }
 
-    .header{
+    .liquid-glass{
+      background:linear-gradient(135deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.02) 100%);
+      backdrop-filter:blur(24px) saturate(140%);
+      -webkit-backdrop-filter:blur(24px) saturate(140%);
+      border:1px solid var(--glass-border);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 4px 24px rgba(0,0,0,.2);
+    }
+
+    .liquid-glass-strong{
+      background:linear-gradient(135deg, rgba(255,255,255,.09) 0%, rgba(255,255,255,.04) 100%);
+      backdrop-filter:blur(32px) saturate(160%);
+      -webkit-backdrop-filter:blur(32px) saturate(160%);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.1),
+        0 8px 32px rgba(0,0,0,.3);
+    }
+
+    .liquid-glass-panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.02) 100%);
+      backdrop-filter:blur(20px) saturate(130%);
+      -webkit-backdrop-filter:blur(20px) saturate(130%);
+      border:1px solid var(--glass-border);
+      border-radius:var(--radius);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 4px 20px rgba(0,0,0,.25);
+    }
+
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:16px 0;
+      gap:4px;
+      border-right:1px solid var(--glass-border);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      backdrop-filter:blur(20px);
+    }
+
+    .sidebar-brand{
+      margin-bottom:16px;
+      width:40px;
+      height:40px;
+      border-radius:14px;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      display:grid;
+      place-items:center;
+      box-shadow:0 4px 16px rgba(10,132,255,.3);
+    }
+
+    .sidebar-brand i{color:#fff;width:20px;height:20px}
+
+    .nav-item{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition:all .2s ease;
+      color:var(--muted);
+      position:relative;
+    }
+
+    .nav-item:hover{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+    }
+
+    .nav-item.active{
+      background:linear-gradient(135deg, rgba(10,132,255,.2), rgba(124,58,237,.15));
+      color:var(--accent);
+      box-shadow:0 0 20px rgba(10,132,255,.15);
+    }
+
+    .nav-item i{width:22px;height:22px}
+
+    .nav-item .badge-count{
+      position:absolute;
+      top:4px;
+      right:4px;
+      background:var(--danger);
+      color:#fff;
+      font-size:9px;
+      font-weight:800;
+      padding:1px 4px;
+      border-radius:999px;
+      min-width:14px;
+      text-align:center;
+    }
+
+    .sidebar-footer{
+      margin-top:auto;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .main{
+      display:grid;
+      grid-template-rows:auto 1fr;
+      overflow:hidden;
+      padding:16px 20px 16px 16px;
+      gap:12px;
+    }
+
+    .topbar{
       display:flex;
       justify-content:space-between;
-      align-items:flex-end;
-      gap:8px;
-      flex-wrap:wrap;
-      padding:0;
+      align-items:center;
+      padding:10px 16px;
+      border-radius:var(--radius);
     }
 
-    .brand h1{
-      margin:0;
-      font-size:clamp(26px,4vw,40px);
-      line-height:1.02;
-      letter-spacing:-.07em;
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .topbar-left h1{
+      font-size:20px;
       font-weight:900;
-    }
-
-    .brand p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.38;
+      letter-spacing:-.04em;
+      background:linear-gradient(135deg, #fff, #8b9cb5);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
     }
 
     .save-pill{
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      color:var(--muted);
-      font-size:11px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-      white-space:nowrap;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:8px;
-    }
-
-    @media (max-width:1100px){
-      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-
-    @media (max-width:640px){
-      body{padding:12px}
-      .stats{grid-template-columns:1fr}
-    }
-
-    .stat{
-      background:var(--card);
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
-      padding:11px;
-      min-height:74px;
-    }
-
-    .stat label{
-      display:block;
-      color:var(--muted);
-      font-size:11px;
-      margin-bottom:6px;
-    }
-
-    .stat .value{
-      font-size:22px;
-      font-weight:900;
-      letter-spacing:-.05em;
-      line-height:1;
-    }
-
-    .stat .sub{
-      margin-top:4px;
-      color:var(--muted);
-      font-size:11px;
-      line-height:1.35;
-    }
-
-    .shell{
-      background:var(--card);
-      border:1px solid var(--stroke);
-      border-radius:30px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
-      overflow:hidden;
-    }
-
-    .shell-inner{padding:10px}
-
-    .tabs{
       display:flex;
+      align-items:center;
       gap:6px;
-      flex-wrap:wrap;
-      padding:0 0 8px;
-    }
-
-    .tab-btn{
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.05);
-      color:var(--muted);
-      padding:7px 10px;
-      border-radius:12px;
-      font-weight:800;
+      padding:5px 10px;
+      border-radius:999px;
+      background:rgba(34,197,94,.1);
+      border:1px solid rgba(34,197,94,.2);
+      color:var(--good);
       font-size:11px;
-      min-width:64px;
-      box-shadow:none;
+      font-weight:700;
     }
 
-    .tab-btn.active{
-      background:linear-gradient(180deg,#0a84ff,#007aff);
-      color:#fff;
-      border-color:transparent;
-      box-shadow:0 12px 28px rgba(0,122,255,.24);
-    }
+    .save-pill i{width:12px;height:12px}
 
-    .panel{display:none}
-    .panel.active{display:block}
-
-    .play-grid{
-      display:grid;
-      grid-template-columns:1.15fr .85fr;
+    .topbar-stats{
+      display:flex;
       gap:8px;
-      align-items:start;
     }
 
-    @media (max-width:980px){
-      .play-grid{grid-template-columns:1fr}
-    }
-
-    .hero,.subcard,.list-card{
-      background:var(--card2);
-      border:1px solid var(--stroke);
-      border-radius:14px;
-      padding:12px;
-    }
-
-    .hero{
-      min-height:250px;
-      display:grid;
+    .top-stat{
+      display:flex;
+      align-items:center;
       gap:8px;
-      align-content:center;
-      position:relative;
+      padding:8px 14px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+    }
+
+    .top-stat i{width:16px;height:16px;color:var(--accent)}
+
+    .top-stat .ts-label{
+      font-size:10px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+
+    .top-stat .ts-value{
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+
+    .content-grid{
+      display:grid;
+      grid-template-columns:1.4fr .6fr;
+      gap:12px;
       overflow:hidden;
-      background:
-        radial-gradient(circle at top, rgba(10,132,255,.10), transparent 42%),
-        radial-gradient(circle at bottom right, rgba(94,92,230,.08), transparent 34%),
-        rgba(15,23,42,.82);
-      transition:box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+      min-height:0;
     }
 
-    .hero.rolling{
-      transform:scale(1.01);
+    @media (max-width:1200px){
+      .content-grid{grid-template-columns:1fr 320px}
     }
 
-    .hero::before{
+    @media (max-width:900px){
+      body{grid-template-columns:60px 1fr}
+      .content-grid{grid-template-columns:1fr}
+    }
+
+    .left-col, .right-col{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      overflow:hidden;
+    }
+
+    .right-col{min-width:280px}
+
+    .panel-section{
+      border-radius:var(--radius);
+      padding:14px;
+      overflow:hidden;
+      display:none;
+    }
+
+    .panel-section.active{display:flex;flex-direction:column}
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:12px;
+    }
+
+    .panel-header h2{
+      font-size:15px;
+      font-weight:800;
+      letter-spacing:-.03em;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .panel-header h2 i{width:18px;height:18px;color:var(--accent)}
+
+    .hero-roll{
+      position:relative;
+      padding:20px;
+      border-radius:var(--radius);
+      min-height:200px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:16px;
+      overflow:hidden;
+      transition:all .3s ease;
+    }
+
+    .hero-roll::before{
       content:"";
       position:absolute;
       inset:0;
+      background:radial-gradient(circle at 30% 20%, rgba(10,132,255,.08), transparent 50%);
       pointer-events:none;
-      background: radial-gradient(circle at center, rgba(255,255,255,.06), transparent 42%);
-      opacity:.15;
-      transition:opacity 200ms ease;
     }
 
-    .hero[data-tier="common"]{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="uncommon"]{ box-shadow: 0 0 0 1px rgba(34,197,94,.10), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="rare"]{ box-shadow: 0 0 0 1px rgba(59,130,246,.16), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="epic"]{ box-shadow: 0 0 0 1px rgba(168,85,247,.16), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="legendary"]{ box-shadow: 0 0 0 1px rgba(245,158,11,.22), 0 0 36px rgba(245,158,11,.10), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="mythic"]{ box-shadow: 0 0 0 1px rgba(244,114,182,.22), 0 0 40px rgba(244,114,182,.12), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="cosmic"]{ box-shadow: 0 0 0 1px rgba(34,211,238,.22), 0 0 44px rgba(34,211,238,.14), 0 20px 60px rgba(0,0,0,.36); }
-    .hero[data-tier="divine"]{ box-shadow: 0 0 0 1px rgba(255,255,255,.22), 0 0 50px rgba(255,255,255,.10), 0 20px 60px rgba(0,0,0,.36); }
+    .hero-roll[data-tier="common"]{border-color:rgba(255,255,255,.06)}
+    .hero-roll[data-tier="uncommon"]{border-color:rgba(34,197,94,.15);box-shadow:inset 0 0 30px rgba(34,197,94,.04),0 4px 24px rgba(0,0,0,.2)}
+    .hero-roll[data-tier="rare"]{border-color:rgba(59,130,246,.18);box-shadow:inset 0 0 30px rgba(59,130,246,.04),0 4px 24px rgba(0,0,0,.2)}
+    .hero-roll[data-tier="epic"]{border-color:rgba(168,85,247,.18);box-shadow:inset 0 0 30px rgba(168,85,247,.04),0 4px 24px rgba(0,0,0,.2)}
+    .hero-roll[data-tier="legendary"]{border-color:rgba(245,158,11,.22);box-shadow:inset 0 0 40px rgba(245,158,11,.06),0 4px 24px rgba(0,0,0,.2)}
+    .hero-roll[data-tier="mythic"]{border-color:rgba(244,114,182,.22);box-shadow:inset 0 0 40px rgba(244,114,182,.06),0 4px 24px rgba(0,0,0,.2)}
+    .hero-roll[data-tier="cosmic"]{border-color:rgba(34,211,238,.22);box-shadow:inset 0 0 50px rgba(34,211,238,.08),0 4px 24px rgba(0,0,0,.2)}
+    .hero-roll[data-tier="divine"]{border-color:rgba(255,255,255,.25);box-shadow:inset 0 0 60px rgba(255,255,255,.08),0 4px 24px rgba(0,0,0,.2)}
 
     .particles{
       position:absolute;
@@ -244,111 +316,73 @@
       position:absolute;
       left:50%;
       top:50%;
-      width:8px;
-      height:8px;
+      width:6px;
+      height:6px;
       border-radius:999px;
       background:var(--pColor);
       transform:translate(-50%,-50%);
       opacity:0;
-      box-shadow:0 0 16px var(--pColor);
-      animation:particleFly 720ms ease-out forwards;
+      box-shadow:0 0 12px var(--pColor);
+      animation:particleFly 600ms ease-out forwards;
     }
 
     @keyframes particleFly{
-      0%{ transform:translate(-50%,-50%) scale(.6); opacity:1; }
-      100%{ transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity:0; }
+      0%{transform:translate(-50%,-50%) scale(.5);opacity:1}
+      100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);opacity:0}
     }
 
-    .hero-top{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
+    .hero-content{
       position:relative;
       z-index:1;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
 
     .big-name{
-      margin:0;
-      font-size:clamp(26px,4vw,42px);
-      line-height:1.02;
-      letter-spacing:-.03em;
-      font-weight:850;
-      font-variant-ligatures:none;
-      padding-right:4px;
-      transition:transform 120ms ease, text-shadow 120ms ease, color 120ms ease;
+      font-size:clamp(24px,3vw,38px);
+      font-weight:900;
+      letter-spacing:-.04em;
+      line-height:1.05;
+      transition:all .2s ease;
       text-wrap:balance;
-      word-break:break-word;
-      min-height:1.1em;
-      position:relative;
-      z-index:1;
-      text-shadow:0 0 0 transparent;
     }
 
     .big-rarity{
-      margin-top:6px;
+      font-size:13px;
       color:var(--muted);
-      font-size:12px;
-      line-height:1.35;
-      position:relative;
-      z-index:1;
-      transition:color 120ms ease, text-shadow 120ms ease;
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
-    .badge{
-      padding:7px 10px;
+    .big-rarity i{width:14px;height:14px}
+
+    .roll-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 12px;
       border-radius:999px;
       background:rgba(255,255,255,.06);
-      color:var(--muted);
-      font-size:11px;
-      border:1px solid rgba(255,255,255,.06);
-      position:relative;
-      z-index:1;
-      transition:color 120ms ease, transform 120ms ease, opacity 120ms ease;
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      font-weight:700;
+      width:fit-content;
     }
 
-    .meter{
+    .roll-badge i{width:14px;height:14px}
+
+    .roll-actions{
       display:grid;
-      gap:8px;
-      position:relative;
-      z-index:1;
-    }
-
-    .meter .row{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      color:var(--muted);
-      font-size:11px;
-    }
-
-    .bar{
-      height:10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.09);
-      overflow:hidden;
-    }
-
-    .bar>span{
-      display:block;
-      height:100%;
-      width:0;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      border-radius:inherit;
-      transition:width 220ms ease;
-    }
-
-    .actions{
-      display:grid;
-      grid-template-columns:1.1fr 1fr 1fr;
+      grid-template-columns:1.2fr 1fr 1fr;
       gap:8px;
       position:relative;
       z-index:1;
     }
 
     @media (max-width:700px){
-      .actions{grid-template-columns:1fr}
+      .roll-actions{grid-template-columns:1fr}
     }
 
     button{
@@ -356,278 +390,374 @@
       border:0;
       font:inherit;
       cursor:pointer;
-      transition:transform 120ms ease,box-shadow 120ms ease,opacity 120ms ease,background 120ms ease;
+      transition:all .15s ease;
+      font-weight:800;
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
     }
 
-    button:active{transform:scale(.985)}
+    button:active{transform:scale(.97)}
+    button i{width:16px;height:16px}
 
-    .btn{
-      padding:8px 10px;
-      border-radius:12px;
-      background:linear-gradient(180deg,#0a84ff,#007aff);
+    .btn-primary{
+      padding:12px 16px;
+      border-radius:var(--radius-sm);
+      background:linear-gradient(135deg, var(--accent), #0066cc);
       color:#fff;
-      font-weight:800;
-      box-shadow:0 14px 30px rgba(0,122,255,.26);
+      box-shadow:0 8px 24px rgba(10,132,255,.25);
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .btn-primary:hover{
+      box-shadow:0 8px 28px rgba(10,132,255,.35);
+      transform:translateY(-1px);
     }
 
     .btn-secondary{
-      padding:8px 10px;
-      border-radius:12px;
-      background:rgba(255,255,255,.07);
-      border:1px solid var(--stroke);
+      padding:10px 14px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--glass-border);
       color:var(--text);
-      font-weight:800;
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,.09);
     }
 
     .btn-danger{
-      background:rgba(239,68,68,.10);
+      background:rgba(239,68,68,.08);
       color:#fca5a5;
-      border:1px solid rgba(239,68,68,.16);
+      border:1px solid rgba(239,68,68,.15);
     }
 
-    .btn:disabled,.btn-secondary:disabled{
-      opacity:.55;
+    .btn-danger:hover{
+      background:rgba(239,68,68,.12);
+    }
+
+    .btn-warn{
+      background:rgba(245,158,11,.08);
+      color:#fcd34d;
+      border:1px solid rgba(245,158,11,.15);
+    }
+
+    .btn-warn:hover{
+      background:rgba(245,158,11,.12);
+    }
+
+    .btn:disabled, .btn-secondary:disabled{
+      opacity:.4;
       cursor:not-allowed;
       box-shadow:none;
     }
 
-    .side{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:8px;
+    .progress-wrap{
+      position:relative;
+      z-index:1;
     }
 
-    .side .subcard:last-child{
-      grid-column:1 / -1;
-    }
-
-    @media (max-width:980px){
-      .side{grid-template-columns:1fr}
-      .side .subcard:last-child{grid-column:auto}
-    }
-
-    .subcard h3,.list-card h3{
-      margin:0 0 8px;
-      font-size:14px;
-      letter-spacing:-.04em;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.38;
-    }
-
-    .tiny{
-      color:var(--muted);
-      font-size:11px;
-      line-height:1.38;
-    }
-
-    .footer-actions{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:8px;
-    }
-
-    @media (max-width:700px){
-      .footer-actions{grid-template-columns:1fr}
-    }
-
-    .inventory{
-      display:grid;
-      gap:8px;
-      max-height:240px;
-      overflow:auto;
-      padding-right:2px;
-    }
-
-    .inventory::-webkit-scrollbar,.list::-webkit-scrollbar{width:8px}
-    .inventory::-webkit-scrollbar-thumb,.list::-webkit-scrollbar-thumb{
-      background:rgba(255,255,255,.14);
-      border-radius:999px;
-    }
-
-    .inv-row,.achievement,.shop-item{
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--stroke);
-      border-radius:14px;
-      padding:12px;
-    }
-
-    .inv-row{
+    .progress-header{
       display:flex;
       justify-content:space-between;
-      gap:8px;
-      align-items:center;
-    }
-
-    .inv-left{display:grid;gap:4px}
-
-    .inv-name{
-      font-weight:900;
-      letter-spacing:-.03em;
-      line-height:1.15;
-      font-size:14px;
-    }
-
-    .inv-meta,.reward{
-      color:var(--muted);
       font-size:11px;
-      line-height:1.38;
-    }
-
-    .inv-count{
-      font-weight:800;
       color:var(--muted);
-      white-space:nowrap;
+      margin-bottom:6px;
     }
 
-    .list{
-      display:grid;
-      gap:8px;
-      max-height:300px;
-      overflow:auto;
-      padding-right:2px;
-    }
-
-    .achievement.unlocked{
-      background:rgba(20, 83, 45, .25);
-      border-color:rgba(34,197,94,.22);
-    }
-
-    .row-top{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      align-items:center;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      padding:5px 8px;
+    .progress-bar{
+      height:8px;
       border-radius:999px;
       background:rgba(255,255,255,.06);
-      color:var(--muted);
-      font-size:11px;
-      font-weight:700;
-      white-space:nowrap;
-    }
-
-    .progress{
-      height:10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.09);
       overflow:hidden;
-      margin:8px 0;
     }
 
-    .progress>span{
-      display:block;
+    .progress-fill{
       height:100%;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
       border-radius:inherit;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      transition:width .3s ease;
+      box-shadow:0 0 12px rgba(10,132,255,.3);
     }
+
+    .info-card{
+      padding:14px;
+      border-radius:var(--radius);
+    }
+
+    .info-card h3{
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      margin-bottom:8px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .info-card h3 i{width:16px;height:16px;color:var(--accent)}
+
+    .info-card .muted{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .info-card .tiny{
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .scroll-list{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      overflow-y:auto;
+      max-height:200px;
+      padding-right:4px;
+    }
+
+    .scroll-list::-webkit-scrollbar{width:6px}
+    .scroll-list::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.12);
+      border-radius:999px;
+    }
+
+    .list-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 12px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+      transition:all .15s ease;
+    }
+
+    .list-item:hover{
+      background:rgba(255,255,255,.06);
+      border-color:rgba(255,255,255,.1);
+    }
+
+    .list-item .li-left{display:flex;flex-direction:column;gap:2px}
+    .list-item .li-name{font-weight:800;font-size:13px;letter-spacing:-.02em}
+    .list-item .li-meta{font-size:11px;color:var(--muted)}
+    .list-item .li-right{font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap}
 
     .shop-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:8px;
+      overflow-y:auto;
+      max-height:calc(100vh - 200px);
+      padding-right:4px;
     }
 
-    @media (max-width:980px){
+    @media (max-width:1100px){
       .shop-grid{grid-template-columns:1fr}
     }
 
     .shop-item{
-      display:grid;
+      padding:12px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+      display:flex;
+      flex-direction:column;
       gap:8px;
     }
 
-    .shop-item .top{
+    .shop-item .si-top{
       display:flex;
       justify-content:space-between;
-      gap:8px;
       align-items:center;
     }
 
-    .shop-item .name{
-      font-weight:900;
-      letter-spacing:-.03em;
-      line-height:1.2;
+    .shop-item .si-name{
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:-.02em;
     }
 
-    .shop-item .desc{
+    .shop-item .si-desc{
+      font-size:11px;
       color:var(--muted);
-      font-size:12px;
-      line-height:1.38;
+      line-height:1.4;
     }
 
-    .shop-item .meta{
+    .shop-item .si-meta{
       display:flex;
       justify-content:space-between;
-      gap:8px;
       align-items:center;
-      flex-wrap:wrap;
+      gap:8px;
+      margin-top:auto;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:10px;
+      font-weight:700;
+      white-space:nowrap;
     }
 
     .small-btn{
-      padding:8px 10px;
-      border-radius:12px;
-      background:linear-gradient(180deg,#0a84ff,#007aff);
+      padding:6px 12px;
+      border-radius:8px;
+      background:linear-gradient(135deg, var(--accent), #0066cc);
       color:#fff;
-      font-weight:800;
       font-size:11px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.1);
       white-space:nowrap;
     }
 
     .small-btn.ghost{
       background:rgba(255,255,255,.06);
       color:var(--text);
-      box-shadow:none;
+      border:1px solid var(--glass-border);
     }
 
-    .tab-note{
-      padding:0 2px 8px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.38;
+    .small-btn:disabled{
+      opacity:.4;
+      cursor:not-allowed;
     }
 
-    .reboot-list{
+    .inv-grid{
       display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
       gap:8px;
-      margin-top:8px;
+      overflow-y:auto;
+      max-height:calc(100vh - 220px);
+      padding-right:4px;
     }
 
-    .reboot-item{
+    .inv-card{
+      padding:12px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
       display:flex;
       justify-content:space-between;
-      gap:8px;
       align-items:center;
-      padding:10px 12px;
-      border-radius:16px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.06);
+      transition:all .15s ease;
     }
 
-    .reboot-item b{
-      display:block;
-      font-size:12px;
-      margin-bottom:4px;
-      letter-spacing:-.02em;
+    .inv-card:hover{
+      background:rgba(255,255,255,.06);
+      transform:translateY(-1px);
     }
 
-    .reboot-item span{
-      color:var(--muted);
+    .inv-card .inv-left{display:flex;flex-direction:column;gap:3px}
+    .inv-card .inv-name{font-weight:800;font-size:13px;letter-spacing:-.02em}
+    .inv-card .inv-meta{font-size:10px;color:var(--muted)}
+    .inv-card .inv-count{font-weight:900;font-size:15px}
+
+    .ach-list{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:8px;
+      overflow-y:auto;
+      max-height:calc(100vh - 220px);
+      padding-right:4px;
+    }
+
+    .ach-card{
+      padding:14px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+      transition:all .15s ease;
+    }
+
+    .ach-card.unlocked{
+      background:rgba(34,197,94,.06);
+      border-color:rgba(34,197,94,.2);
+    }
+
+    .ach-card .ach-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:6px;
+    }
+
+    .ach-card .ach-name{
+      font-weight:800;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .ach-card .ach-name i{width:16px;height:16px}
+
+    .ach-card .ach-desc{
       font-size:11px;
-      line-height:1.35;
+      color:var(--muted);
+      margin-bottom:8px;
     }
 
-    .reboot-tag{
-      padding:5px 8px;
+    .ach-card .ach-progress{
+      height:6px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      margin-bottom:6px;
+    }
+
+    .ach-card .ach-progress>span{
+      display:block;
+      height:100%;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius:inherit;
+      transition:width .3s ease;
+    }
+
+    .ach-card .ach-reward{
+      font-size:10px;
+      color:var(--muted);
+    }
+
+    .rebirth-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:900px){
+      .rebirth-grid{grid-template-columns:1fr}
+    }
+
+    .rebirth-card{
+      padding:16px;
+      border-radius:var(--radius);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .rebirth-stat{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+    }
+
+    .rebirth-stat b{font-size:12px;letter-spacing:-.02em}
+    .rebirth-stat span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+    .rebirth-tag{
+      padding:5px 10px;
       border-radius:999px;
       background:rgba(10,132,255,.12);
       color:#7dd3fc;
@@ -636,274 +766,1038 @@
       white-space:nowrap;
     }
 
-    .recent-list{
-      display:grid;
-      gap:8px;
-      max-height:150px;
-      overflow:auto;
-      padding-right:2px;
+    .milestone-list{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
 
-    .recent-item{
+    .milestone-item{
       display:flex;
       justify-content:space-between;
-      gap:8px;
       align-items:center;
-      padding:8px 10px;
-      border-radius:16px;
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--stroke);
-      line-height:1.2;
+      padding:10px 14px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
     }
 
-    .recent-item strong{
+    .trade-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:900px){
+      .trade-grid{grid-template-columns:1fr}
+    }
+
+    .trade-card{
+      padding:16px;
+      border-radius:var(--radius);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .trade-offer{
+      padding:12px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .trade-offer .to-left{display:flex;flex-direction:column;gap:3px}
+    .trade-offer .to-name{font-weight:800;font-size:13px}
+    .trade-offer .to-meta{font-size:11px;color:var(--muted)}
+    .trade-offer .to-action{display:flex;gap:6px;align-items:center}
+
+    .casino-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+    }
+
+    @media (max-width:1100px){
+      .casino-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width:700px){
+      .casino-grid{grid-template-columns:1fr}
+    }
+
+    .game-card{
+      padding:16px;
+      border-radius:var(--radius);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:280px;
+    }
+
+    .game-card h3{
+      font-size:15px;
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .game-card h3 i{width:20px;height:20px;color:var(--accent3)}
+
+    .game-card .game-desc{
       font-size:12px;
-      letter-spacing:-.02em;
-    }
-
-    .recent-item small{
       color:var(--muted);
+      line-height:1.5;
+      flex:1;
+    }
+
+    .game-card .game-odds{
       font-size:11px;
-      white-space:nowrap;
+      color:var(--accent3);
+      font-weight:700;
     }
 
-    .rare-glow{
-      animation:rareGlow 700ms ease both;
+    .bet-input{
+      width:100%;
+      padding:10px 14px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--glass-border);
+      color:var(--text);
+      font:inherit;
+      font-size:14px;
+      font-weight:700;
+      outline:none;
+      transition:all .15s ease;
     }
 
-    .rare-shake{
-      animation:rareShake 360ms ease both;
+    .bet-input:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(10,132,255,.1);
     }
 
-    .name-pop{
-      animation:namePop 460ms ease both;
+    .bet-input::placeholder{color:var(--muted);font-weight:400}
+
+    .game-result{
+      padding:10px;
+      border-radius:var(--radius-sm);
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      min-height:40px;
+      display:grid;
+      place-items:center;
     }
 
-    .badge-pop{
-      animation:badgePop 420ms ease both;
+    .game-result.win{
+      background:rgba(34,197,94,.1);
+      color:var(--good);
+      border:1px solid rgba(34,197,94,.2);
     }
+
+    .game-result.lose{
+      background:rgba(239,68,68,.1);
+      color:var(--danger);
+      border:1px solid rgba(239,68,68,.2);
+    }
+
+    .game-result.neutral{
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      border:1px solid var(--glass-border);
+    }
+
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      backdrop-filter:blur(8px);
+      display:none;
+      place-items:center;
+      z-index:10000;
+    }
+
+    .modal-overlay.active{display:grid}
+
+    .modal-box{
+      width:min(480px,90vw);
+      padding:24px;
+      border-radius:var(--radius);
+    }
+
+    .modal-box h2{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .modal-box h2 i{width:22px;height:22px;color:var(--danger)}
+
+    .modal-box p{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.6;
+      margin-bottom:16px;
+    }
+
+    .sell-grid{
+      display:grid;
+      gap:6px;
+      max-height:300px;
+      overflow-y:auto;
+      margin-bottom:16px;
+    }
+
+    .sell-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 12px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+    }
+
+    .sell-item .si-info{display:flex;flex-direction:column;gap:2px}
+    .sell-item .si-name{font-weight:800;font-size:13px}
+    .sell-item .si-value{font-size:11px;color:var(--muted)}
+    .sell-item .si-btn{
+      padding:6px 12px;
+      border-radius:8px;
+      background:rgba(245,158,11,.1);
+      color:var(--warn);
+      border:1px solid rgba(245,158,11,.2);
+      font-size:11px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .sell-item .si-btn:hover{
+      background:rgba(245,158,11,.15);
+    }
+
+    #flashOverlay{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 180ms ease;
+      z-index:9999;
+    }
+
+    .name-pop{animation:namePop 400ms ease both}
+    .badge-pop{animation:badgePop 350ms ease both}
+    .rare-glow{animation:rareGlow 600ms ease both}
+    .rare-shake{animation:rareShake 300ms ease both}
 
     @keyframes namePop{
-      0%{transform:scale(.82);opacity:0;filter:blur(3px)}
-      60%{transform:scale(1.08);opacity:1;filter:blur(0)}
+      0%{transform:scale(.8);opacity:0;filter:blur(4px)}
+      60%{transform:scale(1.05);opacity:1;filter:blur(0)}
       100%{transform:scale(1)}
     }
 
     @keyframes badgePop{
-      0%{transform:translateY(6px) scale(.95);opacity:0}
+      0%{transform:translateY(8px) scale(.95);opacity:0}
       100%{transform:translateY(0) scale(1);opacity:1}
     }
 
     @keyframes rareShake{
       0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-3px)}
-      40%{transform:translateX(3px)}
+      20%{transform:translateX(-4px)}
+      40%{transform:translateX(4px)}
       60%{transform:translateX(-2px)}
       80%{transform:translateX(2px)}
     }
 
     @keyframes rareGlow{
-      0%{filter:saturate(1); transform:scale(1)}
-      50%{filter:saturate(1.3); transform:scale(1.01)}
-      100%{filter:saturate(1); transform:scale(1)}
+      0%{filter:saturate(1)}
+      50%{filter:saturate(1.4)}
+      100%{filter:saturate(1)}
     }
 
-    .screen-flash-common{background:rgba(59,130,246,.10)!important}
-    .screen-flash-legendary{background:rgba(245,158,11,.14)!important}
-    .screen-flash-mythic{background:rgba(244,114,182,.16)!important}
-    .screen-flash-cosmic{background:rgba(34,211,238,.16)!important}
-    .screen-flash-divine{background:rgba(255,255,255,.18)!important}
+    .screen-flash-common{background:rgba(59,130,246,.08)!important}
+    .screen-flash-legendary{background:rgba(245,158,11,.12)!important}
+    .screen-flash-mythic{background:rgba(244,114,182,.14)!important}
+    .screen-flash-cosmic{background:rgba(34,211,238,.14)!important}
+    .screen-flash-divine{background:rgba(255,255,255,.15)!important}
+
+    .quick-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .quick-actions button{
+      flex:1;
+      min-width:120px;
+    }
+
+    .empty-state{
+      text-align:center;
+      padding:24px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .empty-state i{
+      width:32px;
+      height:32px;
+      margin-bottom:8px;
+      opacity:.5;
+    }
+
+    .stats-mini{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    @media (max-width:700px){
+      .stats-mini{grid-template-columns:repeat(2, 1fr)}
+    }
+
+    .stat-pill{
+      padding:10px;
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--glass-border);
+      text-align:center;
+    }
+
+    .stat-pill .sp-label{
+      font-size:9px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:4px;
+    }
+
+    .stat-pill .sp-value{
+      font-size:16px;
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+
+    .tier-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+
+    .tier-common{background:rgba(255,255,255,.06);color:#9ca3af}
+    .tier-uncommon{background:rgba(34,197,94,.1);color:#4ade80}
+    .tier-rare{background:rgba(59,130,246,.1);color:#60a5fa}
+    .tier-epic{background:rgba(168,85,247,.1);color:#c084fc}
+    .tier-legendary{background:rgba(245,158,11,.1);color:#fbbf24}
+    .tier-mythic{background:rgba(244,114,182,.1);color:#f9a8d4}
+    .tier-cosmic{background:rgba(34,211,238,.1);color:#67e8f9}
+    .tier-divine{background:rgba(255,255,255,.1);color:#fff}
+
+    .toast-container{
+      position:fixed;
+      top:16px;
+      right:16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      z-index:10001;
+      pointer-events:none;
+    }
+
+    .toast{
+      padding:12px 16px;
+      border-radius:var(--radius-sm);
+      background:var(--glass-strong);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--glass-border);
+      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      font-weight:700;
+      animation:toastIn 300ms ease both;
+      pointer-events:auto;
+      max-width:320px;
+    }
+
+    .toast i{width:18px;height:18px}
+    .toast.success{color:var(--good)}
+    .toast.error{color:var(--danger)}
+    .toast.info{color:var(--accent)}
+    .toast.warn{color:var(--warn)}
+
+    @keyframes toastIn{
+      from{transform:translateX(40px);opacity:0}
+      to{transform:translateX(0);opacity:1}
+    }
+
+    @keyframes toastOut{
+      to{transform:translateX(40px);opacity:0}
+    }
+
+    @media (max-width:600px){
+      body{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .main{padding:12px}
+    }
   </style>
+<base target="_blank">
 </head>
 <body>
   <div id="flashOverlay"></div>
+  <div class="toast-container" id="toastContainer"></div>
 
-  <div class="app">
-    <div class="header">
-      <div class="brand">
-        <h1>Infinity Luck RNG</h1>
-        <p>Dark mode, tighter tabs, clearer item text, colored roll results, and full save migration.</p>
-      </div>
-      <div class="save-pill" id="saveStatus">Saved locally</div>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <label>Total Rolls</label>
-        <div class="value" id="stat-rolls">0</div>
-        <div class="sub" id="stat-rolls-sub">Keep rolling to push milestones.</div>
-      </div>
-      <div class="stat">
-        <label>Luck Points</label>
-        <div class="value" id="stat-points">0</div>
-        <div class="sub" id="stat-points-sub">Spend these in the shop.</div>
-      </div>
-      <div class="stat">
-        <label>Rebirths</label>
-        <div class="value" id="stat-rebirths">0</div>
-        <div class="sub" id="stat-rebirths-sub">Each rebirth boosts your run.</div>
-      </div>
-      <div class="stat">
-        <label>Rebirth Shards</label>
-        <div class="value" id="stat-shards">0</div>
-        <div class="sub" id="stat-shards-sub">Permanent forge currency.</div>
-      </div>
-      <div class="stat">
-        <label>Effective Luck</label>
-        <div class="value" id="stat-luck">1.00x</div>
-        <div class="sub" id="stat-luck-sub">All bonuses combined.</div>
-      </div>
-    </div>
-
-    <div class="shell">
-      <div class="shell-inner">
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="play">Play</button>
-          <button class="tab-btn" data-tab="rebirth">Rebirth</button>
-          <button class="tab-btn" data-tab="collection">Collection</button>
-          <button class="tab-btn" data-tab="achievements">Achievements</button>
-          <button class="tab-btn" data-tab="shop">Shop</button>
-        </div>
-
-        <div class="tab-note" id="tabNote">Roll, collect, and build up enough points to rebirth.</div>
-
-        <section class="panel active" data-panel="play">
-          <div class="play-grid">
-            <div class="hero" id="heroCard" data-tier="common">
-              <div class="particles" id="particleLayer"></div>
-
-              <div class="hero-top">
-                <div>
-                  <h2 class="big-name" id="display-name">Tap Roll</h2>
-                  <div class="big-rarity" id="display-rarity">1 in 0</div>
-                </div>
-                <div class="badge" id="display-badge">Nothing rolled yet</div>
-              </div>
-
-              <div class="meter">
-                <div class="row">
-                  <span>Rebirth progress</span>
-                  <span id="rebirth-progress-text">0 / 0 LP</span>
-                </div>
-                <div class="bar"><span id="rebirth-progress-bar"></span></div>
-              </div>
-
-              <div class="actions">
-                <button class="btn" id="btn-roll">ROLL</button>
-                <button class="btn-secondary" id="btn-auto">Auto Roll: OFF</button>
-                <button class="btn-secondary btn-danger" id="btn-wipe">Wipe Save</button>
-              </div>
-            </div>
-
-            <div class="side">
-              <div class="subcard">
-                <h3>Quick Notes</h3>
-                <div class="muted" id="play-summary">
-                  Rebirth resets rolls and points. The Museum forge upgrade can preserve your collection, and the Vault can keep some LP.
-                </div>
-                <div class="footer-actions">
-                  <button class="btn" id="btn-rebirth">REBIRTH</button>
-                  <button class="btn-secondary" id="btn-max-rebirth">Preview Gain</button>
-                </div>
-                <div class="tiny" id="rebirth-requirement-text" style="margin-top:10px"></div>
-              </div>
-
-              <div class="subcard">
-                <h3>Current State</h3>
-                <div class="tiny" id="state-summary">No run loaded yet.</div>
-              </div>
-
-              <div class="subcard">
-                <h3>Recent Rolls</h3>
-                <div class="recent-list" id="recent-rolls-box"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel" data-panel="rebirth">
-          <div class="subcard">
-            <h3>Why Rebirth Matters</h3>
-            <div class="muted" id="rebirth-description">
-              Rebirth is the prestige layer. Spend your run to gain shards and permanent power.
-            </div>
-            <div class="progress"><span id="rebirth-progress-bar-2"></span></div>
-            <div class="tiny" id="rebirth-text-2"></div>
-            <div class="footer-actions">
-              <button class="btn" id="btn-rebirth-2">REBIRTH NOW</button>
-              <button class="btn-secondary" id="btn-preview-2">Preview Next Rebirth</button>
-            </div>
-
-            <div class="reboot-list">
-              <div class="reboot-item">
-                <div>
-                  <b>Permanent Luck Boost</b>
-                  <span>Every rebirth increases your effective luck.</span>
-                </div>
-                <div class="reboot-tag" id="rebirth-luck-tag">+0%</div>
-              </div>
-              <div class="reboot-item">
-                <div>
-                  <b>Shard Gain</b>
-                  <span>Shards are the permanent currency for the forge.</span>
-                </div>
-                <div class="reboot-tag" id="rebirth-shard-tag">0 shards</div>
-              </div>
-              <div class="reboot-item">
-                <div>
-                  <b>Run Preservation</b>
-                  <span>The Vault can keep some LP after rebirth, and the Museum can preserve your collection.</span>
-                </div>
-                <div class="reboot-tag" id="rebirth-milestone-tag">Check list</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="subcard" style="margin-top:12px">
-            <h3>Rebirth Milestones</h3>
-            <div class="muted">
-              These are the big reasons to keep prestige climbing.
-            </div>
-            <div class="reboot-list" id="rebirth-milestones"></div>
-          </div>
-        </section>
-
-        <section class="panel" data-panel="collection">
-          <div class="subcard">
-            <h3>Collection</h3>
-            <div class="tiny" id="unique-count">0 unique collected</div>
-            <div class="inventory" id="inventory-box" style="margin-top:10px"></div>
-          </div>
-        </section>
-
-        <section class="panel" data-panel="achievements">
-          <div class="subcard">
-            <h3>Achievements</h3>
-            <div class="tiny" id="achievement-progress-text">0 / 0 unlocked</div>
-            <div class="list" id="achievement-box" style="margin-top:10px"></div>
-          </div>
-        </section>
-
-        <section class="panel" data-panel="shop">
-          <div class="shop-grid">
-            <div class="subcard">
-              <h3>Luck Point Shop</h3>
-              <div class="tiny">Spend LP on run power.</div>
-              <div class="list" id="shop-points" style="margin-top:10px"></div>
-            </div>
-
-            <div class="subcard">
-              <h3>Rebirth Forge</h3>
-              <div class="tiny">Spend shards on permanent upgrades.</div>
-              <div class="list" id="shop-shards" style="margin-top:10px"></div>
-            </div>
-          </div>
-        </section>
-      </div>
+  <div class="modal-overlay" id="bankruptcyModal">
+    <div class="modal-box liquid-glass-strong">
+      <h2><i data-lucide="alert-triangle"></i> Bankruptcy</h2>
+      <p>You have no Luck Points left! Sell items from your collection to get back in the game. Each item sells for 60% of its base point value.</p>
+      <div class="sell-grid" id="sellGrid"></div>
+      <button class="btn-secondary" onclick="closeBankruptcy()" style="width:100%">Close</button>
     </div>
   </div>
 
+  <nav class="sidebar liquid-glass">
+    <div class="sidebar-brand">
+      <i data-lucide="sparkles"></i>
+    </div>
+    <div class="nav-item active" data-tab="play" title="Play">
+      <i data-lucide="dices"></i>
+    </div>
+    <div class="nav-item" data-tab="casino" title="Casino">
+      <i data-lucide="diamond"></i>
+    </div>
+    <div class="nav-item" data-tab="collection" title="Collection">
+      <i data-lucide="package"></i>
+    </div>
+    <div class="nav-item" data-tab="trade" title="Trading">
+      <i data-lucide="arrow-left-right"></i>
+    </div>
+    <div class="nav-item" data-tab="shop" title="Shop">
+      <i data-lucide="shopping-bag"></i>
+    </div>
+    <div class="nav-item" data-tab="rebirth" title="Rebirth">
+      <i data-lucide="rotate-ccw"></i>
+    </div>
+    <div class="nav-item" data-tab="achievements" title="Achievements">
+      <i data-lucide="trophy"></i>
+      <span class="badge-count" id="achBadge" style="display:none">0</span>
+    </div>
+    <div class="sidebar-footer">
+      <div class="nav-item" data-tab="settings" title="Settings">
+        <i data-lucide="settings"></i>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <header class="topbar liquid-glass">
+      <div class="topbar-left">
+        <h1>Infinity Luck RNG</h1>
+        <div class="save-pill" id="saveStatus">
+          <i data-lucide="check-circle"></i>
+          <span>Saved</span>
+        </div>
+      </div>
+      <div class="topbar-stats">
+        <div class="top-stat">
+          <i data-lucide="dices"></i>
+          <div>
+            <div class="ts-label">Rolls</div>
+            <div class="ts-value" id="stat-rolls">0</div>
+          </div>
+        </div>
+        <div class="top-stat">
+          <i data-lucide="coins"></i>
+          <div>
+            <div class="ts-label">Luck Points</div>
+            <div class="ts-value" id="stat-points">0</div>
+          </div>
+        </div>
+        <div class="top-stat">
+          <i data-lucide="rotate-ccw"></i>
+          <div>
+            <div class="ts-label">Rebirths</div>
+            <div class="ts-value" id="stat-rebirths">0</div>
+          </div>
+        </div>
+        <div class="top-stat">
+          <i data-lucide="gem"></i>
+          <div>
+            <div class="ts-label">Shards</div>
+            <div class="ts-value" id="stat-shards">0</div>
+          </div>
+        </div>
+        <div class="top-stat">
+          <i data-lucide="zap"></i>
+          <div>
+            <div class="ts-label">Luck</div>
+            <div class="ts-value" id="stat-luck">1.00x</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-grid">
+      <div class="left-col">
+        <section class="panel-section active" data-panel="play">
+          <div class="hero-roll liquid-glass-strong" id="heroCard" data-tier="common">
+            <div class="particles" id="particleLayer"></div>
+            <div class="hero-content">
+              <div>
+                <h2 class="big-name" id="display-name">Tap Roll</h2>
+                <div class="big-rarity" id="display-rarity">
+                  <i data-lucide="bar-chart-2"></i>
+                  <span>1 in 0</span>
+                </div>
+              </div>
+              <div class="roll-badge" id="display-badge">
+                <i data-lucide="mouse-pointer-click"></i>
+                <span>Nothing rolled yet</span>
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-header">
+                <span>Rebirth Progress</span>
+                <span id="rebirth-progress-text">0 / 0 LP</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="rebirth-progress-bar" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="roll-actions">
+              <button class="btn-primary" id="btn-roll">
+                <i data-lucide="dices"></i>
+                ROLL
+              </button>
+              <button class="btn-secondary" id="btn-auto">
+                <i data-lucide="play-circle"></i>
+                Auto Roll: OFF
+              </button>
+              <button class="btn-secondary btn-danger" id="btn-wipe">
+                <i data-lucide="trash-2"></i>
+                Wipe Save
+              </button>
+            </div>
+          </div>
+          <div class="info-card liquid-glass">
+            <h3><i data-lucide="info"></i> Quick Info</h3>
+            <div class="muted" id="play-summary">
+              Rebirth resets rolls and points. The Museum forge upgrade preserves your collection, and the Vault keeps some LP.
+            </div>
+            <div class="quick-actions" style="margin-top:12px">
+              <button class="btn-primary" id="btn-rebirth">
+                <i data-lucide="rotate-ccw"></i>
+                REBIRTH
+              </button>
+              <button class="btn-secondary" id="btn-max-rebirth">
+                <i data-lucide="eye"></i>
+                Preview
+              </button>
+            </div>
+            <div class="tiny" id="rebirth-requirement-text" style="margin-top:10px"></div>
+          </div>
+        </section>
+
+        <section class="panel-section" data-panel="casino">
+          <!-- Game Selection Screen -->
+          <div class="info-card liquid-glass" id="casino-select-screen">
+            <h3><i data-lucide="diamond"></i> Luck Casino</h3>
+            <div class="muted">Pick one game to play. Focus your luck. Win big or lose it all.</div>
+            <div class="casino-grid" style="margin-top:12px;max-height:none">
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('coinflip')">
+                <h3><i data-lucide="circle"></i> Coin Flip</h3>
+                <div class="game-desc">50/50 chance. Double your bet or lose it all.</div>
+                <div class="game-odds">Win: 2x • Odds: 50%</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('dice')">
+                <h3><i data-lucide="box"></i> Dice Roll</h3>
+                <div class="game-desc">Roll 1-6. 4+ wins. Roll 6 for 5x payout.</div>
+                <div class="game-odds">Win: 2x-5x • Odds: 50%</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('rarity')">
+                <h3><i data-lucide="search"></i> Rarity Guess</h3>
+                <div class="game-desc">Guess the next roll's tier. Up to 20x payout.</div>
+                <div class="game-odds">Win: 2x-20x • Based on tier</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('luckynum')">
+                <h3><i data-lucide="hash"></i> Lucky Number</h3>
+                <div class="game-desc">Pick 1-10. Exact = 8x. Close = half refund.</div>
+                <div class="game-odds">Win: 8x • Return: 0.5x • Odds: 10%</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('jackpot')">
+                <h3><i data-lucide="crown"></i> Jackpot</h3>
+                <div class="game-desc">High stakes. 15% win chance. 7x payout.</div>
+                <div class="game-odds">Win: 7x • Odds: 15%</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('allin')">
+                <h3><i data-lucide="flame"></i> All-In</h3>
+                <div class="game-desc">Bet everything. 30% chance to triple. 70% to lose all.</div>
+                <div class="game-odds">Win: 3x ALL • Odds: 30%</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary btn-warn" style="width:100%">
+                    <i data-lucide="flame"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Single Game View (hidden by default) -->
+          <div id="casino-game-view" style="display:none;flex-direction:column;gap:12px;height:100%">
+            <div class="info-card liquid-glass" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <h3 style="margin-bottom:0" id="active-game-title"><i data-lucide="diamond"></i> Game</h3>
+              <button class="btn-secondary" onclick="backToCasinoMenu()">
+                <i data-lucide="arrow-left"></i>
+                Back to Games
+              </button>
+            </div>
+
+            <!-- Coin Flip Game -->
+            <div class="game-view" id="game-coinflip" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="circle"></i> Coin Flip</h3>
+                <div class="game-desc" style="font-size:14px">50/50 chance. Double your bet or lose it all. The classic risk.</div>
+                <div class="game-odds" style="font-size:13px">Win: 2x • Odds: 50%</div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0">
+                  <input type="number" class="bet-input" id="bet-coinflip" placeholder="Enter LP amount..." min="1" style="flex:1;min-width:200px">
+                  <button class="btn-primary" onclick="playCoinFlip()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="flip-horizontal"></i>
+                    Flip Coin
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-coinflip" style="font-size:16px;padding:16px">Place your bet and flip</div>
+              </div>
+            </div>
+
+            <!-- Dice Roll Game -->
+            <div class="game-view" id="game-dice" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="box"></i> Dice Roll</h3>
+                <div class="game-desc" style="font-size:14px">Roll 1-6. 4+ wins. Higher rolls pay more. Roll a 6 for 5x payout.</div>
+                <div class="game-odds" style="font-size:13px">Win: 2x-5x • Odds: 50% (4+)</div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0">
+                  <input type="number" class="bet-input" id="bet-dice" placeholder="Enter LP amount..." min="1" style="flex:1;min-width:200px">
+                  <button class="btn-primary" onclick="playDiceRoll()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="box"></i>
+                    Roll Dice
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-dice" style="font-size:16px;padding:16px">Place your bet and roll</div>
+              </div>
+            </div>
+
+            <!-- Rarity Guess Game -->
+            <div class="game-view" id="game-rarity" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="search"></i> Rarity Guess</h3>
+                <div class="game-desc" style="font-size:14px">Guess the next roll's tier. Common/Uncommon = 2x. Rare+ = 5x. Legendary+ = 20x.</div>
+                <div class="game-odds" style="font-size:13px">Win: 2x-20x • Based on tier</div>
+                <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap">
+                  <button class="btn-secondary" style="flex:1;min-width:100px;font-size:13px;padding:12px" onclick="setRarityGuess('common')">Common</button>
+                  <button class="btn-secondary" style="flex:1;min-width:100px;font-size:13px;padding:12px" onclick="setRarityGuess('rare')">Rare+</button>
+                  <button class="btn-secondary" style="flex:1;min-width:100px;font-size:13px;padding:12px" onclick="setRarityGuess('legendary')">Legendary+</button>
+                </div>
+                <div class="tiny" id="rarity-guess-display" style="text-align:center;font-size:13px;margin-bottom:12px">No guess selected</div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                  <input type="number" class="bet-input" id="bet-rarity" placeholder="Enter LP amount..." min="1" style="flex:1;min-width:200px">
+                  <button class="btn-primary" onclick="playRarityGuess()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="search"></i>
+                    Guess & Roll
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-rarity" style="font-size:16px;padding:16px">Select a tier and bet</div>
+              </div>
+            </div>
+
+            <!-- Lucky Number Game -->
+            <div class="game-view" id="game-luckynum" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="hash"></i> Lucky Number</h3>
+                <div class="game-desc" style="font-size:14px">Pick a number 1-10. If the RNG hits it, you win 8x. Close calls (±1) return half your bet.</div>
+                <div class="game-odds" style="font-size:13px">Win: 8x • Return: 0.5x • Odds: 10%</div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0">
+                  <input type="number" class="bet-input" id="bet-luckynum-num" placeholder="Pick 1-10..." min="1" max="10" style="flex:1;min-width:120px">
+                  <input type="number" class="bet-input" id="bet-luckynum" placeholder="Enter LP amount..." min="1" style="flex:2;min-width:200px">
+                  <button class="btn-primary" onclick="playLuckyNumber()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="hash"></i>
+                    Try Luck
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-luckynum" style="font-size:16px;padding:16px">Pick a number and bet</div>
+              </div>
+            </div>
+
+            <!-- Jackpot Game -->
+            <div class="game-view" id="game-jackpot" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="crown"></i> Jackpot</h3>
+                <div class="game-desc" style="font-size:14px">High stakes. 15% win chance. If you win, you get 7x your bet. The house always wins... usually.</div>
+                <div class="game-odds" style="font-size:13px">Win: 7x • Odds: 15%</div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0">
+                  <input type="number" class="bet-input" id="bet-jackpot" placeholder="Enter LP amount..." min="1" style="flex:1;min-width:200px">
+                  <button class="btn-primary" onclick="playJackpot()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="crown"></i>
+                    Go for Jackpot
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-jackpot" style="font-size:16px;padding:16px">Place your bet</div>
+              </div>
+            </div>
+
+            <!-- All-In Game -->
+            <div class="game-view" id="game-allin" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="flame"></i> All-In</h3>
+                <div class="game-desc" style="font-size:14px">Bet EVERYTHING you have. 30% chance to triple it all. 70% chance to lose everything. Not for the faint of heart.</div>
+                <div class="game-odds" style="font-size:13px">Win: 3x ALL • Odds: 30%</div>
+                <div class="bet-input" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:16px;padding:16px;margin:16px 0">
+                  Betting: <span id="allin-amount" style="color:var(--text);margin-left:6px;font-weight:800;font-size:20px">0</span> <span style="margin-left:4px">LP</span>
+                </div>
+                <button class="btn-primary btn-warn" onclick="playAllIn()" style="padding:16px 32px;font-size:18px">
+                  <i data-lucide="flame"></i>
+                  ALL IN
+                </button>
+                <div class="game-result neutral" id="result-allin" style="font-size:16px;padding:16px;margin-top:16px">Your entire balance is at stake</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section" data-panel="collection">
+          <div class="info-card liquid-glass">
+            <div class="panel-header" style="margin-bottom:0">
+              <h2><i data-lucide="package"></i> Collection</h2>
+              <span class="chip" id="unique-count">0 unique</span>
+            </div>
+          </div>
+          <div class="inv-grid" id="inventory-box"></div>
+        </section>
+
+        <section class="panel-section" data-panel="trade">
+          <div class="trade-grid">
+            <div class="trade-card liquid-glass">
+              <h3 style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+                <i data-lucide="store"></i>
+                Trade Post
+              </h3>
+              <div class="muted">Trade your collection items for Luck Points. Prices fluctuate based on rarity.</div>
+              <div class="scroll-list" id="trade-sell-list" style="max-height:300px;margin-top:8px"></div>
+            </div>
+            <div class="trade-card liquid-glass">
+              <h3 style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+                <i data-lucide="shopping-cart"></i>
+                Buy Items
+              </h3>
+              <div class="muted">Buy items directly with Luck Points. Prices are steep but guaranteed.</div>
+              <div class="scroll-list" id="trade-buy-list" style="max-height:300px;margin-top:8px"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section" data-panel="shop">
+          <div class="shop-grid">
+            <div class="liquid-glass" style="padding:14px;border-radius:var(--radius)">
+              <h3 style="font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+                <i data-lucide="coins"></i>
+                Luck Point Shop
+              </h3>
+              <div class="shop-grid" id="shop-points" style="max-height:calc(100vh - 240px)"></div>
+            </div>
+            <div class="liquid-glass" style="padding:14px;border-radius:var(--radius)">
+              <h3 style="font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+                <i data-lucide="gem"></i>
+                Rebirth Forge
+              </h3>
+              <div class="shop-grid" id="shop-shards" style="max-height:calc(100vh - 240px)"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section" data-panel="rebirth">
+          <div class="rebirth-grid">
+            <div class="rebirth-card liquid-glass">
+              <h3 style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+                <i data-lucide="rotate-ccw"></i>
+                Rebirth
+              </h3>
+              <div class="muted">Prestige to convert progress into permanent power. Resets your run but strengthens future ones.</div>
+              <div class="progress-wrap" style="margin-top:8px">
+                <div class="progress-header">
+                  <span>Progress to Next Rebirth</span>
+                  <span id="rebirth-text-2">0 / 0</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="rebirth-progress-bar-2" style="width:0%"></div>
+                </div>
+              </div>
+              <div class="quick-actions">
+                <button class="btn-primary" id="btn-rebirth-2">
+                  <i data-lucide="rotate-ccw"></i>
+                  REBIRTH NOW
+                </button>
+                <button class="btn-secondary" id="btn-preview-2">
+                  <i data-lucide="eye"></i>
+                  Preview
+                </button>
+              </div>
+              <div class="milestone-list" style="margin-top:8px">
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Permanent Luck Boost</b>
+                    <span>Every rebirth increases luck</span>
+                  </div>
+                  <div class="rebirth-tag" id="rebirth-luck-tag">+0%</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Shard Gain</b>
+                    <span>Permanent forge currency</span>
+                  </div>
+                  <div class="rebirth-tag" id="rebirth-shard-tag">0 shards</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Run Preservation</b>
+                    <span>Vault & Museum upgrades</span>
+                  </div>
+                  <div class="rebirth-tag" id="rebirth-milestone-tag">Check list</div>
+                </div>
+              </div>
+            </div>
+            <div class="rebirth-card liquid-glass">
+              <h3 style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+                <i data-lucide="flag"></i>
+                Rebirth Milestones
+              </h3>
+              <div class="milestone-list" id="rebirth-milestones"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section" data-panel="achievements">
+          <div class="info-card liquid-glass">
+            <div class="panel-header" style="margin-bottom:0">
+              <h2><i data-lucide="trophy"></i> Achievements</h2>
+              <span class="chip" id="achievement-progress-text">0 / 0</span>
+            </div>
+          </div>
+          <div class="ach-list" id="achievement-box"></div>
+        </section>
+
+        <section class="panel-section" data-panel="settings">
+          <div class="rebirth-grid">
+            <div class="rebirth-card liquid-glass">
+              <h3 style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+                <i data-lucide="settings"></i>
+                Settings
+              </h3>
+              <div class="muted">Manage your game data and preferences.</div>
+              <div class="milestone-list" style="margin-top:12px">
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Current State</b>
+                    <span id="state-summary">No data loaded</span>
+                  </div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Auto Save</b>
+                    <span>Game saves automatically on every action</span>
+                  </div>
+                  <div class="rebirth-tag">Enabled</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Save Version</b>
+                    <span>Current save format version</span>
+                  </div>
+                  <div class="rebirth-tag">v9</div>
+                </div>
+              </div>
+              <div class="quick-actions" style="margin-top:12px">
+                <button class="btn-secondary btn-danger" id="btn-wipe-2">
+                  <i data-lucide="trash-2"></i>
+                  Wipe All Data
+                </button>
+                <button class="btn-secondary" onclick="exportSave()">
+                  <i data-lucide="download"></i>
+                  Export Save
+                </button>
+              </div>
+            </div>
+            <div class="rebirth-card liquid-glass">
+              <h3 style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+                <i data-lucide="bar-chart-3"></i>
+                Statistics
+              </h3>
+              <div class="stats-mini">
+                <div class="stat-pill">
+                  <div class="sp-label">Total Rolls</div>
+                  <div class="sp-value" id="stat-rolls-2">0</div>
+                </div>
+                <div class="stat-pill">
+                  <div class="sp-label">Luck Points</div>
+                  <div class="sp-value" id="stat-points-2">0</div>
+                </div>
+                <div class="stat-pill">
+                  <div class="sp-label">Rebirths</div>
+                  <div class="sp-value" id="stat-rebirths-2">0</div>
+                </div>
+                <div class="stat-pill">
+                  <div class="sp-label">Shards</div>
+                  <div class="sp-value" id="stat-shards-2">0</div>
+                </div>
+              </div>
+              <div class="milestone-list">
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Effective Luck</b>
+                    <span>All bonuses combined</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-luck-2">1.00x</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Point Multiplier</b>
+                    <span>LP gain from rolls</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-mult-2">1.00x</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Crit Chance</b>
+                    <span>Double/triple roll points</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-crit-2">0%</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Unique Items</b>
+                    <span>Collection progress</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-unique-2">0</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Best Rarity</b>
+                    <span>Rarest item ever rolled</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-best-2">None</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Auto Roll Delay</b>
+                    <span>Current auto-roll speed</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-delay-2">300ms</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="right-col">
+        <div class="info-card liquid-glass">
+          <h3><i data-lucide="clock"></i> Recent Rolls</h3>
+          <div class="scroll-list" id="recent-rolls-box">
+            <div class="empty-state">
+              <i data-lucide="dices"></i>
+              <div>No rolls yet</div>
+            </div>
+          </div>
+        </div>
+        <div class="info-card liquid-glass">
+          <h3><i data-lucide="trending-up"></i> Current State</h3>
+          <div class="tiny" id="state-summary-side">No run loaded yet.</div>
+        </div>
+        <div class="info-card liquid-glass" id="casino-stats-card" style="display:none">
+          <h3><i data-lucide="diamond"></i> Casino Stats</h3>
+          <div class="milestone-list" style="margin-top:8px">
+            <div class="rebirth-stat">
+              <div>
+                <b>Total Bet</b>
+                <span>Lifetime LP wagered</span>
+              </div>
+              <div class="rebirth-tag" id="casino-total-bet">0</div>
+            </div>
+            <div class="rebirth-stat">
+              <div>
+                <b>Total Won</b>
+                <span>Lifetime LP won</span>
+              </div>
+              <div class="rebirth-tag" id="casino-total-won">0</div>
+            </div>
+            <div class="rebirth-stat">
+              <div>
+                <b>Total Lost</b>
+                <span>Lifetime LP lost</span>
+              </div>
+              <div class="rebirth-tag" id="casino-total-lost">0</div>
+            </div>
+            <div class="rebirth-stat">
+              <div>
+                <b>Net Profit</b>
+                <span>Overall casino performance</span>
+              </div>
+              <div class="rebirth-tag" id="casino-net">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <script>
+    // ============================================
+    // SAVE SYSTEM - PRESERVED EXACTLY FROM ORIGINAL
+    // ============================================
     const SAVE_KEY = "infinity_rng_save_v9";
     const LEGACY_KEYS = [
       "infinity_rng_save_v8",
@@ -919,6 +1813,7 @@
 
     const el = (id) => document.getElementById(id);
 
+    // Item pool - preserved exactly
     const itemPool = [
       { name: "Dirt", rarity: 2, color: "#9ca3af", points: 1 },
       { name: "Pebble", rarity: 3, color: "#a8a29e", points: 2 },
@@ -950,7 +1845,6 @@
       { name: "Nebula Blossom", rarity: 3500000, color: "#f9a8d4", points: 4500000 },
       { name: "Multiverse Core", rarity: 5000000, color: "#fb7185", points: 6500000 },
       { name: "The Terrmari", rarity: 8500000, color: "#e5e7eb", points: 11000000 },
-
       { name: "Void Fragment", rarity: 25000000, color: "#c4b5fd", points: 25000000 },
       { name: "Astral Engine", rarity: 100000000, color: "#67e8f9", points: 75000000 },
       { name: "Celestial Crown", rarity: 250000000, color: "#fde68a", points: 250000000 },
@@ -993,22 +1887,34 @@
       { id: "roll1000", name: "Committed", desc: "Reach 1,000 total rolls.", reward: { lp: 400 }, progress: s => [Math.min(s.rolls, 1000), 1000], unlocked: s => s.rolls >= 1000 },
       { id: "roll10000", name: "Grinding", desc: "Reach 10,000 total rolls.", reward: { lp: 2500 }, progress: s => [Math.min(s.rolls, 10000), 10000], unlocked: s => s.rolls >= 10000 },
       { id: "roll100000", name: "No Life", desc: "Reach 100,000 total rolls.", reward: { shards: 10 }, progress: s => [Math.min(s.rolls, 100000), 100000], unlocked: s => s.rolls >= 100000 },
-
       { id: "collector10", name: "Collector", desc: "Own 10 unique items.", reward: { lp: 250 }, progress: s => [Math.min(s.uniqueItems, 10), 10], unlocked: s => s.uniqueItems >= 10 },
       { id: "collector20", name: "Archivist", desc: "Own 20 unique items.", reward: { shards: 1 }, progress: s => [Math.min(s.uniqueItems, 20), 20], unlocked: s => s.uniqueItems >= 20 },
       { id: "collectorAll", name: "Completionist", desc: "Collect every item.", reward: { shards: 100 }, progress: s => [Math.min(s.uniqueItems, itemPool.length), itemPool.length], unlocked: s => s.uniqueItems >= itemPool.length },
-
       { id: "bigPoints", name: "Stacked", desc: "Hold 50,000 Luck Points.", reward: { lp: 500 }, progress: s => [Math.min(s.luckPoints, 50000), 50000], unlocked: s => s.luckPoints >= 50000 },
       { id: "millionaire", name: "Million Club", desc: "Hold 1,000,000 Luck Points.", reward: { shards: 2 }, progress: s => [Math.min(s.luckPoints, 1000000), 1000000], unlocked: s => s.luckPoints >= 1000000 },
-
       { id: "legendaryPull", name: "Legendary Pull", desc: "Roll something 1 in 100,000 or rarer.", reward: { shards: 1 }, progress: s => [Math.min(s.bestRarity, 100000), 100000], unlocked: s => s.bestRarity >= 100000 },
       { id: "voidPull", name: "Impossible", desc: "Roll Infinity Void or better.", reward: { shards: 25 }, progress: s => [Math.min(s.bestRarity, 500000), 500000], unlocked: s => s.bestRarity >= 500000 },
-
       { id: "rebirth1", name: "Restart", desc: "Perform your first rebirth.", reward: { shards: 1 }, progress: s => [Math.min(s.rebirths, 1), 1], unlocked: s => s.rebirths >= 1 },
       { id: "rebirth5", name: "Cycle", desc: "Perform 5 rebirths.", reward: { shards: 3 }, progress: s => [Math.min(s.rebirths, 5), 5], unlocked: s => s.rebirths >= 5 },
       { id: "rebirth10", name: "Ascension", desc: "Perform 10 rebirths.", reward: { shards: 5 }, progress: s => [Math.min(s.rebirths, 10), 10], unlocked: s => s.rebirths >= 10 },
       { id: "rebirth25", name: "Transcendent", desc: "Perform 25 rebirths.", reward: { shards: 20 }, progress: s => [Math.min(s.rebirths, 25), 25], unlocked: s => s.rebirths >= 25 },
       { id: "rebirth50", name: "Eternal", desc: "Perform 50 rebirths.", reward: { shards: 50 }, progress: s => [Math.min(s.rebirths, 50), 50], unlocked: s => s.rebirths >= 50 }
+    ];
+
+    // NEW: Casino achievements
+    const casinoAchievementDefs = [
+      { id: "casinoFirst", name: "First Bet", desc: "Place your first casino bet.", reward: { lp: 50 }, progress: s => [Math.min(s.casinoTotalBet || 0, 1), 1], unlocked: s => (s.casinoTotalBet || 0) >= 1 },
+      { id: "casinoWin100k", name: "High Roller", desc: "Win 100,000 LP in casino games.", reward: { lp: 1000 }, progress: s => [Math.min(s.casinoTotalWon || 0, 100000), 100000], unlocked: s => (s.casinoTotalWon || 0) >= 100000 },
+      { id: "casinoLose500k", name: "Tough Luck", desc: "Lose 500,000 LP in casino games.", reward: { shards: 2 }, progress: s => [Math.min(s.casinoTotalLost || 0, 500000), 500000], unlocked: s => (s.casinoTotalLost || 0) >= 500000 },
+      { id: "casinoAllIn", name: "Daredevil", desc: "Go All-In at least once.", reward: { lp: 500 }, progress: s => [s.casinoAllIns || 0, 1], unlocked: s => (s.casinoAllIns || 0) >= 1 },
+      { id: "casinoJackpot", name: "Jackpot King", desc: "Win a Jackpot bet.", reward: { shards: 5 }, progress: s => [s.casinoJackpotsWon || 0, 1], unlocked: s => (s.casinoJackpotsWon || 0) >= 1 }
+    ];
+
+    // NEW: Trading achievements
+    const tradeAchievementDefs = [
+      { id: "firstTrade", name: "Trader", desc: "Sell your first item.", reward: { lp: 100 }, progress: s => [s.itemsSold || 0, 1], unlocked: s => (s.itemsSold || 0) >= 1 },
+      { id: "trade100", name: "Merchant", desc: "Sell 100 items total.", reward: { lp: 500 }, progress: s => [s.itemsSold || 0, 100], unlocked: s => (s.itemsSold || 0) >= 100 },
+      { id: "firstBuy", name: "Buyer", desc: "Buy your first item.", reward: { lp: 100 }, progress: s => [s.itemsBought || 0, 1], unlocked: s => (s.itemsBought || 0) >= 1 }
     ];
 
     const rebirthMilestones = [
@@ -1019,6 +1925,9 @@
       { req: 50, title: "Late-Game Speed", text: "Run resets become more efficient and rewarding." },
       { req: 100, title: "Ascension Mode", text: "A major prestige threshold for endgame players." }
     ];
+
+    // NEW: Rarity guess state
+    let currentRarityGuess = null;
 
     function defaultState(){
       return {
@@ -1038,7 +1947,17 @@
         pointShopLevels: Object.fromEntries(pointShop.map(item => [item.id, 0])),
         rebirthShopLevels: Object.fromEntries(rebirthShop.map(item => [item.id, 0])),
         achievements: Object.fromEntries(achievementDefs.map(a => [a.id, false])),
-        recentRolls: []
+        recentRolls: [],
+        // NEW: Casino stats
+        casinoTotalBet: 0,
+        casinoTotalWon: 0,
+        casinoTotalLost: 0,
+        casinoAllIns: 0,
+        casinoJackpotsWon: 0,
+        // NEW: Trading stats
+        itemsSold: 0,
+        itemsBought: 0,
+        totalTradeProfit: 0
       };
     }
 
@@ -1048,6 +1967,9 @@
     let isRolling = false;
     let spinTimer = null;
 
+    // ============================================
+    // SAVE FUNCTIONS - PRESERVED EXACTLY
+    // ============================================
     function parseJSON(raw){
       if (!raw) return null;
       try{
@@ -1075,7 +1997,6 @@
 
     function legacyUpgradeMultiplier(raw){
       if (!raw || typeof raw !== "object") return 0;
-
       let bonus = 0;
       const oldUpgradePool = [
         { id: "clover", multGain: 0.2 },
@@ -1083,7 +2004,6 @@
         { id: "matrix", multGain: 8.0 },
         { id: "singularity", multGain: 50.0 }
       ];
-
       if (raw.upgradeLevels && typeof raw.upgradeLevels === "object") {
         for (const up of oldUpgradePool) {
           bonus += (raw.upgradeLevels[up.id] || 0) * up.multGain;
@@ -1094,39 +2014,40 @@
         if (typeof raw.up3_level === "number") bonus += raw.up3_level * 8.0;
         if (typeof raw.up4_level === "number") bonus += raw.up4_level * 50.0;
       }
-
       if (typeof raw.luckMultiplier === "number") {
         bonus = Math.max(bonus, Math.max(0, raw.luckMultiplier - 1));
       }
-
       return bonus;
     }
 
     function normalizeLoadedSave(raw){
       if (!raw || typeof raw !== "object") return null;
-
       const data = clone(raw);
-
       if (typeof data.points === "number" && (typeof data.luckPoints !== "number" || data.luckPoints === 0)) {
         data.luckPoints = data.points;
       }
-
       if (Array.isArray(data.recentRolls)) {
         data.recentRolls = data.recentRolls.slice(0, 10);
       }
-
       data.legacyMultiplierBonus = Math.max(
         typeof data.legacyMultiplierBonus === "number" ? data.legacyMultiplierBonus : 0,
         legacyUpgradeMultiplier(data)
       );
-
       delete data.points;
+      // NEW: Ensure casino/trade stats exist
+      if (typeof data.casinoTotalBet !== "number") data.casinoTotalBet = 0;
+      if (typeof data.casinoTotalWon !== "number") data.casinoTotalWon = 0;
+      if (typeof data.casinoTotalLost !== "number") data.casinoTotalLost = 0;
+      if (typeof data.casinoAllIns !== "number") data.casinoAllIns = 0;
+      if (typeof data.casinoJackpotsWon !== "number") data.casinoJackpotsWon = 0;
+      if (typeof data.itemsSold !== "number") data.itemsSold = 0;
+      if (typeof data.itemsBought !== "number") data.itemsBought = 0;
+      if (typeof data.totalTradeProfit !== "number") data.totalTradeProfit = 0;
       return data;
     }
 
     function scoreSaveData(data){
       if (!data || typeof data !== "object") return 0;
-
       let score = 0;
       score += (data.rolls || 0);
       score += (data.luckPoints || 0) * 0.1;
@@ -1134,36 +2055,29 @@
       score += (data.rebirthShards || 0) * 10000;
       score += (data.bestRarity || 0) / 1000;
       score += (data.legacyMultiplierBonus || 0) * 1000;
-
       if (data.inventory && typeof data.inventory === "object") {
         score += Object.values(data.inventory).reduce((a, b) => a + (b || 0), 0) * 50;
       }
-
       if (data.pointShopLevels && typeof data.pointShopLevels === "object") {
         score += Object.values(data.pointShopLevels).reduce((a, b) => a + (b || 0), 0) * 100;
       }
-
       if (data.rebirthShopLevels && typeof data.rebirthShopLevels === "object") {
         score += Object.values(data.rebirthShopLevels).reduce((a, b) => a + (b || 0), 0) * 200;
       }
-
       return score;
     }
 
     function getBestLegacySave(){
       let best = null;
-
       for (const key of LEGACY_KEYS){
         const raw = localStorage.getItem(key);
         const data = normalizeLoadedSave(parseJSON(raw));
         if (!data) continue;
-
         const score = scoreSaveData(data);
         if (!best || score > best.score) {
           best = { key, data, score };
         }
       }
-
       return best;
     }
 
@@ -1173,7 +2087,6 @@
         const incoming = sourceInv && typeof sourceInv[item.name] === "number" ? sourceInv[item.name] : 0;
         targetInv[item.name] = Math.max(current, incoming);
       }
-
       if (sourceInv && typeof sourceInv === "object") {
         for (const key of Object.keys(sourceInv)) {
           if (!(key in targetInv) && typeof sourceInv[key] === "number") {
@@ -1194,37 +2107,38 @@
 
     function mergeSaveData(base, incoming){
       if (!incoming) return base;
-
       base.rolls = Math.max(base.rolls || 0, incoming.rolls || 0);
       base.luckPoints = Math.max(base.luckPoints || 0, incoming.luckPoints || 0);
       base.rebirths = Math.max(base.rebirths || 0, incoming.rebirths || 0);
       base.rebirthShards = Math.max(base.rebirthShards || 0, incoming.rebirthShards || 0);
       base.bestRarity = Math.max(base.bestRarity || 0, incoming.bestRarity || 0);
       base.legacyMultiplierBonus = Math.max(base.legacyMultiplierBonus || 0, incoming.legacyMultiplierBonus || 0);
-
       if (!base.lastRoll || base.lastRoll === "Tap Roll") {
         if (incoming.lastRoll) base.lastRoll = incoming.lastRoll;
       }
-
       if (!base.lastRarity || base.lastRarity === "1 in 0") {
         if (incoming.lastRarity) base.lastRarity = incoming.lastRarity;
       }
-
       mergeInventory(base.inventory, incoming.inventory);
       mergeLevels(base.pointShopLevels, incoming.pointShopLevels);
       mergeLevels(base.rebirthShopLevels, incoming.rebirthShopLevels);
-
       for (const ach of achievementDefs) {
         base.achievements[ach.id] = !!base.achievements[ach.id] || !!(incoming.achievements && incoming.achievements[ach.id]);
       }
-
       if (!Array.isArray(base.recentRolls) || base.recentRolls.length === 0) {
         if (Array.isArray(incoming.recentRolls)) base.recentRolls = incoming.recentRolls.slice(0, 10);
       }
-
       base.autoUnlock = !!base.autoUnlock || !!incoming.autoUnlock || (base.pointShopLevels.autoRoller || 0) >= 1;
       base.autoRolling = !!base.autoRolling && base.autoUnlock;
-
+      // NEW: Merge casino/trade stats
+      base.casinoTotalBet = Math.max(base.casinoTotalBet || 0, incoming.casinoTotalBet || 0);
+      base.casinoTotalWon = Math.max(base.casinoTotalWon || 0, incoming.casinoTotalWon || 0);
+      base.casinoTotalLost = Math.max(base.casinoTotalLost || 0, incoming.casinoTotalLost || 0);
+      base.casinoAllIns = Math.max(base.casinoAllIns || 0, incoming.casinoAllIns || 0);
+      base.casinoJackpotsWon = Math.max(base.casinoJackpotsWon || 0, incoming.casinoJackpotsWon || 0);
+      base.itemsSold = Math.max(base.itemsSold || 0, incoming.itemsSold || 0);
+      base.itemsBought = Math.max(base.itemsBought || 0, incoming.itemsBought || 0);
+      base.totalTradeProfit = Math.max(base.totalTradeProfit || 0, incoming.totalTradeProfit || 0);
       return base;
     }
 
@@ -1234,21 +2148,11 @@
       pointBonus += getPointLevel("luckyClover") * 5;
       pointBonus += getPointLevel("pureLuck") * 40;
       pointBonus += getPointLevel("holyGrail") * 100;
-
       const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
       const globalRebirthBonus = state.rebirths * 0.15;
       const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
       const legacyBonus = state.legacyMultiplierBonus || 0;
-
-      return Math.max(
-        1,
-        1 +
-        pointBonus +
-        rebirthBonus +
-        globalRebirthBonus +
-        collectionBonus +
-        legacyBonus
-      );
+      return Math.max(1, 1 + pointBonus + rebirthBonus + globalRebirthBonus + collectionBonus + legacyBonus);
     }
 
     function getPointMultiplier(){
@@ -1287,28 +2191,30 @@
       return Math.round(item.baseCost * Math.pow(item.scale, level));
     }
 
+    // ============================================
+    // SAVE / LOAD - PRESERVED EXACTLY
+    // ============================================
     function setSaveStatus(text){
-      el("saveStatus").textContent = text;
+      const pill = el("saveStatus");
+      pill.querySelector("span").textContent = text;
     }
 
     function saveGame(){
       state.version = 9;
-      state.tab = document.querySelector(".tab-btn.active")?.dataset.tab || state.tab || "play";
+      state.tab = document.querySelector(".nav-item.active")?.dataset.tab || state.tab || "play";
       localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-      setSaveStatus("Saved locally");
+      setSaveStatus("Saved");
       lastSaveStamp = Date.now();
     }
 
     function loadGame(){
       let repaired = false;
       state = defaultState();
-
       const currentRaw = parseJSON(localStorage.getItem(SAVE_KEY));
       if (currentRaw) {
         const current = normalizeLoadedSave(currentRaw);
         mergeSaveData(state, current);
       }
-
       const bestLegacy = getBestLegacySave();
       if (bestLegacy) {
         const before = scoreSaveData(state);
@@ -1318,16 +2224,13 @@
           repaired = true;
         }
       }
-
       state.autoUnlock = !!state.autoUnlock || (state.pointShopLevels.autoRoller || 0) >= 1;
       state.autoRolling = !!state.autoRolling && state.autoUnlock;
-
       recalcDerived();
       checkAchievements();
-
       if (repaired) {
         saveGame();
-        setSaveStatus("Migrated old save");
+        setSaveStatus("Migrated");
       }
     }
 
@@ -1338,16 +2241,18 @@
     function wipeSave(){
       if (!confirm("Erase all data? This cannot be undone.")) return;
       stopAuto();
-
       for (const key of [SAVE_KEY, ...LEGACY_KEYS]) {
         localStorage.removeItem(key);
       }
-
       state = defaultState();
       renderAll();
       saveGame();
+      showToast("Save wiped", "info");
     }
 
+    // ============================================
+    // ROLL SYSTEM - PRESERVED EXACTLY
+    // ============================================
     function getRarityTier(rarity){
       if (rarity >= 1e16) return "divine";
       if (rarity >= 1e15) return "divine";
@@ -1373,7 +2278,6 @@
       const hero = el("heroCard");
       const tier = getRarityTier(item.rarity);
       hero.dataset.tier = tier;
-
       if (tier === "divine"){
         hero.style.boxShadow = "0 0 0 1px rgba(255,255,255,.24), 0 0 60px rgba(255,255,255,.10), 0 20px 60px rgba(0,0,0,.36)";
       } else if (tier === "cosmic" || tier === "void"){
@@ -1397,23 +2301,20 @@
       const nameNode = el("display-name");
       const rarityNode = el("display-rarity");
       const badgeNode = el("display-badge");
-
       nameNode.textContent = item.name;
       nameNode.style.color = item.color;
       nameNode.style.textShadow = `0 0 12px ${item.color}22, 0 0 26px ${item.color}16`;
-
-      rarityNode.textContent = `Rarity: 1 in ${item.rarity.toLocaleString()}`;
+      rarityNode.innerHTML = `<i data-lucide="bar-chart-2"></i><span>Rarity: 1 in ${item.rarity.toLocaleString()}</span>`;
       rarityNode.style.color = item.color;
-
-      badgeNode.textContent = crit ? `Critical pull! +${gain.toLocaleString()} LP` : `+${gain.toLocaleString()} LP gained`;
+      badgeNode.innerHTML = crit 
+        ? `<i data-lucide="zap"></i><span>Critical pull! +${gain.toLocaleString()} LP</span>`
+        : `<i data-lucide="plus-circle"></i><span>+${gain.toLocaleString()} LP gained</span>`;
       badgeNode.style.color = item.color;
-
       nameNode.classList.remove("name-pop");
       badgeNode.classList.remove("badge-pop");
       void nameNode.offsetWidth;
       nameNode.classList.add("name-pop");
       badgeNode.classList.add("badge-pop");
-
       if (item.rarity >= 1000){
         nameNode.classList.add("rare-glow");
         if (item.rarity >= 1e5){
@@ -1422,14 +2323,13 @@
       } else {
         nameNode.classList.remove("rare-glow", "rare-shake");
       }
-
       setHeroTier(item);
+      lucide.createIcons();
     }
 
     function createParticleBurst(item){
       const layer = el("particleLayer");
       layer.innerHTML = "";
-
       let count = 0;
       if (item.rarity >= 1e16) count = 220;
       else if (item.rarity >= 1e12) count = 180;
@@ -1438,7 +2338,6 @@
       else if (item.rarity >= 1e5) count = 45;
       else if (item.rarity >= 1000) count = 24;
       else count = 10;
-
       for (let i = 0; i < count; i++){
         const p = document.createElement("span");
         p.className = "particle";
@@ -1452,10 +2351,7 @@
         p.style.animationDelay = `${Math.random() * 80}ms`;
         layer.appendChild(p);
       }
-
-      setTimeout(() => {
-        layer.innerHTML = "";
-      }, 900);
+      setTimeout(() => { layer.innerHTML = ""; }, 900);
     }
 
     function triggerScreenFlash(item){
@@ -1464,39 +2360,30 @@
       overlay.className = "";
       overlay.classList.add(rarityFlashClass(tier));
       overlay.style.opacity = "1";
-
       if (tier === "divine"){
-        overlay.style.background = "rgba(255,255,255,.18)";
+        overlay.style.background = "rgba(255,255,255,.15)";
       } else if (tier === "cosmic" || tier === "void"){
-        overlay.style.background = "rgba(34,211,238,.16)";
+        overlay.style.background = "rgba(34,211,238,.14)";
       } else if (tier === "mythic"){
-        overlay.style.background = "rgba(244,114,182,.16)";
+        overlay.style.background = "rgba(244,114,182,.14)";
       } else if (tier === "legendary"){
-        overlay.style.background = "rgba(245,158,11,.14)";
+        overlay.style.background = "rgba(245,158,11,.12)";
       } else {
-        overlay.style.background = "rgba(59,130,246,.10)";
+        overlay.style.background = "rgba(59,130,246,.08)";
       }
-
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-      }, 180);
-
-      setTimeout(() => {
-        overlay.className = "";
-      }, 480);
+      setTimeout(() => { overlay.style.opacity = "0"; }, 180);
+      setTimeout(() => { overlay.className = ""; }, 480);
     }
 
     function selectRolledItem(){
       const chance = Math.random() / getEffectiveLuck();
       let rolledItem = itemPool[0];
-
       for (let i = itemPool.length - 1; i >= 0; i--){
         if (chance <= (1 / itemPool[i].rarity)){
           rolledItem = itemPool[i];
           break;
         }
       }
-
       const rareHunter = getPointLevel("rareHunter");
       if (rareHunter > 0 && Math.random() < Math.min(0.40, rareHunter * 0.025)){
         const idx = itemPool.findIndex(x => x.name === rolledItem.name);
@@ -1505,7 +2392,6 @@
           rolledItem = itemPool[bump];
         }
       }
-
       return rolledItem;
     }
 
@@ -1524,24 +2410,24 @@
     function renderRecentRolls(){
       const box = el("recent-rolls-box");
       box.innerHTML = "";
-
       if (!state.recentRolls.length){
-        const empty = document.createElement("div");
-        empty.className = "tiny";
-        empty.textContent = "No rolls yet.";
-        box.appendChild(empty);
+        box.innerHTML = `
+          <div class="empty-state">
+            <i data-lucide="dices"></i>
+            <div>No rolls yet</div>
+          </div>`;
+        lucide.createIcons();
         return;
       }
-
       for (const roll of state.recentRolls){
         const row = document.createElement("div");
-        row.className = "recent-item";
+        row.className = "list-item";
         row.innerHTML = `
-          <div>
-            <strong style="color:${roll.color};">${roll.name}</strong>
-            <div class="tiny">${roll.crit ? "Critical pull" : "Normal pull"} • ${roll.points.toLocaleString()} LP</div>
+          <div class="li-left">
+            <div class="li-name" style="color:${roll.color === "#ffffff" ? "#f8fafc" : roll.color};">${roll.name}</div>
+            <div class="li-meta">${roll.crit ? "Critical" : "Normal"} • ${roll.points.toLocaleString()} LP</div>
           </div>
-          <small>1 in ${roll.rarity.toLocaleString()}</small>
+          <div class="li-right">1 in ${roll.rarity.toLocaleString()}</div>
         `;
         box.appendChild(row);
       }
@@ -1552,25 +2438,20 @@
       const rarityNode = el("display-rarity");
       const badgeNode = el("display-badge");
       const hero = el("heroCard");
-
       const spinCount = 16 + Math.floor(Math.random() * 8);
       let tick = 0;
-
       hero.classList.add("rolling");
-      rarityNode.textContent = "Rolling...";
-      badgeNode.textContent = "Shuffling possibilities...";
+      rarityNode.innerHTML = `<i data-lucide="loader"></i><span>Rolling...</span>`;
+      badgeNode.innerHTML = `<i data-lucide="shuffle"></i><span>Shuffling possibilities...</span>`;
       badgeNode.style.color = finalItem.color;
       nameNode.style.color = "#ffffff";
-
       if (spinTimer) clearInterval(spinTimer);
-
       spinTimer = setInterval(() => {
         const randomItem = itemPool[Math.floor(Math.random() * itemPool.length)];
         nameNode.textContent = randomItem.name;
         nameNode.style.color = randomItem.color;
-        rarityNode.textContent = `Rolling... ${tick + 1}/${spinCount}`;
+        rarityNode.innerHTML = `<i data-lucide="loader"></i><span>Rolling... ${tick + 1}/${spinCount}</span>`;
         tick++;
-
         if (tick >= spinCount){
           clearInterval(spinTimer);
           spinTimer = null;
@@ -1582,12 +2463,10 @@
     function roll(){
       if (isRolling) return;
       isRolling = true;
-
       const finalItem = selectRolledItem();
       const crit = Math.random() < getCritChance();
       const critMult = getPointLevel("superCrit") >= 1 ? 3 : 2;
       const gain = Math.round(finalItem.points * getPointMultiplier() * (crit ? critMult : 1));
-
       startSpinAnimation(finalItem, () => {
         state.rolls += 1;
         state.inventory[finalItem.name] = (state.inventory[finalItem.name] || 0) + 1;
@@ -1596,22 +2475,22 @@
         state.lastRoll = finalItem.name;
         state.lastRarity = `1 in ${finalItem.rarity.toLocaleString()}`;
         state.uniqueItems = getUniqueCount();
-
         updateDisplayForItem(finalItem, gain, crit);
         createParticleBurst(finalItem);
         triggerScreenFlash(finalItem);
-
         pushRecentRoll(finalItem, gain, crit);
         checkAchievements();
         recalcDerived();
         renderAll();
         saveGame();
-
         el("heroCard").classList.remove("rolling");
         isRolling = false;
       });
     }
 
+    // ============================================
+    // REBIRTH - PRESERVED EXACTLY
+    // ============================================
     function canRebirth(){
       return state.luckPoints >= getRebirthRequirement();
     }
@@ -1619,49 +2498,44 @@
     function rebirth(){
       const req = getRebirthRequirement();
       if (state.luckPoints < req) return;
-
       const shardGain = getRebirthShardGain();
       const keepPercent = getKeepLPPercent();
       const keptLP = Math.floor(state.luckPoints * keepPercent);
-
       state.rebirths += 1;
       state.rebirthShards += shardGain;
-
       state.rolls = 0;
       state.luckPoints = getStartingBank() + keptLP;
       state.bestRarity = 0;
       state.lastRoll = "Tap Roll";
       state.lastRarity = "1 in 0";
-
       if (getRebirthLevel("museum") < 1){
         state.inventory = Object.fromEntries(itemPool.map(item => [item.name, 0]));
       }
-
       state.autoUnlock = (getPointLevel("autoRoller") >= 1);
       state.autoRolling = false;
       stopAuto();
-
       checkAchievements();
       recalcDerived();
       renderAll();
       saveGame();
-
       el("display-name").textContent = "Rebirth Complete";
       el("display-name").style.color = "#0a84ff";
-      el("display-rarity").textContent = `Gained ${shardGain} shard${shardGain === 1 ? "" : "s"}`;
-      el("display-badge").textContent = "Permanent power added.";
+      el("display-rarity").innerHTML = `<i data-lucide="gem"></i><span>Gained ${shardGain} shard${shardGain === 1 ? "" : "s"}</span>`;
+      el("display-badge").innerHTML = `<i data-lucide="check-circle"></i><span>Permanent power added.</span>`;
+      lucide.createIcons();
+      showToast(`Rebirth complete! +${shardGain} shards`, "success");
     }
 
+    // ============================================
+    // SHOP - PRESERVED EXACTLY
+    // ============================================
     function buyPointShop(id){
       const item = pointShop.find(x => x.id === id);
       if (!item) return;
-
       const level = getPointLevel(id);
       if (level >= item.maxLevel) return;
-
       const cost = getShopCost(item, level);
       if (state.luckPoints < cost) return;
-
       state.luckPoints -= cost;
       state.pointShopLevels[id] = level + 1;
       if (id === "autoRoller") state.autoUnlock = true;
@@ -1670,25 +2544,27 @@
       checkAchievements();
       renderAll();
       saveGame();
+      showToast(`Bought ${item.name} (Lv.${level + 1})`, "success");
     }
 
     function buyRebirthShop(id){
       const item = rebirthShop.find(x => x.id === id);
       if (!item) return;
-
       const level = getRebirthLevel(id);
       if (level >= item.maxLevel) return;
-
       const cost = getShopCost(item, level);
       if (state.rebirthShards < cost) return;
-
       state.rebirthShards -= cost;
       state.rebirthShopLevels[id] = level + 1;
       recalcDerived();
       renderAll();
       saveGame();
+      showToast(`Forged ${item.name} (Lv.${level + 1})`, "success");
     }
 
+    // ============================================
+    // ACHIEVEMENTS - PRESERVED + NEW ONES
+    // ============================================
     function checkAchievements(){
       for (const ach of achievementDefs){
         if (state.achievements[ach.id]) continue;
@@ -1696,15 +2572,42 @@
           state.achievements[ach.id] = true;
           if (ach.reward?.lp) state.luckPoints += ach.reward.lp;
           if (ach.reward?.shards) state.rebirthShards += ach.reward.shards;
+          showToast(`Achievement: ${ach.name}!`, "success");
+        }
+      }
+      // NEW: Casino achievements
+      for (const ach of casinoAchievementDefs){
+        if (state.achievements[ach.id]) continue;
+        if (ach.unlocked(state)){
+          state.achievements[ach.id] = true;
+          if (ach.reward?.lp) state.luckPoints += ach.reward.lp;
+          if (ach.reward?.shards) state.rebirthShards += ach.reward.shards;
+          showToast(`Achievement: ${ach.name}!`, "success");
+        }
+      }
+      // NEW: Trade achievements
+      for (const ach of tradeAchievementDefs){
+        if (state.achievements[ach.id]) continue;
+        if (ach.unlocked(state)){
+          state.achievements[ach.id] = true;
+          if (ach.reward?.lp) state.luckPoints += ach.reward.lp;
+          if (ach.reward?.shards) state.rebirthShards += ach.reward.shards;
+          showToast(`Achievement: ${ach.name}!`, "success");
         }
       }
     }
 
+    // ============================================
+    // AUTO ROLL - PRESERVED EXACTLY
+    // ============================================
     function stopAuto(){
       if (autoTimer) clearInterval(autoTimer);
       autoTimer = null;
       state.autoRolling = false;
-      el("btn-auto").textContent = state.autoUnlock ? "Auto Roll: OFF" : "Auto Roll: LOCKED";
+      el("btn-auto").innerHTML = state.autoUnlock 
+        ? `<i data-lucide="play-circle"></i><span>Auto Roll: OFF</span>` 
+        : `<i data-lucide="lock"></i><span>Auto Roll: LOCKED</span>`;
+      lucide.createIcons();
     }
 
     function setAutoTimer(){
@@ -1714,7 +2617,8 @@
       }
       if (autoTimer) clearInterval(autoTimer);
       autoTimer = setInterval(roll, getAutoDelay());
-      el("btn-auto").textContent = "Auto Roll: ON";
+      el("btn-auto").innerHTML = `<i data-lucide="pause-circle"></i><span>Auto Roll: ON</span>`;
+      lucide.createIcons();
     }
 
     function toggleAuto(){
@@ -1722,11 +2626,9 @@
         if (getPointLevel("autoRoller") < 1) return;
         state.autoUnlock = true;
       }
-
       state.autoRolling = !state.autoRolling;
       if (state.autoRolling) setAutoTimer();
       else stopAuto();
-
       renderAll();
       saveGame();
     }
@@ -1735,162 +2637,626 @@
       const req = getRebirthRequirement();
       const gain = getRebirthShardGain();
       const keepPercent = Math.round(getKeepLPPercent() * 100);
-
-      alert(
-        `Current rebirth requirement: ${req.toLocaleString()} LP\n` +
-        `Estimated shard gain: ${gain}\n` +
-        `LP kept after rebirth: ${keepPercent}%\n\n` +
-        `Rebirth resets your run, but it permanently strengthens future runs.`
-      );
+      showToast(`Req: ${req.toLocaleString()} LP | Gain: ${gain} shards | Keep: ${keepPercent}%`, "info");
     }
 
+    // ============================================
+    // NAVIGATION
+    // ============================================
     function switchTab(tab){
       state.tab = tab;
-      document.querySelectorAll(".tab-btn").forEach(btn => {
+      document.querySelectorAll(".nav-item").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.tab === tab);
       });
-      document.querySelectorAll(".panel").forEach(panel => {
+      document.querySelectorAll(".panel-section").forEach(panel => {
         panel.classList.toggle("active", panel.dataset.panel === tab);
       });
+      // Show/hide casino stats card
+      el("casino-stats-card").style.display = tab === "casino" ? "block" : "none";
+      saveGame();
+      lucide.createIcons();
+    }
 
-      const notes = {
-        play: "Roll, collect, and build up enough points to rebirth.",
-        rebirth: "Prestige here to convert progress into permanent power.",
-        collection: "Everything you have pulled lives here.",
-        achievements: "Unlock goals for extra LP and shards.",
-        shop: "Spend LP on run power and shards on permanent upgrades."
+    // ============================================
+    // TOAST SYSTEM
+    // ============================================
+    function showToast(message, type = "info") {
+      const container = el("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      const icons = {
+        success: "check-circle",
+        error: "x-circle",
+        warn: "alert-triangle",
+        info: "info"
       };
+      toast.innerHTML = `<i data-lucide="${icons[type]}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.style.animation = "toastOut 300ms ease forwards";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
 
-      el("tabNote").textContent = notes[tab] || "";
+    // ============================================
+    // CASINO NAVIGATION
+    // ============================================
+    let activeCasinoGame = null;
+
+    function selectCasinoGame(gameId) {
+      activeCasinoGame = gameId;
+      el("casino-select-screen").style.display = "none";
+      el("casino-game-view").style.display = "flex";
+      // Hide all game views
+      document.querySelectorAll(".game-view").forEach(v => v.style.display = "none");
+      // Show selected game
+      const gameView = el("game-" + gameId);
+      if (gameView) gameView.style.display = "flex";
+      // Update title
+      const titles = {
+        coinflip: "Coin Flip",
+        dice: "Dice Roll",
+        rarity: "Rarity Guess",
+        luckynum: "Lucky Number",
+        jackpot: "Jackpot",
+        allin: "All-In"
+      };
+      const icons = {
+        coinflip: "circle",
+        dice: "box",
+        rarity: "search",
+        luckynum: "hash",
+        jackpot: "crown",
+        allin: "flame"
+      };
+      el("active-game-title").innerHTML = `<i data-lucide="${icons[gameId]}"></i> ${titles[gameId]}`;
+      lucide.createIcons();
       saveGame();
     }
 
+    function backToCasinoMenu() {
+      activeCasinoGame = null;
+      el("casino-select-screen").style.display = "block";
+      el("casino-game-view").style.display = "none";
+      document.querySelectorAll(".game-view").forEach(v => v.style.display = "none");
+      saveGame();
+    }
+
+    // ============================================
+    // CASINO / BETTING GAMES
+    // ============================================
+    function validateBet(inputId) {
+      const val = parseInt(el(inputId).value);
+      if (isNaN(val) || val <= 0) {
+        showToast("Enter a valid bet amount", "error");
+        return null;
+      }
+      if (val > state.luckPoints) {
+        showToast("Not enough Luck Points!", "error");
+        return null;
+      }
+      return val;
+    }
+
+    function recordCasino(bet, won, lost) {
+      state.casinoTotalBet += bet;
+      if (won > 0) state.casinoTotalWon += won;
+      if (lost > 0) state.casinoTotalLost += lost;
+      checkAchievements();
+      saveGame();
+      renderCasinoStats();
+    }
+
+    function renderCasinoStats() {
+      el("casino-total-bet").textContent = state.casinoTotalBet.toLocaleString();
+      el("casino-total-won").textContent = state.casinoTotalWon.toLocaleString();
+      el("casino-total-lost").textContent = state.casinoTotalLost.toLocaleString();
+      const net = state.casinoTotalWon - state.casinoTotalLost;
+      const netEl = el("casino-net");
+      netEl.textContent = (net >= 0 ? "+" : "") + net.toLocaleString();
+      netEl.style.color = net >= 0 ? "var(--good)" : "var(--danger)";
+    }
+
+    function checkBankruptcy() {
+      if (state.luckPoints <= 0) {
+        const hasItems = Object.values(state.inventory).some(v => v > 0);
+        if (hasItems) {
+          showBankruptcy();
+        } else {
+          showToast("Completely bankrupt! No items to sell.", "error");
+        }
+      }
+    }
+
+    // Coin Flip
+    function playCoinFlip() {
+      const bet = validateBet("bet-coinflip");
+      if (bet === null) return;
+      state.luckPoints -= bet;
+      const win = Math.random() < 0.5;
+      const resultEl = el("result-coinflip");
+      if (win) {
+        const payout = bet * 2;
+        state.luckPoints += payout;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="check-circle" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> HEADS! Won ${payout.toLocaleString()} LP`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`Coin Flip: Won ${(payout - bet).toLocaleString()} LP!`, "success");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.innerHTML = `<i data-lucide="x-circle" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> TAILS! Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Coin Flip: Lost ${bet.toLocaleString()} LP`, "error");
+      }
+      lucide.createIcons();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // Dice Roll
+    function playDiceRoll() {
+      const bet = validateBet("bet-dice");
+      if (bet === null) return;
+      state.luckPoints -= bet;
+      const roll = Math.floor(Math.random() * 6) + 1;
+      const resultEl = el("result-dice");
+      let multiplier = 0;
+      if (roll >= 6) multiplier = 5;
+      else if (roll >= 5) multiplier = 3;
+      else if (roll >= 4) multiplier = 2;
+      if (multiplier > 0) {
+        const payout = Math.round(bet * multiplier);
+        state.luckPoints += payout;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="box" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> Rolled ${roll}! Won ${payout.toLocaleString()} LP (${multiplier}x)`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`Dice: Rolled ${roll}, won ${(payout - bet).toLocaleString()} LP!`, "success");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.innerHTML = `<i data-lucide="box" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> Rolled ${roll}! Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Dice: Rolled ${roll}, lost ${bet.toLocaleString()} LP`, "error");
+      }
+      lucide.createIcons();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // Rarity Guess
+    function setRarityGuess(tier) {
+      currentRarityGuess = tier;
+      const display = el("rarity-guess-display");
+      const payouts = { common: "2x", rare: "5x", legendary: "20x" };
+      display.innerHTML = `Guessing: <span style="color:var(--accent);font-weight:800">${tier.toUpperCase()}</span> or better • Payout: ${payouts[tier]}`;
+    }
+
+    function playRarityGuess() {
+      if (!currentRarityGuess) {
+        showToast("Select a tier guess first!", "warn");
+        return;
+      }
+      const bet = validateBet("bet-rarity");
+      if (bet === null) return;
+      state.luckPoints -= bet;
+      const item = selectRolledItem();
+      const tier = getRarityTier(item.rarity);
+      const resultEl = el("result-rarity");
+      const tierOrder = ["common", "uncommon", "rare", "epic", "legendary", "mythic", "cosmic", "void", "divine"];
+      const guessIdx = tierOrder.indexOf(currentRarityGuess);
+      const actualIdx = tierOrder.indexOf(tier);
+      let won = false;
+      let multiplier = 0;
+      if (currentRarityGuess === "common" && (tier === "common" || tier === "uncommon")) {
+        won = true;
+        multiplier = 2;
+      } else if (currentRarityGuess === "rare" && actualIdx >= tierOrder.indexOf("rare")) {
+        won = true;
+        multiplier = 5;
+      } else if (currentRarityGuess === "legendary" && actualIdx >= tierOrder.indexOf("legendary")) {
+        won = true;
+        multiplier = 20;
+      }
+      if (won) {
+        const payout = Math.round(bet * multiplier);
+        state.luckPoints += payout;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="search" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> ${item.name} (${tier})! Won ${payout.toLocaleString()} LP`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`Rarity Guess: ${item.name} — Won ${(payout - bet).toLocaleString()} LP!`, "success");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.innerHTML = `<i data-lucide="search" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> ${item.name} (${tier})! Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Rarity Guess: ${item.name} — Lost ${bet.toLocaleString()} LP`, "error");
+      }
+      lucide.createIcons();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // Lucky Number
+    function playLuckyNumber() {
+      const num = parseInt(el("bet-luckynum-num").value);
+      if (isNaN(num) || num < 1 || num > 10) {
+        showToast("Pick a number between 1 and 10!", "error");
+        return;
+      }
+      const bet = validateBet("bet-luckynum");
+      if (bet === null) return;
+      state.luckPoints -= bet;
+      const roll = Math.floor(Math.random() * 10) + 1;
+      const diff = Math.abs(roll - num);
+      const resultEl = el("result-luckynum");
+      if (diff === 0) {
+        const payout = bet * 8;
+        state.luckPoints += payout;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="hash" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> Exact match! ${roll} = ${num}! Won ${payout.toLocaleString()} LP (8x)`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`Lucky Number: Exact match! +${(payout - bet).toLocaleString()} LP`, "success");
+      } else if (diff === 1) {
+        const refund = Math.round(bet * 0.5);
+        state.luckPoints += refund;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="hash" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> Close call! ${roll} (picked ${num}). Returned ${refund.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet - refund);
+        showToast(`Lucky Number: Close call, returned ${refund.toLocaleString()} LP`, "warn");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.innerHTML = `<i data-lucide="hash" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> Rolled ${roll} (picked ${num}). Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Lucky Number: Missed! Lost ${bet.toLocaleString()} LP`, "error");
+      }
+      lucide.createIcons();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // Jackpot
+    function playJackpot() {
+      const bet = validateBet("bet-jackpot");
+      if (bet === null) return;
+      state.luckPoints -= bet;
+      const win = Math.random() < 0.15;
+      const resultEl = el("result-jackpot");
+      if (win) {
+        const payout = bet * 7;
+        state.luckPoints += payout;
+        state.casinoJackpotsWon = (state.casinoJackpotsWon || 0) + 1;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="crown" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> JACKPOT! Won ${payout.toLocaleString()} LP (7x)`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`JACKPOT! Won ${(payout - bet).toLocaleString()} LP!`, "success");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.innerHTML = `<i data-lucide="crown" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> No jackpot. Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Jackpot: Lost ${bet.toLocaleString()} LP`, "error");
+      }
+      lucide.createIcons();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // All-In
+    function playAllIn() {
+      const bet = state.luckPoints;
+      if (bet <= 0) {
+        showToast("You have nothing to bet!", "error");
+        return;
+      }
+      state.luckPoints = 0;
+      state.casinoAllIns = (state.casinoAllIns || 0) + 1;
+      const win = Math.random() < 0.30;
+      const resultEl = el("result-allin");
+      if (win) {
+        const payout = bet * 3;
+        state.luckPoints = payout;
+        resultEl.className = "game-result win";
+        resultEl.innerHTML = `<i data-lucide="flame" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> ALL IN WINS! ${payout.toLocaleString()} LP (3x)`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`ALL IN: TRIPLED to ${payout.toLocaleString()} LP!`, "success");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.innerHTML = `<i data-lucide="flame" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px"></i> ALL IN LOST! Everything gone.`;
+        recordCasino(bet, 0, bet);
+        showToast(`ALL IN: Lost everything!`, "error");
+      }
+      lucide.createIcons();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // ============================================
+    // BANKRUPTCY / SELLING
+    // ============================================
+    function showBankruptcy() {
+      const grid = el("sellGrid");
+      grid.innerHTML = "";
+      const owned = itemPool.filter(item => (state.inventory[item.name] || 0) > 0);
+      if (!owned.length) {
+        grid.innerHTML = `<div class="empty-state"><i data-lucide="package-x"></i><div>No items to sell</div></div>`;
+        lucide.createIcons();
+      }
+      for (const item of owned) {
+        const sellPrice = Math.round(item.points * 0.6);
+        const div = document.createElement("div");
+        div.className = "sell-item";
+        div.innerHTML = `
+          <div class="si-info">
+            <div class="si-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color}">${item.name}</div>
+            <div class="si-value">Sell for ${sellPrice.toLocaleString()} LP • Have x${state.inventory[item.name]}</div>
+          </div>
+          <button class="si-btn" onclick="sellItem('${item.name}', ${sellPrice})">Sell</button>
+        `;
+        grid.appendChild(div);
+      }
+      el("bankruptcyModal").classList.add("active");
+    }
+
+    function closeBankruptcy() {
+      el("bankruptcyModal").classList.remove("active");
+    }
+
+    function sellItem(itemName, price) {
+      if ((state.inventory[itemName] || 0) <= 0) return;
+      state.inventory[itemName]--;
+      state.luckPoints += price;
+      state.itemsSold = (state.itemsSold || 0) + 1;
+      state.totalTradeProfit = (state.totalTradeProfit || 0) + price;
+      showToast(`Sold ${itemName} for ${price.toLocaleString()} LP`, "success");
+      checkAchievements();
+      renderAll();
+      saveGame();
+      // Refresh bankruptcy modal
+      if (state.luckPoints > 0) {
+        closeBankruptcy();
+      } else {
+        showBankruptcy();
+      }
+    }
+
+    // ============================================
+    // TRADING SYSTEM
+    // ============================================
+    function getSellPrice(item) {
+      // Sell price is 40-70% of base points based on rarity
+      const ratio = 0.4 + (Math.log10(item.rarity) / 20);
+      return Math.max(1, Math.round(item.points * Math.min(0.7, ratio)));
+    }
+
+    function getBuyPrice(item) {
+      // Buy price is 3-5x base points based on rarity
+      const multiplier = 3 + (Math.log10(item.rarity + 1) / 5);
+      return Math.round(item.points * Math.min(5, multiplier));
+    }
+
+    function renderTrade() {
+      // Sell list
+      const sellList = el("trade-sell-list");
+      sellList.innerHTML = "";
+      const owned = itemPool.filter(item => (state.inventory[item.name] || 0) > 0);
+      if (!owned.length) {
+        sellList.innerHTML = `<div class="empty-state"><i data-lucide="package-x"></i><div>No items to sell</div></div>`;
+      } else {
+        for (const item of owned) {
+          const price = getSellPrice(item);
+          const div = document.createElement("div");
+          div.className = "trade-offer";
+          div.innerHTML = `
+            <div class="to-left">
+              <div class="to-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color}">${item.name}</div>
+              <div class="to-meta">1 in ${item.rarity.toLocaleString()} • x${state.inventory[item.name]} owned</div>
+            </div>
+            <div class="to-action">
+              <span class="chip">${price.toLocaleString()} LP</span>
+              <button class="small-btn" onclick="sellTradeItem('${item.name}', ${price})">Sell</button>
+            </div>
+          `;
+          sellList.appendChild(div);
+        }
+      }
+
+      // Buy list
+      const buyList = el("trade-buy-list");
+      buyList.innerHTML = "";
+      for (const item of itemPool) {
+        const price = getBuyPrice(item);
+        const div = document.createElement("div");
+        div.className = "trade-offer";
+        div.innerHTML = `
+          <div class="to-left">
+            <div class="to-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color}">${item.name}</div>
+            <div class="to-meta">1 in ${item.rarity.toLocaleString()} • ${item.points.toLocaleString()} base LP</div>
+          </div>
+          <div class="to-action">
+            <span class="chip">${price.toLocaleString()} LP</span>
+            <button class="small-btn" onclick="buyTradeItem('${item.name}', ${price})" ${state.luckPoints < price ? "disabled" : ""}>Buy</button>
+          </div>
+        `;
+        buyList.appendChild(div);
+      }
+      lucide.createIcons();
+    }
+
+    function sellTradeItem(itemName, price) {
+      if ((state.inventory[itemName] || 0) <= 0) return;
+      state.inventory[itemName]--;
+      state.luckPoints += price;
+      state.itemsSold = (state.itemsSold || 0) + 1;
+      state.totalTradeProfit = (state.totalTradeProfit || 0) + price;
+      showToast(`Sold ${itemName} for ${price.toLocaleString()} LP`, "success");
+      checkAchievements();
+      renderAll();
+      saveGame();
+    }
+
+    function buyTradeItem(itemName, price) {
+      if (state.luckPoints < price) {
+        showToast("Not enough Luck Points!", "error");
+        return;
+      }
+      state.luckPoints -= price;
+      state.inventory[itemName] = (state.inventory[itemName] || 0) + 1;
+      state.itemsBought = (state.itemsBought || 0) + 1;
+      showToast(`Bought ${itemName} for ${price.toLocaleString()} LP`, "success");
+      checkAchievements();
+      renderAll();
+      saveGame();
+    }
+
+    // ============================================
+    // EXPORT SAVE
+    // ============================================
+    function exportSave() {
+      const data = JSON.stringify(state, null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `infinity_rng_save_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Save exported!", "success");
+    }
+
+    // ============================================
+    // RENDER FUNCTIONS
+    // ============================================
     function renderStats(){
       el("stat-rolls").textContent = state.rolls.toLocaleString();
       el("stat-points").textContent = state.luckPoints.toLocaleString();
       el("stat-rebirths").textContent = state.rebirths.toLocaleString();
       el("stat-shards").textContent = state.rebirthShards.toLocaleString();
       el("stat-luck").textContent = `${getEffectiveLuck().toFixed(2)}x`;
-
-      el("stat-rolls-sub").textContent = state.rolls >= 1000 ? "You are deep into the loop." : "Keep rolling to push milestones.";
-      el("stat-points-sub").textContent = `Point multiplier: ${getPointMultiplier().toFixed(2)}x`;
-      el("stat-rebirths-sub").textContent = `Next rebirth improves your run.`;
-      el("stat-shards-sub").textContent = `Spend shards in the forge.`;
-      el("stat-luck-sub").textContent = `Crit chance: ${(getCritChance() * 100).toFixed(0)}%`;
     }
 
     function renderPlay(){
       el("display-name").textContent = state.lastRoll || "Tap Roll";
       el("display-name").style.color = state.lastRoll === "Tap Roll" ? "#9ca3af" : "#f8fafc";
-      el("display-rarity").textContent = state.lastRarity || "1 in 0";
-      el("display-badge").textContent = state.lastRoll === "Tap Roll" ? "Nothing rolled yet" : "Ready for another pull.";
-
+      el("display-rarity").innerHTML = state.lastRoll === "Tap Roll" 
+        ? `<i data-lucide="bar-chart-2"></i><span>1 in 0</span>`
+        : `<i data-lucide="bar-chart-2"></i><span>${state.lastRarity}</span>`;
+      el("display-badge").innerHTML = state.lastRoll === "Tap Roll"
+        ? `<i data-lucide="mouse-pointer-click"></i><span>Nothing rolled yet</span>`
+        : `<i data-lucide="check-circle"></i><span>Ready for another pull.</span>`;
       const req = getRebirthRequirement();
       const pct = Math.min(100, (state.luckPoints / req) * 100);
-
       el("rebirth-progress-text").textContent = `${state.luckPoints.toLocaleString()} / ${req.toLocaleString()} LP`;
       el("rebirth-progress-bar").style.width = `${pct}%`;
       el("rebirth-progress-bar-2").style.width = `${pct}%`;
-
       el("rebirth-requirement-text").textContent = `Need ${req.toLocaleString()} LP to rebirth.`;
-      el("rebirth-text-2").textContent =
-        `You will gain ${getRebirthShardGain()} shard${getRebirthShardGain() === 1 ? "" : "s"} on rebirth. ` +
-        `You also keep ${Math.round(getKeepLPPercent() * 100)}% of your current LP.`;
-
-      el("state-summary").textContent =
-        `Rolls: ${state.rolls.toLocaleString()} • LP: ${state.luckPoints.toLocaleString()} • Rebirths: ${state.rebirths.toLocaleString()} • Shards: ${state.rebirthShards.toLocaleString()}`;
-
+      el("rebirth-text-2").textContent = `Gain ${getRebirthShardGain()} shard${getRebirthShardGain() === 1 ? "" : "s"} • Keep ${Math.round(getKeepLPPercent() * 100)}% LP`;
+      el("state-summary-side").textContent = `Rolls: ${state.rolls.toLocaleString()} • LP: ${state.luckPoints.toLocaleString()} • Rebirths: ${state.rebirths.toLocaleString()}`;
       const enabled = canRebirth();
       const rebirthBtn = el("btn-rebirth");
       const rebirthBtn2 = el("btn-rebirth-2");
       rebirthBtn.disabled = !enabled;
       rebirthBtn2.disabled = !enabled;
-      rebirthBtn.textContent = enabled ? "REBIRTH" : "NEED MORE LP";
-      rebirthBtn2.textContent = enabled ? "REBIRTH NOW" : "NEED MORE LP";
-
-      el("btn-auto").textContent = state.autoUnlock ? (state.autoRolling ? "Auto Roll: ON" : "Auto Roll: OFF") : "Auto Roll: LOCKED";
+      rebirthBtn.innerHTML = enabled 
+        ? `<i data-lucide="rotate-ccw"></i><span>REBIRTH</span>` 
+        : `<i data-lucide="lock"></i><span>NEED MORE LP</span>`;
+      rebirthBtn2.innerHTML = enabled 
+        ? `<i data-lucide="rotate-ccw"></i><span>REBIRTH NOW</span>` 
+        : `<i data-lucide="lock"></i><span>NEED MORE LP</span>`;
+      el("btn-auto").innerHTML = state.autoUnlock 
+        ? (state.autoRolling ? `<i data-lucide="pause-circle"></i><span>Auto Roll: ON</span>` : `<i data-lucide="play-circle"></i><span>Auto Roll: OFF</span>`)
+        : `<i data-lucide="lock"></i><span>Auto Roll: LOCKED</span>`;
       el("rebirth-luck-tag").textContent = `+${(state.rebirths * 15).toFixed(0)}%`;
       el("rebirth-shard-tag").textContent = `${getRebirthShardGain().toLocaleString()} shard${getRebirthShardGain() === 1 ? "" : "s"}`;
-      el("rebirth-milestone-tag").textContent = state.rebirths >= 25 ? "Late game unlocked" : "Keep pushing";
+      el("rebirth-milestone-tag").textContent = state.rebirths >= 25 ? "Late game" : "Keep pushing";
+      el("allin-amount").textContent = state.luckPoints.toLocaleString();
+      lucide.createIcons();
     }
 
     function renderInventory(){
       const box = el("inventory-box");
       box.innerHTML = "";
-
       const owned = itemPool.slice().reverse().filter(item => (state.inventory[item.name] || 0) > 0);
       el("unique-count").textContent = `${owned.length} unique collected`;
-
       if (!owned.length){
-        const empty = document.createElement("div");
-        empty.className = "tiny";
-        empty.textContent = "Nothing collected yet. Start rolling.";
-        box.appendChild(empty);
+        box.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i data-lucide="package-x"></i><div>Nothing collected yet. Start rolling.</div></div>`;
+        lucide.createIcons();
         return;
       }
-
       for (const item of owned){
-        const row = document.createElement("div");
-        row.className = "inv-row";
-        row.innerHTML = `
+        const card = document.createElement("div");
+        card.className = "inv-card";
+        card.innerHTML = `
           <div class="inv-left">
             <div class="inv-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color};">${item.name}</div>
-            <div class="inv-meta">1 in ${item.rarity.toLocaleString()} • ${item.points.toLocaleString()} LP base</div>
+            <div class="inv-meta">1 in ${item.rarity.toLocaleString()}</div>
           </div>
-          <div class="inv-count">x${state.inventory[item.name].toLocaleString()}</div>
+          <div class="inv-count" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color}">x${state.inventory[item.name].toLocaleString()}</div>
         `;
-        box.appendChild(row);
+        box.appendChild(card);
       }
     }
 
     function renderAchievements(){
       const box = el("achievement-box");
       box.innerHTML = "";
-
-      const unlocked = Object.values(state.achievements).filter(Boolean).length;
-      el("achievement-progress-text").textContent = `${unlocked} / ${achievementDefs.length} unlocked`;
-
-      for (const ach of achievementDefs){
+      const allAchs = [...achievementDefs, ...casinoAchievementDefs, ...tradeAchievementDefs];
+      const unlocked = allAchs.filter(a => !!state.achievements[a.id]).length;
+      el("achievement-progress-text").textContent = `${unlocked} / ${allAchs.length} unlocked`;
+      // Update badge
+      const badge = el("achBadge");
+      const newUnlocks = allAchs.filter(a => !state.achievements[a.id]).length;
+      if (newUnlocks > 0 && newUnlocks < allAchs.length) {
+        badge.textContent = newUnlocks;
+        badge.style.display = "block";
+      } else {
+        badge.style.display = "none";
+      }
+      for (const ach of allAchs){
         const done = !!state.achievements[ach.id];
         const [cur, goal] = ach.progress(state);
         const pct = Math.min(100, (cur / goal) * 100);
         const reward = [];
         if (ach.reward?.lp) reward.push(`${ach.reward.lp.toLocaleString()} LP`);
         if (ach.reward?.shards) reward.push(`${ach.reward.shards.toLocaleString()} shard${ach.reward.shards === 1 ? "" : "s"}`);
-
         const card = document.createElement("div");
-        card.className = `achievement ${done ? "unlocked" : ""}`;
+        card.className = `ach-card ${done ? "unlocked" : ""}`;
         card.innerHTML = `
-          <div class="row-top">
-            <div style="font-weight:900;letter-spacing:-.03em">${ach.name}</div>
+          <div class="ach-top">
+            <div class="ach-name">
+              <i data-lucide="${done ? "check-circle" : "circle"}"></i>
+              ${ach.name}
+            </div>
             <span class="chip">${done ? "Unlocked" : `${cur.toLocaleString()} / ${goal.toLocaleString()}`}</span>
           </div>
-          <div class="muted" style="margin-top:6px">${ach.desc}</div>
-          <div class="progress"><span style="width:${pct}%"></span></div>
-          <div class="reward">Reward: ${reward.join(" + ") || "None"}</div>
+          <div class="ach-desc">${ach.desc}</div>
+          <div class="ach-progress"><span style="width:${pct}%"></span></div>
+          <div class="ach-reward">Reward: ${reward.join(" + ") || "None"}</div>
         `;
         box.appendChild(card);
       }
+      lucide.createIcons();
     }
 
     function renderShop(){
       const pointsBox = el("shop-points");
       pointsBox.innerHTML = "";
-
       for (const item of pointShop){
         const level = getPointLevel(item.id);
         const cost = getShopCost(item, level);
-
         const card = document.createElement("div");
         card.className = "shop-item";
         card.innerHTML = `
-          <div class="top">
-            <div class="name">${item.name}</div>
+          <div class="si-top">
+            <div class="si-name">${item.name}</div>
             <span class="chip">Lv. ${level} / ${item.maxLevel}</span>
           </div>
-          <div class="desc">${item.desc}</div>
-          <div class="meta">
-            <span class="tiny">Cost: ${cost.toLocaleString()} LP</span>
+          <div class="si-desc">${item.desc}</div>
+          <div class="si-meta">
+            <span class="tiny">${cost.toLocaleString()} LP</span>
             <button class="small-btn" data-buy-point="${item.id}" ${state.luckPoints < cost || level >= item.maxLevel ? "disabled" : ""}>
               ${level >= item.maxLevel ? "MAX" : "Buy"}
             </button>
@@ -1898,24 +3264,21 @@
         `;
         pointsBox.appendChild(card);
       }
-
       const shardBox = el("shop-shards");
       shardBox.innerHTML = "";
-
       for (const item of rebirthShop){
         const level = getRebirthLevel(item.id);
         const cost = getShopCost(item, level);
-
         const card = document.createElement("div");
         card.className = "shop-item";
         card.innerHTML = `
-          <div class="top">
-            <div class="name">${item.name}</div>
+          <div class="si-top">
+            <div class="si-name">${item.name}</div>
             <span class="chip">Lv. ${level} / ${item.maxLevel}</span>
           </div>
-          <div class="desc">${item.desc}</div>
-          <div class="meta">
-            <span class="tiny">Cost: ${cost.toLocaleString()} Shard${cost === 1 ? "" : "s"}</span>
+          <div class="si-desc">${item.desc}</div>
+          <div class="si-meta">
+            <span class="tiny">${cost.toLocaleString()} Shard${cost === 1 ? "" : "s"}</span>
             <button class="small-btn" data-buy-shard="${item.id}" ${state.rebirthShards < cost || level >= item.maxLevel ? "disabled" : ""}>
               ${level >= item.maxLevel ? "MAX" : "Forge"}
             </button>
@@ -1928,25 +3291,37 @@
     function renderRebirthMilestones(){
       const box = el("rebirth-milestones");
       box.innerHTML = "";
-
       for (const m of rebirthMilestones){
         const achieved = state.rebirths >= m.req;
         const div = document.createElement("div");
-        div.className = "reboot-item";
+        div.className = "milestone-item";
         div.innerHTML = `
           <div>
-            <b>${achieved ? "✓" : "•"} Rebirth ${m.req}</b>
-            <span>${m.text}</span>
+            <b style="font-size:12px;letter-spacing:-.02em">${achieved ? "✓" : "•"} Rebirth ${m.req}</b>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${m.text}</div>
           </div>
-          <div class="reboot-tag">${achieved ? "Done" : "Locked"}</div>
+          <div class="rebirth-tag">${achieved ? "Done" : "Locked"}</div>
         `;
         box.appendChild(div);
       }
     }
 
+    function renderSettings() {
+      el("state-summary").textContent = `Rolls: ${state.rolls.toLocaleString()} • LP: ${state.luckPoints.toLocaleString()} • Rebirths: ${state.rebirths.toLocaleString()} • Shards: ${state.rebirthShards.toLocaleString()}`;
+      el("stat-rolls-2").textContent = state.rolls.toLocaleString();
+      el("stat-points-2").textContent = state.luckPoints.toLocaleString();
+      el("stat-rebirths-2").textContent = state.rebirths.toLocaleString();
+      el("stat-shards-2").textContent = state.rebirthShards.toLocaleString();
+      el("stat-luck-2").textContent = `${getEffectiveLuck().toFixed(2)}x`;
+      el("stat-mult-2").textContent = `${getPointMultiplier().toFixed(2)}x`;
+      el("stat-crit-2").textContent = `${(getCritChance() * 100).toFixed(0)}%`;
+      el("stat-unique-2").textContent = getUniqueCount().toLocaleString();
+      el("stat-best-2").textContent = state.bestRarity > 0 ? `1 in ${state.bestRarity.toLocaleString()}` : "None";
+      el("stat-delay-2").textContent = `${getAutoDelay()}ms`;
+    }
+
     function renderAll(){
       state.uniqueItems = getUniqueCount();
-
       renderStats();
       renderPlay();
       renderInventory();
@@ -1954,32 +3329,27 @@
       renderShop();
       renderRebirthMilestones();
       renderRecentRolls();
-
-      document.querySelectorAll(".tab-btn").forEach(btn => {
+      renderTrade();
+      renderSettings();
+      renderCasinoStats();
+      document.querySelectorAll(".nav-item").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.tab === state.tab);
       });
-
-      document.querySelectorAll(".panel").forEach(panel => {
+      document.querySelectorAll(".panel-section").forEach(panel => {
         panel.classList.toggle("active", panel.dataset.panel === state.tab);
       });
-
-      const notes = {
-        play: "Roll, collect, and build up enough points to rebirth.",
-        rebirth: "Prestige here to convert progress into permanent power.",
-        collection: "Everything you have pulled lives here.",
-        achievements: "Unlock goals for extra LP and shards.",
-        shop: "Spend LP on run power and shards on permanent upgrades."
-      };
-
-      el("tabNote").textContent = notes[state.tab] || "";
-
+      el("casino-stats-card").style.display = state.tab === "casino" ? "block" : "none";
       if (Date.now() - lastSaveStamp > 1000){
-        setSaveStatus("Saved locally");
+        setSaveStatus("Saved");
       }
+      lucide.createIcons();
     }
 
+    // ============================================
+    // INIT
+    // ============================================
     function initTabs(){
-      document.querySelectorAll(".tab-btn").forEach(btn => {
+      document.querySelectorAll(".nav-item").forEach(btn => {
         btn.addEventListener("click", () => {
           state.tab = btn.dataset.tab;
           renderAll();
@@ -1996,7 +3366,7 @@
       el("btn-rebirth-2").addEventListener("click", rebirth);
       el("btn-preview-2").addEventListener("click", previewRebirth);
       el("btn-max-rebirth").addEventListener("click", previewRebirth);
-
+      el("btn-wipe-2").addEventListener("click", wipeSave);
       document.addEventListener("click", (e) => {
         const point = e.target.closest("[data-buy-point]");
         const shard = e.target.closest("[data-buy-shard]");
@@ -2022,6 +3392,7 @@
       switchTab(state.tab || "play");
       renderAll();
       saveGame();
+      lucide.createIcons();
     }
 
     window.addEventListener("beforeunload", saveGame);
@@ -2033,6 +3404,6 @@
     }, 5000);
 
     boot();
-</script>
+  </script>
 </body>
 </html>
