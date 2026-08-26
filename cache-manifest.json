@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "assets": [
+    "./index.html",
+    "./manifest.json",
+    "./offline.json",
+    "./offline/2048.html",
+    "./offline/2048.png",
+    "./offline/PixelClient 1.12.2 WASM.html",
+    "./offline/PixelClient 1.8.8 WASM.html",
+    "./offline/astra112.html",
+    "./offline/astra18.html",
+    "./offline/astraclient.jpeg",
+    "./offline/eaglercraft.dev_Resent_Client_5.0_WASM.html",
+    "./offline/eaglercraft.dev_ShadowNetClient_WASM.html",
+    "./offline/eaglercraft.dev_Tuff_Client_WASM.html",
+    "./offline/flash-installer.html",
+    "./offline/infinityrng.html",
+    "./offline/infinityrnglegacy.html",
+    "./offline/orbital.html",
+    "./offline/pixelclient.svg",
+    "./offline/pocket_monsters_dark_catcher.html",
+    "./offline/resentclient.png",
+    "./offline/rng.png",
+    "./offline/tuffclient.png"
+  ]
+}
