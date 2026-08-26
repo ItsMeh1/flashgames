@@ -1,0 +1,30 @@
+{
+  "version": "v2-platform-1",
+  "assets": [
+    "./",
+    "./index.html",
+    "./styles.css",
+    "./refinement.css",
+    "./precision.css",
+    "./issue-fixes.css",
+    "./performance.css",
+    "./final-fixes.css",
+    "./alignment-reset.css",
+    "./data.js",
+    "./legacy-cache.js",
+    "./admin.js",
+    "./auth.js",
+    "./app.js",
+    "./sync.js",
+    "./login-gate.js",
+    "./player-fixes.js",
+    "./custom-install.js",
+    "./moderation-fixes.js",
+    "./profile-fixes.js",
+    "./platform-upgrades.js",
+    "./update.json",
+    "./manifest.json",
+    "./offline.json",
+    "./offline/logo.png"
+  ]
+}
