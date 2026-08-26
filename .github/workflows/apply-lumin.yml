@@ -1,8 +1,9 @@
-name: Apply LuminSDK integration
+name: Integrate FlashGames platform upgrades
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,105 +16,77 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
-      - name: Inject LuminSDK arcade
+      - name: Apply platform upgrades
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import json, re
+          root=Path('.')
+          index=root/'index.html'; admin=root/'admin.html'; sw=root/'sw.js'; offline_path=root/'offline.json'
+          index_text=index.read_text(encoding='utf-8')
+          admin_text=admin.read_text(encoding='utf-8')
+          offline=json.loads(offline_path.read_text(encoding='utf-8'))
 
-          path = Path('index.html')
-          text = path.read_text(encoding='utf-8')
+          assets=['./index.html','./manifest.json','./offline.json']
+          for g in offline:
+              for key in ('url','cover'):
+                  value=g.get(key)
+                  if isinstance(value,str) and value.startswith('./'): assets.append(value)
+          assets=sorted(set(assets))
+          mp=root/'cache-manifest.json'
+          old={}
+          if mp.exists():
+              try: old=json.loads(mp.read_text(encoding='utf-8'))
+              except Exception: pass
+          mp.write_text(json.dumps({'version':old.get('version',0)+1,'assets':assets},indent=2)+'\n',encoding='utf-8')
 
-          marker_start = '<!-- FLASH-LUMIN-START -->'
-          if marker_start in text:
-              print('LuminSDK integration already present; nothing to do.')
-              raise SystemExit(0)
-
-          block = r'''<!-- FLASH-LUMIN-START -->
-          <section id="lumin-arcade" class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
-              <div class="glass-panel-dark rounded-[2rem] border border-white/10 overflow-hidden shadow-2xl">
-                  <div class="p-6 md:p-8 border-b border-white/10 bg-white/[0.02]">
-                      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                          <div>
-                              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/20 text-indigo-200 text-[11px] font-bold uppercase tracking-[0.2em]">
-                                  LuminSDK Arcade
-                              </div>
-                              <h2 class="mt-3 text-2xl md:text-3xl font-bold text-white tracking-tight">Even more games.</h2>
-                              <p class="mt-2 text-sm md:text-base text-slate-400 max-w-2xl">Your normal Flash Games library stays right where it is. Lumin adds its browser-game catalog alongside it, with built-in search, categories, random play, and fullscreen gameplay.</p>
-                          </div>
-                          <a href="https://docs.luminsdk.com/" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center px-4 py-2.5 rounded-2xl btn-glass text-sm font-semibold text-slate-200 border border-white/10 hover:text-white">LuminSDK docs ↗</a>
-                      </div>
+          index_text=re.sub(r'<!-- FLASH-LUMIN-START -->.*?<!-- FLASH-LUMIN-END -->\s*','',index_text,flags=re.S)
+          block=r'''<!-- FLASH-LUMIN-START -->
+          <section id="flashLuminHome" class="flash-lumin-home hidden w-full max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+            <div class="glass-panel-dark rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
+              <div class="px-6 py-7 md:px-8 md:py-8 border-b border-white/10 bg-white/[0.02]">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+                  <div class="min-w-0">
+                    <div class="inline-flex rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-indigo-200">Online Arcade</div>
+                    <h2 class="mt-3 text-2xl md:text-3xl font-bold tracking-tight text-white">Online games, right on Home.</h2>
+                    <p class="mt-2 max-w-3xl text-sm md:text-base leading-relaxed text-slate-400">Library and Store remain your Offline HTML Games Pack. Lumin's online catalog lives here, separately, so the two libraries stay clean.</p>
                   </div>
-                  <div id="lumin-games" class="min-h-[520px] w-full bg-slate-950/40"></div>
+                  <a href="https://docs.luminsdk.com/" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10">LuminSDK docs ↗</a>
+                </div>
               </div>
+              <div class="min-h-[620px] bg-black/15 p-3 sm:p-5 md:p-6"><div id="flashLuminGames"></div></div>
+            </div>
           </section>
           <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
-          <script>
-              (() => {
-                  const initLumin = async () => {
-                      const container = document.getElementById('lumin-games');
-                      if (!container || !window.Lumin) return;
-
-                      try {
-                          await Lumin.init({
-                              container,
-                              theme: 'dark',
-                              columns: 6,
-                              rows: 4,
-                              gamesPerPage: 24,
-                              showSearch: true,
-                              showCategories: true,
-                              showRandom: true,
-                              onError: (error) => {
-                                  console.error('LuminSDK error:', error);
-                              }
-                          });
-                      } catch (error) {
-                          console.error('Failed to initialize LuminSDK:', error);
-                          container.innerHTML = `
-                              <div class="min-h-[420px] flex items-center justify-center p-8 text-center">
-                                  <div>
-                                      <div class="text-3xl mb-3">⚠️</div>
-                                      <h3 class="text-white font-bold text-lg">Lumin Arcade couldn't load</h3>
-                                      <p class="text-slate-400 text-sm mt-2 max-w-md">Your local Flash Games library is still available above. Check your connection and reload to try Lumin again.</p>
-                                  </div>
-                              </div>
-                          `;
-                      }
-                  };
-
-                  if (document.readyState === 'loading') {
-                      document.addEventListener('DOMContentLoaded', initLumin, { once: true });
-                  } else {
-                      initLumin();
-                  }
-              })();
-          </script>
+          <script src="./lumin-home.js" defer></script>
+          <script src="./ip-guard.js" defer></script>
+          <script src="./cache-sync.js" defer></script>
           <!-- FLASH-LUMIN-END -->
           '''
+          index_text=index_text.replace('</body>',block+'\n</body>',1)
+          fixes='''<style id="flash-layout-fixes">
+          html,body{width:100%;min-width:0}body{overflow-x:clip}*,*::before,*::after{box-sizing:border-box}img,video,iframe{max-width:100%}button,input,textarea,select{min-width:0}.flash-lumin-home{position:relative;z-index:2}.flash-lumin-home>div{width:100%;min-width:0}#flashLuminGames{width:100%;min-width:0;overflow:hidden}main,[role="main"]{min-width:0}.glass-panel,.glass-panel-dark,.glass-card{min-width:0}@media(max-width:768px){.flash-lumin-home{padding-left:.75rem!important;padding-right:.75rem!important}}
+          </style>'''
+          if 'flash-layout-fixes' not in index_text: index_text=index_text.replace('</head>',fixes+'\n</head>',1)
+          index.write_text(index_text,encoding='utf-8')
 
-          # Keep the injection at the very end of the document so it does not disturb
-          # the existing Offline Games Pack/game portal markup.
-          needle = '</body>'
-          if needle not in text:
-              raise SystemExit('index.html does not contain </body>')
+          (root/'lumin-home.js').write_text(r'''(()=>{const s=()=>document.getElementById('flashLuminHome');let ready=false;function t(e){return(e?.textContent||'').replace(/\s+/g,' ').trim().toLowerCase()}function home(e){return t(e)==='home'||t(e).includes('home')}function place(){const x=s(),m=document.querySelector('main');if(x&&m&&x.parentElement!==m)m.appendChild(x)}function visible(v){s()?.classList.toggle('hidden',!v)}function init(){place();const links=[...document.querySelectorAll('button,a')];links.forEach(e=>{if(home(e)&&!e.dataset.luminBound){e.dataset.luminBound='1';e.addEventListener('click',()=>setTimeout(()=>visible(home(e)),0))}});if(!ready&&window.Lumin&&document.getElementById('flashLuminGames')){ready=true;try{Lumin.init({container:'#flashLuminGames',theme:'dark'})}catch(e){console.error('LuminSDK initialization failed:',e)}}}new MutationObserver(init).observe(document.documentElement,{childList:true,subtree:true});document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init,{once:true}):init()})();''',encoding='utf-8')
 
-          text = text.replace(needle, block + '\n' + needle, 1)
-          path.write_text(text, encoding='utf-8')
-          print('Injected LuminSDK arcade into index.html')
+          (root/'ip-guard.js').write_text(r'''(()=>{const collection='ipBans';async function hash(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}async function ip(){const c=new AbortController(),q=setTimeout(()=>c.abort(),6000);try{const r=await fetch('https://api64.ipify.org?format=json',{cache:'no-store',signal:c.signal});if(!r.ok)throw 0;return(await r.json()).ip||''}finally{clearTimeout(q)}}function block(reason,expires){const x=document.createElement('div');x.id='flashIpBlock';x.style='position:fixed;inset:0;z-index:100000;background:#050507ee;backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui;color:#fff';const e=expires?` This suspension ends ${new Date(expires).toLocaleString()}.`:'';x.innerHTML=`<div style="width:min(620px,100%);border:1px solid #ffffff1f;background:#121217f5;border-radius:28px;padding:32px"><div style="font-size:11px;letter-spacing:.18em;color:#a5b4fc;font-weight:800">FLASH GAMES SECURITY</div><h1 style="font-size:30px;margin:10px 0">Access restricted</h1><p style="color:#a1a1aa;line-height:1.7">${String(reason||'This IP address is restricted.').replace(/[<>]/g,'')}${e}</p><button onclick="location.reload()" style="margin-top:20px;border:0;border-radius:14px;padding:11px 16px;font-weight:800">Retry</button></div>`;document.body.appendChild(x)}async function run(){try{if(!window.__flashFirebase?.db)return;const v=await ip();if(!v)return;const d=await window.__flashFirebase.db.collection(collection).doc(await hash(v)).get();if(!d.exists)return;const b=d.data()||{};if(b.active===false)return;const e=b.expiresAt?.toDate?b.expiresAt.toDate().getTime():null;if(e&&e<=Date.now()){d.ref.update({active:false}).catch(()=>{});return}block(b.reason,e?new Date(e).toISOString():null)}catch(e){console.warn('IP check unavailable',e)}}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',run,{once:true}):run()})();''',encoding='utf-8')
+
+          (root/'cache-sync.js').write_text(r'''(()=>{async function run(){try{if(!('serviceWorker'in navigator))return;const r=await fetch('./cache-manifest.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const m=await r.json(),v=String(m.version||0),old=localStorage.getItem('flash_cache_manifest_version'),reg=await navigator.serviceWorker.ready;if(reg.active)reg.active.postMessage({type:'FLASH_CACHE_SYNC',version:v,assets:m.assets||[]});if(old!==v)localStorage.setItem('flash_cache_manifest_version',v)}catch(e){console.warn('Cache sync failed',e)}}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',run,{once:true}):run()})();''',encoding='utf-8')
+
+          sw.write_text(r'''const CACHE_NAME='flashgames-cache-v2';const CORE=['./index.html','./manifest.json','./offline.json','./cache-manifest.json'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE).catch(()=>{})));self.skipWaiting()});self.addEventListener('activate',e=>e.waitUntil((async()=>{const k=await caches.keys();await Promise.all(k.filter(x=>x.startsWith('flashgames-cache-')&&x!==CACHE_NAME).map(x=>caches.delete(x)));await self.clients.claim()})()));self.addEventListener('message',e=>{if(e.data?.type!=='FLASH_CACHE_SYNC')return;e.waitUntil((async()=>{const c=await caches.open(CACHE_NAME);for(const a of [...CORE,...(e.data.assets||[])])try{const u=new URL(a,self.registration.scope).href,r=await fetch(u,{cache:'reload'});if(r.ok)await c.put(u,r.clone())}catch(_){} })())});self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||!e.request.url.startsWith('http'))return;e.respondWith((async()=>{const c=await caches.open(CACHE_NAME);try{const r=await fetch(e.request,{cache:'no-store'});if(r.ok)c.put(e.request,r.clone()).catch(()=>{});return r}catch(_){const x=await c.match(e.request,{ignoreSearch:true});if(x)return x;if(e.request.mode==='navigate'){const f=await c.match(new URL('./index.html',self.registration.scope).href);if(f)return f}throw _}})())});''',encoding='utf-8')
+
+          if './ip-controls.js' not in admin_text: admin_text=admin_text.replace('</body>','<script src="./ip-controls.js" defer></script>\n</body>',1)
+          admin.write_text(admin_text,encoding='utf-8')
+          (root/'ip-controls.js').write_text(r'''(()=>{let db,m;const C='ipBans';const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));async function h(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v.trim()));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}function modal(){if(m)return m;m=document.createElement('div');m.style='display:none;position:fixed;inset:0;z-index:99999;background:#000b;backdrop-filter:blur(14px);padding:24px;align-items:center;justify-content:center';m.innerHTML=`<div style="width:min(980px,100%);max-height:90vh;overflow:auto;background:#121214;border:1px solid #ffffff1a;border-radius:24px;padding:24px;color:#fff"><div style="display:flex;justify-content:space-between"><div><small style="color:#a5b4fc">NETWORK ACCESS CONTROLS</small><h2>IP bans & suspensions</h2></div><button id="icClose">Close</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px"><input id="icIp" placeholder="IP address"><select id="icType"><option value="ban">Permanent ban</option><option value="suspension">Temporary suspension</option></select><input id="icUntil" type="datetime-local"><input id="icReason" placeholder="Reason"></div><div style="margin-top:12px"><button id="icApply">Apply restriction</button><button id="icRefresh">Refresh</button></div><p id="icNotice"></p><div style="overflow:auto"><table style="width:100%"><thead><tr><th>IP</th><th>Type</th><th>Reason</th><th>Expires</th><th></th></tr></thead><tbody id="icRows"></tbody></table></div></div>`;document.body.appendChild(m);m.querySelector('#icClose').onclick=()=>m.style.display='none';m.querySelector('#icRefresh').onclick=rows;m.querySelector('#icApply').onclick=apply;return m}async function apply(){const x=modal(),ip=x.querySelector('#icIp').value.trim(),type=x.querySelector('#icType').value,reason=x.querySelector('#icReason').value.trim()||'Administrator restriction',u=x.querySelector('#icUntil').value;if(!ip)return;x.querySelector('#icNotice').textContent='Applying…';try{await db.collection(C).doc(await h(ip)).set({active:true,type,reason,ipSuffix:ip.slice(-8),expiresAt:type==='suspension'&&u?firebase.firestore.Timestamp.fromDate(new Date(u)):null,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});x.querySelector('#icNotice').textContent='Restriction applied.';await rows()}catch(e){x.querySelector('#icNotice').textContent='Firestore write failed. Check security rules.'}}async function rows(){const x=modal(),b=x.querySelector('#icRows');b.innerHTML='<tr><td colspan="5">Loading…</td></tr>';try{const s=await db.collection(C).where('active','==',true).get();b.innerHTML='';s.forEach(d=>{const v=d.data()||{},tr=document.createElement('tr');tr.innerHTML=`<td>••••${esc(v.ipSuffix||'unknown')}</td><td>${esc(v.type)}</td><td>${esc(v.reason)}</td><td>${esc(v.expiresAt?.toDate?v.expiresAt.toDate().toLocaleString():'Never')}</td><td><button>Revoke</button></td>`;tr.querySelector('button').onclick=async()=>{await db.collection(C).doc(d.id).set({active:false,revokedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});rows()};b.appendChild(tr)})}catch(e){b.innerHTML='<tr><td colspan="5">Firestore read failed. Check security rules.</td></tr>'}}function mount(){if(!window.__flashFirebase?.db)return setTimeout(mount,800);db=window.__flashFirebase.db;const bar=document.querySelector('#appView header .flex.items-center.gap-2');if(!bar||document.getElementById('flashIpControlsButton'))return;const b=document.createElement('button');b.id='flashIpControlsButton';b.className='btn-glass px-3 py-1.5 rounded-lg text-xs font-medium';b.textContent='IP Controls';b.onclick=()=>{modal().style.display='flex';rows()};bar.insertBefore(b,bar.firstChild)}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',mount,{once:true}):mount()})();''',encoding='utf-8')
+          print('upgrade generated')
           PY
-
-      - name: Commit LuminSDK integration
-        shell: bash
+      - name: Commit upgrades
         run: |
-          if git diff --quiet -- index.html; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "feat: add LuminSDK arcade"
-          git push
+          git add index.html admin.html sw.js cache-manifest.json lumin-home.js ip-guard.js cache-sync.js ip-controls.js
+          git diff --cached --quiet || (git commit -m "feat: online arcade, IP controls and cache refresh" && git push)
