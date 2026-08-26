@@ -1,6 +1,0 @@
-Requested upgrade scope:
-- Lumin online arcade on Home; Library and Store remain offline games.
-- IP bans and temporary IP suspensions.
-- CSS alignment/overflow fixes.
-- Bug fixes and optimization.
-- On every load, verify manifest/cache version and recache changed assets.
