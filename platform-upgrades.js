@@ -84,59 +84,6 @@
     $('#securityRetry', overlay)?.addEventListener('click', () => location.reload());
   }
 
-  function ensureLuminScript() {
-    return new Promise((resolve, reject) => {
-      if (window.Lumin) return resolve(window.Lumin);
-      const existing = document.querySelector(`script[src="${LUMIN_SRC}"]`);
-      if (existing) {
-        existing.addEventListener('load', () => resolve(window.Lumin), { once: true });
-        existing.addEventListener('error', reject, { once: true });
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = LUMIN_SRC;
-      script.async = true;
-      script.onload = () => resolve(window.Lumin);
-      script.onerror = () => reject(new Error('LuminSDK failed to load.'));
-      document.head.appendChild(script);
-    });
-  }
-
-  async function mountLumin() {
-    const home = $('#homeView');
-    if (!home || $('#flashOnlineArcade', home)) return;
-
-    const section = document.createElement('section');
-    section.id = 'flashOnlineArcade';
-    section.className = 'section online-arcade-section glass';
-    section.innerHTML = `
-      <div class="online-arcade-head">
-        <div>
-          <span class="eyebrow">ONLINE ARCADE</span>
-          <h2>Lumin Games</h2>
-          <p>Online games live here. Your Library and Store stay focused on the Offline HTML Games Pack.</p>
-        </div>
-        <a class="link-btn" href="https://docs.luminsdk.com/" target="_blank" rel="noopener noreferrer">LuminSDK docs ↗</a>
-      </div>
-      <div class="online-arcade-shell">
-        <div id="flashLuminGames" aria-label="Lumin online games"></div>
-        <div class="online-arcade-loading" id="luminLoading">Loading online games…</div>
-      </div>
-    `;
-    home.appendChild(section);
-
-    try {
-      const Lumin = await ensureLuminScript();
-      if (!Lumin?.init) throw new Error('LuminSDK did not expose Lumin.init.');
-      await Lumin.init({ container: '#flashLuminGames', theme: 'dark' });
-      $('#luminLoading', section)?.remove();
-    } catch (error) {
-      console.error('[Flash Games] Lumin initialization failed:', error);
-      const loading = $('#luminLoading', section);
-      if (loading) loading.textContent = 'The online arcade could not load. Reload to try again.';
-    }
-  }
-
   async function cacheSync() {
     if (!('serviceWorker' in navigator)) return;
     try {
@@ -283,17 +230,7 @@
     }
   }
 
-  function observeRoutes() {
-    let lastRoute = '';
-    const render = () => {
-      const route = location.hash.replace('#', '') || 'home';
-      if (route === lastRoute) return;
-      lastRoute = route;
-      if (route === 'home') setTimeout(mountLumin, 0);
-    };
-    window.addEventListener('hashchange', render);
-    render();
-  }
+  function observeRoutes() { /* Lumin is initialized only by app.js in headless mode. */ }
 
   function injectStyles() {
     if ($('#platform-upgrades-style')) return;
