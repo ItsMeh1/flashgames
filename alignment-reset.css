@@ -26,3 +26,25 @@ button > svg, .btn > svg, .icon-btn > svg, .nav-item > svg, .dock-item > svg, .s
 .admin-section-head > :last-child { margin-left: auto; }
 .lucide { vertical-align: middle; }
 @media (max-width: 760px) { .desktop-nav .nav-item { min-width: 44px; } .admin-section-head { align-items: flex-start; flex-direction: column; } .admin-section-head > :last-child { margin-left: 0; width: 100%; } .admin-actions .btn { flex: 1 1 auto; } }
+
+
+/* Unified Games hub + compact members. Keep this in the existing alignment layer instead of creating another fix file. */
+.desktop-nav { padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.025); }
+.desktop-nav .nav-item { width: 44px; min-width: 44px; padding: 0 13px; overflow: hidden; border-radius: 999px; transition: width .22s ease, padding .22s ease, background .2s ease; }
+.desktop-nav .nav-item span { max-width: 0; opacity: 0; overflow: hidden; transition: max-width .22s ease, opacity .16s ease; }
+.desktop-nav .nav-item:hover, .desktop-nav .nav-item:focus-visible, .desktop-nav .nav-item.active { width: auto; min-width: 44px; padding-inline: 14px; }
+.desktop-nav .nav-item:hover span, .desktop-nav .nav-item:focus-visible span, .desktop-nav .nav-item.active span { max-width: 90px; opacity: 1; }
+.desktop-nav .nav-indicator { display:none; }
+.gamesView, #gamesView { min-width: 0; }
+#gamesView .page-head { align-items: flex-end; }
+#gamesView .store-tools { justify-content: flex-end; }
+.admin-members-list { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); align-content:start; gap:10px; padding:14px; overflow:auto; }
+.admin-member-row { min-height:190px !important; display:flex !important; flex-direction:column; justify-content:center; align-items:center; gap:10px !important; padding:14px !important; border:1px solid var(--line); border-radius:16px; background:var(--glass-soft); text-align:center; }
+.admin-member-row:hover { border-color:var(--line-strong); background:rgba(255,255,255,.07); transform:translateY(-2px); }
+.admin-member-row .avatar { width:56px !important; height:56px !important; border-radius:16px; }
+.admin-member-row .admin-member-copy { width:100%; flex:0 0 auto; display:grid; gap:4px; text-align:center; }
+.admin-member-row .admin-member-copy strong, .admin-member-row .admin-member-copy small { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.admin-member-row .admin-member-copy small { color:var(--muted); font-size:9px; }
+.admin-user-editor textarea { width:100%; min-height:120px; resize:vertical; padding:12px; border:1px solid var(--line); border-radius:13px; background:var(--glass-soft); color:var(--text); outline:0; }
+.admin-user-editor label small { color:var(--muted); font-size:9px; line-height:1.45; }
+@media(max-width:760px){ .desktop-nav{display:none}.admin-members-list{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:10px}.admin-member-row{min-height:165px !important;padding:10px !important} }
