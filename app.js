@@ -7,7 +7,7 @@
   const icon = (name) => `<i data-lucide="${name}"></i>`;
 
   const state = {
-    route: location.hash.replace('#', '') || 'home', games: [], installed: [], favourites: new Set(), onlineGames: [], flashExclusiveGames: [], gameSection: 'all', gamesQuery: '',
+    route: location.hash.replace('#', '') || 'home', games: [], installed: [], favourites: new Set(), onlineGames: [], flashExclusiveGames: Array.isArray(window.FlashExclusiveGames) ? window.FlashExclusiveGames : [], gameSection: 'all', gamesQuery: '',
     user: null, profile: {}, updates: { version: '0.0.0', releases: [] }, notifications: [],
     query: '', category: 'All', sort: localStorage.getItem('flashgames.sort') || 'featured', searchIndex: 0, stats: loadStats(),
     theme: localStorage.getItem('flashgames.theme') || 'dark', accent: localStorage.getItem('flashgames.accent') || '#8b5cf6',
@@ -104,24 +104,51 @@
 
   async function ensureOnlineGames() {
     if (state.onlineGames.length) return state.onlineGames;
-    if (!window.Lumin) {
-      await new Promise((resolve, reject) => {
-        const existing = document.querySelector('script[data-flash-lumin]');
-        if (existing) { existing.addEventListener('load', resolve, { once: true }); existing.addEventListener('error', reject, { once: true }); return; }
-        const script = document.createElement('script'); script.dataset.flashLumin = '1'; script.src = 'https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js'; script.onload = resolve; script.onerror = reject; document.head.appendChild(script);
-      });
-    }
-    if (!window.__flashLuminReady) window.__flashLuminReady = Promise.resolve(window.Lumin.init({ headless: true }));
-    await window.__flashLuminReady;
-    const response = await window.Lumin.getGames({ page: 1, limit: 100 });
-    const games = Array.isArray(response?.games) ? response.games : Array.isArray(response) ? response : [];
-    state.onlineGames = await Promise.all(games.map(async (g) => {
-      const token = g.image_token || g.imageToken || g.thumbnail_token || g.thumbnailToken || g.image || g.thumbnail || '';
-      let cover = /^https?:/i.test(String(token)) ? token : './offline/logo.png';
-      try { if (token && window.Lumin.getImageUrl) { const value = await window.Lumin.getImageUrl(token); cover = typeof value === 'string' ? value : value?.url || cover; } } catch {}
-      return { id: 'lumin:' + String(g.id || g.game_id || g.slug || g.name), luminId: String(g.id || g.game_id || g.slug || g.name), name: g.title || g.name || 'Online Game', description: g.description || 'Play instantly online.', category: g.category || g.genre || 'Online', zone: 'LUMIN', source: 'Lumin', cover, rating: g.rating || '' };
-    }));
-    return state.onlineGames;
+    if (window.__flashLuminLoadPromise) return window.__flashLuminLoadPromise;
+    window.__flashLuminLoadPromise = (async () => {
+      if (!window.Lumin) {
+        await new Promise((resolve, reject) => {
+          const existing = document.querySelector('script[data-flash-lumin]');
+          if (existing) {
+            if (window.Lumin) return resolve();
+            existing.addEventListener('load', resolve, { once: true });
+            existing.addEventListener('error', reject, { once: true });
+            return;
+          }
+          const script = document.createElement('script');
+          script.dataset.flashLumin = '1';
+          script.src = 'https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js';
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Lumin SDK could not be loaded.'));
+          document.head.appendChild(script);
+        });
+      }
+      if (!window.Lumin?.init) throw new Error('Lumin SDK is unavailable.');
+      if (!window.__flashLuminReady) {
+        window.__flashLuminReady = window.Lumin.init({ headless: true });
+      }
+      await window.__flashLuminReady;
+      const response = await window.Lumin.getGames({ page: 1, limit: 100 });
+      const games = Array.isArray(response?.games) ? response.games : Array.isArray(response) ? response : [];
+      state.onlineGames = games.map((g) => ({
+        id: 'lumin:' + String(g.id || g.game_id || g.slug || g.name),
+        luminId: String(g.id || g.game_id || g.slug || g.name),
+        name: g.title || g.name || 'Online Game',
+        description: g.description || 'Play instantly online.',
+        category: g.category || g.genre || 'Online',
+        zone: 'LUMIN',
+        source: 'Lumin',
+        cover: g.image_url || g.thumbnail_url || g.image || g.thumbnail || './offline/logo.png',
+        rating: g.rating || ''
+      }));
+      return state.onlineGames;
+    })().catch((error) => {
+      window.__flashLuminLoadPromise = null;
+      window.__flashLuminReady = null;
+      throw error;
+    });
+    return window.__flashLuminLoadPromise;
   }
 
   function flashExclusiveGames() {
@@ -151,13 +178,13 @@
     const target = $('#gamesView'); if (!target) return;
     target.innerHTML = `<div class="page-head"><div><span class="eyebrow">GAMES</span><h1>Find your next game</h1><p>Offline downloads, instant online games, and Flash exclusives in one place.</p></div><div class="store-tools"><label class="search-bar">${icon('search')}<input id="gamesSearch" value="${esc(state.gamesQuery)}" placeholder="Search all games…"></label><label class="sort-control"><span>Section</span><select id="gamesSection"><option value="all">All</option><option value="offline">Offline+</option><option value="lumin">Lumin</option><option value="exclusive">Flash Exclusive</option></select></label></div></div><div id="gamesGrid" class="game-grid">${emptyState('Loading games','Building your full game collection…','loader-circle')}</div>`;
     $('#gamesSection').value = state.gameSection;
-    try { await ensureOnlineGames(); } catch (e) { console.warn('Online games unavailable', e); }
+    if (state.gameSection === 'all' || state.gameSection === 'lumin') { try { await ensureOnlineGames(); } catch (e) { console.warn('Online games unavailable', e); } }
     const installed = installedSet();
     const query = state.gamesQuery.trim().toLowerCase();
     const visible = sortGames(gamesUniverse().filter((g) => matchesGamesSection(g) && (!query || `${g.name} ${g.category} ${g.description} ${g.zone}`.toLowerCase().includes(query))));
     const grid = $('#gamesGrid');
     grid.innerHTML = visible.length ? visible.map((g) => gamesCard(g, installed.has(g.id))).join('') : emptyState('No games found','Try another search or section.','search-x');
-    $('#gamesSearch').oninput = (event) => { state.gamesQuery = event.target.value; clearTimeout(state.searchTimer); state.searchTimer = setTimeout(renderGames, 120); };
+    $('#gamesSearch').oninput = (event) => { state.gamesQuery = event.target.value; clearTimeout(state.searchTimer); state.searchTimer = setTimeout(() => renderGames(), 180); };
     $('#gamesSection').onchange = (event) => { state.gameSection = event.target.value; renderGames(); };
     refreshIcons(target);
   }
