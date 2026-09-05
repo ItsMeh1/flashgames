@@ -12,8 +12,70 @@
   const FAVOURITES_KEY = 'flashgames.favourites.v1';
 
   window.FlashExclusiveGames = [
-    // Add Flash-exclusive games here. Example:
-    // { id: 'my-game', name: 'My Game', rawUrl: './exclusive/my-game.html', cover: './exclusive/my-game.png', category: 'Exclusive', description: 'Made for Flash Games.' }
+    {
+    id: 'flash-orbital',
+    name: 'Orbital',
+    rawUrl: './offline/orbital.html',
+    cover: '',
+    category: 'Exclusive',
+    description: 'Try to not get hit by the missles!'
+  },
+  {
+    id: 'flash-infinity-rng',
+    name: 'Infinity RNG',
+    rawUrl: './offline/infinityrng.html',
+    cover: './offline/rng.png',
+    category: 'Exclusive',
+    description: 'Test your luck! Updates weekly!'
+  },
+  {
+    id: 'flash-infinity-rng-legacy',
+    name: 'Legacy Infinity RNG',
+    rawUrl: './offline/infinityrnglegacy.html',
+    cover: './offline/rng.png',
+    category: 'Exclusive',
+    description: 'Only the OGs played this'
+  },
+  {
+    id: 'flash-2048',
+    name: '2048',
+    rawUrl: './offline/2048.html',
+    cover: './offline/2048.png',
+    category: 'Exclusive',
+    description: 'its really just 2048, nothing special'
+  },
+  {
+    id: 'pixelclient-112',
+    name: 'PixelClient 1.12',
+    rawUrl: './offline/PixelClient 1.12.2 WASM.html',
+    cover: '/offline/pixelclient.svg',
+    category: 'Exclusive',
+    description: 'PixelClient: An Eaglercraft client with 20+ built-in mods'
+  },
+  {
+    id: 'pixelclient-18',
+    name: 'PixelClient 1.12',
+    rawUrl: './offline/PixelClient 1.8.8 WASM.html',
+    cover: '/offline/pixelclient.svg',
+    category: 'Exclusive',
+    description: 'PixelClient: An Eaglercraft client with 20+ built-in mods & 1.8 PVP!'
+  },
+  {
+    id: 'tuffclient',
+    name: 'Tuff Client',
+    rawUrl: './offline/eaglercraft.dev_Tuff_Client_WASM.html',
+    cover: './offline/tuffclient.png',
+    category: 'Exclusive',
+    description: 'Anyone remember this?'
+  },
+  {
+    id: 'astra112',
+    name: 'AstraClient 1.12',
+    rawUrl: './offline/astra112.html',
+    cover: './offline/astraclient.jpeg',
+    category: 'Exclusive',
+    description: 'One of the Best Clients'
+  }
   ];
 
   let dbPromise = null;
