@@ -11,6 +11,11 @@
   const OFFLINE_MANIFEST_URL = './offline.json';
   const FAVOURITES_KEY = 'flashgames.favourites.v1';
 
+  window.FlashExclusiveGames = [
+    // Add Flash-exclusive games here. Example:
+    // { id: 'my-game', name: 'My Game', rawUrl: './exclusive/my-game.html', cover: './exclusive/my-game.png', category: 'Exclusive', description: 'Made for Flash Games.' }
+  ];
+
   let dbPromise = null;
   let cataloguePromise = null;
 
