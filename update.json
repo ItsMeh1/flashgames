@@ -2,6 +2,20 @@
   "version": "4.5.4",
   "releases": [
     {
+      "version": "4.7.0",
+      "date": "September 5, 2026",
+      "description": "MOREEEEEEEEEE",
+      "changes": [
+        {"type": "add", "text": "Added about 1700 games in a new, revamped game section & library"},
+        {"type": "add", "text": "New library & store with the 313 offline downloadable games & search for all games when offline as well"},
+        { "type": "change", "text": "Lots of new UI for really everything" },
+        { "type": "change", "text": "Better stats with total playtime, member levels, games played, and total installed games." },
+        { "type": "change", "text": "New UI pill" },
+        { "type": "change", "text": "Fixed a really annoying bug where some updates in the changelog wouldn't show." },
+        { "type": "remove", "text": "Removed old game library on the home page & added a recently played in its place" }
+      ]
+    },
+    {
       "version": "4.5.4",
       "date": "August 22, 2026",
       "description": "Flash Games Redesigned: v2",
@@ -14,8 +28,8 @@
         {"type": "add", "text": "Themes & preferences"},
         {"type": "edit", "text": "Fixed a bug where your data wouldn't exactly save & you couldn't enter your account."},
         {"type": "edit", "text": "Fixed a bug where the page wouldn't load at all & the stylesheet was broken."},
-        {"type": "add", "remove": "Removed a bunch of accounts for testing & from link leaks"},
-        {"type": "add", "remove": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."}
+        {"type": "remove", "test": "Removed a bunch of accounts for testing & from link leaks"},
+        {"type": "remove", "test": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."}
 
         
       ]
@@ -26,8 +40,8 @@
       "description": "Performance & Bug Patch",
       "changes": [
         {"type": "add", "text": "Added a better system for performance mode, rather the old system."},
-        {"type": "add", "edit": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."},
-        { "type": "add", "remove": "Removed spam accounts & accounts created during link leaks." },
+        {"type": "add", "text": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."},
+        { "type": "add", "text": "Removed spam accounts & accounts created during link leaks." },
         {"type": "add", "text": "Lots of bug fixes."}
         
       ]
