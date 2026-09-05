@@ -243,15 +243,62 @@
   function openSearch() { const backdrop = $('#searchBackdrop'); if (!backdrop) return; backdrop.hidden = false; state.searchIndex = 0; renderSearchResults(); $('#searchInput')?.focus(); }
   async function loadInstalled() { state.installed = await FlashGamesStore.getAllCachedGames(); state.favourites = FlashGamesStore.getFavourites(); }
 
-  async function playOnlineGame(game) { try { await ensureOnlineGames(); const value = await window.Lumin.getGameUrl(game.luminId); const url = typeof value === 'string' ? value : value?.url; if (!url) throw new Error('Online game URL unavailable.'); const frame = $('#gameFrame'), overlay = $('#playerOverlay'); if (!frame || !overlay) return; frame.src = url; overlay.hidden = false; document.body.classList.add('player-open'); refreshIcons(overlay); } catch (error) { toast('Could not open online game', error.message || 'The game could not be opened.', 'error'); } }\n\n  async function playGame(game) { if (game?.zone === 'LUMIN') return playOnlineGame(game);
+  async function playOnlineGame(game) {
+    try {
+      await ensureOnlineGames();
+      const value = await window.Lumin.getGameUrl(game.luminId);
+      const url = typeof value === 'string' ? value : value?.url;
+      if (!url) throw new Error('Online game URL unavailable.');
+      const frame = $('#gameFrame');
+      const overlay = $('#playerOverlay');
+      if (!frame || !overlay) return;
+      frame.src = url;
+      overlay.hidden = false;
+      document.body.classList.add('player-open');
+      refreshIcons(overlay);
+    } catch (error) {
+      toast('Could not open online game', error.message || 'The game could not be opened.', 'error');
+    }
+  }
+
+  async function playGame(game) {
+    if (game?.zone === 'LUMIN') return playOnlineGame(game);
     if (!game) return;
     try {
       let installed = await FlashGamesStore.getCachedGame(game.id);
-      if (!installed) { toast('Preparing game', `Downloading ${game.name} for local playback…`); installed = await FlashGamesStore.install(game); state.stats.installs += 1; saveStats(); await loadInstalled(); }
-      const url = await FlashGamesStore.launch(installed || game); const frame = $('#gameFrame'), overlay = $('#playerOverlay'); if (!frame || !overlay || !url) return;
-      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl); state.objectUrl = url.startsWith('blob:') ? url : null; const recent = (() => { try { return JSON.parse(localStorage.getItem('flashgames.recent') || '[]'); } catch { return []; } })(); localStorage.setItem('flashgames.recent', JSON.stringify([game.id, ...recent.filter((id) => id !== game.id)].slice(0, 12))); frame.src = url; overlay.hidden = false; document.body.classList.add('player-open'); state.stats.played += 1; state.gameStartedAt = Date.now(); saveStats(); refreshIcons(overlay);
-    } catch (error) { toast('Could not open game', error.message || 'The game could not be downloaded.', 'error'); }
+      if (!installed) {
+        toast('Preparing game', `Downloading ${game.name} for local playback…`);
+        installed = await FlashGamesStore.install(game);
+        state.stats.installs += 1;
+        saveStats();
+        await loadInstalled();
+      }
+      const url = await FlashGamesStore.launch(installed || game);
+      const frame = $('#gameFrame');
+      const overlay = $('#playerOverlay');
+      if (!frame || !overlay || !url) return;
+      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl);
+      state.objectUrl = url.startsWith('blob:') ? url : null;
+      const recent = (() => {
+        try { return JSON.parse(localStorage.getItem('flashgames.recent') || '[]'); }
+        catch { return []; }
+      })();
+      localStorage.setItem('flashgames.recent', JSON.stringify([
+        game.id,
+        ...recent.filter((id) => id !== game.id)
+      ].slice(0, 12)));
+      frame.src = url;
+      overlay.hidden = false;
+      document.body.classList.add('player-open');
+      state.stats.played += 1;
+      state.gameStartedAt = Date.now();
+      saveStats();
+      refreshIcons(overlay);
+    } catch (error) {
+      toast('Could not open game', error.message || 'The game could not be downloaded.', 'error');
+    }
   }
+
   function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) frame.src = 'about:blank'; if (overlay) overlay.hidden = true; document.body.classList.remove('player-open'); if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; } }
   async function installGame(game) { try { toast('Installing', `Caching ${game.name} locally…`); await FlashGamesStore.install(game); state.stats.installs += 1; saveStats(); await loadInstalled(); toast('Installed', `${game.name} is now in your Library.`, 'success'); if (state.route === 'store') renderStore(); else renderLibrary(); } catch (error) { toast('Install failed', error.message || 'The game could not be cached.', 'error'); } }
   async function removeGame(game) { confirmDialog('Remove game?', `${game.name} will be removed from your local library.`, async () => { await FlashGamesStore.deleteCachedGame(game.id); await loadInstalled(); toast('Removed', `${game.name} was removed from your library.`, 'success'); if (state.route === 'library') renderLibrary(); if (state.route === 'home') renderHome(); if (state.route === 'store') renderStore(); }, true); }
