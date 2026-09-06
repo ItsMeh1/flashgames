@@ -21,7 +21,7 @@
     catch { return { played: 0, time: 0, installs: 0 }; }
   }
   function saveStats() { localStorage.setItem('flashgames.stats', JSON.stringify(state.stats)); }
-  function refreshIcons(root = document) { if (window.lucide?.createIcons) requestAnimationFrame(() => window.lucide.createIcons({ root, attrs: { 'stroke-width': 1.5 } })); }
+  function refreshIcons(root = document) { const run=()=>{ try{window.lucide?.createIcons?.({root,attrs:{'stroke-width':1.5,width:18,height:18}})}catch(e){console.warn('Lucide refresh skipped',e)} }; requestAnimationFrame(run); }
 
   function toast(title, message, type = 'info') {
     const stack = $('#toastStack'); if (!stack) return;
@@ -70,6 +70,8 @@
   function currentDisplayName() { return state.profile.username || state.profile.displayName || state.user?.displayName || state.user?.email?.split('@')[0] || 'Sign in'; }
   function currentPfp() { return state.profile.pfp || state.profile.photoURL || state.profile.photo || state.profile.avatar || state.user?.photoURL || ''; }
   function gameCover(game) { return game.cover || './offline/logo.png'; }
+  function luminImageToken(game) { return game?.__raw?.image_token || game?.__raw?.imageToken || game?.__raw?.thumbnail_token || game?.__raw?.thumbnailToken || game?.__raw?.image?.token || ''; }
+  async function hydrateLuminImages(root=document) { if(!window.Lumin?.getImageUrl)return; const cards=[...root.querySelectorAll('[data-lumin-id]')].slice(0,24); await Promise.allSettled(cards.map(async card=>{ const game=state.onlineGames.find(g=>g.id===card.dataset.gameId); const token=luminImageToken(game); if(!game||!token)return; try{const value=await window.Lumin.getImageUrl(token);const url=typeof value==='string'?value:(value?.url||value?.image_url||'');const img=card.querySelector('img[data-lumin-image]');if(url&&img){game.cover=url;img.src=url;}}catch{}})); }
   function installedSet() { return new Set(state.installed.map((game) => game.id)); }
 
   function sortGames(list) {
@@ -97,7 +99,7 @@
 
   function gameCard(game, installed = false) {
     const favourite = state.favourites.has(game.id);
-    return `<article class="game-card" data-game-id="${esc(game.id)}"><div class="cover"><img loading="lazy" src="${esc(gameCover(game))}" alt="${esc(game.name)}" onerror="this.onerror=null;this.src='./offline/logo.png'"><span class="badge">${installed ? 'Installed' : esc(game.category || 'HTML Game')}</span><div class="card-overlay"><button class="expand-action play" data-game-action="play" aria-label="Play ${esc(game.name)}">${icon('play')}<span>Play</span></button>${installed ? '' : `<button class="expand-action" data-game-action="install" aria-label="Install ${esc(game.name)}">${icon('download')}<span>Install</span></button>`}<button class="expand-action" data-game-action="favorite" aria-label="${favourite ? 'Remove favorite' : 'Favorite'} ${esc(game.name)}">${icon(favourite ? 'heart-off' : 'heart')}<span>${favourite ? 'Unfavorite' : 'Favorite'}</span></button><button class="expand-action" data-game-action="boost" aria-label="Performance boost">${icon('gauge')}<span>Boost</span></button>${installed ? `<button class="expand-action close" data-game-action="remove" aria-label="Remove ${esc(game.name)}">${icon('trash-2')}<span>Remove</span></button>` : ''}</div></div><div class="card-body"><div class="card-title"><h3>${esc(game.name)}</h3><span class="rating">${icon('star')} ${game.rating ? esc(game.rating) : 'HTML'}</span></div><div class="meta"><span class="tag">${esc(game.zone || 'STORE')}</span></div><p class="card-desc">${esc(game.description || 'Single-file HTML game.')}</p></div></article>`;
+    return `<article class="game-card" data-game-id="${esc(game.id)}"${game.zone === 'LUMIN' ? ` data-lumin-id="${esc(game.luminId || game.id)}"` : ''}><div class="cover"><img loading="lazy" src="${esc(gameCover(game))}" alt="${esc(game.name)}"${game.zone === 'LUMIN' ? ' data-lumin-image' : ''} onerror="this.onerror=null;this.src='./offline/logo.png'"><span class="badge">${installed ? 'Installed' : esc(game.category || 'HTML Game')}</span><div class="card-overlay"><button class="expand-action play" data-game-action="play" aria-label="Play ${esc(game.name)}">${icon('play')}<span>Play</span></button>${installed ? '' : `<button class="expand-action" data-game-action="install" aria-label="Install ${esc(game.name)}">${icon('download')}<span>Install</span></button>`}<button class="expand-action" data-game-action="favorite" aria-label="${favourite ? 'Remove favorite' : 'Favorite'} ${esc(game.name)}">${icon(favourite ? 'heart-off' : 'heart')}<span>${favourite ? 'Unfavorite' : 'Favorite'}</span></button><button class="expand-action" data-game-action="boost" aria-label="Performance boost">${icon('gauge')}<span>Boost</span></button>${installed ? `<button class="expand-action close" data-game-action="remove" aria-label="Remove ${esc(game.name)}">${icon('trash-2')}<span>Remove</span></button>` : ''}</div></div><div class="card-body"><div class="card-title"><h3>${esc(game.name)}</h3><span class="rating">${icon('star')} ${game.rating ? esc(game.rating) : 'HTML'}</span></div><div class="meta"><span class="tag">${esc(game.zone || 'STORE')}</span></div><p class="card-desc">${esc(game.description || 'Single-file HTML game.')}</p></div></article>`;
   }
   function emptyState(title, text, glyph = 'gamepad-2') { return `<div class="empty glass">${icon(glyph)}<h3>${esc(title)}</h3><p>${esc(text)}</p></div>`; }
 
@@ -186,7 +188,7 @@
     grid.innerHTML = visible.length ? visible.map((g) => gamesCard(g, installed.has(g.id))).join('') : emptyState('No games found','Try another search or section.','search-x');
     $('#gamesSearch').oninput = (event) => { state.gamesQuery = event.target.value; clearTimeout(state.searchTimer); state.searchTimer = setTimeout(() => renderGames(), 180); };
     $('#gamesSection').onchange = (event) => { state.gameSection = event.target.value; renderGames(); };
-    refreshIcons(target);
+    refreshIcons(target); requestAnimationFrame(()=>hydrateLuminImages(target));
   }
 
   function recentGames() { try { const ids = JSON.parse(localStorage.getItem('flashgames.recent') || '[]'); return ids.map((id) => state.games.find((game) => game.id === id)).filter(Boolean).slice(0, 8); } catch { return []; } }
@@ -235,6 +237,8 @@
 
   function memberLevel() { const minutes = Math.floor(state.stats.time / 60000); if (state.stats.played >= 100 || minutes >= 600) return 'Elite Member'; if (state.stats.played >= 30 || minutes >= 120 || state.stats.installs >= 30) return 'Dedicated Member'; if (state.stats.played >= 5 || state.stats.installs >= 5) return 'Active Member'; return 'New Member'; }
 
+  function isVerifiedUser(){return !!(state.profile?.verified||state.profile?.isVerified||state.profile?.verificationStatus==='verified');}
+  function renderCloud(){const target=$('#cloudView');if(!target)return;if(!state.user){target.innerHTML=emptyState('Sign in to use Cloud Gaming','Cloud Gaming is available to verified Flash Games accounts.','cloud');refreshIcons(target);return;}if(!isVerifiedUser()){target.innerHTML=`<div class="page-head"><div><span class="eyebrow">CLOUD GAMING</span><h1>Verification required</h1><p>Cloud Gaming is reserved for verified Flash Games accounts.</p></div></div><div class="empty glass">${icon('badge-check')}<h3>Get verified</h3><p>Your account is signed in, but verification has not been granted yet.</p></div>`;refreshIcons(target);return;}target.innerHTML=`<div class="page-head"><div><span class="eyebrow">CLOUD GAMING</span><h1>Play without installing</h1><p>Your verified account can access cloud-ready games.</p></div></div><div class="empty glass">${icon('cloud-lightning')}<h3>Cloud Gaming is ready</h3><p>Verified access is enabled.</p></div>`;refreshIcons(target);}
   function renderProfile() {
     const name = currentDisplayName();
     if ($('#profileName')) $('#profileName').textContent = name; if ($('#profileEmail')) $('#profileEmail').textContent = state.user?.email || 'Your Firebase profile will appear here.'; if ($('#headerName')) $('#headerName').textContent = name;
