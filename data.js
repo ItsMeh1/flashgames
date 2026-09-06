@@ -78,6 +78,12 @@
   }
   ];
 
+
+  // Add cloud games here. These URLs are shown only to verified users.
+  window.FlashCloudGames = [
+    // { id:'cloud-example', name:'My Cloud Game', url:'https://example.com/play', cover:'./offline/example.png', description:'Cloud game description' }
+  ];
+
   let dbPromise = null;
   let cataloguePromise = null;
 
