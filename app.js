@@ -142,7 +142,8 @@
         zone: 'LUMIN',
         source: 'Lumin',
         cover: g.image_url || g.thumbnail_url || g.image || g.thumbnail || './offline/logo.png',
-        rating: g.rating || ''
+        rating: g.rating || '',
+        __raw: g
       }));
       return state.onlineGames;
     })().catch((error) => {
