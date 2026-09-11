@@ -1,36 +1,4 @@
 {
-  "version": "v3-platform-2",
-  "assets": [
-    "./",
-    "./index.html",
-    "./styles.css",
-    "./refinement.css",
-    "./precision.css",
-    "./issue-fixes.css",
-    "./performance.css",
-    "./final-fixes.css",
-    "./alignment-reset.css",
-    "./data.js",
-    "./legacy-cache.js",
-    "./admin.js",
-    "./auth.js",
-    "./app.js",
-    "./sync.js",
-    "./login-gate.js",
-    "./offline-session.js",
-    "./player-fixes.js",
-    "./custom-install.js",
-    "./moderation-fixes.js",
-    "./profile-fixes.js",
-    "./platform-upgrades.js",
-    "./v2-hotfixes.js",
-    "./flash-terminal.js",
-    "./flash-terminal.css",
-    "./online-cache.js",
-    "./sw.js",
-    "./update.json",
-    "./manifest.json",
-    "./offline.json",
-    "./offline/logo.png"
-  ]
+  "version":"v3-platform-3",
+  "assets":["./","./index.html","./styles.css","./refinement.css","./precision.css","./issue-fixes.css","./performance.css","./final-fixes.css","./alignment-reset.css","./data.js","./legacy-cache.js","./admin.js","./auth.js","./app.js","./sync.js","./login-gate.js","./offline-session.js","./player-fixes.js","./custom-install.js","./moderation-fixes.js","./profile-fixes.js","./platform-upgrades.js","./v2-hotfixes.js","./flash-terminal.js","./flash-terminal.css","./online-cache.js","./auth-recovery.js","./admin-panel.css","./sw.js","./update.json","./manifest.json","./offline.json","./offline/logo.png"]
 }
