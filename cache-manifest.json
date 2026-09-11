@@ -1,5 +1,5 @@
 {
-  "version": "v2-platform-4",
+  "version": "v3-platform-2",
   "assets": [
     "./",
     "./index.html",
@@ -17,12 +17,16 @@
     "./app.js",
     "./sync.js",
     "./login-gate.js",
+    "./offline-session.js",
     "./player-fixes.js",
     "./custom-install.js",
     "./moderation-fixes.js",
     "./profile-fixes.js",
     "./platform-upgrades.js",
     "./v2-hotfixes.js",
+    "./flash-terminal.js",
+    "./flash-terminal.css",
+    "./online-cache.js",
     "./sw.js",
     "./update.json",
     "./manifest.json",
