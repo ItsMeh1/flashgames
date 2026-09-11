@@ -1,21 +1,24 @@
 {
+  "id": "./",
   "name": "Flash Games",
-  "short_name": "Flash-G",
+  "short_name": "Flash Games",
   "description": "Your centralized, offline-ready game vault.",
-  "start_url": "https://itsmeh1.github.io/flashgames/?.classlink.com",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#020617",
-  "theme_color": "#6366f1",
+  "theme_color": "#07080c",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "offline/logo.png",
+      "src": "./offline/logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "offline/logo.png",
+      "src": "./offline/logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
