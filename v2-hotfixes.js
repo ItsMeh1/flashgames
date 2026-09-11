@@ -1,6 +1,12 @@
 (() => {
   'use strict';
-  // Compatibility shim: v2-hotfixes previously mounted Lumin in normal mode.
-  // Lumin now lives only in app.js and is initialized once in headless mode.
-  // Keep this file intentionally inert so stale HTML/service-worker references cannot create duplicate SDK instances.
+  // Compatibility shim remains inert for the old Lumin behavior.
+  // Phase 2 additionally loads the isolated online-game cache bridge.
+  if (!document.querySelector('script[data-flash-online-cache]')) {
+    const script = document.createElement('script');
+    script.src = './online-cache.js';
+    script.defer = true;
+    script.dataset.flashOnlineCache = '1';
+    document.head.appendChild(script);
+  }
 })();
