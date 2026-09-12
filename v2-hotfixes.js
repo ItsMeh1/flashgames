@@ -1,11 +1,11 @@
 (() => {
   'use strict';
   const scripts = [
-    ['./online-cache.js', 'flash-online-cache'],
-    ['./auth-recovery.js', 'flash-auth-recovery']
+    ['./online-cache.js', 'flashOnlineCache'],
+    ['./auth-recovery.js', 'flashAuthRecovery']
   ];
   for (const [src, key] of scripts) {
-    if (document.querySelector(`script[data-${key}]`)) continue;
+    if (document.querySelector(`script[data-${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}]`)) continue;
     const script = document.createElement('script');
     script.src = src;
     script.defer = true;
