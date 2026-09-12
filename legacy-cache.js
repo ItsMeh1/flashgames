@@ -3,6 +3,8 @@
 
   const CACHE_NAME = 'flash-games-cache';
   const METADATA_KEY = 'flash_offline_folder';
+  const FAVOURITES_KEY = 'flashgames.favourites.v1';
+  const GAME_CACHE = 'flashgames.catalogue.v8';
   const original = window.FlashGamesStore ? { ...window.FlashGamesStore } : {};
   let migrationPromise = null;
   let libraryPromise = null;
@@ -15,9 +17,7 @@
     try {
       const list = JSON.parse(localStorage.getItem(METADATA_KEY) || '[]');
       return Array.isArray(list) ? list : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
   function metaFor(url) {
@@ -70,11 +70,7 @@
       const requests = await cache.keys();
       return requests.map((request) => normalize(request.url, metaFor(request.url))).filter((game) => game.rawUrl);
     })();
-    try {
-      return await libraryPromise;
-    } finally {
-      libraryPromise = null;
-    }
+    try { return await libraryPromise; } finally { libraryPromise = null; }
   }
 
   async function readGameByUrl(url) {
@@ -92,11 +88,7 @@
     const html = clean(game?.html);
     if (!url || !html) throw new Error('The game has no downloadable HTML content.');
     const cache = await cacheHandle();
-    await cache.put(url, new Response(html, {
-      status: 200,
-      statusText: 'OK',
-      headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Flash-Games-Installed': '1' }
-    }));
+    await cache.put(url, new Response(html, { status: 200, statusText: 'OK', headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Flash-Games-Installed': '1' } }));
     libraryPromise = null;
     return normalize(url, metaFor(url), { ...game, html, installedAt: Date.now(), cached: true });
   }
@@ -107,12 +99,8 @@
       if (!original.getAllCachedGames) return;
       try {
         const oldGames = await original.getAllCachedGames();
-        for (const game of oldGames || []) {
-          if (game?.html && (game.rawUrl || game.url)) await putGame(game);
-        }
-      } catch {
-        // Old v2 storage is optional; never block the real legacy cache.
-      }
+        for (const game of oldGames || []) if (game?.html && (game.rawUrl || game.url)) await putGame(game);
+      } catch {}
     })();
     return migrationPromise;
   }
@@ -127,14 +115,11 @@
   async function getCachedGame(identifier) {
     const key = clean(identifier);
     if (!key) return null;
-
     const direct = await readGameByUrl(key);
     if (direct) return direct;
-
     const games = await getAllCachedGames();
     const match = games.find((item) => item.id === key || item.rawUrl === key || item.url === key);
-    if (!match) return null;
-    return readGameByUrl(match.rawUrl || match.url);
+    return match ? readGameByUrl(match.rawUrl || match.url) : null;
   }
 
   async function installGame(game) {
@@ -152,29 +137,19 @@
     if (!response.ok) throw new Error(`Game download failed (${response.status}).`);
     const html = await response.text();
     if (!/<html[\s>]/i.test(html) && !/<body[\s>]/i.test(html)) throw new Error('The URL did not return an HTML game.');
-    return putGame({
-      id: `custom-${btoa(unescape(encodeURIComponent(source))).replace(/[^a-z0-9]/gi, '').slice(0, 48)}`,
-      name: clean(name) || prettyName(source), description: clean(description) || 'Custom HTML game.', cover: clean(cover),
-      url: source, rawUrl: source, zone: 'CUSTOM', category: 'Custom', source: 'Custom URL', custom: true,
-      html, installedAt: Date.now()
-    });
+    return putGame({ id: `custom-${btoa(unescape(encodeURIComponent(source))).replace(/[^a-z0-9]/gi, '').slice(0, 48)}`, name: clean(name) || prettyName(source), description: clean(description) || 'Custom HTML game.', cover: clean(cover), url: source, rawUrl: source, zone: 'CUSTOM', category: 'Custom', source: 'Custom URL', custom: true, html, installedAt: Date.now() });
   }
 
   async function launchGame(game) {
     const source = clean(game?.rawUrl || game?.url || game?.id);
     if (!source) throw new Error('This game has no source URL.');
-
     let cached = await getCachedGame(game?.id || source);
     if (!cached && game?.rawUrl) cached = await getCachedGame(game.rawUrl);
-
     if (!cached?.html) {
-      // Uncached playback still follows the required path: fetch -> cache -> Blob URL.
       const response = await fetch(source, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Game download failed (${response.status}).`);
-      const html = await response.text();
-      cached = await putGame({ ...game, html, rawUrl: source, url: source });
+      cached = await putGame({ ...game, html: await response.text(), rawUrl: source, url: source });
     }
-
     return URL.createObjectURL(new Blob([cached.html], { type: 'text/html' }));
   }
 
@@ -186,14 +161,33 @@
   }
 
   async function clearGames() {
-    // Explicit user/admin action only. Update/cache installation never calls this.
     await caches.delete(CACHE_NAME);
     cachePromise = null;
     libraryPromise = null;
   }
 
+  function readFavourites() {
+    try {
+      const value = JSON.parse(localStorage.getItem(FAVOURITES_KEY) || '[]');
+      return new Set(Array.isArray(value) ? value.map(String) : []);
+    } catch { return new Set(); }
+  }
+  function writeFavourites(value) {
+    const list = [...new Set((Array.isArray(value) ? value : [...value]).map(String))];
+    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(list));
+    return list;
+  }
+  function getFavourites() { return readFavourites(); }
+  function setFavourite(id, enabled) { const current = readFavourites(); if (enabled) current.add(String(id)); else current.delete(String(id)); return writeFavourites(current); }
+
   window.FlashGamesStore = {
     ...original,
+    getFavourites,
+    setFavourite,
+    setFavourites: writeFavourites,
+    addFavourite: (id) => writeFavourites([...readFavourites(), id]),
+    removeFavourite: (id) => writeFavourites([...readFavourites()].filter((item) => item !== String(id))),
+    toggleFavourite: (id) => { const key = String(id), current = readFavourites(); if (current.has(key)) current.delete(key); else current.add(key); return writeFavourites(current); },
     getAllCachedGames,
     getCachedGame,
     install: installGame,
@@ -204,5 +198,61 @@
     cacheName: CACHE_NAME
   };
 
-  window.FlashGamesLegacyCache = { CACHE_NAME, migrateOldV2, readCacheGames, readGameByUrl };
+  function fallbackGames() {
+    try {
+      const value = JSON.parse(localStorage.getItem(GAME_CACHE) || 'null');
+      return Array.isArray(value?.games) ? value.games : Array.isArray(value) ? value : [];
+    } catch { return []; }
+  }
+
+  async function loadGames(force = false) {
+    if (!force) {
+      const cached = fallbackGames();
+      if (cached.length) return { games: cached, source: 'cache' };
+    }
+    try {
+      const response = await fetch(`./offline.json?v=${Date.now()}`, { cache: 'no-store' });
+      if (response.ok) {
+        const data = await response.json();
+        const games = (Array.isArray(data) ? data : data.games || []).filter(Boolean);
+        if (games.length) {
+          try { localStorage.setItem(GAME_CACHE, JSON.stringify({ version: 8, generatedAt: Date.now(), games })); } catch {}
+          return { games, source: 'offline-manifest' };
+        }
+      }
+    } catch {}
+    return { games: fallbackGames(), source: 'cache' };
+  }
+
+  async function loadUpdates() {
+    try {
+      const response = await fetch(`./update.json?v=${Date.now()}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+      const releases = Array.isArray(data) ? data : data.releases || [];
+      return { version: clean(data.version || releases[0]?.version || '0.0.0'), releases };
+    } catch { return { version: '0.0.0', releases: [] }; }
+  }
+
+  async function loadNotifications(uid) {
+    const db = window.__flashFirebase?.db;
+    if (!db) return [];
+    try {
+      const collection = db.collection('notifications');
+      const snapshot = uid ? await collection.where('uid', '==', uid).limit(30).get().catch(() => collection.limit(30).get()) : await collection.limit(30).get();
+      return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch { return []; }
+  }
+
+  const existingData = window.FlashData || {};
+  window.FlashData = {
+    ...existingData,
+    loadGames,
+    loadUpdates,
+    loadNotifications,
+    syncGames: () => loadGames(true),
+    clearCache: () => localStorage.removeItem(GAME_CACHE),
+    esc: existingData.esc || ((value) => clean(value).replace(/[&<>\"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' })[char]))
+  };
+  window.FlashData.prettyName = window.FlashData.prettyName || prettyName;
 })();
