@@ -79,9 +79,22 @@
   ];
 
 
-  // Add cloud games here. These URLs are shown only to verified users.
+  // Cloud providers. These open the provider's own cloud-game catalog instead of pretending individual games are directly embeddable.
   window.FlashCloudGames = [
-    // { id:'cloud-example', name:'My Cloud Game', url:'https://example.com/play', cover:'./offline/example.png', description:'Cloud game description' }
+    {
+      id: 'raccoon-cloud-games',
+      name: 'Raccoon Cloud Games',
+      url: 'https://www.raccoongame.com/wap/dist/',
+      cover: './offline/logo.png',
+      description: 'Play cloud games through Raccoon Game. The provider handles the game catalog and streaming session.'
+    },
+    {
+      id: 'raccoon-cloud-games-web',
+      name: 'Raccoon Cloud Games Web',
+      url: 'https://www.raccoongame.com/',
+      cover: './offline/logo.png',
+      description: 'Open the main Raccoon cloud gaming catalog.'
+    }
   ];
 
   let dbPromise = null;
@@ -367,60 +380,29 @@
     const html = await response.text();
     if (!/<html[\s>]/i.test(html) && !/<body[\s>]/i.test(html)) throw new Error('The URL did not return an HTML game.');
     const parsedName = clean(name) || prettyName(rawUrl.split('/').pop() || 'Custom Game');
-    const id = `custom-${btoa(unescape(encodeURIComponent(rawUrl))).replace(/[^a-z0-9]/gi, '').slice(0, 48)}`;
-    const cached = normalizeGame({ id, name: parsedName, url: rawUrl, rawUrl, description: clean(description) || 'Custom HTML game.', cover: clean(cover), category: 'Custom', zone: 'CUSTOM', source: 'Custom URL' });
-    cached.html = html;
-    cached.installedAt = Date.now();
-    cached.custom = true;
+    const game = normalizeGame({ id: `custom-${Date.now()}`, name: parsedName, rawUrl, description, cover, category: 'Custom', source: 'Custom URL' });
+    const cached = { ...game, html, installedAt: Date.now(), size: html.length };
     await storeRequest('readwrite', (store) => store.put(cached));
     return cached;
   }
 
   async function removeGame(id) {
-    try { await storeRequest('readwrite', (store) => store.delete(id)); } catch { /* storage failure is non-fatal */ }
+    return storeRequest('readwrite', (store) => store.delete(id));
   }
 
-  async function clearGames() {
-    try { await storeRequest('readwrite', (store) => store.clear()); } catch { /* storage failure is non-fatal */ }
+  async function clearAll() {
+    return storeRequest('readwrite', (store) => store.clear());
   }
 
-  async function launchGame(game) {
-    const cached = await getCachedGame(game.id);
-    if (cached?.html) return URL.createObjectURL(new Blob([cached.html], { type: 'text/html' }));
-    return clean(game?.rawUrl || game?.url);
-  }
-
-  function getFavourites() {
-    try {
-      const value = JSON.parse(localStorage.getItem(FAVOURITES_KEY) || '[]');
-      return new Set(Array.isArray(value) ? value : []);
-    } catch { return new Set(); }
-  }
-
-  function setFavourite(id, enabled) {
-    const favourites = getFavourites();
-    if (enabled) favourites.add(id); else favourites.delete(id);
-    localStorage.setItem(FAVOURITES_KEY, JSON.stringify([...favourites]));
-  }
-
-  async function loadUpdates() {
-    try {
-      const data = await fetchJson(`./update.json?v=${Date.now()}`);
-      const releases = Array.isArray(data) ? data : data.releases || [];
-      return { version: clean(data.version || releases[0]?.version || '0.0.0'), releases };
-    } catch { return { version: '0.0.0', releases: [] }; }
-  }
-
-  async function loadNotifications(uid) {
-    const db = window.__flashFirebase?.db;
-    if (!db) return [];
-    try {
-      const collection = db.collection('notifications');
-      const snapshot = uid ? await collection.where('uid', '==', uid).limit(30).get().catch(() => collection.limit(30).get()) : await collection.limit(30).get();
-      return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    } catch { return []; }
-  }
-
-  window.FlashGamesStore = { getFavourites, setFavourite, getAllCachedGames, getCachedGame, install: installGame, installCustom: installCustomGame, launch: launchGame, deleteCachedGame: removeGame, clearGameCache: clearGames };
-  window.FlashData = { loadGames, loadUpdates, loadNotifications, syncGames: () => loadGames(true), clearCache: () => localStorage.removeItem(GAME_CACHE), esc };
+  window.FlashGamesStore = {
+    loadGames,
+    getAllCachedGames,
+    getCachedGame,
+    install: installGame,
+    installCustom: installCustomGame,
+    remove: removeGame,
+    clearAll,
+    sourceRoot: SOURCE_ROOT
+  };
+  window.FlashData = { esc, prettyName, normalizeGame };
 })();
