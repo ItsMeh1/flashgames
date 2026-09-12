@@ -255,4 +255,36 @@
     esc: existingData.esc || ((value) => clean(value).replace(/[&<>\"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' })[char]))
   };
   window.FlashData.prettyName = window.FlashData.prettyName || prettyName;
+
+  // legacy-cache.js is already part of the real app shell. Use that guaranteed
+  // execution point to load platform helpers even when the service worker has
+  // not taken control yet. Each helper is loaded at most once.
+  function loadOnce(src, onload) {
+    if (document.querySelector(`script[src="${src}"]`)) return;
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    if (typeof onload === 'function') script.onload = onload;
+    script.onerror = () => {};
+    (document.body || document.head || document.documentElement).appendChild(script);
+  }
+
+  function bootPlatformHelpers() {
+    if (!document.querySelector('link[data-flash-terminal-css]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = './flash-terminal.css';
+      css.dataset.flashTerminalCss = '1';
+      document.head?.appendChild(css);
+    }
+    loadOnce('./data-compat.js');
+    loadOnce('./flash-terminal.js');
+    loadOnce('./online-cache.js');
+    loadOnce('./auth-recovery.js');
+    loadOnce('./phase3-hotfixes.js');
+    loadOnce('./cloud-playback.js');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootPlatformHelpers, { once: true });
+  else bootPlatformHelpers();
 })();
