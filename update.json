@@ -2,17 +2,24 @@
   "version": "4.5.4",
   "releases": [
     {
-      "version": "4.7.0",
-      "date": "September 5, 2026",
-      "description": "MOREEEEEEEEEE",
+      "version": "4.7.1",
+      "date": "September 11, 2026",
+      "description": "Platform, Accounts & Cloud Update",
       "changes": [
-        {"type": "add", "text": "Added about 1700 games in a new, revamped game section & library"},
-        {"type": "add", "text": "New library & store with the 313 offline downloadable games & search for all games when offline as well"},
-        { "type": "change", "text": "Lots of new UI for really everything" },
-        { "type": "change", "text": "Better stats with total playtime, member levels, games played, and total installed games." },
-        { "type": "change", "text": "New UI pill" },
-        { "type": "change", "text": "Fixed a really annoying bug where some updates in the changelog wouldn't show." },
-        { "type": "remove", "text": "Removed old game library on the home page & added a recently played in its place" }
+        {"type": "add", "text": "Added offline startup support for previously verified Firebase accounts using a local verified-session cache."},
+        {"type": "add", "text": "Restored account creation with username, profile picture, email, and password support."},
+        {"type": "add", "text": "Added clear account-creation lock messaging when registration is disabled or unavailable."},
+        {"type": "add", "text": "Added a rebuilt moderation-focused admin panel with member search, review filters, account status, verification, activity signals, roles, notes, restrictions, suspensions, and profile controls."},
+        {"type": "add", "text": "Added Flash Terminal with safe read-only diagnostics and an Alt/Option+T keyboard shortcut."},
+        {"type": "add", "text": "Added online-game caching through the same Flash Games install pipeline used for offline games."},
+        {"type": "add", "text": "Added cloud gaming provider access through Raccoon Cloud Games."},
+        {"type": "add", "text": "Added a loading screen that says Loading game... while slower games start."},
+        {"type": "edit", "text": "Improved game downloads so compatible alternate game URLs can be tried when a provider returns a 404 or not-found error."},
+        {"type": "edit", "text": "Improved the service worker app shell and cache versioning for the new platform features."},
+        {"type": "edit", "text": "Updated the app manifest and offline session handling for more reliable installed/offline use."},
+        {"type": "fix", "text": "Fixed the Flash Terminal not opening because its mount routine was never started."},
+        {"type": "fix", "text": "Fixed the cloud section having no provider entries despite the cloud-game system being present."},
+        {"type": "fix", "text": "Fixed several account and moderation UI paths while preserving the existing save and localStorage systems."}
       ]
     },
     {
@@ -30,8 +37,6 @@
         {"type": "edit", "text": "Fixed a bug where the page wouldn't load at all & the stylesheet was broken."},
         {"type": "remove", "test": "Removed a bunch of accounts for testing & from link leaks"},
         {"type": "remove", "test": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."}
-
-        
       ]
     },
     {
@@ -43,7 +48,6 @@
         {"type": "add", "text": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."},
         { "type": "add", "text": "Removed spam accounts & accounts created during link leaks." },
         {"type": "add", "text": "Lots of bug fixes."}
-        
       ]
     },
     {
