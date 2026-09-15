@@ -3,7 +3,7 @@
   "name": "Flash Games",
   "short_name": "Flash Games",
   "description": "Your centralized, offline-ready game vault.",
-  "start_url": "./",
+  "start_url": "https://itsmeh1.github.io/flashgames/?.amplify.com",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -11,17 +11,7 @@
   "theme_color": "#07080c",
   "prefer_related_applications": false,
   "icons": [
-    {
-      "src": "./offline/logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./offline/logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "./offline/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./offline/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
