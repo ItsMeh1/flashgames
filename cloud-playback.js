@@ -25,4 +25,24 @@
   }, true);
 
   window.FlashCloudPlayer = { open: openCloud };
+
+  function loadEnhancements() {
+    if (!document.querySelector('link[data-flash-enhancements-css]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = './flash-enhancements.css';
+      css.dataset.flashEnhancementsCss = '1';
+      document.head?.appendChild(css);
+    }
+    if (document.querySelector('script[data-flash-enhancements]')) return;
+    const script = document.createElement('script');
+    script.src = './flash-enhancements.js';
+    script.dataset.flashEnhancements = '1';
+    script.async = false;
+    script.onerror = () => {};
+    (document.body || document.head || document.documentElement).appendChild(script);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadEnhancements, { once: true });
+  else loadEnhancements();
 })();
