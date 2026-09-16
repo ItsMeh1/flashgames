@@ -75,15 +75,12 @@
   const installedExtensions = new Set();
 
   const moduleUI = (out) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'terminal-modules';
+    const wrap = document.createElement('div'); wrap.className = 'terminal-modules';
     const available = Object.values(extensionCatalog).filter((mod) => !state.modules.has(mod.name));
     if (!available.length) { print(out, 'All optional modules are installed.'); return; }
     available.forEach((mod) => {
-      const card = document.createElement('div');
-      card.className = 'terminal-module';
-      const info = document.createElement('div');
-      info.className = 'terminal-module-info';
+      const card = document.createElement('div'); card.className = 'terminal-module';
+      const info = document.createElement('div'); info.className = 'terminal-module-info';
       const name = document.createElement('div'); name.className = 'terminal-module-name'; name.textContent = mod.name;
       const desc = document.createElement('div'); desc.className = 'terminal-module-description'; desc.textContent = mod.description;
       const install = document.createElement('button'); install.type = 'button'; install.className = 'terminal-module-install'; install.textContent = 'Install';
@@ -102,40 +99,16 @@
   }});
 
   function help(out) {
-    print(out, 'Flash Terminal');
-    print(out, 'Type a module followed by a command. Type clear to clear the terminal.');
-    print(out, '');
-    print(out, 'BUILT-IN MODULES');
-    print(out, '  system        Basic app/browser status       status, time');
-    print(out, '  browser       Browser information            info, storage, viewport');
-    print(out, '  offline       Service worker/cache info      status, caches, games');
-    print(out, '  localstorage  Safe storage inspection        keys, get <key>');
-    print(out, '  session       Account diagnostics             status');
-    print(out, '  modules       Install optional modules        list, install, available, remove');
-    print(out, '');
-    print(out, 'OPTIONAL MODULES');
-    Object.values(extensionCatalog).forEach((m) => print(out, `  ${m.name.padEnd(13)} ${m.description}`));
-    print(out, '');
-    print(out, 'EXAMPLES');
-    print(out, '  system status');
-    print(out, '  browser viewport');
-    print(out, '  offline caches');
-    print(out, '  modules install');
-    print(out, '  network status   (after installing network)');
+    print(out, 'Flash Terminal'); print(out, 'Type a module followed by a command. Type clear to clear the terminal.'); print(out, ''); print(out, 'BUILT-IN MODULES');
+    print(out, '  system        Basic app/browser status       status, time'); print(out, '  browser       Browser information            info, storage, viewport'); print(out, '  offline       Service worker/cache info      status, caches, games'); print(out, '  localstorage  Safe storage inspection        keys, get <key>'); print(out, '  session       Account diagnostics             status'); print(out, '  modules       Install optional modules        list, install, available, remove'); print(out, ''); print(out, 'OPTIONAL MODULES');
+    Object.values(extensionCatalog).forEach((m) => print(out, `  ${m.name.padEnd(13)} ${m.description}`)); print(out, ''); print(out, 'EXAMPLES'); print(out, '  system status'); print(out, '  browser viewport'); print(out, '  offline caches'); print(out, '  modules install'); print(out, '  network status   (after installing network)');
   }
 
   function run(out, raw) {
-    const input = raw.trim();
-    if (!input) return;
-    state.history.push(input); state.index = state.history.length;
-    const parts = input.split(/\s+/); const head = parts.shift().toLowerCase();
-    if (head === 'clear') { out.textContent = ''; return; }
-    if (head === 'help') { help(out); return; }
-    const module = state.modules.get(head);
-    if (!module) return print(out, `Unknown command/module: ${head}`, 'error');
-    const command = (parts.shift() || 'help').toLowerCase(); const fn = module.commands[command];
-    if (typeof fn !== 'function') return print(out, `Unknown ${head} command: ${command}`, 'error');
-    Promise.resolve(fn({ out, args: parts })).catch(() => print(out, 'Command failed safely.', 'error'));
+    const input = raw.trim(); if (!input) return; state.history.push(input); state.index = state.history.length;
+    const parts = input.split(/\s+/); const head = parts.shift().toLowerCase(); if (head === 'clear') { out.textContent = ''; return; } if (head === 'help') { help(out); return; }
+    const module = state.modules.get(head); if (!module) return print(out, `Unknown command/module: ${head}`, 'error'); const command = (parts.shift() || 'help').toLowerCase(); const fn = module.commands[command];
+    if (typeof fn !== 'function') return print(out, `Unknown ${head} command: ${command}`, 'error'); Promise.resolve(fn({ out, args: parts })).catch(() => print(out, 'Command failed safely.', 'error'));
   }
 
   function mount() {
@@ -143,16 +116,19 @@
     const button = document.createElement('button'); button.className = 'icon-btn flash-terminal-trigger'; button.type = 'button'; button.title = 'Flash Terminal — Option+T'; button.setAttribute('aria-label', 'Flash Terminal — Option+T'); button.innerHTML = '<i data-lucide="terminal"></i>';
     document.querySelector('.top-actions')?.appendChild(button);
     const backdrop = document.createElement('div'); backdrop.id = 'flashTerminal'; backdrop.className = 'modal-backdrop'; backdrop.hidden = true;
-    backdrop.innerHTML = '<section class="flash-terminal" role="dialog" aria-modal="true" aria-label="Terminal"><div class="terminal-body"><div id="flashTerminalOutput" class="terminal-output" aria-live="polite"></div><form id="flashTerminalForm" class="terminal-form"><span>&gt;</span><input id="flashTerminalInput" autocomplete="off" spellcheck="false" placeholder="type a command"><button type="submit">Run</button></form></div></section>';
+    backdrop.innerHTML = '<section class="flash-terminal" role="dialog" aria-modal="true" aria-label="Flash Terminal"><div class="terminal-body"><div class="terminal-toolbar"><div class="terminal-toolbar-title"><span class="terminal-orb"><i data-lucide="terminal"></i></span><div><strong>Flash Terminal</strong><small>Browser diagnostics & tools</small></div></div><div class="terminal-toolbar-actions"><button type="button" data-terminal-action="help"><i data-lucide="circle-help"></i><span>Help</span></button><button type="button" data-terminal-action="clear"><i data-lucide="eraser"></i><span>Clear</span></button></div></div><div id="flashTerminalOutput" class="terminal-output" aria-live="polite"></div><div class="terminal-quick-actions"><span>Quick actions</span><button type="button" data-command="system status">System</button><button type="button" data-command="browser viewport">Viewport</button><button type="button" data-command="offline status">Offline</button><button type="button" data-command="modules install">Modules</button></div><form id="flashTerminalForm" class="terminal-form"><span>&gt;</span><input id="flashTerminalInput" autocomplete="off" spellcheck="false" placeholder="Type a command…"><button type="submit">Run</button></form></div></section>';
     document.body.appendChild(backdrop);
     const out = backdrop.querySelector('#flashTerminalOutput'); const input = backdrop.querySelector('#flashTerminalInput');
-    const open = () => { backdrop.hidden = false; input.focus(); if (!out.childElementCount) print(out, 'Flash Terminal ready. Type help.'); };
+    const open = () => { backdrop.hidden = false; input.focus(); if (!out.childElementCount) print(out, 'Flash Terminal ready. Choose a quick action or type help.'); };
     const close = () => { backdrop.hidden = true; };
     button.addEventListener('click', open); backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
     backdrop.querySelector('#flashTerminalForm').addEventListener('submit', (e) => { e.preventDefault(); const v = input.value; input.value = ''; print(out, `> ${v}`, 'command'); run(out, v); });
+    backdrop.querySelectorAll('[data-command]').forEach((action) => action.addEventListener('click', () => { const command = action.dataset.command || ''; input.value = command; backdrop.querySelector('#flashTerminalForm').requestSubmit(); }));
+    backdrop.querySelector('[data-terminal-action="help"]').addEventListener('click', () => { print(out, ''); help(out); });
+    backdrop.querySelector('[data-terminal-action="clear"]').addEventListener('click', () => { out.textContent = ''; print(out, 'Terminal cleared. Choose a quick action or type help.'); });
     input.addEventListener('keydown', (e) => { if (e.key === 'ArrowUp') { e.preventDefault(); state.index = Math.max(0, state.index - 1); input.value = state.history[state.index] || ''; } if (e.key === 'ArrowDown') { e.preventDefault(); state.index = Math.min(state.history.length, state.index + 1); input.value = state.history[state.index] || ''; } if (e.key === 'Escape') close(); });
     window.addEventListener('keydown', (e) => { if (e.altKey && (e.code === 'KeyT' || e.key.toLowerCase() === 't')) { e.preventDefault(); e.stopPropagation(); open(); } }, true);
-    window.lucide?.createIcons?.({ root: button, attrs: { 'stroke-width': 1.5 } });
+    window.lucide?.createIcons?.({ root: backdrop, attrs: { 'stroke-width': 1.5 } }); window.lucide?.createIcons?.({ root: button, attrs: { 'stroke-width': 1.5 } });
   }
   function boot() { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true }); else mount(); }
   boot();
