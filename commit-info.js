@@ -3,10 +3,12 @@
 
   const REPO = 'ItsMeh1/flashgames';
   const BRANCH = 'v4';
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>\"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;', "'":'&#39;' }[c]));
+  const refreshIcons = (root) => { try { window.lucide?.createIcons?.({ root, attrs: { 'stroke-width': 1.5 } }); } catch (_) {} };
   const brand = document.querySelector('.brand');
   if (!brand || document.getElementById('flashCommitInfo')) return;
 
-  const currentName = brand.dataset.commitName || 'v4: add commit history UI';
+  const currentName = brand.dataset.commitName || 'v4: add commit name and history to brand';
   brand.title = currentName;
   brand.setAttribute('aria-label', `Flash Games — ${currentName}`);
 
@@ -24,9 +26,6 @@
   modal.hidden = true;
   modal.innerHTML = `<section class="flash-commit-modal glass" role="dialog" aria-modal="true" aria-labelledby="flashCommitTitle"><div class="flash-commit-head"><div><span class="eyebrow">VERSION HISTORY</span><h2 id="flashCommitTitle">Commits</h2></div><button type="button" class="icon-btn" data-commit-close aria-label="Close"><i data-lucide="x"></i></button></div><div class="flash-current-commit"><span>Current commit</span><strong>${escapeHtml(currentName)}</strong><code id="flashCurrentSha">Loading…</code></div><div id="flashCommitList" class="flash-commit-list"><div class="flash-commit-loading">Loading commit history…</div></div></section>`;
   document.body.appendChild(modal);
-
-  const escapeHtml = (value) => String(value ?? '').replace(/[&<>\"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;', "'":'&#39;' }[c]));
-  const refreshIcons = (root) => { try { window.lucide?.createIcons?.({ root, attrs: { 'stroke-width': 1.5 } }); } catch (_) {} };
 
   async function loadHistory() {
     const list = document.getElementById('flashCommitList');
