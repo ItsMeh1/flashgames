@@ -1,6 +1,115 @@
 {
-  "version": "4.5.4",
+  "version": "5.3.6",
   "releases": [
+    {
+      "version": "5.3.6",
+      "date": "September 26, 2026",
+      "description": "Admin Rebuild",
+      "changes": [
+        {"type": "fix", "text": "Fixed maintenance lock never engaging. The panel now actually exports its status reader."},
+        {"type": "fix", "text": "Fixed member search losing focus after every keystroke."},
+        {"type": "add", "text": "Rebuilt administration from scratch: health metrics, searchable member directory, full profiles with suspension and age signals, moderation actions, release lock and catalogue controls."}
+      ]
+    },
+    {
+      "version": "5.3.5",
+      "date": "September 26, 2026",
+      "description": "One Game, One Name",
+      "changes": [
+        {"type": "fix", "text": "The same game no longer appears twice under different names. Local games share one identity everywhere, old installs and favorites migrate automatically, and the library always shows the catalogue name."}
+      ]
+    },
+    {
+      "version": "5.3.4",
+      "date": "September 26, 2026",
+      "description": "Cloud Arcade & Always-On Social",
+      "changes": [
+        {"type": "add", "text": "Polished the cloud arcade: region and tunnel badges, numbered titles, host tags and Play buttons with live opening state."},
+        {"type": "edit", "text": "Confer now fills the whole social tab and stays mounted, so calls survive tab switches."}
+      ]
+    },
+    {
+      "version": "5.3.3",
+      "date": "September 26, 2026",
+      "description": "Exclusive Shelf Fix",
+      "changes": [
+        {"type": "fix", "text": "The Flash Exclusive collection is stocked again. Every bundled offline game now lives there, with no double listings."}
+      ]
+    },
+    {
+      "version": "5.3.2",
+      "date": "September 26, 2026",
+      "description": "Duplicate Cleanup",
+      "changes": [
+        {"type": "fix", "text": "Removed double listings. Games shared by the offline manifest and the exclusive shelf now show once."}
+      ]
+    },
+    {
+      "version": "5.3.1",
+      "date": "September 26, 2026",
+      "description": "Regional Cloud Routing",
+      "changes": [
+        {"type": "fix", "text": "Cloud titles now detect nowgg.fun's region redirect and play from your regional host (e.g. 24.ip.nowgg.fun) instead of dying on DNS errors."},
+        {"type": "add", "text": "Your region is remembered, so repeat plays skip straight to the regional host."}
+      ]
+    },
+    {
+      "version": "5.3.0",
+      "date": "September 26, 2026",
+      "description": "Cloud Region Fix & RNG Rebuild",
+      "changes": [
+        {"type": "fix", "text": "Fixed cloud games dying on region redirects. Titles verify through the engine, then the player navigates for real so geo-matching resolves natively."},
+        {"type": "add", "text": "Rebuilt Infinity RNG as Aurora Vault: new dock, arena stage, bento casino, pity meter and mobile tab bar. Save system untouched."},
+        {"type": "fix", "text": "Fixed Turbo Motor doing nothing, stale Hi-Lo reference, dead save-merge code and unreachable mobile tabs in RNG."}
+      ]
+    },
+    {
+      "version": "5.2.1",
+      "date": "September 26, 2026",
+      "description": "Library Focus Update",
+      "changes": [
+        {"type": "remove", "text": "Removed the Games section. The store now covers every collection and the library holds everything installed."},
+        {"type": "edit", "text": "Library took over the games icon."},
+        {"type": "fix", "text": "Custom URL installs now appear in the library immediately."}
+      ]
+    },
+    {
+      "version": "5.2.0",
+      "date": "September 25, 2026",
+      "description": "Player, Store & Packs Update",
+      "changes": [
+        {"type": "edit", "text": "The game player is now tab-fullscreen by default, with optional window fullscreen."},
+        {"type": "edit", "text": "All cloud traffic now loads through the vendored static fetch engine."},
+        {"type": "add", "text": "Added collection switching (Offline, Lumin, Exclusive) and a dedicated packs area in the store."},
+        {"type": "add", "text": "Added pack detail views so you can see and play every game inside a bundle."}
+      ]
+    },
+    {
+      "version": "5.1.0",
+      "date": "September 25, 2026",
+      "description": "Access, Cloud, Packs & Navbar Update",
+      "changes": [
+        {"type": "add", "text": "Added an access gate. An account or a developer code is now required to enter. Developer codes also unlock cloud gaming."},
+        {"type": "add", "text": "Added a static fetch engine (vendored) with graceful direct fallback."},
+        {"type": "add", "text": "Added 12 nowgg.fun cloud titles: Roblox, Rocket League, Minecraft, Among Us, PUBG, Free Fire, Genshin, COD, Blox Fruit, Adopt Me and more."},
+        {"type": "add", "text": "Added game packs in the store. One tap installs a whole bundle locally for offline play."},
+        {"type": "add", "text": "Added a condensing navbar pill on scroll with hover tooltips, plus a layout-stability pass so search no longer shifts the page."},
+        {"type": "fix", "text": "Restored the gameplay iframe to its original unsandboxed playback."}
+      ]
+    },
+    {
+      "version": "5.0.0",
+      "date": "September 25, 2026",
+      "description": "Slimdown & Reliability Update",
+      "changes": [
+        {"type": "remove", "text": "Removed 30+ redundant hotfix stylesheets and scripts. The whole site now runs on one stylesheet and five scripts."},
+        {"type": "edit", "text": "New minimal interface: calmer surfaces, faster load, same features."},
+        {"type": "edit", "text": "Online games are now downloaded and cached before playing. If caching fails you get a clear error instead of a broken frame."},
+        {"type": "fix", "text": "Fixed library, search and favorites not refreshing on the Games tab."},
+        {"type": "fix", "text": "Fixed cloud games that refused to load inside the player. They now open in a new tab."},
+        {"type": "fix", "text": "Fixed stale service worker caching and broken manifest start URL."}
+      ]
+    },
     {
       "version": "4.7.1",
       "date": "September 11, 2026",

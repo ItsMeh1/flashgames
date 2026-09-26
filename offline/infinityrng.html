@@ -3,190 +3,255 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Infinity Luck RNG — Liquid Glass Edition</title>
+  <title>Infinity RNG — Aurora Vault</title>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script>window.lucide = window.lucide || { createIcons() {} };</script>
   <style>
     :root{
-      --bg1:#030508;
-      --bg2:#0a0f1a;
-      --glass:rgba(255,255,255,.04);
-      --glass-border:rgba(255,255,255,.08);
-      --glass-strong:rgba(255,255,255,.07);
-      --text:#f0f4f8;
-      --muted:#8b9cb5;
-      --accent:#0a84ff;
+      --bg0:#04050a;
+      --bg1:#070912;
+      --bg2:#0b0f1c;
+      --ink:#f5f7fc;
+      --mut:#9298b0;
+      --dim:#5c6379;
+      --line:rgba(255,255,255,.09);
+      --vio:#8b5cf6;
+      --cy:#22d3ee;
+      --pk:#f472b6;
+      --gold:#fbbf24;
+      --grn:#34d399;
+      --red:#f87171;
+      --card:rgba(13,16,27,.78);
+      --card-solid:#0d101b;
+      --r:20px;
+      --rs:13px;
+      --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,system-ui,sans-serif;
+      --display:"Arial Black",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Inter,system-ui,sans-serif;
+      /* legacy aliases (JS + inline styles depend on these) */
+      --text:var(--ink);
+      --muted:var(--mut);
+      --accent:#8b5cf6;
       --accent2:#7c3aed;
       --accent3:#06b6d4;
-      --good:#22c55e;
-      --danger:#ef4444;
-      --warn:#f59e0b;
-      --shadow:0 8px 32px rgba(0,0,0,.4);
-      --radius:20px;
-      --radius-sm:12px;
+      --good:var(--grn);
+      --danger:var(--red);
+      --warn:var(--gold);
+      --glass:rgba(255,255,255,.04);
+      --glass-border:var(--line);
+      --glass-strong:rgba(255,255,255,.07);
+      --shadow:0 18px 50px rgba(0,0,0,.5);
+      --radius:var(--r);
+      --radius-sm:var(--rs);
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{
       height:100vh;
       overflow:hidden;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,system-ui,sans-serif;
-      color:var(--text);
-      background:var(--bg1);
+      font-family:var(--font);
+      color:var(--ink);
+      background:var(--bg0);
     }
 
     body{
       display:grid;
-      grid-template-columns:72px 1fr;
+      grid-template-columns:92px 1fr;
       background:
-        radial-gradient(ellipse at 20% 0%, rgba(10,132,255,.08), transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(124,58,237,.06), transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(6,182,212,.03), transparent 60%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
+        radial-gradient(1100px 500px at 15% -10%, rgba(139,92,246,.13), transparent 60%),
+        radial-gradient(900px 480px at 90% 110%, rgba(34,211,238,.09), transparent 60%),
+        linear-gradient(180deg,var(--bg1),var(--bg0));
+    }
+
+    body::before,body::after{
+      content:"";
+      position:fixed;
+      border-radius:50%;
+      filter:blur(110px);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body::before{
+      width:480px;height:480px;
+      left:-160px;top:-140px;
+      background:rgba(139,92,246,.16);
+      animation:auroraDrift 22s ease-in-out infinite alternate;
+    }
+
+    body::after{
+      width:420px;height:420px;
+      right:-140px;bottom:-160px;
+      background:rgba(34,211,238,.11);
+      animation:auroraDrift 26s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes auroraDrift{
+      from{transform:translate(0,0) scale(1)}
+      to{transform:translate(60px,40px) scale(1.12)}
     }
 
     .liquid-glass{
-      background:linear-gradient(135deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.02) 100%);
-      backdrop-filter:blur(24px) saturate(140%);
-      -webkit-backdrop-filter:blur(24px) saturate(140%);
-      border:1px solid var(--glass-border);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.08),
-        0 4px 24px rgba(0,0,0,.2);
+      background:linear-gradient(160deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.02) 100%);
+      backdrop-filter:blur(22px) saturate(150%);
+      -webkit-backdrop-filter:blur(22px) saturate(150%);
+      border:1px solid var(--line);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.09), 0 10px 34px rgba(0,0,0,.35);
     }
 
     .liquid-glass-strong{
-      background:linear-gradient(135deg, rgba(255,255,255,.09) 0%, rgba(255,255,255,.04) 100%);
-      backdrop-filter:blur(32px) saturate(160%);
-      -webkit-backdrop-filter:blur(32px) saturate(160%);
+      background:linear-gradient(160deg, rgba(20,25,42,.92) 0%, rgba(10,13,24,.88) 100%);
+      backdrop-filter:blur(28px) saturate(160%);
+      -webkit-backdrop-filter:blur(28px) saturate(160%);
       border:1px solid rgba(255,255,255,.12);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.1),
-        0 8px 32px rgba(0,0,0,.3);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 18px 55px rgba(0,0,0,.5);
     }
 
     .liquid-glass-panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.02) 100%);
-      backdrop-filter:blur(20px) saturate(130%);
-      -webkit-backdrop-filter:blur(20px) saturate(130%);
-      border:1px solid var(--glass-border);
-      border-radius:var(--radius);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.06),
-        0 4px 20px rgba(0,0,0,.25);
+      background:linear-gradient(180deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.02) 100%);
+      backdrop-filter:blur(20px) saturate(140%);
+      -webkit-backdrop-filter:blur(20px) saturate(140%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 10px 30px rgba(0,0,0,.35);
     }
 
     .sidebar{
+      position:relative;
+      z-index:2;
       display:flex;
       flex-direction:column;
-      align-items:center;
-      padding:16px 0;
-      gap:4px;
-      border-right:1px solid var(--glass-border);
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-      backdrop-filter:blur(20px);
+      align-items:stretch;
+      gap:6px;
+      margin:14px 0 14px 14px;
+      padding:16px 10px;
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(20,25,42,.85), rgba(9,12,22,.85));
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      box-shadow:0 14px 44px rgba(0,0,0,.45);
     }
 
     .sidebar-brand{
-      margin-bottom:16px;
-      width:40px;
-      height:40px;
-      border-radius:14px;
-      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      margin:0 auto 14px;
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      background:conic-gradient(from 210deg, var(--vio), var(--cy), var(--pk), var(--vio));
       display:grid;
       place-items:center;
-      box-shadow:0 4px 16px rgba(10,132,255,.3);
+      box-shadow:0 6px 22px rgba(139,92,246,.45);
     }
 
-    .sidebar-brand i{color:#fff;width:20px;height:20px}
+    .sidebar-brand i{color:#fff;width:22px;height:22px}
 
     .nav-item{
-      width:48px;
-      height:48px;
-      border-radius:14px;
-      display:grid;
-      place-items:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:4px;
+      padding:10px 4px;
+      border-radius:16px;
       cursor:pointer;
-      transition:all .2s ease;
-      color:var(--muted);
+      transition:all .18s ease;
+      color:var(--dim);
       position:relative;
+      border:1px solid transparent;
     }
 
     .nav-item:hover{
       background:rgba(255,255,255,.06);
-      color:var(--text);
+      color:var(--ink);
     }
 
     .nav-item.active{
-      background:linear-gradient(135deg, rgba(10,132,255,.2), rgba(124,58,237,.15));
-      color:var(--accent);
-      box-shadow:0 0 20px rgba(10,132,255,.15);
+      background:linear-gradient(135deg, rgba(139,92,246,.28), rgba(34,211,238,.14));
+      border-color:rgba(139,92,246,.4);
+      color:#fff;
+      box-shadow:0 0 24px rgba(139,92,246,.28), inset 0 1px 0 rgba(255,255,255,.12);
     }
 
-    .nav-item i{width:22px;height:22px}
+    .nav-item i{width:21px;height:21px}
+
+    .nav-item span.nl{
+      font-size:8.5px;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
 
     .nav-item .badge-count{
       position:absolute;
       top:4px;
-      right:4px;
-      background:var(--danger);
+      right:8px;
+      background:var(--pk);
       color:#fff;
       font-size:9px;
       font-weight:800;
-      padding:1px 4px;
+      padding:1px 5px;
       border-radius:999px;
-      min-width:14px;
+      min-width:15px;
       text-align:center;
+      box-shadow:0 0 10px rgba(244,114,182,.6);
     }
 
     .sidebar-footer{
       margin-top:auto;
       display:flex;
       flex-direction:column;
-      gap:4px;
+      gap:6px;
+      padding-top:10px;
+      border-top:1px solid var(--line);
     }
 
     .main{
+      position:relative;
+      z-index:1;
       display:grid;
       grid-template-rows:auto 1fr;
       overflow:hidden;
-      padding:16px 20px 16px 16px;
-      gap:12px;
+      padding:14px 18px 14px 14px;
+      gap:14px;
     }
 
     .topbar{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:10px 16px;
-      border-radius:var(--radius);
+      gap:14px;
+      padding:12px 18px;
+      border-radius:var(--r);
     }
 
     .topbar-left{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:14px;
     }
 
     .topbar-left h1{
-      font-size:20px;
+      font-size:19px;
       font-weight:900;
-      letter-spacing:-.04em;
-      background:linear-gradient(135deg, #fff, #8b9cb5);
+      letter-spacing:-.03em;
+      background:linear-gradient(100deg, #fff 20%, var(--cy) 55%, var(--vio) 80%);
       -webkit-background-clip:text;
+      background-clip:text;
       -webkit-text-fill-color:transparent;
+      white-space:nowrap;
     }
 
     .save-pill{
       display:flex;
       align-items:center;
       gap:6px;
-      padding:5px 10px;
+      padding:5px 11px;
       border-radius:999px;
-      background:rgba(34,197,94,.1);
-      border:1px solid rgba(34,197,94,.2);
-      color:var(--good);
+      background:rgba(52,211,153,.1);
+      border:1px solid rgba(52,211,153,.25);
+      color:var(--grn);
       font-size:11px;
-      font-weight:700;
+      font-weight:800;
+      letter-spacing:.02em;
     }
 
     .save-pill i{width:12px;height:12px}
@@ -194,37 +259,44 @@
     .topbar-stats{
       display:flex;
       gap:8px;
+      overflow-x:auto;
+      scrollbar-width:none;
     }
+
+    .topbar-stats::-webkit-scrollbar{display:none}
 
     .top-stat{
       display:flex;
       align-items:center;
-      gap:8px;
-      padding:8px 14px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      gap:9px;
+      padding:8px 14px 8px 10px;
+      border-radius:14px;
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
+      white-space:nowrap;
     }
 
-    .top-stat i{width:16px;height:16px;color:var(--accent)}
+    .top-stat i{width:17px;height:17px;color:var(--cy)}
 
     .top-stat .ts-label{
-      font-size:10px;
-      color:var(--muted);
+      font-size:9px;
+      color:var(--dim);
       text-transform:uppercase;
-      letter-spacing:.05em;
+      letter-spacing:.09em;
+      font-weight:800;
     }
 
     .top-stat .ts-value{
-      font-size:15px;
+      font-size:16px;
       font-weight:900;
-      letter-spacing:-.03em;
+      letter-spacing:-.02em;
+      font-variant-numeric:tabular-nums;
     }
 
     .content-grid{
       display:grid;
-      grid-template-columns:1.4fr .6fr;
-      gap:12px;
+      grid-template-columns:1.5fr .55fr;
+      gap:14px;
       overflow:hidden;
       min-height:0;
     }
@@ -234,24 +306,25 @@
     }
 
     @media (max-width:900px){
-      body{grid-template-columns:60px 1fr}
+      body{grid-template-columns:76px 1fr}
       .content-grid{grid-template-columns:1fr}
     }
 
     .left-col, .right-col{
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:14px;
       overflow:hidden;
     }
 
     .right-col{min-width:280px}
 
     .panel-section{
-      border-radius:var(--radius);
-      padding:14px;
+      border-radius:var(--r);
+      padding:0;
       overflow:hidden;
       display:none;
+      gap:14px;
     }
 
     .panel-section.active{display:flex;flex-direction:column}
@@ -264,96 +337,121 @@
     }
 
     .panel-header h2{
-      font-size:15px;
-      font-weight:800;
-      letter-spacing:-.03em;
+      font-size:16px;
+      font-weight:900;
+      letter-spacing:-.02em;
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:9px;
     }
 
-    .panel-header h2 i{width:18px;height:18px;color:var(--accent)}
+    .panel-header h2 i{width:19px;height:19px;color:var(--cy)}
 
     .hero-roll{
       position:relative;
-      padding:20px;
-      border-radius:var(--radius);
-      min-height:200px;
+      padding:26px 24px 22px;
+      border-radius:24px;
+      min-height:300px;
       display:flex;
       flex-direction:column;
-      justify-content:space-between;
-      gap:16px;
+      justify-content:flex-end;
+      gap:18px;
       overflow:hidden;
-      transition:all .3s ease;
+      transition:border-color .3s ease, box-shadow .3s ease;
+      isolation:isolate;
     }
 
     .hero-roll::before{
       content:"";
       position:absolute;
-      inset:0;
-      background:radial-gradient(circle at 30% 20%, rgba(10,132,255,.08), transparent 50%);
+      inset:-40%;
+      background:conic-gradient(from 0deg, transparent 0%, rgba(139,92,246,.14) 12%, transparent 26%, transparent 50%, rgba(34,211,238,.12) 62%, transparent 76%);
+      animation:auraSpin 14s linear infinite;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .hero-roll::after{
+      content:"";
+      position:absolute;
+      inset:2px;
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(13,17,29,.94), rgba(7,9,16,.96));
+      z-index:0;
       pointer-events:none;
     }
 
-    .hero-roll[data-tier="common"]{border-color:rgba(255,255,255,.06)}
-    .hero-roll[data-tier="uncommon"]{border-color:rgba(34,197,94,.15);box-shadow:inset 0 0 30px rgba(34,197,94,.04),0 4px 24px rgba(0,0,0,.2)}
-    .hero-roll[data-tier="rare"]{border-color:rgba(59,130,246,.18);box-shadow:inset 0 0 30px rgba(59,130,246,.04),0 4px 24px rgba(0,0,0,.2)}
-    .hero-roll[data-tier="epic"]{border-color:rgba(168,85,247,.18);box-shadow:inset 0 0 30px rgba(168,85,247,.04),0 4px 24px rgba(0,0,0,.2)}
-    .hero-roll[data-tier="legendary"]{border-color:rgba(245,158,11,.22);box-shadow:inset 0 0 40px rgba(245,158,11,.06),0 4px 24px rgba(0,0,0,.2)}
-    .hero-roll[data-tier="mythic"]{border-color:rgba(244,114,182,.22);box-shadow:inset 0 0 40px rgba(244,114,182,.06),0 4px 24px rgba(0,0,0,.2)}
-    .hero-roll[data-tier="cosmic"]{border-color:rgba(34,211,238,.22);box-shadow:inset 0 0 50px rgba(34,211,238,.08),0 4px 24px rgba(0,0,0,.2)}
-    .hero-roll[data-tier="divine"]{border-color:rgba(255,255,255,.25);box-shadow:inset 0 0 60px rgba(255,255,255,.08),0 4px 24px rgba(0,0,0,.2)}
+    @keyframes auraSpin{
+      to{transform:rotate(360deg)}
+    }
+
+    .hero-roll[data-tier="common"]{border-color:rgba(255,255,255,.09)}
+    .hero-roll[data-tier="uncommon"]{border-color:rgba(52,211,153,.3);box-shadow:0 0 34px rgba(52,211,153,.1),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="rare"]{border-color:rgba(96,165,250,.32);box-shadow:0 0 34px rgba(96,165,250,.12),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="epic"]{border-color:rgba(192,132,252,.34);box-shadow:0 0 38px rgba(168,85,247,.14),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="legendary"]{border-color:rgba(251,191,36,.4);box-shadow:0 0 44px rgba(251,191,36,.16),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="mythic"]{border-color:rgba(244,114,182,.4);box-shadow:0 0 44px rgba(244,114,182,.16),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="cosmic"]{border-color:rgba(34,211,238,.42);box-shadow:0 0 54px rgba(34,211,238,.2),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="void"]{border-color:rgba(196,181,253,.45);box-shadow:0 0 54px rgba(167,139,250,.22),0 18px 55px rgba(0,0,0,.5)}
+    .hero-roll[data-tier="divine"]{border-color:rgba(255,255,255,.45);box-shadow:0 0 64px rgba(255,255,255,.2),0 18px 55px rgba(0,0,0,.5)}
+
+    .hero-roll.rolling .hero-content{opacity:.75}
 
     .particles{
       position:absolute;
       inset:0;
       pointer-events:none;
       overflow:hidden;
-      z-index:0;
+      z-index:1;
     }
 
     .particle{
       position:absolute;
       left:50%;
-      top:50%;
+      top:60%;
       width:6px;
       height:6px;
       border-radius:999px;
       background:var(--pColor);
       transform:translate(-50%,-50%);
       opacity:0;
-      box-shadow:0 0 12px var(--pColor);
-      animation:particleFly 600ms ease-out forwards;
+      box-shadow:0 0 14px var(--pColor), 0 0 30px var(--pColor);
+      animation:particleFly 700ms ease-out forwards;
     }
 
     @keyframes particleFly{
-      0%{transform:translate(-50%,-50%) scale(.5);opacity:1}
+      0%{transform:translate(-50%,-50%) scale(.6);opacity:1}
       100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);opacity:0}
     }
 
     .hero-content{
       position:relative;
-      z-index:1;
+      z-index:2;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:10px;
     }
 
     .big-name{
-      font-size:clamp(24px,3vw,38px);
+      font-family:var(--display);
+      font-size:clamp(30px,3.6vw,50px);
       font-weight:900;
-      letter-spacing:-.04em;
-      line-height:1.05;
+      letter-spacing:-.02em;
+      line-height:1;
       transition:all .2s ease;
       text-wrap:balance;
+      text-shadow:0 4px 30px rgba(0,0,0,.6);
     }
 
     .big-rarity{
       font-size:13px;
-      color:var(--muted);
+      font-weight:700;
+      color:var(--mut);
       display:flex;
       align-items:center;
-      gap:6px;
+      gap:7px;
+      letter-spacing:.04em;
+      text-transform:uppercase;
     }
 
     .big-rarity i{width:14px;height:14px}
@@ -361,13 +459,13 @@
     .roll-badge{
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      padding:6px 12px;
+      gap:7px;
+      padding:8px 14px;
       border-radius:999px;
       background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);
-      font-size:12px;
-      font-weight:700;
+      border:1px solid rgba(255,255,255,.1);
+      font-size:12.5px;
+      font-weight:800;
       width:fit-content;
     }
 
@@ -375,10 +473,10 @@
 
     .roll-actions{
       display:grid;
-      grid-template-columns:1.2fr 1fr 1fr;
-      gap:8px;
+      grid-template-columns:1.4fr 1fr 1fr;
+      gap:10px;
       position:relative;
-      z-index:1;
+      z-index:2;
     }
 
     @media (max-width:700px){
@@ -390,139 +488,169 @@
       border:0;
       font:inherit;
       cursor:pointer;
-      transition:all .15s ease;
+      transition:transform .12s ease, box-shadow .18s ease, background .18s ease, filter .18s ease;
       font-weight:800;
       font-size:13px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:6px;
+      gap:7px;
     }
 
     button:active{transform:scale(.97)}
     button i{width:16px;height:16px}
 
     .btn-primary{
-      padding:12px 16px;
-      border-radius:var(--radius-sm);
-      background:linear-gradient(135deg, var(--accent), #0066cc);
+      padding:15px 18px;
+      border-radius:16px;
+      background:linear-gradient(135deg, var(--vio) 0%, #6d28d9 55%, #4c1d95 100%);
       color:#fff;
-      box-shadow:0 8px 24px rgba(10,132,255,.25);
-      border:1px solid rgba(255,255,255,.1);
+      font-size:15px;
+      letter-spacing:.08em;
+      box-shadow:0 10px 34px rgba(139,92,246,.42), inset 0 1px 0 rgba(255,255,255,.25);
+      border:1px solid rgba(196,181,253,.4);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .btn-primary::after{
+      content:"";
+      position:absolute;
+      top:0;bottom:0;
+      width:60px;
+      left:-80px;
+      background:linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+      transform:skewX(-18deg);
+      animation:sheen 3.2s ease-in-out infinite;
+    }
+
+    @keyframes sheen{
+      0%,55%{left:-80px}
+      100%{left:calc(100% + 80px)}
     }
 
     .btn-primary:hover{
-      box-shadow:0 8px 28px rgba(10,132,255,.35);
+      box-shadow:0 12px 40px rgba(139,92,246,.55), inset 0 1px 0 rgba(255,255,255,.25);
       transform:translateY(-1px);
+      filter:brightness(1.08);
     }
 
     .btn-secondary{
-      padding:10px 14px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--glass-border);
-      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.055);
+      border:1px solid var(--line);
+      color:var(--ink);
     }
 
     .btn-secondary:hover{
-      background:rgba(255,255,255,.09);
+      background:rgba(255,255,255,.1);
+      border-color:rgba(255,255,255,.16);
     }
 
     .btn-danger{
-      background:rgba(239,68,68,.08);
+      background:rgba(248,113,113,.09);
       color:#fca5a5;
-      border:1px solid rgba(239,68,68,.15);
+      border:1px solid rgba(248,113,113,.22);
     }
 
     .btn-danger:hover{
-      background:rgba(239,68,68,.12);
+      background:rgba(248,113,113,.15);
     }
 
     .btn-warn{
-      background:rgba(245,158,11,.08);
-      color:#fcd34d;
-      border:1px solid rgba(245,158,11,.15);
+      background:rgba(251,191,36,.09);
+      color:#fde68a;
+      border:1px solid rgba(251,191,36,.22);
     }
 
     .btn-warn:hover{
-      background:rgba(245,158,11,.12);
+      background:rgba(251,191,36,.15);
     }
 
     .btn:disabled, .btn-secondary:disabled{
-      opacity:.4;
+      opacity:.35;
       cursor:not-allowed;
       box-shadow:none;
+      filter:grayscale(.4);
     }
 
     .progress-wrap{
       position:relative;
-      z-index:1;
+      z-index:2;
     }
 
     .progress-header{
       display:flex;
       justify-content:space-between;
       font-size:11px;
-      color:var(--muted);
-      margin-bottom:6px;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--dim);
+      margin-bottom:8px;
     }
 
     .progress-bar{
-      height:8px;
+      height:12px;
       border-radius:999px;
       background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
       overflow:hidden;
+      padding:2px;
     }
 
     .progress-fill{
       height:100%;
       border-radius:inherit;
-      background:linear-gradient(90deg, var(--accent), var(--accent2));
-      transition:width .3s ease;
-      box-shadow:0 0 12px rgba(10,132,255,.3);
+      background:linear-gradient(90deg, var(--vio), var(--cy));
+      transition:width .35s ease;
+      box-shadow:0 0 16px rgba(139,92,246,.55);
     }
 
     .info-card{
-      padding:14px;
-      border-radius:var(--radius);
+      padding:18px;
+      border-radius:var(--r);
     }
 
     .info-card h3{
-      font-size:13px;
-      font-weight:800;
-      letter-spacing:-.02em;
-      margin-bottom:8px;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:-.01em;
+      margin-bottom:10px;
       display:flex;
       align-items:center;
-      gap:6px;
+      gap:8px;
     }
 
-    .info-card h3 i{width:16px;height:16px;color:var(--accent)}
+    .info-card h3 i{width:17px;height:17px;color:var(--cy)}
 
     .info-card .muted{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
+      font-size:12.5px;
+      color:var(--mut);
+      line-height:1.6;
     }
 
     .info-card .tiny{
-      font-size:11px;
-      color:var(--muted);
-      line-height:1.5;
+      font-size:11.5px;
+      color:var(--dim);
+      line-height:1.6;
     }
 
     .scroll-list{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:8px;
       overflow-y:auto;
-      max-height:200px;
+      max-height:220px;
       padding-right:4px;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,.16) transparent;
     }
 
     .scroll-list::-webkit-scrollbar{width:6px}
     .scroll-list::-webkit-scrollbar-thumb{
-      background:rgba(255,255,255,.12);
+      background:rgba(255,255,255,.14);
       border-radius:999px;
     }
 
@@ -530,30 +658,34 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:10px 12px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      gap:10px;
+      padding:11px 14px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
       transition:all .15s ease;
     }
 
     .list-item:hover{
-      background:rgba(255,255,255,.06);
-      border-color:rgba(255,255,255,.1);
+      background:rgba(255,255,255,.07);
+      border-color:rgba(139,92,246,.35);
+      transform:translateX(2px);
     }
 
-    .list-item .li-left{display:flex;flex-direction:column;gap:2px}
-    .list-item .li-name{font-weight:800;font-size:13px;letter-spacing:-.02em}
-    .list-item .li-meta{font-size:11px;color:var(--muted)}
-    .list-item .li-right{font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap}
+    .list-item .li-left{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .list-item .li-name{font-weight:800;font-size:13.5px;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .list-item .li-meta{font-size:11px;color:var(--dim)}
+    .list-item .li-right{font-weight:900;font-size:13px;color:var(--mut);white-space:nowrap;font-variant-numeric:tabular-nums}
 
     .shop-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:8px;
+      gap:10px;
       overflow-y:auto;
       max-height:calc(100vh - 200px);
       padding-right:4px;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,.16) transparent;
     }
 
     @media (max-width:1100px){
@@ -561,31 +693,51 @@
     }
 
     .shop-item{
-      padding:12px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      padding:15px;
+      border-radius:16px;
+      background:linear-gradient(165deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+      border:1px solid var(--line);
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:9px;
+      transition:all .16s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .shop-item::before{
+      content:"";
+      position:absolute;
+      left:0;top:12px;bottom:12px;
+      width:3px;
+      border-radius:99px;
+      background:linear-gradient(180deg, var(--vio), var(--cy));
+      opacity:.85;
+    }
+
+    .shop-item:hover{
+      border-color:rgba(139,92,246,.4);
+      transform:translateY(-2px);
+      box-shadow:0 12px 30px rgba(0,0,0,.4);
     }
 
     .shop-item .si-top{
       display:flex;
       justify-content:space-between;
       align-items:center;
+      gap:8px;
     }
 
     .shop-item .si-name{
-      font-weight:800;
-      font-size:13px;
-      letter-spacing:-.02em;
+      font-weight:900;
+      font-size:13.5px;
+      letter-spacing:-.01em;
     }
 
     .shop-item .si-desc{
-      font-size:11px;
-      color:var(--muted);
-      line-height:1.4;
+      font-size:11.5px;
+      color:var(--mut);
+      line-height:1.5;
     }
 
     .shop-item .si-meta{
@@ -594,142 +746,170 @@
       align-items:center;
       gap:8px;
       margin-top:auto;
+      padding-top:6px;
+      border-top:1px dashed rgba(255,255,255,.09);
     }
 
     .chip{
       display:inline-flex;
       align-items:center;
-      padding:4px 8px;
+      padding:5px 10px;
       border-radius:999px;
-      background:rgba(255,255,255,.06);
-      color:var(--muted);
-      font-size:10px;
-      font-weight:700;
+      background:rgba(139,92,246,.13);
+      border:1px solid rgba(139,92,246,.25);
+      color:#c9b8fa;
+      font-size:10.5px;
+      font-weight:800;
       white-space:nowrap;
+      letter-spacing:.02em;
     }
 
     .small-btn{
-      padding:6px 12px;
-      border-radius:8px;
-      background:linear-gradient(135deg, var(--accent), #0066cc);
+      padding:8px 14px;
+      border-radius:10px;
+      background:linear-gradient(135deg, var(--vio), #6d28d9);
       color:#fff;
-      font-size:11px;
+      font-size:11.5px;
       font-weight:800;
-      border:1px solid rgba(255,255,255,.1);
+      border:1px solid rgba(196,181,253,.35);
+      box-shadow:0 4px 16px rgba(139,92,246,.3);
       white-space:nowrap;
     }
 
+    .small-btn:hover:not(:disabled){filter:brightness(1.12)}
+
     .small-btn.ghost{
       background:rgba(255,255,255,.06);
-      color:var(--text);
-      border:1px solid var(--glass-border);
+      color:var(--ink);
+      border:1px solid var(--line);
+      box-shadow:none;
     }
 
     .small-btn:disabled{
-      opacity:.4;
+      opacity:.35;
       cursor:not-allowed;
+      filter:grayscale(.5);
     }
 
     .inv-grid{
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
-      gap:8px;
+      grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));
+      gap:10px;
       overflow-y:auto;
       max-height:calc(100vh - 220px);
       padding-right:4px;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,.16) transparent;
     }
 
     .inv-card{
-      padding:12px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      padding:13px 14px 13px 16px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
+      border-left:3px solid var(--vio);
       display:flex;
       justify-content:space-between;
       align-items:center;
+      gap:10px;
       transition:all .15s ease;
     }
 
     .inv-card:hover{
-      background:rgba(255,255,255,.06);
-      transform:translateY(-1px);
+      background:rgba(255,255,255,.07);
+      transform:translateY(-2px);
+      border-color:rgba(139,92,246,.4);
+      border-left-color:var(--cy);
     }
 
-    .inv-card .inv-left{display:flex;flex-direction:column;gap:3px}
-    .inv-card .inv-name{font-weight:800;font-size:13px;letter-spacing:-.02em}
-    .inv-card .inv-meta{font-size:10px;color:var(--muted)}
-    .inv-card .inv-count{font-weight:900;font-size:15px}
+    .inv-card .inv-left{display:flex;flex-direction:column;gap:4px;min-width:0}
+    .inv-card .inv-name{font-weight:800;font-size:13.5px;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .inv-card .inv-meta{font-size:10.5px;color:var(--dim)}
+    .inv-card .inv-count{font-weight:900;font-size:17px;font-variant-numeric:tabular-nums}
 
     .ach-list{
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-      gap:8px;
+      grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
+      gap:10px;
       overflow-y:auto;
       max-height:calc(100vh - 220px);
       padding-right:4px;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,.16) transparent;
     }
 
     .ach-card{
-      padding:14px;
-      border-radius:var(--radius-sm);
+      padding:16px;
+      border-radius:16px;
       background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
-      transition:all .15s ease;
+      border:1px solid var(--line);
+      transition:all .16s ease;
+      position:relative;
+      overflow:hidden;
     }
 
     .ach-card.unlocked{
-      background:rgba(34,197,94,.06);
-      border-color:rgba(34,197,94,.2);
+      background:linear-gradient(165deg, rgba(52,211,153,.1), rgba(52,211,153,.03));
+      border-color:rgba(52,211,153,.35);
+      box-shadow:0 0 26px rgba(52,211,153,.08);
     }
 
     .ach-card .ach-top{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:6px;
+      gap:8px;
+      margin-bottom:7px;
     }
 
     .ach-card .ach-name{
-      font-weight:800;
-      font-size:13px;
+      font-weight:900;
+      font-size:13.5px;
       display:flex;
       align-items:center;
-      gap:6px;
+      gap:7px;
     }
 
-    .ach-card .ach-name i{width:16px;height:16px}
+    .ach-card .ach-name i{width:17px;height:17px}
+
+    .ach-card.unlocked .ach-name i{color:var(--grn)}
 
     .ach-card .ach-desc{
-      font-size:11px;
-      color:var(--muted);
-      margin-bottom:8px;
+      font-size:11.5px;
+      color:var(--mut);
+      margin-bottom:10px;
+      line-height:1.5;
     }
 
     .ach-card .ach-progress{
-      height:6px;
+      height:8px;
       border-radius:999px;
-      background:rgba(255,255,255,.06);
+      background:rgba(255,255,255,.07);
       overflow:hidden;
-      margin-bottom:6px;
+      margin-bottom:8px;
+      padding:0;
+      border:none;
     }
 
     .ach-card .ach-progress>span{
       display:block;
       height:100%;
-      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      background:linear-gradient(90deg, var(--grn), var(--cy));
       border-radius:inherit;
-      transition:width .3s ease;
+      transition:width .35s ease;
+      box-shadow:0 0 10px rgba(52,211,153,.5);
     }
 
     .ach-card .ach-reward{
-      font-size:10px;
-      color:var(--muted);
+      font-size:10.5px;
+      color:var(--dim);
+      font-weight:700;
     }
 
     .rebirth-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
+      gap:14px;
     }
 
     @media (max-width:900px){
@@ -737,55 +917,59 @@
     }
 
     .rebirth-card{
-      padding:16px;
-      border-radius:var(--radius);
+      padding:20px;
+      border-radius:var(--r);
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:13px;
     }
 
     .rebirth-stat{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:10px 14px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      gap:12px;
+      padding:12px 15px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
     }
 
-    .rebirth-stat b{font-size:12px;letter-spacing:-.02em}
-    .rebirth-stat span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+    .rebirth-stat b{font-size:13px;letter-spacing:-.01em}
+    .rebirth-stat span{font-size:11.5px;color:var(--dim);display:block;margin-top:3px}
     .rebirth-tag{
-      padding:5px 10px;
+      padding:6px 12px;
       border-radius:999px;
-      background:rgba(10,132,255,.12);
-      color:#7dd3fc;
+      background:rgba(34,211,238,.1);
+      border:1px solid rgba(34,211,238,.25);
+      color:#a5f3fc;
       font-size:11px;
       font-weight:800;
       white-space:nowrap;
+      font-variant-numeric:tabular-nums;
     }
 
     .milestone-list{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:8px;
     }
 
     .milestone-item{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:10px 14px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      gap:10px;
+      padding:12px 15px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
     }
 
     .trade-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
+      gap:14px;
     }
 
     @media (max-width:900px){
@@ -793,27 +977,31 @@
     }
 
     .trade-card{
-      padding:16px;
-      border-radius:var(--radius);
+      padding:20px;
+      border-radius:var(--r);
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:13px;
     }
 
     .trade-offer{
-      padding:12px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      padding:13px 15px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
       display:flex;
       justify-content:space-between;
       align-items:center;
+      gap:10px;
+      transition:all .15s ease;
     }
 
-    .trade-offer .to-left{display:flex;flex-direction:column;gap:3px}
-    .trade-offer .to-name{font-weight:800;font-size:13px}
-    .trade-offer .to-meta{font-size:11px;color:var(--muted)}
-    .trade-offer .to-action{display:flex;gap:6px;align-items:center}
+    .trade-offer:hover{border-color:rgba(251,191,36,.35)}
+
+    .trade-offer .to-left{display:flex;flex-direction:column;gap:4px;min-width:0}
+    .trade-offer .to-name{font-weight:800;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .trade-offer .to-meta{font-size:11px;color:var(--dim)}
+    .trade-offer .to-action{display:flex;gap:8px;align-items:center;flex:none}
 
     .casino-grid{
       display:grid;
@@ -830,157 +1018,200 @@
     }
 
     .game-card{
-      padding:16px;
-      border-radius:var(--radius);
+      padding:18px;
+      border-radius:18px;
+      background:linear-gradient(165deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line);
       display:flex;
       flex-direction:column;
-      gap:12px;
-      min-height:280px;
+      gap:11px;
+      min-height:230px;
+      transition:all .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .game-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:radial-gradient(220px 120px at 50% -40px, rgba(244,114,182,.12), transparent 70%);
+      pointer-events:none;
+    }
+
+    .game-card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(244,114,182,.4);
+      box-shadow:0 16px 40px rgba(0,0,0,.45), 0 0 30px rgba(244,114,182,.1);
     }
 
     .game-card h3{
-      font-size:15px;
-      font-weight:800;
+      font-size:16px;
+      font-weight:900;
+      letter-spacing:-.01em;
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:9px;
     }
 
-    .game-card h3 i{width:20px;height:20px;color:var(--accent3)}
+    .game-card h3 i{width:21px;height:21px;color:var(--pk)}
 
     .game-card .game-desc{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
+      font-size:12.5px;
+      color:var(--mut);
+      line-height:1.6;
       flex:1;
     }
 
     .game-card .game-odds{
-      font-size:11px;
-      color:var(--accent3);
-      font-weight:700;
+      font-size:11.5px;
+      color:var(--cy);
+      font-weight:800;
+      letter-spacing:.02em;
     }
+
+    .game-view{display:none;flex:1}
+    .game-view .game-card{min-height:auto}
 
     .bet-input{
       width:100%;
-      padding:10px 14px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--glass-border);
-      color:var(--text);
+      padding:12px 15px;
+      border-radius:var(--rs);
+      background:rgba(0,0,0,.32);
+      border:1px solid var(--line);
+      color:var(--ink);
       font:inherit;
       font-size:14px;
       font-weight:700;
       outline:none;
       transition:all .15s ease;
+      font-variant-numeric:tabular-nums;
     }
 
     .bet-input:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 3px rgba(10,132,255,.1);
+      border-color:var(--vio);
+      box-shadow:0 0 0 3px rgba(139,92,246,.18);
     }
 
-    .bet-input::placeholder{color:var(--muted);font-weight:400}
+    .bet-input::placeholder{color:var(--dim);font-weight:400}
 
     .game-result{
-      padding:10px;
-      border-radius:var(--radius-sm);
+      padding:13px;
+      border-radius:var(--rs);
       text-align:center;
       font-weight:800;
-      font-size:13px;
-      min-height:40px;
+      font-size:13.5px;
+      min-height:46px;
       display:grid;
       place-items:center;
     }
 
     .game-result.win{
-      background:rgba(34,197,94,.1);
-      color:var(--good);
-      border:1px solid rgba(34,197,94,.2);
+      background:rgba(52,211,153,.1);
+      color:var(--grn);
+      border:1px solid rgba(52,211,153,.3);
+      box-shadow:0 0 22px rgba(52,211,153,.1);
     }
 
     .game-result.lose{
-      background:rgba(239,68,68,.1);
-      color:var(--danger);
-      border:1px solid rgba(239,68,68,.2);
+      background:rgba(248,113,113,.09);
+      color:var(--red);
+      border:1px solid rgba(248,113,113,.28);
     }
 
     .game-result.neutral{
-      background:rgba(255,255,255,.03);
-      color:var(--muted);
-      border:1px solid var(--glass-border);
+      background:rgba(255,255,255,.035);
+      color:var(--dim);
+      border:1px solid var(--line);
     }
 
     .modal-overlay{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.7);
-      backdrop-filter:blur(8px);
+      background:rgba(3,4,9,.72);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
       display:none;
       place-items:center;
       z-index:10000;
+      padding:20px;
     }
 
-    .modal-overlay.active{display:grid}
+    .modal-overlay.active{display:grid;animation:modalIn 220ms ease both}
+
+    @keyframes modalIn{
+      from{opacity:0}
+      to{opacity:1}
+    }
 
     .modal-box{
-      width:min(480px,90vw);
-      padding:24px;
-      border-radius:var(--radius);
+      width:min(500px,94vw);
+      padding:26px;
+      border-radius:24px;
+      animation:cardIn 260ms cubic-bezier(.2,.9,.3,1.15) both;
+    }
+
+    @keyframes cardIn{
+      from{transform:translateY(16px) scale(.97);opacity:0}
+      to{transform:none;opacity:1}
     }
 
     .modal-box h2{
-      font-size:18px;
+      font-size:19px;
       font-weight:900;
+      letter-spacing:-.01em;
       margin-bottom:8px;
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:9px;
     }
 
-    .modal-box h2 i{width:22px;height:22px;color:var(--danger)}
+    .modal-box h2 i{width:23px;height:23px;color:var(--gold)}
 
     .modal-box p{
       font-size:13px;
-      color:var(--muted);
-      line-height:1.6;
+      color:var(--mut);
+      line-height:1.65;
       margin-bottom:16px;
     }
 
     .sell-grid{
       display:grid;
-      gap:6px;
+      gap:8px;
       max-height:300px;
       overflow-y:auto;
       margin-bottom:16px;
+      scrollbar-width:thin;
     }
 
     .sell-item{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:10px 12px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      gap:10px;
+      padding:11px 13px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
     }
 
-    .sell-item .si-info{display:flex;flex-direction:column;gap:2px}
-    .sell-item .si-name{font-weight:800;font-size:13px}
-    .sell-item .si-value{font-size:11px;color:var(--muted)}
+    .sell-item .si-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .sell-item .si-name{font-weight:800;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sell-item .si-value{font-size:11px;color:var(--dim)}
     .sell-item .si-btn{
-      padding:6px 12px;
-      border-radius:8px;
-      background:rgba(245,158,11,.1);
-      color:var(--warn);
-      border:1px solid rgba(245,158,11,.2);
-      font-size:11px;
+      padding:8px 14px;
+      border-radius:10px;
+      background:rgba(251,191,36,.12);
+      color:var(--gold);
+      border:1px solid rgba(251,191,36,.3);
+      font-size:11.5px;
       font-weight:800;
       cursor:pointer;
+      flex:none;
     }
 
     .sell-item .si-btn:hover{
-      background:rgba(245,158,11,.15);
+      background:rgba(251,191,36,.2);
     }
 
     #flashOverlay{
@@ -992,72 +1223,72 @@
       z-index:9999;
     }
 
-    .name-pop{animation:namePop 400ms ease both}
+    .name-pop{animation:namePop 420ms cubic-bezier(.2,.9,.3,1.2) both}
     .badge-pop{animation:badgePop 350ms ease both}
-    .rare-glow{animation:rareGlow 600ms ease both}
-    .rare-shake{animation:rareShake 300ms ease both}
+    .rare-glow{animation:rareGlow 700ms ease both}
+    .rare-shake{animation:rareShake 320ms ease both}
 
     @keyframes namePop{
-      0%{transform:scale(.8);opacity:0;filter:blur(4px)}
-      60%{transform:scale(1.05);opacity:1;filter:blur(0)}
+      0%{transform:scale(.82) translateY(6px);opacity:0;filter:blur(6px)}
+      60%{transform:scale(1.04);opacity:1;filter:blur(0)}
       100%{transform:scale(1)}
     }
 
     @keyframes badgePop{
-      0%{transform:translateY(8px) scale(.95);opacity:0}
+      0%{transform:translateY(10px) scale(.94);opacity:0}
       100%{transform:translateY(0) scale(1);opacity:1}
     }
 
     @keyframes rareShake{
       0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-4px)}
-      40%{transform:translateX(4px)}
-      60%{transform:translateX(-2px)}
-      80%{transform:translateX(2px)}
+      20%{transform:translateX(-5px) rotate(-.4deg)}
+      40%{transform:translateX(5px) rotate(.4deg)}
+      60%{transform:translateX(-3px)}
+      80%{transform:translateX(3px)}
     }
 
     @keyframes rareGlow{
-      0%{filter:saturate(1)}
-      50%{filter:saturate(1.4)}
-      100%{filter:saturate(1)}
+      0%{filter:saturate(1) brightness(1)}
+      50%{filter:saturate(1.6) brightness(1.25)}
+      100%{filter:saturate(1) brightness(1)}
     }
 
-    .screen-flash-common{background:rgba(59,130,246,.08)!important}
-    .screen-flash-legendary{background:rgba(245,158,11,.12)!important}
-    .screen-flash-mythic{background:rgba(244,114,182,.14)!important}
-    .screen-flash-cosmic{background:rgba(34,211,238,.14)!important}
-    .screen-flash-divine{background:rgba(255,255,255,.15)!important}
+    .screen-flash-common{background:rgba(96,165,250,.09)!important}
+    .screen-flash-legendary{background:rgba(251,191,36,.13)!important}
+    .screen-flash-mythic{background:rgba(244,114,182,.15)!important}
+    .screen-flash-cosmic{background:rgba(34,211,238,.15)!important}
+    .screen-flash-divine{background:rgba(255,255,255,.16)!important}
 
     .quick-actions{
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
     }
 
     .quick-actions button{
       flex:1;
-      min-width:120px;
+      min-width:130px;
     }
 
     .empty-state{
       text-align:center;
-      padding:24px;
-      color:var(--muted);
+      padding:28px 20px;
+      color:var(--dim);
       font-size:13px;
     }
 
     .empty-state i{
-      width:32px;
-      height:32px;
-      margin-bottom:8px;
-      opacity:.5;
+      width:34px;
+      height:34px;
+      margin-bottom:10px;
+      opacity:.45;
     }
 
     .stats-mini{
       display:grid;
       grid-template-columns:repeat(4, 1fr);
-      gap:8px;
-      margin-bottom:12px;
+      gap:10px;
+      margin-bottom:14px;
     }
 
     @media (max-width:700px){
@@ -1065,98 +1296,250 @@
     }
 
     .stat-pill{
-      padding:10px;
-      border-radius:var(--radius-sm);
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--glass-border);
+      padding:12px 10px;
+      border-radius:var(--rs);
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
       text-align:center;
     }
 
     .stat-pill .sp-label{
       font-size:9px;
-      color:var(--muted);
+      font-weight:800;
+      color:var(--dim);
       text-transform:uppercase;
-      letter-spacing:.08em;
-      margin-bottom:4px;
+      letter-spacing:.1em;
+      margin-bottom:5px;
     }
 
     .stat-pill .sp-value{
-      font-size:16px;
+      font-size:17px;
       font-weight:900;
-      letter-spacing:-.03em;
+      letter-spacing:-.02em;
+      font-variant-numeric:tabular-nums;
     }
 
     .tier-badge{
       display:inline-flex;
       align-items:center;
       gap:4px;
-      padding:3px 8px;
+      padding:4px 9px;
       border-radius:999px;
       font-size:10px;
       font-weight:800;
       text-transform:uppercase;
-      letter-spacing:.05em;
+      letter-spacing:.06em;
     }
 
-    .tier-common{background:rgba(255,255,255,.06);color:#9ca3af}
-    .tier-uncommon{background:rgba(34,197,94,.1);color:#4ade80}
-    .tier-rare{background:rgba(59,130,246,.1);color:#60a5fa}
-    .tier-epic{background:rgba(168,85,247,.1);color:#c084fc}
-    .tier-legendary{background:rgba(245,158,11,.1);color:#fbbf24}
-    .tier-mythic{background:rgba(244,114,182,.1);color:#f9a8d4}
-    .tier-cosmic{background:rgba(34,211,238,.1);color:#67e8f9}
-    .tier-divine{background:rgba(255,255,255,.1);color:#fff}
+    .tier-common{background:rgba(255,255,255,.07);color:#9ca3af}
+    .tier-uncommon{background:rgba(52,211,153,.12);color:#4ade80}
+    .tier-rare{background:rgba(96,165,250,.12);color:#60a5fa}
+    .tier-epic{background:rgba(192,132,252,.12);color:#c084fc}
+    .tier-legendary{background:rgba(251,191,36,.12);color:#fbbf24}
+    .tier-mythic{background:rgba(244,114,182,.12);color:#f9a8d4}
+    .tier-cosmic{background:rgba(34,211,238,.12);color:#67e8f9}
+    .tier-void{background:rgba(196,181,253,.14);color:#c4b5fd}
+    .tier-divine{background:rgba(255,255,255,.12);color:#fff}
 
     .toast-container{
       position:fixed;
-      top:16px;
-      right:16px;
+      top:18px;
+      left:50%;
+      transform:translateX(-50%);
       display:flex;
       flex-direction:column;
-      gap:8px;
+      align-items:center;
+      gap:9px;
       z-index:10001;
       pointer-events:none;
+      width:max-content;
+      max-width:92vw;
     }
 
     .toast{
-      padding:12px 16px;
-      border-radius:var(--radius-sm);
-      background:var(--glass-strong);
+      padding:13px 18px;
+      border-radius:999px;
+      background:rgba(16,20,33,.92);
       backdrop-filter:blur(20px);
-      border:1px solid var(--glass-border);
-      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      -webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,.13);
+      box-shadow:0 14px 44px rgba(0,0,0,.5);
       display:flex;
       align-items:center;
       gap:10px;
       font-size:13px;
-      font-weight:700;
-      animation:toastIn 300ms ease both;
+      font-weight:800;
+      animation:toastDrop 320ms cubic-bezier(.2,.9,.3,1.2) both;
       pointer-events:auto;
-      max-width:320px;
+      max-width:92vw;
     }
 
-    .toast i{width:18px;height:18px}
-    .toast.success{color:var(--good)}
-    .toast.error{color:var(--danger)}
-    .toast.info{color:var(--accent)}
-    .toast.warn{color:var(--warn)}
+    .toast i{width:18px;height:18px;flex:none}
+    .toast.success{color:var(--grn);border-color:rgba(52,211,153,.35)}
+    .toast.success i{color:var(--grn)}
+    .toast.error{color:#fca5a5;border-color:rgba(248,113,113,.35)}
+    .toast.error i{color:var(--red)}
+    .toast.info{color:#c9b8fa;border-color:rgba(139,92,246,.4)}
+    .toast.info i{color:var(--vio)}
+    .toast.warn{color:#fde68a;border-color:rgba(251,191,36,.35)}
+    .toast.warn i{color:var(--gold)}
 
-    @keyframes toastIn{
-      from{transform:translateX(40px);opacity:0}
-      to{transform:translateX(0);opacity:1}
+    @keyframes toastDrop{
+      from{transform:translateY(-24px) scale(.94);opacity:0}
+      to{transform:none;opacity:1}
     }
 
     @keyframes toastOut{
-      to{transform:translateX(40px);opacity:0}
+      to{transform:translateY(-16px) scale(.94);opacity:0}
     }
+
+    .world-tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .world-tab{
+      flex:1;
+      min-width:140px;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:11px 13px;
+      border-radius:16px;
+      background:rgba(255,255,255,.035);
+      border:1px solid var(--line);
+      color:var(--dim);
+      font-size:12.5px;
+      font-weight:800;
+      cursor:pointer;
+      transition:all .16s ease;
+    }
+
+    .world-tab i{width:17px;height:17px;flex:none}
+
+    .world-tab:hover{background:rgba(255,255,255,.08);color:var(--ink);transform:translateY(-1px)}
+
+    .world-tab.active{
+      background:linear-gradient(135deg, rgba(139,92,246,.3), rgba(34,211,238,.16));
+      border-color:rgba(139,92,246,.5);
+      color:#fff;
+      box-shadow:0 0 26px rgba(139,92,246,.25), inset 0 1px 0 rgba(255,255,255,.14);
+    }
+
+    .world-tab.locked{opacity:.5;cursor:not-allowed;filter:saturate(.4)}
+
+    .world-tab .wt-mult{
+      margin-left:auto;
+      padding:3px 9px;
+      border-radius:999px;
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.1);
+      font-size:10.5px;
+      font-weight:900;
+      white-space:nowrap;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .world-tab.active .wt-mult{
+      background:rgba(139,92,246,.4);
+      border-color:rgba(196,181,253,.4);
+    }
+
+    .pity-meter{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:var(--rs);
+      background:rgba(244,114,182,.05);
+      border:1px solid rgba(244,114,182,.18);
+    }
+
+    .pity-meter .pm-top{
+      display:flex;
+      justify-content:space-between;
+      font-size:10.5px;
+      font-weight:800;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+      color:var(--pk);
+      margin-bottom:8px;
+    }
+
+    .pity-meter .pm-top span:last-child{font-variant-numeric:tabular-nums}
+
+    .pity-meter .pm-bar{
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.07);
+      overflow:hidden;
+    }
+
+    .pity-meter .pm-fill{
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg, var(--pk), var(--vio));
+      box-shadow:0 0 12px rgba(244,114,182,.5);
+      transition:width .3s ease;
+    }
+
+    .slot-reels{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin:16px 0;
+    }
+
+    .slot-reel{
+      width:70px;
+      height:70px;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      font-weight:900;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      box-shadow:inset 0 2px 8px rgba(0,0,0,.4);
+    }
+
+    .hilo-ref{
+      text-align:center;
+      padding:14px;
+      border-radius:var(--rs);
+      background:rgba(34,211,238,.05);
+      border:1px solid rgba(34,211,238,.2);
+      font-size:14px;
+      font-weight:800;
+      margin:12px 0;
+    }
+
+    ::-webkit-scrollbar{width:8px;height:8px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,.4)}
 
     @media (max-width:600px){
       body{grid-template-columns:1fr}
-      .sidebar{display:none}
-      .main{padding:12px}
+      .sidebar{
+        position:fixed;
+        left:10px;right:10px;bottom:10px;
+        z-index:9000;
+        flex-direction:row;
+        justify-content:space-around;
+        margin:0;
+        padding:8px 10px;
+        border-radius:22px;
+      }
+      .sidebar-brand{display:none}
+      .sidebar-footer{flex-direction:row;margin:0;padding:0;border:0}
+      .nav-item{flex:1;padding:8px 2px}
+      .nav-item span.nl{display:none}
+      .main{padding:12px 12px 96px}
+      .topbar-left h1{font-size:16px}
+      .big-name{font-size:34px}
     }
   </style>
-<base target="_blank">
 </head>
 <body>
   <div id="flashOverlay"></div>
@@ -1177,29 +1560,37 @@
     </div>
     <div class="nav-item active" data-tab="play" title="Play">
       <i data-lucide="dices"></i>
+      <span class="nl">Roll</span>
     </div>
     <div class="nav-item" data-tab="casino" title="Casino">
       <i data-lucide="diamond"></i>
+      <span class="nl">Casino</span>
     </div>
     <div class="nav-item" data-tab="collection" title="Collection">
       <i data-lucide="package"></i>
+      <span class="nl">Items</span>
     </div>
     <div class="nav-item" data-tab="trade" title="Trading">
       <i data-lucide="arrow-left-right"></i>
+      <span class="nl">Trade</span>
     </div>
     <div class="nav-item" data-tab="shop" title="Shop">
       <i data-lucide="shopping-bag"></i>
+      <span class="nl">Shop</span>
     </div>
     <div class="nav-item" data-tab="rebirth" title="Rebirth">
       <i data-lucide="rotate-ccw"></i>
+      <span class="nl">Rebirth</span>
     </div>
     <div class="nav-item" data-tab="achievements" title="Achievements">
       <i data-lucide="trophy"></i>
+      <span class="nl">Goals</span>
       <span class="badge-count" id="achBadge" style="display:none">0</span>
     </div>
     <div class="sidebar-footer">
       <div class="nav-item" data-tab="settings" title="Settings">
         <i data-lucide="settings"></i>
+        <span class="nl">Setup</span>
       </div>
     </div>
   </nav>
@@ -1255,6 +1646,8 @@
     <div class="content-grid">
       <div class="left-col">
         <section class="panel-section active" data-panel="play">
+          <div class="world-tabs" id="world-tabs"></div>
+          <div class="tiny" id="world-bonus-text" style="margin-bottom:12px"></div>
           <div class="hero-roll liquid-glass-strong" id="heroCard" data-tier="common">
             <div class="particles" id="particleLayer"></div>
             <div class="hero-content">
@@ -1310,6 +1703,10 @@
               </button>
             </div>
             <div class="tiny" id="rebirth-requirement-text" style="margin-top:10px"></div>
+            <div class="pity-meter" id="pity-meter">
+              <div class="pm-top"><span>Pity Protocol</span><span id="pity-text">0 / 150</span></div>
+              <div class="pm-bar"><div class="pm-fill" id="pity-fill" style="width:0%"></div></div>
+            </div>
           </div>
         </section>
 
@@ -1381,6 +1778,28 @@
                 <div style="margin-top:auto;padding-top:12px">
                   <button class="btn-primary btn-warn" style="width:100%">
                     <i data-lucide="flame"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('slots')">
+                <h3><i data-lucide="cherry"></i> Slots</h3>
+                <div class="game-desc">Three reels. Match all three for up to 25x. Any pair returns 0.4x.</div>
+                <div class="game-odds">Win: up to 25x • Pair: 0.4x back</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
+                    Play
+                  </button>
+                </div>
+              </div>
+              <div class="game-card liquid-glass" style="cursor:pointer;min-height:auto" onclick="selectCasinoGame('hilo')">
+                <h3><i data-lucide="arrow-up-down"></i> Higher or Lower</h3>
+                <div class="game-desc">Guess if the next roll is rarer or more common. Win 1.8x. Ties refund.</div>
+                <div class="game-odds">Win: 1.8x • Tie: refund</div>
+                <div style="margin-top:auto;padding-top:12px">
+                  <button class="btn-primary" style="width:100%">
+                    <i data-lucide="play-circle"></i>
                     Play
                   </button>
                 </div>
@@ -1504,6 +1923,49 @@
                   ALL IN
                 </button>
                 <div class="game-result neutral" id="result-allin" style="font-size:16px;padding:16px;margin-top:16px">Your entire balance is at stake</div>
+              </div>
+            </div>
+
+            <!-- Slots Game -->
+            <div class="game-view" id="game-slots" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="cherry"></i> Slots</h3>
+                <div class="game-desc" style="font-size:14px">Three reels. Match all three: 7s pay 25x, BAR 10x, stars 5x, diamonds 3x, orbs 2x. Any pair returns 0.4x.</div>
+                <div class="game-odds" style="font-size:13px">Win: up to 25x • Pair: 0.4x back</div>
+                <div class="slot-reels" id="slots-reels">
+                  <div class="slot-reel">7</div><div class="slot-reel">7</div><div class="slot-reel">7</div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                  <input type="number" class="bet-input" id="bet-slots" placeholder="Enter LP amount..." min="1" style="flex:1;min-width:200px">
+                  <button class="btn-primary" onclick="playSlots()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="cherry"></i>
+                    Spin
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-slots" style="font-size:16px;padding:16px">Place your bet and spin</div>
+              </div>
+            </div>
+
+            <!-- Higher or Lower Game -->
+            <div class="game-view" id="game-hilo" style="display:none;flex:1">
+              <div class="game-card liquid-glass" style="min-height:auto;flex:1;justify-content:center;max-width:600px;margin:0 auto;width:100%">
+                <h3 style="font-size:22px"><i data-lucide="arrow-up-down"></i> Higher or Lower</h3>
+                <div class="game-desc" style="font-size:14px">Guess whether the next roll is rarer (higher) or more common (lower) than the reference item. Win 1.8x. Ties refund your bet.</div>
+                <div class="game-odds" style="font-size:13px">Win: 1.8x • Tie: refund</div>
+                <div class="hilo-ref" id="hilo-ref-display">No reference yet</div>
+                <div style="display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap">
+                  <button class="btn-secondary" style="flex:1;min-width:120px;padding:12px" onclick="setHiLoGuess('higher')">Higher (rarer)</button>
+                  <button class="btn-secondary" style="flex:1;min-width:120px;padding:12px" onclick="setHiLoGuess('lower')">Lower (commoner)</button>
+                </div>
+                <div class="tiny" id="hilo-guess-display" style="text-align:center;font-size:13px;margin-bottom:12px">No guess selected</div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                  <input type="number" class="bet-input" id="bet-hilo" placeholder="Enter LP amount..." min="1" style="flex:1;min-width:200px">
+                  <button class="btn-primary" onclick="playHiLo()" style="padding:12px 28px;font-size:15px">
+                    <i data-lucide="arrow-up-down"></i>
+                    Roll
+                  </button>
+                </div>
+                <div class="game-result neutral" id="result-hilo" style="font-size:16px;padding:16px">Pick higher or lower, then bet</div>
               </div>
             </div>
           </div>
@@ -1657,7 +2119,7 @@
                     <b>Save Version</b>
                     <span>Current save format version</span>
                   </div>
-                  <div class="rebirth-tag">v9</div>
+                  <div class="rebirth-tag">v10</div>
                 </div>
               </div>
               <div class="quick-actions" style="margin-top:12px">
@@ -1737,6 +2199,27 @@
                   </div>
                   <div class="rebirth-tag" id="stat-delay-2">300ms</div>
                 </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Current World</b>
+                    <span>Active world bonus</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-world-2">Overworld</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Total Earned</b>
+                    <span>Lifetime LP from rolls</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-earned-2">0</div>
+                </div>
+                <div class="rebirth-stat">
+                  <div>
+                    <b>Pity Progress</b>
+                    <span>Dry rolls toward a guaranteed epic</span>
+                  </div>
+                  <div class="rebirth-tag" id="stat-pity-2">0 / 150</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1798,8 +2281,9 @@
     // ============================================
     // SAVE SYSTEM - PRESERVED EXACTLY FROM ORIGINAL
     // ============================================
-    const SAVE_KEY = "infinity_rng_save_v9";
+    const SAVE_KEY = "infinity_rng_save_v10";
     const LEGACY_KEYS = [
+      "infinity_rng_save_v9",
       "infinity_rng_save_v8",
       "infinity_rng_save_v7",
       "infinity_rng_save_v6",
@@ -1853,8 +2337,25 @@
       { name: "Eon Prism", rarity: 25000000000, color: "#f0abfc", points: 25000000000 },
       { name: "Chronicle Halo", rarity: 100000000000, color: "#93c5fd", points: 100000000000 },
       { name: "Omega Relic", rarity: 500000000000, color: "#fda4af", points: 500000000000 },
+      { name: "Glitched Pixel", rarity: 1500, color: "#84cc16", points: 500 },
+      { name: "Neon Circuit", rarity: 75, color: "#22d3ee", points: 30, world: "cyber" },
+      { name: "Holo Blade", rarity: 450, color: "#67e8f9", points: 160, world: "cyber" },
+      { name: "Chrome Dragon", rarity: 8000, color: "#a5f3fc", points: 2200, world: "cyber" },
+      { name: "Mainframe Titan", rarity: 90000, color: "#0891b2", points: 20000, world: "cyber" },
+      { name: "Quantum Overlord", rarity: 900000, color: "#cffafe", points: 700000, world: "cyber" },
+      { name: "Abyssal Eye", rarity: 6000, color: "#7c3aed", points: 1800, world: "abyss" },
+      { name: "Drowned Crown", rarity: 60000, color: "#6d28d9", points: 14000, world: "abyss" },
+      { name: "Leviathan Heart", rarity: 600000, color: "#8b5cf6", points: 400000, world: "abyss" },
+      { name: "Voidcaller", rarity: 8000000, color: "#a78bfa", points: 9000000, world: "abyss" },
+      { name: "Eternal Maw", rarity: 400000000, color: "#ddd6fe", points: 350000000, world: "abyss" },
+      { name: "Dawn Feather", rarity: 45000, color: "#fde68a", points: 11000, world: "celestial" },
+      { name: "Solar Scepter", rarity: 400000, color: "#fcd34d", points: 280000, world: "celestial" },
+      { name: "Empyrean Gate", rarity: 3000000, color: "#fbbf24", points: 3200000, world: "celestial" },
+      { name: "Seraphim Song", rarity: 60000000, color: "#fef3c7", points: 55000000, world: "celestial" },
+      { name: "Throne of Light", rarity: 2000000000, color: "#fffbeb", points: 2200000000, world: "celestial" },
       { name: "Eternal Singularity", rarity: 1000000000000000, color: "#ffffff", points: 1000000000000000 },
-      { name: "Apex of Silence", rarity: 10000000000000000, color: "#d1d5db", points: 7500000000000000 }
+      { name: "Apex of Silence", rarity: 10000000000000000, color: "#d1d5db", points: 7500000000000000 },
+      { name: "Heart of Infinity", rarity: 100000000000000000, color: "#f0f9ff", points: 80000000000000000 }
     ].sort((a, b) => a.rarity - b.rarity);
 
     const pointShop = [
@@ -1868,7 +2369,9 @@
       { id: "critCharm", name: "Crit Charm", desc: "+4% chance to double roll points per level.", baseCost: 1000, scale: 1.30, maxLevel: 15 },
       { id: "rareHunter", name: "Rare Hunter", desc: "Improves rolls in the upper rarity band.", baseCost: 2500, scale: 1.34, maxLevel: 12 },
       { id: "collectionBoost", name: "Collection Boost", desc: "+1% luck per unique item owned per level.", baseCost: 3500, scale: 1.32, maxLevel: 10 },
-      { id: "superCrit", name: "Super Crit", desc: "Critical rolls become much stronger.", baseCost: 50000, scale: 2.00, maxLevel: 1 }
+      { id: "superCrit", name: "Super Crit", desc: "Critical rolls become much stronger.", baseCost: 50000, scale: 2.00, maxLevel: 1 },
+      { id: "worldCompass", name: "World Compass", desc: "+8% luck per unlocked world per level.", baseCost: 8000, scale: 1.50, maxLevel: 10 },
+      { id: "pityCharm", name: "Pity Charm", desc: "Guaranteed epic+ arrives 15 dry rolls sooner per level.", baseCost: 12000, scale: 1.55, maxLevel: 8 }
     ];
 
     const rebirthShop = [
@@ -1878,7 +2381,9 @@
       { id: "collectorGrid", name: "Collector Grid", desc: "+8% Luck Points from rolls per rank.", baseCost: 2, scale: 1.65, maxLevel: 30 },
       { id: "preservationVault", name: "Preservation Vault", desc: "Keep 5% of LP after rebirth per rank.", baseCost: 3, scale: 1.90, maxLevel: 10 },
       { id: "museum", name: "Museum", desc: "Keep all collection data on rebirth.", baseCost: 25, scale: 2.00, maxLevel: 1 },
-      { id: "shardAmplifier", name: "Shard Amplifier", desc: "Double shard gain from rebirth.", baseCost: 6, scale: 2.20, maxLevel: 5 }
+      { id: "shardAmplifier", name: "Shard Amplifier", desc: "Double shard gain from rebirth.", baseCost: 6, scale: 2.20, maxLevel: 5 },
+      { id: "worldAnchor", name: "World Anchor", desc: "+25% world luck multiplier per rank.", baseCost: 4, scale: 1.80, maxLevel: 8 },
+      { id: "shardRain", name: "Shard Rain", desc: "+10% shard gain from rebirth per rank.", baseCost: 5, scale: 1.90, maxLevel: 10 }
     ];
 
     const achievementDefs = [
@@ -1917,6 +2422,101 @@
       { id: "firstBuy", name: "Buyer", desc: "Buy your first item.", reward: { lp: 100 }, progress: s => [s.itemsBought || 0, 1], unlocked: s => (s.itemsBought || 0) >= 1 }
     ];
 
+    // NEW: World achievements
+    const worldAchievementDefs = [
+      { id: "worldExplorer", name: "World Explorer", desc: "Unlock a second world.", reward: { lp: 1000 }, progress: s => [Math.min((s.unlockedWorlds || []).length, 2), 2], unlocked: s => (s.unlockedWorlds || []).length >= 2 },
+      { id: "abyssDiver", name: "Abyss Diver", desc: "Unlock The Abyss.", reward: { shards: 3 }, progress: s => [(s.unlockedWorlds || []).includes("abyss") ? 1 : 0, 1], unlocked: s => (s.unlockedWorlds || []).includes("abyss") },
+      { id: "celestialBeing", name: "Celestial Being", desc: "Unlock Celestial.", reward: { shards: 10 }, progress: s => [(s.unlockedWorlds || []).includes("celestial") ? 1 : 0, 1], unlocked: s => (s.unlockedWorlds || []).includes("celestial") },
+      { id: "exclusiveHunter", name: "Exclusive Hunter", desc: "Own 5 unique world-exclusive items.", reward: { shards: 5 }, progress: s => [Math.min(countWorldExclusives(s), 5), 5], unlocked: s => countWorldExclusives(s) >= 5 }
+    ];
+
+    // NEW: Minigame + pity achievements
+    const minigameAchievementDefs = [
+      { id: "slotsWinner", name: "Slot Winner", desc: "Hit three of a kind on Slots.", reward: { lp: 200 }, progress: s => [Math.min(s.slotsWins || 0, 1), 1], unlocked: s => (s.slotsWins || 0) >= 1 },
+      { id: "slotsHighRoller", name: "Slots High Roller", desc: "Win 50,000 LP total from Slots.", reward: { shards: 2 }, progress: s => [Math.min(s.slotsWon || 0, 50000), 50000], unlocked: s => (s.slotsWon || 0) >= 50000 },
+      { id: "hiloSharp", name: "Sharp Caller", desc: "Win 3 Higher-or-Lower in a row.", reward: { lp: 500 }, progress: s => [Math.min(s.hiloBest || 0, 3), 3], unlocked: s => (s.hiloBest || 0) >= 3 },
+      { id: "pitySaved", name: "Pity Party", desc: "Get saved by the pity system once.", reward: { lp: 250 }, progress: s => [Math.min(s.pityTriggers || 0, 1), 1], unlocked: s => (s.pityTriggers || 0) >= 1 }
+    ];
+
+    function allAchievementDefs(){
+      return [...achievementDefs, ...casinoAchievementDefs, ...tradeAchievementDefs, ...worldAchievementDefs, ...minigameAchievementDefs];
+    }
+
+    function countWorldExclusives(s){
+      const inv = (s || state).inventory || {};
+      return itemPool.filter(item => item.world && (inv[item.name] || 0) > 0).length;
+    }
+
+    // ============================================
+    // WORLDS
+    // ============================================
+    const WORLDS = [
+      { id: "overworld", name: "Overworld", icon: "globe", desc: "Where every journey begins. No bonus.", mult: 1, unlock: { rolls: 0, rebirths: 0, best: 0 } },
+      { id: "cyber", name: "Neon Cyber", icon: "cpu", desc: "+50% luck. Exclusive tech relics.", mult: 1.5, unlock: { rolls: 500, rebirths: 1, best: 0 } },
+      { id: "abyss", name: "The Abyss", icon: "waves", desc: "3x luck. Deep horrors await.", mult: 3, unlock: { rolls: 0, rebirths: 3, best: 0 } },
+      { id: "celestial", name: "Celestial", icon: "sun", desc: "6x luck. Relics of pure light.", mult: 6, unlock: { rolls: 0, rebirths: 8, best: 1000000000 } }
+    ];
+
+    function getWorld(id){
+      return WORLDS.find(w => w.id === id) || WORLDS[0];
+    }
+
+    function worldUnlocked(id){
+      return (state.unlockedWorlds || []).includes(id);
+    }
+
+    function worldMeetsUnlock(world){
+      const u = world.unlock || {};
+      if (u.rolls > 0 && state.rolls >= u.rolls) return true;
+      if (u.rebirths > 0 && state.rebirths >= u.rebirths) return true;
+      if (u.best > 0 && state.bestRarity >= u.best) return true;
+      return (u.rolls || 0) === 0 && (u.rebirths || 0) === 0 && (u.best || 0) === 0;
+    }
+
+    function worldUnlockText(world){
+      const u = world.unlock || {};
+      const parts = [];
+      if (u.rolls > 0) parts.push(`${u.rolls.toLocaleString()} rolls`);
+      if (u.rebirths > 0) parts.push(`${u.rebirths} rebirths`);
+      if (u.best > 0) parts.push(`best 1 in ${u.best.toLocaleString()}`);
+      return parts.length ? `Needs ${parts.join(" or ")}` : "Available";
+    }
+
+    function checkWorldUnlocks(){
+      let changed = false;
+      for (const world of WORLDS){
+        if (!worldUnlocked(world.id) && worldMeetsUnlock(world)){
+          state.unlockedWorlds.push(world.id);
+          changed = true;
+          showToast(`New world unlocked: ${world.name}!`, "success");
+        }
+      }
+      if (changed) checkAchievements();
+      return changed;
+    }
+
+    function switchWorld(id){
+      if (!worldUnlocked(id)){
+        const world = getWorld(id);
+        showToast(`${world.name} is locked. ${worldUnlockText(world)}.`, "warn");
+        return;
+      }
+      state.world = id;
+      showToast(`Travelled to ${getWorld(id).name}`, "info");
+      renderAll();
+      saveGame();
+    }
+
+    function getWorldLuckMult(){
+      const world = getWorld(state.world);
+      const anchor = 1 + getRebirthLevel("worldAnchor") * 0.25;
+      return world.mult * anchor;
+    }
+
+    function getPityThreshold(){
+      return Math.max(25, 150 - getPointLevel("pityCharm") * 15);
+    }
+
     const rebirthMilestones = [
       { req: 1, title: "Auto Roll Unlock", text: "Auto Roll can be unlocked in the LP shop." },
       { req: 5, title: "Permanent Luck Push", text: "Your rebirth scaling starts to feel much faster." },
@@ -1931,7 +2531,7 @@
 
     function defaultState(){
       return {
-        version: 9,
+        version: 10,
         tab: "play",
         rolls: 0,
         luckPoints: 0,
@@ -1946,8 +2546,20 @@
         inventory: Object.fromEntries(itemPool.map(item => [item.name, 0])),
         pointShopLevels: Object.fromEntries(pointShop.map(item => [item.id, 0])),
         rebirthShopLevels: Object.fromEntries(rebirthShop.map(item => [item.id, 0])),
-        achievements: Object.fromEntries(achievementDefs.map(a => [a.id, false])),
+        achievements: Object.fromEntries(allAchievementDefs().map(a => [a.id, false])),
         recentRolls: [],
+        world: "overworld",
+        unlockedWorlds: ["overworld"],
+        dryStreak: 0,
+        totalEarned: 0,
+        bestItem: "",
+        pityTriggers: 0,
+        slotsWins: 0,
+        slotsWon: 0,
+        hiloWins: 0,
+        hiloStreak: 0,
+        hiloBest: 0,
+        hiloRef: "",
         // NEW: Casino stats
         casinoTotalBet: 0,
         casinoTotalWon: 0,
@@ -2034,7 +2646,7 @@
         legacyUpgradeMultiplier(data)
       );
       delete data.points;
-      // NEW: Ensure casino/trade stats exist
+      // Ensure casino/trade stats exist
       if (typeof data.casinoTotalBet !== "number") data.casinoTotalBet = 0;
       if (typeof data.casinoTotalWon !== "number") data.casinoTotalWon = 0;
       if (typeof data.casinoTotalLost !== "number") data.casinoTotalLost = 0;
@@ -2043,6 +2655,41 @@
       if (typeof data.itemsSold !== "number") data.itemsSold = 0;
       if (typeof data.itemsBought !== "number") data.itemsBought = 0;
       if (typeof data.totalTradeProfit !== "number") data.totalTradeProfit = 0;
+      // Ensure world / pity / minigame fields exist
+      if (typeof data.world !== "string" || !WORLDS.some(w => w.id === data.world)) data.world = "overworld";
+      if (!Array.isArray(data.unlockedWorlds) || !data.unlockedWorlds.length) data.unlockedWorlds = ["overworld"];
+      data.unlockedWorlds = [...new Set(["overworld", ...data.unlockedWorlds.filter(id => WORLDS.some(w => w.id === id))])];
+      if (typeof data.dryStreak !== "number") data.dryStreak = 0;
+      if (typeof data.totalEarned !== "number") data.totalEarned = 0;
+      if (typeof data.bestItem !== "string") data.bestItem = "";
+      if (typeof data.pityTriggers !== "number") data.pityTriggers = 0;
+      if (typeof data.slotsWins !== "number") data.slotsWins = 0;
+      if (typeof data.slotsWon !== "number") data.slotsWon = 0;
+      if (typeof data.hiloWins !== "number") data.hiloWins = 0;
+      if (typeof data.hiloStreak !== "number") data.hiloStreak = 0;
+      if (typeof data.hiloBest !== "number") data.hiloBest = 0;
+      if (typeof data.hiloRef !== "string") data.hiloRef = "";
+      // Backfill inventory + shop levels for items added after the save was made
+      if (data.inventory && typeof data.inventory === "object"){
+        for (const item of itemPool){
+          if (typeof data.inventory[item.name] !== "number") data.inventory[item.name] = 0;
+        }
+      }
+      if (data.pointShopLevels && typeof data.pointShopLevels === "object"){
+        for (const item of pointShop){
+          if (typeof data.pointShopLevels[item.id] !== "number") data.pointShopLevels[item.id] = 0;
+        }
+      }
+      if (data.rebirthShopLevels && typeof data.rebirthShopLevels === "object"){
+        for (const item of rebirthShop){
+          if (typeof data.rebirthShopLevels[item.id] !== "number") data.rebirthShopLevels[item.id] = 0;
+        }
+      }
+      if (data.achievements && typeof data.achievements === "object"){
+        for (const ach of allAchievementDefs()){
+          if (typeof data.achievements[ach.id] !== "boolean") data.achievements[ach.id] = false;
+        }
+      }
       return data;
     }
 
@@ -2081,78 +2728,19 @@
       return best;
     }
 
-    function mergeInventory(targetInv, sourceInv){
-      for (const item of itemPool) {
-        const current = targetInv[item.name] || 0;
-        const incoming = sourceInv && typeof sourceInv[item.name] === "number" ? sourceInv[item.name] : 0;
-        targetInv[item.name] = Math.max(current, incoming);
-      }
-      if (sourceInv && typeof sourceInv === "object") {
-        for (const key of Object.keys(sourceInv)) {
-          if (!(key in targetInv) && typeof sourceInv[key] === "number") {
-            targetInv[key] = sourceInv[key];
-          }
-        }
-      }
-    }
-
-    function mergeLevels(targetMap, sourceMap){
-      if (!sourceMap || typeof sourceMap !== "object") return;
-      for (const key of Object.keys(sourceMap)) {
-        const incoming = typeof sourceMap[key] === "number" ? sourceMap[key] : 0;
-        const current = typeof targetMap[key] === "number" ? targetMap[key] : 0;
-        targetMap[key] = Math.max(current, incoming);
-      }
-    }
-
-    function mergeSaveData(base, incoming){
-      if (!incoming) return base;
-      base.rolls = Math.max(base.rolls || 0, incoming.rolls || 0);
-      base.luckPoints = Math.max(base.luckPoints || 0, incoming.luckPoints || 0);
-      base.rebirths = Math.max(base.rebirths || 0, incoming.rebirths || 0);
-      base.rebirthShards = Math.max(base.rebirthShards || 0, incoming.rebirthShards || 0);
-      base.bestRarity = Math.max(base.bestRarity || 0, incoming.bestRarity || 0);
-      base.legacyMultiplierBonus = Math.max(base.legacyMultiplierBonus || 0, incoming.legacyMultiplierBonus || 0);
-      if (!base.lastRoll || base.lastRoll === "Tap Roll") {
-        if (incoming.lastRoll) base.lastRoll = incoming.lastRoll;
-      }
-      if (!base.lastRarity || base.lastRarity === "1 in 0") {
-        if (incoming.lastRarity) base.lastRarity = incoming.lastRarity;
-      }
-      mergeInventory(base.inventory, incoming.inventory);
-      mergeLevels(base.pointShopLevels, incoming.pointShopLevels);
-      mergeLevels(base.rebirthShopLevels, incoming.rebirthShopLevels);
-      for (const ach of achievementDefs) {
-        base.achievements[ach.id] = !!base.achievements[ach.id] || !!(incoming.achievements && incoming.achievements[ach.id]);
-      }
-      if (!Array.isArray(base.recentRolls) || base.recentRolls.length === 0) {
-        if (Array.isArray(incoming.recentRolls)) base.recentRolls = incoming.recentRolls.slice(0, 10);
-      }
-      base.autoUnlock = !!base.autoUnlock || !!incoming.autoUnlock || (base.pointShopLevels.autoRoller || 0) >= 1;
-      base.autoRolling = !!base.autoRolling && base.autoUnlock;
-      // NEW: Merge casino/trade stats
-      base.casinoTotalBet = Math.max(base.casinoTotalBet || 0, incoming.casinoTotalBet || 0);
-      base.casinoTotalWon = Math.max(base.casinoTotalWon || 0, incoming.casinoTotalWon || 0);
-      base.casinoTotalLost = Math.max(base.casinoTotalLost || 0, incoming.casinoTotalLost || 0);
-      base.casinoAllIns = Math.max(base.casinoAllIns || 0, incoming.casinoAllIns || 0);
-      base.casinoJackpotsWon = Math.max(base.casinoJackpotsWon || 0, incoming.casinoJackpotsWon || 0);
-      base.itemsSold = Math.max(base.itemsSold || 0, incoming.itemsSold || 0);
-      base.itemsBought = Math.max(base.itemsBought || 0, incoming.itemsBought || 0);
-      base.totalTradeProfit = Math.max(base.totalTradeProfit || 0, incoming.totalTradeProfit || 0);
-      return base;
-    }
-
     function getEffectiveLuck() {
       let pointBonus = 0;
       pointBonus += getPointLevel("luckyDice") * 0.30;
       pointBonus += getPointLevel("luckyClover") * 5;
       pointBonus += getPointLevel("pureLuck") * 40;
       pointBonus += getPointLevel("holyGrail") * 100;
+      pointBonus += getPointLevel("worldCompass") * 0.08 * (state.unlockedWorlds || []).length;
       const rebirthBonus = getRebirthLevel("legacyLuck") * 0.12;
       const globalRebirthBonus = state.rebirths * 0.15;
       const collectionBonus = getPointLevel("collectionBoost") * getUniqueCount() * 0.01;
       const legacyBonus = state.legacyMultiplierBonus || 0;
-      return Math.max(1, 1 + pointBonus + rebirthBonus + globalRebirthBonus + collectionBonus + legacyBonus);
+      const base = Math.max(1, 1 + pointBonus + rebirthBonus + globalRebirthBonus + collectionBonus + legacyBonus);
+      return base * getWorldLuckMult();
     }
 
     function getPointMultiplier(){
@@ -2176,7 +2764,8 @@
     function getRebirthShardGain(){
       const base = Math.max(1, Math.floor(Math.sqrt(state.luckPoints / 5000)));
       const amplified = base + getRebirthLevel("shardPulse");
-      return getRebirthLevel("shardAmplifier") >= 1 ? amplified * 2 : amplified;
+      const withRain = Math.round(amplified * (1 + getRebirthLevel("shardRain") * 0.10));
+      return getRebirthLevel("shardAmplifier") >= 1 ? withRain * 2 : withRain;
     }
 
     function getStartingBank(){
@@ -2200,28 +2789,47 @@
     }
 
     function saveGame(){
-      state.version = 9;
+      state.version = 10;
       state.tab = document.querySelector(".nav-item.active")?.dataset.tab || state.tab || "play";
       localStorage.setItem(SAVE_KEY, JSON.stringify(state));
       setSaveStatus("Saved");
       lastSaveStamp = Date.now();
     }
 
+    function applySaveData(data){
+      const base = defaultState();
+      for (const key of Object.keys(base)){
+        if (data[key] !== undefined) base[key] = data[key];
+      }
+      for (const ach of allAchievementDefs()){
+        if (typeof base.achievements[ach.id] !== "boolean") base.achievements[ach.id] = false;
+      }
+      if (!WORLDS.some(w => w.id === base.world)) base.world = "overworld";
+      if (!Array.isArray(base.unlockedWorlds) || !base.unlockedWorlds.includes("overworld")) base.unlockedWorlds = ["overworld"];
+      return base;
+    }
+
+    function hasProgress(data){
+      if (!data || typeof data !== "object") return false;
+      if ((data.rolls || 0) > 0 || (data.luckPoints || 0) > 0 || (data.rebirths || 0) > 0 || (data.rebirthShards || 0) > 0) return true;
+      return Object.values(data.inventory || {}).some(v => v > 0);
+    }
+
     function loadGame(){
       let repaired = false;
       state = defaultState();
-      const currentRaw = parseJSON(localStorage.getItem(SAVE_KEY));
-      if (currentRaw) {
-        const current = normalizeLoadedSave(currentRaw);
-        mergeSaveData(state, current);
-      }
-      const bestLegacy = getBestLegacySave();
-      if (bestLegacy) {
-        const before = scoreSaveData(state);
-        mergeSaveData(state, bestLegacy.data);
-        const after = scoreSaveData(state);
-        if (after > before || scoreSaveData(currentRaw) < bestLegacy.score) {
+      // The current save is the source of truth and is loaded directly.
+      // (Never max-merged: spending LP or selling items must persist.)
+      const current = normalizeLoadedSave(parseJSON(localStorage.getItem(SAVE_KEY)));
+      if (current && hasProgress(current)){
+        state = applySaveData(current);
+      } else {
+        const bestLegacy = getBestLegacySave();
+        if (bestLegacy && bestLegacy.data){
+          state = applySaveData(normalizeLoadedSave(bestLegacy.data));
           repaired = true;
+        } else if (current){
+          state = applySaveData(current);
         }
       }
       state.autoUnlock = !!state.autoUnlock || (state.pointShopLevels.autoRoller || 0) >= 1;
@@ -2241,6 +2849,9 @@
     function wipeSave(){
       if (!confirm("Erase all data? This cannot be undone.")) return;
       stopAuto();
+      if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
+      isRolling = false;
+      el("heroCard")?.classList.remove("rolling");
       for (const key of [SAVE_KEY, ...LEGACY_KEYS]) {
         localStorage.removeItem(key);
       }
@@ -2254,7 +2865,6 @@
     // ROLL SYSTEM - PRESERVED EXACTLY
     // ============================================
     function getRarityTier(rarity){
-      if (rarity >= 1e16) return "divine";
       if (rarity >= 1e15) return "divine";
       if (rarity >= 1e12) return "cosmic";
       if (rarity >= 1e9) return "void";
@@ -2280,8 +2890,10 @@
       hero.dataset.tier = tier;
       if (tier === "divine"){
         hero.style.boxShadow = "0 0 0 1px rgba(255,255,255,.24), 0 0 60px rgba(255,255,255,.10), 0 20px 60px rgba(0,0,0,.36)";
-      } else if (tier === "cosmic" || tier === "void"){
+      } else if (tier === "cosmic"){
         hero.style.boxShadow = "0 0 0 1px rgba(34,211,238,.22), 0 0 44px rgba(34,211,238,.14), 0 20px 60px rgba(0,0,0,.36)";
+      } else if (tier === "void"){
+        hero.style.boxShadow = "0 0 0 1px rgba(167,139,250,.24), 0 0 44px rgba(167,139,250,.15), 0 20px 60px rgba(0,0,0,.36)";
       } else if (tier === "mythic"){
         hero.style.boxShadow = "0 0 0 1px rgba(244,114,182,.22), 0 0 40px rgba(244,114,182,.12), 0 20px 60px rgba(0,0,0,.36)";
       } else if (tier === "legendary"){
@@ -2297,16 +2909,18 @@
       }
     }
 
-    function updateDisplayForItem(item, gain, crit){
+    function updateDisplayForItem(item, gain, crit, pitied){
       const nameNode = el("display-name");
       const rarityNode = el("display-rarity");
       const badgeNode = el("display-badge");
       nameNode.textContent = item.name;
       nameNode.style.color = item.color;
       nameNode.style.textShadow = `0 0 12px ${item.color}22, 0 0 26px ${item.color}16`;
-      rarityNode.innerHTML = `<i data-lucide="bar-chart-2"></i><span>Rarity: 1 in ${item.rarity.toLocaleString()}</span>`;
+      rarityNode.innerHTML = `<i data-lucide="bar-chart-2"></i><span>Rarity: 1 in ${item.rarity.toLocaleString()}${item.world ? ` • ${getWorld(item.world).name}` : ""}</span>`;
       rarityNode.style.color = item.color;
-      badgeNode.innerHTML = crit 
+      badgeNode.innerHTML = pitied
+        ? `<i data-lucide="life-buoy"></i><span>Pity pull! +${gain.toLocaleString()} LP</span>`
+        : crit
         ? `<i data-lucide="zap"></i><span>Critical pull! +${gain.toLocaleString()} LP</span>`
         : `<i data-lucide="plus-circle"></i><span>+${gain.toLocaleString()} LP gained</span>`;
       badgeNode.style.color = item.color;
@@ -2375,15 +2989,20 @@
       setTimeout(() => { overlay.className = ""; }, 480);
     }
 
-    function selectRolledItem(){
+    function rollFromPool(pool){
       const chance = Math.random() / getEffectiveLuck();
-      let rolledItem = itemPool[0];
-      for (let i = itemPool.length - 1; i >= 0; i--){
-        if (chance <= (1 / itemPool[i].rarity)){
-          rolledItem = itemPool[i];
+      let rolledItem = pool[0];
+      for (let i = pool.length - 1; i >= 0; i--){
+        if (chance <= (1 / pool[i].rarity)){
+          rolledItem = pool[i];
           break;
         }
       }
+      return rolledItem;
+    }
+
+    function selectRolledItem(){
+      let rolledItem = rollFromPool(itemPool);
       const rareHunter = getPointLevel("rareHunter");
       if (rareHunter > 0 && Math.random() < Math.min(0.40, rareHunter * 0.025)){
         const idx = itemPool.findIndex(x => x.name === rolledItem.name);
@@ -2392,7 +3011,22 @@
           rolledItem = itemPool[bump];
         }
       }
+      // World bias: a slice of rolls draws from the current world's exclusives.
+      const exclusives = itemPool.filter(item => item.world === state.world);
+      if (exclusives.length && Math.random() < 0.18){
+        const worldItem = rollFromPool(exclusives);
+        if (worldItem.rarity >= rolledItem.rarity) rolledItem = worldItem;
+      }
       return rolledItem;
+    }
+
+    function forceEpicRoll(){
+      const luck = getEffectiveLuck();
+      const epics = itemPool.filter(item => item.rarity >= 1000).sort((a, b) => b.rarity - a.rarity);
+      for (const item of epics){
+        if (Math.random() <= Math.min(1, luck / item.rarity)) return item;
+      }
+      return epics[epics.length - 1];
     }
 
     function pushRecentRoll(item, gain, crit){
@@ -2463,29 +3097,49 @@
     function roll(){
       if (isRolling) return;
       isRolling = true;
-      const finalItem = selectRolledItem();
+      let finalItem = selectRolledItem();
+      let pitied = false;
+      if (finalItem.rarity < 1000 && (state.dryStreak || 0) >= getPityThreshold()){
+        finalItem = forceEpicRoll();
+        pitied = true;
+        state.pityTriggers = (state.pityTriggers || 0) + 1;
+      }
       const crit = Math.random() < getCritChance();
       const critMult = getPointLevel("superCrit") >= 1 ? 3 : 2;
       const gain = Math.round(finalItem.points * getPointMultiplier() * (crit ? critMult : 1));
-      startSpinAnimation(finalItem, () => {
+      const completeRoll = () => {
         state.rolls += 1;
         state.inventory[finalItem.name] = (state.inventory[finalItem.name] || 0) + 1;
         state.bestRarity = Math.max(state.bestRarity, finalItem.rarity);
+        const prevBest = itemPool.find(i => i.name === state.bestItem);
+        if (!state.bestItem || !prevBest || finalItem.rarity >= prevBest.rarity) state.bestItem = finalItem.name;
         state.luckPoints += gain;
+        state.totalEarned = (state.totalEarned || 0) + gain;
         state.lastRoll = finalItem.name;
         state.lastRarity = `1 in ${finalItem.rarity.toLocaleString()}`;
+        state.hiloRef = finalItem.name;
         state.uniqueItems = getUniqueCount();
-        updateDisplayForItem(finalItem, gain, crit);
-        createParticleBurst(finalItem);
-        triggerScreenFlash(finalItem);
+        if (finalItem.rarity >= 1000) state.dryStreak = 0;
+        else state.dryStreak = (state.dryStreak || 0) + 1;
+        updateDisplayForItem(finalItem, gain, crit, pitied);
+        if (!state.autoRolling) {
+          createParticleBurst(finalItem);
+          triggerScreenFlash(finalItem);
+        }
         pushRecentRoll(finalItem, gain, crit);
+        checkWorldUnlocks();
         checkAchievements();
         recalcDerived();
         renderAll();
+        renderHiLoRef();
         saveGame();
         el("heroCard").classList.remove("rolling");
         isRolling = false;
-      });
+      };
+      // Auto rolls resolve instantly so Turbo Motor speed actually matters;
+      // manual rolls keep the cinematic spin.
+      if (state.autoRolling) completeRoll();
+      else startSpinAnimation(finalItem, completeRoll);
     }
 
     // ============================================
@@ -2506,6 +3160,7 @@
       state.rolls = 0;
       state.luckPoints = getStartingBank() + keptLP;
       state.bestRarity = 0;
+      state.dryStreak = 0;
       state.lastRoll = "Tap Roll";
       state.lastRarity = "1 in 0";
       if (getRebirthLevel("museum") < 1){
@@ -2587,6 +3242,26 @@
       }
       // NEW: Trade achievements
       for (const ach of tradeAchievementDefs){
+        if (state.achievements[ach.id]) continue;
+        if (ach.unlocked(state)){
+          state.achievements[ach.id] = true;
+          if (ach.reward?.lp) state.luckPoints += ach.reward.lp;
+          if (ach.reward?.shards) state.rebirthShards += ach.reward.shards;
+          showToast(`Achievement: ${ach.name}!`, "success");
+        }
+      }
+      // NEW: World achievements
+      for (const ach of worldAchievementDefs){
+        if (state.achievements[ach.id]) continue;
+        if (ach.unlocked(state)){
+          state.achievements[ach.id] = true;
+          if (ach.reward?.lp) state.luckPoints += ach.reward.lp;
+          if (ach.reward?.shards) state.rebirthShards += ach.reward.shards;
+          showToast(`Achievement: ${ach.name}!`, "success");
+        }
+      }
+      // NEW: Minigame achievements
+      for (const ach of minigameAchievementDefs){
         if (state.achievements[ach.id]) continue;
         if (ach.unlocked(state)){
           state.achievements[ach.id] = true;
@@ -2700,7 +3375,9 @@
         rarity: "Rarity Guess",
         luckynum: "Lucky Number",
         jackpot: "Jackpot",
-        allin: "All-In"
+        allin: "All-In",
+        slots: "Slots",
+        hilo: "Higher or Lower"
       };
       const icons = {
         coinflip: "circle",
@@ -2708,10 +3385,13 @@
         rarity: "search",
         luckynum: "hash",
         jackpot: "crown",
-        allin: "flame"
+        allin: "flame",
+        slots: "cherry",
+        hilo: "arrow-up-down"
       };
       el("active-game-title").innerHTML = `<i data-lucide="${icons[gameId]}"></i> ${titles[gameId]}`;
       lucide.createIcons();
+      if (gameId === "hilo") renderHiLoRef();
       saveGame();
     }
 
@@ -2975,6 +3655,126 @@
     }
 
     // ============================================
+    // SLOTS
+    // ============================================
+    const SLOT_SYMBOLS = [
+      { s: "7", pay: 25, w: 1 },
+      { s: "BAR", pay: 10, w: 2 },
+      { s: "★", pay: 5, w: 3 },
+      { s: "◆", pay: 3, w: 4 },
+      { s: "●", pay: 2, w: 6 }
+    ];
+
+    function spinReel(){
+      const total = SLOT_SYMBOLS.reduce((a, b) => a + b.w, 0);
+      let r = Math.random() * total;
+      for (const sym of SLOT_SYMBOLS){
+        r -= sym.w;
+        if (r <= 0) return sym;
+      }
+      return SLOT_SYMBOLS[SLOT_SYMBOLS.length - 1];
+    }
+
+    function playSlots(){
+      const bet = validateBet("bet-slots");
+      if (bet === null) return;
+      state.luckPoints -= bet;
+      const reels = [spinReel(), spinReel(), spinReel()];
+      el("slots-reels").innerHTML = reels.map(x => `<div class="slot-reel">${x.s}</div>`).join("");
+      const resultEl = el("result-slots");
+      if (reels[0].s === reels[1].s && reels[1].s === reels[2].s){
+        const payout = bet * reels[0].pay;
+        state.luckPoints += payout;
+        state.slotsWins = (state.slotsWins || 0) + 1;
+        state.slotsWon = (state.slotsWon || 0) + (payout - bet);
+        resultEl.className = "game-result win";
+        resultEl.textContent = `${reels[0].s} ${reels[1].s} ${reels[2].s} — JACKPOT! Won ${payout.toLocaleString()} LP (${reels[0].pay}x)`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`Slots: three ${reels[0].s}! +${(payout - bet).toLocaleString()} LP`, "success");
+      } else if (reels[0].s === reels[1].s || reels[1].s === reels[2].s || reels[0].s === reels[2].s){
+        const payout = Math.round(bet * 0.4);
+        state.luckPoints += payout;
+        resultEl.className = "game-result win";
+        resultEl.textContent = `${reels[0].s} ${reels[1].s} ${reels[2].s} — Pair! Got ${payout.toLocaleString()} LP back`;
+        recordCasino(bet, 0, bet - payout);
+        showToast(`Slots: pair, got ${payout.toLocaleString()} LP back`, "warn");
+      } else {
+        resultEl.className = "game-result lose";
+        resultEl.textContent = `${reels[0].s} ${reels[1].s} ${reels[2].s} — No match. Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Slots: lost ${bet.toLocaleString()} LP`, "error");
+      }
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // ============================================
+    // HIGHER OR LOWER
+    // ============================================
+    let currentHiLoGuess = null;
+
+    function getHiLoRef(){
+      return itemPool.find(i => i.name === state.hiloRef)
+        || itemPool.find(i => i.name === state.lastRoll)
+        || itemPool[Math.floor(itemPool.length / 2)];
+    }
+
+    function renderHiLoRef(){
+      const ref = getHiLoRef();
+      el("hilo-ref-display").innerHTML = `Reference: <span style="color:${ref.color === "#ffffff" ? "#f8fafc" : ref.color}">${ref.name}</span> <span style="color:var(--muted);font-weight:400">1 in ${ref.rarity.toLocaleString()}</span>`;
+    }
+
+    function setHiLoGuess(guess){
+      currentHiLoGuess = guess;
+      el("hilo-guess-display").innerHTML = `Guessing: <span style="color:var(--accent);font-weight:800">${guess === "higher" ? "HIGHER (rarer)" : "LOWER (commoner)"}</span> • Payout: 1.8x`;
+    }
+
+    function playHiLo(){
+      if (!currentHiLoGuess){
+        showToast("Pick higher or lower first!", "warn");
+        return;
+      }
+      const bet = validateBet("bet-hilo");
+      if (bet === null) return;
+      const ref = getHiLoRef();
+      state.luckPoints -= bet;
+      const next = selectRolledItem();
+      state.hiloRef = next.name;
+      const resultEl = el("result-hilo");
+      const won = (currentHiLoGuess === "higher" && next.rarity > ref.rarity)
+        || (currentHiLoGuess === "lower" && next.rarity < ref.rarity);
+      const tied = next.rarity === ref.rarity;
+      if (won){
+        const payout = Math.round(bet * 1.8);
+        state.luckPoints += payout;
+        state.hiloWins = (state.hiloWins || 0) + 1;
+        state.hiloStreak = (state.hiloStreak || 0) + 1;
+        state.hiloBest = Math.max(state.hiloBest || 0, state.hiloStreak);
+        resultEl.className = "game-result win";
+        resultEl.textContent = `${next.name} (1 in ${next.rarity.toLocaleString()}) — Correct! Won ${payout.toLocaleString()} LP`;
+        recordCasino(bet, payout - bet, 0);
+        showToast(`Higher or Lower: correct! +${(payout - bet).toLocaleString()} LP`, "success");
+      } else if (tied){
+        state.luckPoints += bet;
+        resultEl.className = "game-result win";
+        resultEl.textContent = `${next.name} — Exact tie! Bet refunded.`;
+        recordCasino(bet, 0, 0);
+        showToast("Higher or Lower: tie, refunded", "warn");
+      } else {
+        state.hiloStreak = 0;
+        resultEl.className = "game-result lose";
+        resultEl.textContent = `${next.name} (1 in ${next.rarity.toLocaleString()}) — Wrong! Lost ${bet.toLocaleString()} LP`;
+        recordCasino(bet, 0, bet);
+        showToast(`Higher or Lower: wrong, lost ${bet.toLocaleString()} LP`, "error");
+      }
+      renderHiLoRef();
+      renderAll();
+      saveGame();
+      checkBankruptcy();
+    }
+
+    // ============================================
     // BANKRUPTCY / SELLING
     // ============================================
     function showBankruptcy() {
@@ -2994,7 +3794,7 @@
             <div class="si-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color}">${item.name}</div>
             <div class="si-value">Sell for ${sellPrice.toLocaleString()} LP • Have x${state.inventory[item.name]}</div>
           </div>
-          <button class="si-btn" onclick="sellItem('${item.name}', ${sellPrice})">Sell</button>
+          <button class="si-btn" data-sell-item="${item.name}" data-sell-price="${sellPrice}">Sell</button>
         `;
         grid.appendChild(div);
       }
@@ -3057,7 +3857,7 @@
             </div>
             <div class="to-action">
               <span class="chip">${price.toLocaleString()} LP</span>
-              <button class="small-btn" onclick="sellTradeItem('${item.name}', ${price})">Sell</button>
+              <button class="small-btn" data-trade-sell="${item.name}" data-trade-price="${price}">Sell</button>
             </div>
           `;
           sellList.appendChild(div);
@@ -3078,7 +3878,7 @@
           </div>
           <div class="to-action">
             <span class="chip">${price.toLocaleString()} LP</span>
-            <button class="small-btn" onclick="buyTradeItem('${item.name}', ${price})" ${state.luckPoints < price ? "disabled" : ""}>Buy</button>
+            <button class="small-btn" data-trade-buy="${item.name}" data-trade-price="${price}" ${state.luckPoints < price ? "disabled" : ""}>Buy</button>
           </div>
         `;
         buyList.appendChild(div);
@@ -3170,6 +3970,11 @@
         ? (state.autoRolling ? `<i data-lucide="pause-circle"></i><span>Auto Roll: ON</span>` : `<i data-lucide="play-circle"></i><span>Auto Roll: OFF</span>`)
         : `<i data-lucide="lock"></i><span>Auto Roll: LOCKED</span>`;
       el("rebirth-luck-tag").textContent = `+${(state.rebirths * 15).toFixed(0)}%`;
+      const world = getWorld(state.world);
+      el("world-bonus-text").textContent = `${world.name}: ${world.mult}x world luck${getRebirthLevel("worldAnchor") ? ` (+${getRebirthLevel("worldAnchor") * 25}% anchor)` : ""} • ${world.desc}`;
+      const pityMax = getPityThreshold();
+      el("pity-text").textContent = `${state.dryStreak || 0} / ${pityMax}`;
+      el("pity-fill").style.width = `${Math.min(100, ((state.dryStreak || 0) / pityMax) * 100)}%`;
       el("rebirth-shard-tag").textContent = `${getRebirthShardGain().toLocaleString()} shard${getRebirthShardGain() === 1 ? "" : "s"}`;
       el("rebirth-milestone-tag").textContent = state.rebirths >= 25 ? "Late game" : "Keep pushing";
       el("allin-amount").textContent = state.luckPoints.toLocaleString();
@@ -3192,7 +3997,7 @@
         card.innerHTML = `
           <div class="inv-left">
             <div class="inv-name" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color};">${item.name}</div>
-            <div class="inv-meta">1 in ${item.rarity.toLocaleString()}</div>
+            <div class="inv-meta">1 in ${item.rarity.toLocaleString()}${item.world ? ` • ${getWorld(item.world).name}` : ""}</div>
           </div>
           <div class="inv-count" style="color:${item.color === "#ffffff" ? "#f8fafc" : item.color}">x${state.inventory[item.name].toLocaleString()}</div>
         `;
@@ -3203,7 +4008,7 @@
     function renderAchievements(){
       const box = el("achievement-box");
       box.innerHTML = "";
-      const allAchs = [...achievementDefs, ...casinoAchievementDefs, ...tradeAchievementDefs];
+      const allAchs = allAchievementDefs();
       const unlocked = allAchs.filter(a => !!state.achievements[a.id]).length;
       el("achievement-progress-text").textContent = `${unlocked} / ${allAchs.length} unlocked`;
       // Update badge
@@ -3318,11 +4123,35 @@
       el("stat-unique-2").textContent = getUniqueCount().toLocaleString();
       el("stat-best-2").textContent = state.bestRarity > 0 ? `1 in ${state.bestRarity.toLocaleString()}` : "None";
       el("stat-delay-2").textContent = `${getAutoDelay()}ms`;
+      el("stat-world-2").textContent = getWorld(state.world).name;
+      el("stat-earned-2").textContent = (state.totalEarned || 0).toLocaleString();
+      el("stat-pity-2").textContent = `${state.dryStreak || 0} / ${getPityThreshold()}`;
+    }
+
+    function renderWorlds(){
+      const box = el("world-tabs");
+      if (!box) return;
+      box.innerHTML = "";
+      for (const world of WORLDS){
+        const unlocked = worldUnlocked(world.id);
+        const btn = document.createElement("button");
+        btn.className = `world-tab${state.world === world.id ? " active" : ""}${unlocked ? "" : " locked"}`;
+        btn.dataset.worldTab = world.id;
+        btn.innerHTML = `
+          <i data-lucide="${unlocked ? world.icon : "lock"}"></i>
+          <span>${world.name}</span>
+          <span class="wt-mult">${unlocked ? `${world.mult}x` : "Locked"}</span>
+        `;
+        btn.title = unlocked ? world.desc : worldUnlockText(world);
+        box.appendChild(btn);
+      }
+      lucide.createIcons();
     }
 
     function renderAll(){
       state.uniqueItems = getUniqueCount();
       renderStats();
+      renderWorlds();
       renderPlay();
       renderInventory();
       renderAchievements();
@@ -3372,6 +4201,14 @@
         const shard = e.target.closest("[data-buy-shard]");
         if (point) buyPointShop(point.dataset.buyPoint);
         if (shard) buyRebirthShop(shard.dataset.buyShard);
+        const sell = e.target.closest("[data-sell-item]");
+        if (sell) sellItem(sell.dataset.sellItem, Number(sell.dataset.sellPrice));
+        const tradeSell = e.target.closest("[data-trade-sell]");
+        if (tradeSell) sellTradeItem(tradeSell.dataset.tradeSell, Number(tradeSell.dataset.tradePrice));
+        const tradeBuy = e.target.closest("[data-trade-buy]");
+        if (tradeBuy) buyTradeItem(tradeBuy.dataset.tradeBuy, Number(tradeBuy.dataset.tradePrice));
+        const world = e.target.closest("[data-world-tab]");
+        if (world) switchWorld(world.dataset.worldTab);
       });
     }
 

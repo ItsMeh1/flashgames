@@ -1,1 +1,75 @@
-const CACHE_NAME='flashgames-v3-platform-8';const APP_SHELL=['./','./index.html','./styles.css','./refinement.css','./precision.css','./issue-fixes.css','./performance.css','./final-fixes.css','./alignment-reset.css','./app.js','./data.js','./data-compat.js','./favourites-fix.js','./legacy-cache.js','./admin.js','./auth.js','./sync.js','./login-gate.js','./offline-session.js','./player-fixes.js','./custom-install.js','./moderation-fixes.js','./profile-fixes.js','./platform-upgrades.js','./v2-hotfixes.js','./flash-terminal.js','./flash-terminal.css','./online-cache.js','./auth-recovery.js','./admin-panel.css','./phase3-hotfixes.js','./cloud-playback.js','./flash-enhancements.js','./flash-enhancements.css','./updates-commits.js','./cache-manifest.json','./manifest.json','./update.json','./offline.json','./offline/logo.png'];async function fresh(url){return fetch(`${url}${url.includes('?')?'&':'?'}v=${Date.now()}-${Math.random().toString(36).slice(2)}`,{cache:'no-store'})}async function warm(assets){const c=await caches.open(CACHE_NAME);for(const asset of[...new Set(assets)]){try{const u=new URL(asset,self.registration.scope).href,r=await fresh(u);if(r.ok)await c.put(u,r.clone())}catch(_){}}}async function appShellResponse(request){const r=await fresh(request.url);if(!r.ok)return r;const type=r.headers.get('content-type')||'';if(!type.includes('text/html'))return r;const html=await r.text();const head='<link rel="manifest" href="./manifest.json"><script src="./data-compat.js"></script><script src="./offline-session.js" defer></script>';const body='<script src="./v2-hotfixes.js" defer></script><script src="./flash-terminal.js" defer></script><script src="./online-cache.js" defer></script><script src="./auth-recovery.js" defer></script><script src="./phase3-hotfixes.js" defer></script><script src="./cloud-playback.js" defer></script><script src="./flash-enhancements.js" defer></script><script src="./updates-commits.js" defer></script><link rel="stylesheet" href="./flash-terminal.css"><link rel="stylesheet" href="./flash-enhancements.css">';let out=html;if(!out.includes('rel="manifest"'))out=out.replace('</head>',`${head}</head>`);if(!out.includes('flash-enhancements.js'))out=out.replace('</body>',`${body}</body>`);const headers=new Headers(r.headers);headers.set('cache-control','no-store, no-cache, must-revalidate');return new Response(out,{status:r.status,statusText:r.statusText,headers})}self.addEventListener('install',e=>e.waitUntil(warm(APP_SHELL).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('flashgames-')&&k!==CACHE_NAME).map(k=>caches.delete(k)));await self.clients.claim()})()));self.addEventListener('message',e=>{if(e.data?.type!=='FLASHGAMES_CACHE_SYNC')return;e.waitUntil(warm(Array.isArray(e.data.assets)?e.data.assets:APP_SHELL))});self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==self.location.origin)return;e.respondWith((async()=>{const c=await caches.open(CACHE_NAME);try{if(r.mode==='navigate'||u.pathname.endsWith('/index.html')){const n=await appShellResponse(r);if(n.ok)return n}const n=await fresh(u.href);if(n.ok){c.put(u.href,n.clone()).catch(()=>{});return n}throw Error('network')}catch(_){return(await c.match(r,{ignoreSearch:true}))||new Response('Offline',{status:503})}})())});
+/* Flash Games service worker — minimal offline shell, no HTML rewriting. */
+const CACHE_NAME = 'flashgames-v6';
+const APP_SHELL = [
+  './', './index.html', './styles.css',
+  './core.js', './app.js', './admin.js', './auth.js', './extras.js',
+  './manifest.json', './update.json', './offline.json', './offline/logo.png'
+];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE_NAME);
+    await Promise.allSettled(APP_SHELL.map(async (a) => {
+      try {
+        const u = new URL(a, self.registration.scope).href;
+        const r = await fetch(u, { cache: 'no-store' });
+        if (r.ok) await c.put(u, r.clone());
+      } catch (_) {}
+    }));
+    await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    // NOTE: game-library caches are never deleted here (only old app shells).
+    await Promise.all(keys
+      .filter((k) => k.startsWith('flashgames-') && k !== CACHE_NAME)
+      .map((k) => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data?.type !== 'FLASHGAMES_CACHE_SYNC') return;
+  const assets = Array.isArray(e.data.assets) ? e.data.assets : APP_SHELL;
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE_NAME);
+    await Promise.allSettled(assets.map(async (a) => {
+      try {
+        const u = new URL(a, self.registration.scope).href;
+        const r = await fetch(u, { cache: 'no-store' });
+        if (r.ok) await c.put(u, r.clone());
+      } catch (_) {}
+    }));
+  })());
+});
+
+self.addEventListener('fetch', (e) => {
+  const r = e.request;
+  if (r.method !== 'GET') return;
+  const u = new URL(r.url);
+  if (u.origin !== self.location.origin) return;
+  e.respondWith((async () => {
+    const c = await caches.open(CACHE_NAME);
+    // Navigations: network first, fall back to cached shell.
+    if (r.mode === 'navigate') {
+      try {
+        const n = await fetch(r);
+        if (n.ok) { c.put(r.url, n.clone()).catch(() => {}); return n; }
+      } catch (_) {}
+      return (await c.match('./index.html')) || (await c.match(r, { ignoreSearch: true })) || Response.error();
+    }
+    // Shell assets: cache first, then network.
+    const hit = await c.match(r, { ignoreSearch: false });
+    if (hit) return hit;
+    try {
+      const n = await fetch(r);
+      if (n.ok) c.put(r.url, n.clone()).catch(() => {});
+      return n;
+    } catch (_) {
+      return (await c.match(r, { ignoreSearch: true })) || new Response('Offline', { status: 503 });
+    }
+  })());
+});

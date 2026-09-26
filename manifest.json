@@ -3,7 +3,7 @@
   "name": "Flash Games",
   "short_name": "Flash Games",
   "description": "Your centralized, offline-ready game vault.",
-  "start_url": "https://itsmeh1.github.io/flashgames/?.amplify.com",
+  "start_url": "https://itsmeh1.github.io/flashgames?.amplify.com",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
