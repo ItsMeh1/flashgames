@@ -37,18 +37,17 @@
   // App paths below were verified against now.gg listing pages.
   if (!Array.isArray(window.FlashCloudGames)) {
     window.FlashCloudGames = [
-      { id: 'cloud-roblox', name: 'Roblox', url: 'https://nowgg.fun/apps/roblox-corporation/5349/roblox.html', cover: './offline/logo.png', description: 'Play Roblox in the cloud via nowgg.fun. No install needed.' },
-      { id: 'cloud-rocket-league', name: 'Rocket League', url: 'https://nowgg.fun/apps/psyonix-studios/4656/rocket-league.html', cover: './offline/logo.png', description: 'Rocket League in the cloud via nowgg.fun.' },
-      { id: 'cloud-paper-minecraft', name: 'Paper Minecraft', url: 'https://nowgg.fun/apps/griffpatch/51381/paper-minecraft.html', cover: './offline/logo.png', description: 'Minecraft-style building in the cloud via nowgg.fun.' },
-      { id: 'cloud-miniblox', name: 'Miniblox', url: 'https://nowgg.fun/apps/hv-studios/51764/miniblox.html', cover: './offline/logo.png', description: 'Voxel sandbox in the cloud via nowgg.fun.' },
-      { id: 'cloud-among-us', name: 'Among Us', url: 'https://nowgg.fun/apps/innersloth-llc/4047/among-us.html', cover: './offline/logo.png', description: 'Social deduction in the cloud via nowgg.fun.' },
-      { id: 'cloud-pubg', name: 'PUBG Mobile', url: 'https://nowgg.fun/apps/proxima-beta/2609/pubg-mobile-resistance.html', cover: './offline/logo.png', description: 'Battle royale in the cloud via nowgg.fun.' },
-      { id: 'cloud-free-fire', name: 'Free Fire', url: 'https://nowgg.fun/apps/garena-international-i/1398/free-fire.html', cover: './offline/logo.png', description: 'Fast battle royale in the cloud via nowgg.fun.' },
-      { id: 'cloud-genshin', name: 'Genshin Impact', url: 'https://nowgg.fun/apps/cognosphere-pte-ltd-/1773/genshin-impact.html', cover: './offline/logo.png', description: 'Open-world RPG in the cloud via nowgg.fun.' },
-      { id: 'cloud-cod', name: 'Call of Duty', url: 'https://nowgg.fun/apps/activision-publishing-inc/7935/call-of-duty.html', cover: './offline/logo.png', description: 'FPS action in the cloud via nowgg.fun.' },
-      { id: 'cloud-blox-fruit', name: 'Blox Fruit', url: 'https://nowgg.fun/apps/blox-fruit/19901/blox-fruit.html', cover: './offline/logo.png', description: 'Roblox adventure in the cloud via nowgg.fun.' },
-      { id: 'cloud-adopt-me', name: 'Adopt Me', url: 'https://nowgg.fun/apps/adopt-me/19912/adopt-me.html', cover: './offline/logo.png', description: 'Pets and roleplay in the cloud via nowgg.fun.' },
-      { id: 'cloud-moto-x3m', name: 'Moto X3M', url: 'https://nowgg.fun/apps/madpuffers/51036/moto-x3m.html', cover: './offline/logo.png', description: 'Stunt biking in the cloud via nowgg.fun.' }
+      { id: 'cloud-roblox', name: 'Roblox', url: 'https://nowgg.fun/apps/a/19900/b.html', cover: 'https://nowgg.fun/img/roadblock.png', description: 'Play Roblox in the cloud via nowgg.fun. No install needed.' },
+      { id: 'cloud-stumble-guys', name: 'Stumble Guys', url: 'https://nowgg.fun/apps/a/10011/b.html', cover: 'https://nowgg.fun/img/stumbleguys.jpg', description: 'Chaotic multiplayer races in the cloud via nowgg.fun.' },
+      { id: 'cloud-cod', name: 'Call of Duty', url: 'https://nowgg.fun/apps/a/10008/b.html', cover: 'https://nowgg.fun/img/cod.jpg', description: 'FPS action in the cloud via nowgg.fun.' },
+      { id: 'cloud-cookie-run', name: 'Cookie Run', url: 'https://nowgg.fun/apps/a/10019/b.html', cover: 'https://nowgg.fun/img/cookierun.jpg', description: 'Oven-break running in the cloud via nowgg.fun.' },
+      { id: 'cloud-rocket-league', name: 'Rocket League', url: 'https://nowgg.fun/apps/psyonix-studios/4656/rocket-league.html', cover: 'https://nowgg.fun/img/rocketleague.webp', description: 'Car soccer in the cloud via nowgg.fun.' },
+      { id: 'cloud-geometry-dash', name: 'Geometry Dash', url: 'https://nowgg.fun/apps/robtop-games/1400/geometry-dash.html', cover: 'https://nowgg.fun/img/geodash.png', description: 'Rhythm platforming in the cloud via nowgg.fun.' },
+      { id: 'cloud-melon-sandbox', name: 'Melon Sandbox', url: 'https://nowgg.fun/apps/playducky/7199/melon-sandbox.html', cover: 'https://nowgg.fun/img/melon-sandbox.png', description: 'Physics playground in the cloud via nowgg.fun.' },
+      { id: 'cloud-fortnite', name: 'Fortnite', url: 'https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.epicgames.fortnite', cover: 'https://nowgg.fun/img/fortnite.png', description: 'Battle royale in the cloud via nowgg.fun.' },
+      { id: 'cloud-minecraft-trial', name: 'Minecraft Trial', url: 'https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe', cover: './offline/logo.png', description: 'Block building in the cloud via nowgg.fun.' },
+      { id: 'cloud-aptoide', name: 'Aptoide', url: 'https://nowgg.fun/apps/aptoide/5874/aptoide.html', cover: 'https://nowgg.fun/img/aptoide.png', description: 'App store games in the cloud via nowgg.fun.' },
+      { id: 'cloud-uncube', name: 'Uncube Now', url: 'https://nowgg.fun/apps/uncube/7074/now.html', cover: 'https://nowgg.fun/img/android.jpg', description: 'Android gaming in the cloud via nowgg.fun.' }
     ];
   }
 
@@ -78,9 +77,18 @@
   };
   window.FlashOfflineSession = Object.freeze(session);
 
-  /* ---------- catalogue ---------- */
+  /* ---------- catalogue ----------
+   * Fast path: cache + manifest resolve instantly. Remote listings refresh
+   * in the background (stale-while-revalidate) at most every REFRESH_AFTER.
+   * Listings come from a mirror ladder so a single dead/rate-limited source
+   * never breaks the store. */
 
   let cataloguePromise = null;
+  let refreshPromise = null;
+
+  const SYNC_KEY = 'flashgames.catalogue.sync.v1';
+  const REFRESH_AFTER = 30 * 60 * 1000; // background re-sync at most every 30 min
+  const FAST_CACHE_MIN = 300;           // cache is "good enough" below this many? no: above
 
   function readCache(key) {
     try {
@@ -92,7 +100,19 @@
     return mergeGames(...[GAME_CACHE, ...LEGACY_CATALOGUES].map(readCache));
   }
   function writeCatalogue(games) {
-    try { localStorage.setItem(GAME_CACHE, JSON.stringify({ version: 8, generatedAt: Date.now(), games })); } catch {}
+    try { localStorage.setItem(GAME_CACHE, JSON.stringify({ version: 9, generatedAt: Date.now(), games })); } catch {}
+  }
+
+  function readSyncMeta() {
+    try {
+      const v = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null');
+      return v && typeof v === 'object' ? v : null;
+    } catch { return null; }
+  }
+  function writeSyncMeta(patch) {
+    const next = { ...readSyncMeta(), ...patch, at: Date.now() };
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify(next)); } catch {}
+    return next;
   }
 
   // Bundled files get a stable id from their filename, so the manifest entry,
@@ -177,54 +197,127 @@
     return `https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/${best.path}`;
   }
 
-  async function fetchFullCatalogue() {
-    const tree = await fetchJson(TREE_URL);
-    const entries = Array.isArray(tree?.tree) ? tree.tree : [];
-    const html = entries.filter((e) => e.type === 'blob' && /^offline\/.*\.html?$/i.test(e.path)).map((e) => e.path).sort();
-    const images = entries.filter((e) => e.type === 'blob' && /^offline\/.*\.(png|jpe?g|webp|gif|svg)$/i.test(e.path)).map((e) => e.path);
-    return html.map((path) => {
+  function parseGameFiles(payload) {
+    // GitHub git-trees API: {tree:[{path,type,size}]}, ungh.cc: {files:[{path,size}]}.
+    const entries = Array.isArray(payload?.tree) ? payload.tree
+      : Array.isArray(payload?.files) ? payload.files : [];
+    const isFile = Array.isArray(payload?.tree)
+      ? (e) => e.type === 'blob'
+      : (e) => !e.type || /^100\d{3}$/.test(String(e.mode || ''));
+    const sizes = new Map();
+    for (const e of entries) {
+      if (isFile(e) && typeof e.size === 'number' && e.size >= 0) sizes.set(String(e.path), e.size);
+    }
+    return {
+      html: entries.filter((e) => isFile(e) && /^offline\/.*\.html?$/i.test(e.path)).map((e) => e.path).sort(),
+      images: entries.filter(isFile).filter((e) => /^offline\/.*\.(png|jpe?g|webp|gif|svg)$/i.test(e.path)).map((e) => e.path),
+      sizes
+    };
+  }
+
+  // Mirror ladder for the pack listing. ungh.cc is an open GitHub proxy and
+  // is immune to the API's 60 req/h per-IP rate limit.
+  const CATALOGUE_SOURCES = [
+    { id: 'github', label: 'GitHub API', url: TREE_URL },
+    { id: 'ungh', label: 'ungh.cc mirror', url: 'https://ungh.cc/repos/CoolDude2349/Offline-HTML-Games-Pack/files/master' }
+  ];
+
+  async function fetchGameListing(timeout = 12000) {
+    let lastErr = new Error('No catalogue source was reachable.');
+    for (const src of CATALOGUE_SOURCES) {
+      try {
+        const payload = await fetchJson(src.url, timeout);
+        const listing = parseGameFiles(payload);
+        if (!listing.html.length) throw new Error('Listing has no game files.');
+        return { ...listing, source: src.label };
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr;
+  }
+
+  function gamesFromListing(listing) {
+    return listing.html.map((path) => {
       const file = path.slice(path.lastIndexOf('/') + 1);
       const rawUrl = `${SOURCE_ROOT}${encodeURIComponent(file)}`;
-      const name = prettyName(file).replace(/\bFnaf\b/gi, 'FNAF').replace(/\bLol\b/gi, 'LoL').replace(/\bAgar Io\b/gi, 'Agar.io');
+      const name = prettyName(file).replace(/\bFnaf\b/i, 'FNAF').replace(/\bLol\b/i, 'LoL').replace(/\bAgar Io\b/i, 'Agar.io');
       return {
         id: `offline-${file.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
         name, title: name, url: rawUrl, rawUrl, zone: 'OFFLINE PACK', category: 'HTML Games',
         description: 'Single-file HTML game from the Offline HTML Games Pack.',
-        cover: chooseCover(path, images), tags: ['HTML', 'Offline'], source: 'CoolDude2349/Offline-HTML-Games-Pack'
+        cover: chooseCover(path, listing.images), tags: ['HTML', 'Offline'], source: 'CoolDude2349/Offline-HTML-Games-Pack',
+        size: listing.sizes ? (listing.sizes.get(path) || 0) : 0
       };
     });
   }
 
   async function loadLocalManifest() {
-    try {
-      const r = await fetch(`${OFFLINE_MANIFEST_URL}?v=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data = await r.json();
-      const list = Array.isArray(data) ? data : data.games || [];
-      // Bundled local games ARE the Flash exclusives: they ship with the app.
-      return list.map((g, i) => normalizeGame({
-        ...g,
-        zone: 'FLASH EXCLUSIVE',
-        source: 'Flash Exclusive',
-        category: (!g.category || g.category === 'Standard') ? 'Exclusive' : g.category
-      }, i)).filter(Boolean);
-    } catch { return []; }
+    // Cache-busted fetch keeps the manifest fresh; when offline the service
+    // worker serves the pre-cached copy (exact-URL fetch), then storage.
+    const attempts = [
+      () => fetch(`${OFFLINE_MANIFEST_URL}?v=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } }),
+      () => fetch(OFFLINE_MANIFEST_URL, { cache: 'no-store', headers: { Accept: 'application/json' } })
+    ];
+    for (const attempt of attempts) {
+      try {
+        const r = await attempt();
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        const list = Array.isArray(data) ? data : data.games || [];
+        // Bundled local games ARE the Flash exclusives: they ship with the app.
+        return list.map((g, i) => normalizeGame({
+          ...g,
+          zone: 'FLASH EXCLUSIVE',
+          source: 'Flash Exclusive',
+          category: (!g.category || g.category === 'Standard') ? 'Exclusive' : g.category
+        }, i)).filter(Boolean);
+      } catch { /* try the next fallback */ }
+    }
+    return [];
+  }
+
+  // One shared refresh: fetch listing (mirror ladder), merge with cache and
+  // the local manifest, persist, then tell the UI exactly what changed.
+  function refreshCatalogue() {
+    if (refreshPromise) return refreshPromise;
+    refreshPromise = (async () => {
+      const [local, listing] = await Promise.all([loadLocalManifest(), fetchGameListing().catch(() => null)]);
+      const remote = listing ? gamesFromListing(listing) : [];
+      const games = mergeGames(local, remote, readCachedCatalogue());
+      if (games.length) writeCatalogue(games);
+      writeSyncMeta({ source: listing ? listing.source : 'network', games: games.length, refreshed: remote.length > 0 });
+      try { window.dispatchEvent(new CustomEvent('flashgames:catalogue-updated', { detail: { games, refreshed: remote.length > 0, source: listing ? listing.source : '' } })); } catch {}
+      return {
+        games,
+        source: games.length ? (remote.length ? 'catalogue' : 'cache+manifest') : 'empty',
+        error: remote.length || games.length ? '' : (listing ? '' : 'offline')
+      };
+    })().catch(async () => {
+      const games = mergeGames(await loadLocalManifest(), readCachedCatalogue());
+      return { games, source: games.length ? 'cache' : 'empty', error: 'offline' };
+    }).finally(() => { refreshPromise = null; });
+    return refreshPromise;
   }
 
   function loadGames(force = false) {
     if (cataloguePromise && !force) return cataloguePromise;
+    if (force) return refreshCatalogue();
     cataloguePromise = (async () => {
       const cached = readCachedCatalogue();
       const local = await loadLocalManifest();
-      if (!force && cached.length >= 300) {
-        const games = mergeGames(local, cached);
-        if (games.length !== cached.length) writeCatalogue(games);
-        return { games, source: 'cache+manifest' };
+      const combined = mergeGames(local, cached);
+      const meta = readSyncMeta();
+      // Fast path: resolvable games from cache+manifest. A healthy cached
+      // catalogue renders instantly; a stale one quietly re-syncs while the
+      // user browses.
+      if (combined.length >= FAST_CACHE_MIN) {
+        const stale = !meta || !meta.at || (Date.now() - meta.at) > REFRESH_AFTER;
+        if (stale) refreshCatalogue().catch(() => {});
+        return { games: combined, source: 'cache+manifest' };
       }
-      const remote = await fetchFullCatalogue().catch(() => []);
-      const games = mergeGames(local, remote, cached);
-      if (games.length) writeCatalogue(games);
-      return { games, source: games.length ? 'catalogue' : 'empty' };
+      // First run / thin cache: wait for a real listing.
+      const result = await refreshCatalogue();
+      if (result.games.length) return result;
+      return { games: combined, source: combined.length ? 'cache' : 'empty', error: result.error || 'offline' };
     })();
     return cataloguePromise.then(
       (v) => { cataloguePromise = null; return v; },
@@ -259,7 +352,11 @@
     loadGames, loadUpdates, loadNotifications,
     syncGames: () => loadGames(true),
     getCachedCatalogue: () => ({ games: readCachedCatalogue(), source: 'cache' }),
-    clearCache() { try { localStorage.removeItem(GAME_CACHE); } catch {} }
+    getSyncMeta: () => readSyncMeta() || {},
+    clearCache() {
+      try { localStorage.removeItem(GAME_CACHE); } catch {}
+      for (const key of LEGACY_CATALOGUES) { try { localStorage.removeItem(key); } catch {} }
+    }
   };
 
   /* ---------- favourites (sync API) ---------- */
@@ -370,20 +467,130 @@
     } catch {}
   }
 
-  async function fetchHtml(url) {
-    const tries = [url];
-    try { const d = decodeURIComponent(url); if (d !== url) tries.push(d); } catch {}
-    let lastErr = new Error('Download failed.');
-    for (const u of tries) {
+  // Download pipeline with live progress and a mirror ladder so a slow or
+  // blocked direct fetch doesn't leave the player with a dead spinner:
+  //   1. already-cached copy (instant / offline)
+  //   2. direct fetch, streamed with a real progress bar
+  //   3. jsDelivr gh mirror (for raw.githubusercontent paths)
+  //   4. public CORS proxies, in order, streamed too
+  function fmtBytes(n) {
+    if (!Number.isFinite(n) || n <= 0) return '';
+    if (n >= 1e9) return `${(n / 1e9).toFixed(2)} GB`;
+    if (n >= 1e6) return `${(n / 1e6).toFixed(1)} MB`;
+    if (n >= 1e3) return `${Math.round(n / 1e3)} KB`;
+    return `${n} B`;
+  }
+
+  function mirrorUrls(source) {
+    const ladder = [];
+    const gh = /^https?:\/\/raw\.githubusercontent\.com\/([^?#]+)/i.exec(source);
+    if (gh) {
       try {
-        const r = await fetch(u, { cache: 'no-store' });
-        if (!r.ok) throw new Error(`Download failed (${r.status}).`);
-        const text = await r.text();
-        if (!text) throw new Error('The download was empty.');
-        return text;
-      } catch (e) { lastErr = e; }
+        const path = decodeURIComponent(gh[1]);
+        const jsdh = `https://cdn.jsdelivr.net/gh/${path}`;
+        if (jsdh !== source) ladder.push(jsdh);
+      } catch {}
     }
-    throw lastErr;
+    ladder.push(`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(source)}`);
+    ladder.push(`https://api.allorigins.win/raw?url=${encodeURIComponent(source)}`);
+    return ladder;
+  }
+
+  function validateGameHtml(text) {
+    if (!text) throw new Error('The download was empty.');
+    if (text.length < 40) throw new Error('The download was too small to be a game page.');
+    if (!/</.test(text) || !/<!doctype html|<html|<script|<body|<iframe/i.test(text.slice(0, 1200))) {
+      throw new Error('The server did not return a game page (not HTML).');
+    }
+    return text;
+  }
+
+  async function drainResponse(res, onProgress, atLeastOnce) {
+    const reader = res?.body && typeof res.body.getReader === 'function' ? res.body.getReader() : null;
+    const totalRaw = Number(res?.headers?.get?.('content-length') || 0);
+    const total = totalRaw > 0 && Number.isFinite(totalRaw) ? totalRaw : 0;
+    if (!reader) {
+      const text = typeof res?.text === 'function' ? await res.text() : '';
+      if (!atLeastOnce) onProgress({ loaded: total || 0, total, pct: total ? 100 : null });
+      return text;
+    }
+    const decoder = new TextDecoder();
+    let loaded = 0;
+    let lastPaint = 0;
+    let text = '';
+    for (;;) {
+      let step;
+      try { step = await reader.read(); }
+      catch (e) { throw new Error('Connection dropped while downloading.'); }
+      if (step.done) break;
+      const chunk = step.value instanceof Uint8Array ? step.value : null;
+      if (chunk) {
+        loaded += chunk.length;
+        text += decoder.decode(chunk, { stream: true });
+      } else if (typeof step.value === 'string') {
+        loaded += step.value.length;
+        text += step.value;
+      }
+      const now = Date.now();
+      if (now - lastPaint > 150) {
+        lastPaint = now;
+        onProgress({ loaded, total, pct: total ? Math.min(99, Math.round((loaded / total) * 100)) : null });
+      }
+    }
+    text += decoder.decode();
+    onProgress({ loaded: loaded || text.length, total: total || loaded, pct: 99 });
+    return text;
+  }
+
+  async function attemptUrl(url, onProgress) {
+    // Cap how long a dead host can stall the ladder.
+    const ctl = new AbortController();
+    const abort = setTimeout(() => ctl.abort(), 60000);
+    try {
+      const res = await fetch(url, { cache: 'no-store', redirect: 'follow', signal: ctl.signal });
+      if (!res.ok) throw new Error(`Download failed (${res.status}).`);
+      return validateGameHtml(await drainResponse(res, onProgress, true));
+    } finally { clearTimeout(abort); }
+  }
+
+  async function downloadHtml(url, opts = {}) {
+    const on = (typeof opts === 'function' ? opts : (opts && opts.onProgress) || (() => {}));
+    const source = clean(url);
+    if (!source) throw new Error('This game has no source URL.');
+    // Fast path: already installed → climb straight out of the cache.
+    try {
+      const cache = await cacheHandle();
+      const hit = await cache.match(source).catch(() => null);
+      if (hit) {
+        on({ loaded: 1, total: 1, pct: 100, cached: true });
+        return validateGameHtml(await hit.text());
+      }
+    } catch { /* cache unavailable, keep downloading */ }
+    // Mirror ladder: direct → libcurl relay engine (when live) → proxies.
+    const engineOk = (() => {
+      try {
+        const status = window.FlashBridge?.status?.();
+        return !!(status && status.engine && window.FlashBridge.fetchText);
+      } catch { return false; }
+    })();
+    const fetchPlain = async (u, viaEngine = false) => {
+      on({ loaded: 0, total: 0, pct: null, mirror: u !== source || viaEngine });
+      if (viaEngine) return validateGameHtml(await window.FlashBridge.fetchText(u));
+      return attemptUrl(u, on);
+    };
+    const ladder = [() => fetchPlain(source)];
+    if (engineOk) ladder.push(() => fetchPlain(source, true));
+    for (const mirror of mirrorUrls(source)) ladder.push(() => fetchPlain(mirror));
+    const errors = [];
+    for (const step of ladder) {
+      try {
+        const text = await step();
+        return text;
+      } catch (e) {
+        errors.push((e && e.message) || String(e));
+      }
+    }
+    throw new Error(`Download failed after ${ladder.length} attempts — ${errors.pop() || 'all mirrors blocked'}.`);
   }
 
   async function putRecord(game, html) {
@@ -460,16 +667,17 @@
     return match ? readByUrl(match.rawUrl || match.url).catch(() => null) : null;
   }
 
-  async function installGame(game) {
+  async function installGame(game, opts) {
     const url = clean(game?.rawUrl || game?.url);
     if (!url) throw new Error('This game has no source URL.');
-    return putRecord(game, await fetchHtml(url));
+    return putRecord(game, await downloadHtml(url, opts));
   }
 
-  async function installCustom({ url, name, description, cover }) {
+  async function installCustom(payload, opts) {
+    let { url, name, description, cover } = payload || {};
     const source = clean(url);
     if (!/^https?:\/\//i.test(source)) throw new Error('Enter a valid http(s) game URL.');
-    const html = await fetchHtml(source);
+    const html = await downloadHtml(source, opts);
     if (!/<html[\s>]/i.test(html) && !/<body[\s>]/i.test(html)) throw new Error('The URL did not return an HTML game.');
     const parsed = clean(name) || prettyName(source.split('/').pop() || 'Custom Game');
     return putRecord(
@@ -478,13 +686,13 @@
     );
   }
 
-  async function launchGame(game) {
+  async function launchGame(game, opts) {
     const source = clean(game?.rawUrl || game?.url || game?.id);
     if (!source) throw new Error('This game has no source URL.');
     let cached = (game?.id && await getCachedGame(game.id).catch(() => null))
       || (await getCachedGame(source).catch(() => null));
     if (!cached?.html) {
-      const html = await fetchHtml(source);
+      const html = await downloadHtml(source, opts);
       cached = await putRecord({ ...(game || {}), rawUrl: source, url: source }, html);
     }
     return URL.createObjectURL(new Blob([cached.html], { type: 'text/html' }));
@@ -668,16 +876,55 @@
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
   };
 
+  function hostOf(u) { try { return new URL(String(u)).hostname.toLowerCase(); } catch { return ''; } }
+
+  // Pages in broken geo states navigate to mangled hosts (e.g. a region
+  // prefix glued onto "srcdoc"). Never fetch those, never frame those.
+  function isGarbageHost(host) {
+    return /(^|\.)srcdoc(\.|$|:)/i.test(String(host || ''));
+  }
+
   function responseLocation(res, base) {
     try {
       const headers = (res && res.headers) || {};
       const loc = typeof headers.get === 'function' ? headers.get('location') : (headers.location || headers.Location);
-      return loc ? new URL(loc, base).toString() : '';
+      if (!loc) return '';
+      const abs = new URL(loc, base).toString();
+      if (isGarbageHost(hostOf(abs))) return '';
+      return abs;
     } catch { return ''; }
   }
 
   // Every cloud document goes through the static engine,
   // following redirects until it loads.
+  // The engine egress IP is a datacenter: geo-matching breaks on it.
+  // Learn the device IP once (best-effort, direct) and forward it so
+  // relayed requests resolve to the USER's geography instead.
+  async function learnClientIp() {
+    if (bridge.clientIp) return bridge.clientIp;
+    if (typeof fetch !== 'function') return '';
+    try {
+      const res = await Promise.race([
+        fetch('https://api64.ipify.org?format=json', { cache: 'no-store' }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('ip timeout')), 3500))
+      ]);
+      const data = await res.json();
+      const ip = String((data && (data.ip || data.address)) || '').trim();
+      if (/^[0-9a-fA-F:.]{3,45}$/.test(ip)) bridge.clientIp = ip;
+    } catch {}
+    return bridge.clientIp || '';
+  }
+
+  function fetchHeaders(extra) {
+    const headers = { ...(extra || {}) };
+    if (bridge.clientIp) {
+      headers['X-Forwarded-For'] = bridge.clientIp;
+      headers['X-Real-IP'] = bridge.clientIp;
+      headers['Forwarded'] = `for=${bridge.clientIp}`;
+    }
+    return headers;
+  }
+
   async function engineFetchText(url, timeoutMs = 8000) {
     const engine = await loadEngine();
     if (typeof engine.fetch !== 'function') throw new Error('Engine fetch unavailable.');
@@ -692,7 +939,7 @@
         for (let hop = 0; hop < 4; hop++) {
           try {
             const res = await Promise.race([
-              engine.fetch(current, { headers: FETCH_HEADERS }),
+              engine.fetch(current, { headers: fetchHeaders(FETCH_HEADERS) }),
               new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out.')), timeoutMs))
             ]);
             const status = Number(res && res.status);
@@ -722,35 +969,161 @@
     bridge.status = 'direct';
     throw lastErr;
   }
+  // Cloud titles verify through the engine, then open top-level.
+  // (Regional pages send X-Frame-Options: SAMEORIGIN, so framing them is
+  // impossible — a new tab also lets region routing, login and media work.)
+  function clearBlobs() {
+    try {
+      for (const u of bridge.blobs || []) { try { URL.revokeObjectURL(u); } catch {} }
+    } catch {}
+    bridge.blobs = [];
+  }
+
+  // Region the way their launcher does: STUN srflx candidate → public IP
+  // → first octet. Native page, real WebRTC: this is exactly what top-level
+  // nowgg.fun runs, so we get the same answer it would.
+  async function detectOctet(timeoutMs = 2500) {
+    try {
+      if (typeof RTCPeerConnection !== 'function') return '';
+      const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+      const octet = await new Promise((resolve) => {
+        let done = false;
+        const finish = (value) => {
+          if (done) return;
+          done = true;
+          try { pc.close(); } catch {}
+          resolve(value || '');
+        };
+        try {
+          pc.onicecandidate = (ev) => {
+            try {
+              const cand = ev && ev.candidate && ev.candidate.candidate;
+              if (!cand) return;
+              if (!/typ (srflx|relay)/.test(cand)) return;
+              const parts = cand.split(' ');
+              const ip = parts[4] || '';
+              if (!ip || ip.includes(':')) return;
+              const first = ip.split('.')[0];
+              if (/^\d{1,3}$/.test(first)) finish(first);
+            } catch {}
+          };
+          pc.createDataChannel('x');
+          pc.createOffer()
+            .then((offer) => pc.setLocalDescription(offer))
+            .catch(() => finish(''));
+        } catch { finish(''); }
+        setTimeout(() => finish(''), timeoutMs);
+      });
+      return octet;
+    } catch { return ''; }
+  }
+
+  function toRegional(base, octet) {
+    try {
+      const u = new URL(base);
+      if (u.hostname.toLowerCase() === 'nowgg.fun' && octet) {
+        u.hostname = `${octet}.ip.nowgg.fun`;
+        return u.toString();
+      }
+    } catch {}
+    return base;
+  }
+
+  function deviceReachable(url, timeoutMs = 8000) {
+    if (typeof fetch !== 'function') return Promise.resolve(true);
+    return Promise.race([
+      fetch(url, { mode: 'no-cors', cache: 'no-store', credentials: 'omit', redirect: 'follow' }).then(() => true),
+      new Promise((resolve) => setTimeout(() => resolve(false), timeoutMs))
+    ]).catch(() => false);
+  }
+
+  function handoffCard(name) {
+    const safe = esc(name || 'Cloud game');
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Playing</title>` +
+    `<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0d12;color:#f2f4f8;font-family:system-ui,sans-serif;padding:24px;box-sizing:border-box}` +
+    `.card{max-width:440px;text-align:center;background:#141824;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:36px 30px}` +
+    `h1{font-size:20px;margin:0 0 10px}p{color:#9aa1b2;font-size:14px;line-height:1.6;margin:0}</style></head><body><div class="card">` +
+    `<h1>${safe} is playing</h1><p>${safe} launched its own hosting session, which needs to run outside the player. Come back here to browse.</p>` +
+    `</div></body></html>`;
+  }
+
+  function disarmHandoff() {
+    try {
+      const h = bridge._handoff;
+      if (h && h.frame && h.onLoad) h.frame.removeEventListener('load', h.onLoad);
+    } catch {}
+    bridge._handoff = null;
+  }
+
+  // The launcher self-navigates to its regional session host on Play.
+  // When that hop breaks framing, park a status card in the frame instead —
+  // nothing is ever handed off to a browser tab.
+  function armHandoff(predicted, name) {
+    disarmHandoff();
+    const frame = document.getElementById('gameFrame');
+    if (!frame) return;
+    let loads = 0;
+    const onLoad = () => {
+      loads += 1;
+      if (loads < 2) return;
+      disarmHandoff();
+      try {
+        frame.removeAttribute('sandbox');
+        frame.srcdoc = handoffCard(name);
+      } catch {}
+    };
+    try { frame.addEventListener('load', onLoad); } catch {}
+    bridge._handoff = { frame, onLoad };
+  }
+
   async function openCloud(url, name) {
     const base = clean(url);
     if (!base) throw new Error('This cloud game has no URL.');
     if (!/^https?:\/\//i.test(base)) throw new Error('Only http(s) cloud URLs are supported.');
-    // Go straight to the regional host when it is known.
-    const target = regionalUrl(base);
+    const apex = base;
+    disarmHandoff();
+    // Device IP first (best-effort): relayed calls carry user geography.
+    try { await learnClientIp(); } catch {}
+    // Engine verification (warms region learning; proves relay egress).
+    try {
+      await Promise.race([
+        engineFetchText(regionalUrl(base)),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out.')), 15000))
+      ]);
+    } catch {}
+    // Region the same way their launcher derives it (STUN first octet).
+    let predicted = regionalUrl(base);
+    try {
+      const octet = await detectOctet();
+      if (octet) predicted = toRegional(base, octet);
+    } catch {}
+    // Preflight both doors in parallel: apex for framing, regional fallback.
+    const [apexOk, regionOk] = await Promise.all([deviceReachable(apex), deviceReachable(predicted)]);
+    if (!apexOk && !regionOk) {
+      return 'tab-unreachable';
+    }
+    // Frame the launcher in the player: real location, working STUN,
+    // correct regional self-navigation. If Framing fails the gameplay page
+    // tells the player in-app — never a tab.
     const overlay = document.getElementById('playerOverlay');
     const frame = document.getElementById('gameFrame');
+    if (!overlay || !frame) {
+      return 'framing';
+    }
+    overlay.hidden = false;
+    document.body.classList.add('player-open');
+    try { window.lucide?.createIcons?.({ root: overlay, attrs: { 'stroke-width': 1.5 } }); } catch {}
     try {
-      // Verify reachability through the engine; throws on refusal.
-      await Promise.race([
-        engineFetchText(target),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out.')), 22000))
-      ]);
-      if (!overlay || !frame) throw new Error('Player unavailable.');
-      // Real navigation (never srcdoc): the browser follows nowgg.fun's
-      // region-matching redirect chain natively, so no DNS dead-ends.
       frame.removeAttribute('sandbox');
       frame.removeAttribute('srcdoc');
+      frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-modals');
       frame.title = name || 'Cloud game';
-      overlay.hidden = false;
-      document.body.classList.add('player-open');
-      frame.src = bridge.lastFinalUrl || target;
-      try { window.lucide?.createIcons?.({ root: overlay, attrs: { 'stroke-width': 1.5 } }); } catch {}
-      return 'playing';
-    } catch (error) {
-      window.open(target, '_blank', 'noopener,noreferrer');
-      throw error instanceof Error ? error : new Error('Cloud title could not be loaded.');
+      frame.src = apexOk ? apex : predicted;
+    } catch {
+      return 'framing';
     }
+    armHandoff(predicted, name);
+    return 'framing';
   }
 
   window.FlashBridge = Object.freeze({
@@ -787,6 +1160,8 @@
       );
     },
     fetchText: (url) => engineFetchText(url),
+    lastUrl: () => bridge.lastFinalUrl || '',
+    reset() { try { disarmHandoff(); } catch {} try { clearBlobs(); } catch {} },
     open: openCloud
   });
 
@@ -798,30 +1173,56 @@
     { id: 'pack-arcade', name: 'Arcade Classics', icon: 'ghost', description: 'Snake, Pong, Breakout, runners and endless arcade loops.', match: ['pac', 'snake', 'pong', 'breakout', 'invader', 'asteroid', 'arcade', 'retro', 'pinball', 'runner', 'dash', 'jump'], max: 30 },
     { id: 'pack-action', name: 'Action & Shooter', icon: 'zap', description: 'Zombies, stickmen, battles and fast shooters.', match: ['shooter', 'zombie', 'battle', 'fight', 'war', 'strike', 'sniper', 'gun', 'stickman', 'ninja'], max: 30 },
     { id: 'pack-racing', name: 'Racing & Sports', icon: 'flag', description: 'Cars, bikes, drifts and sports minigames.', match: ['rac', 'car', 'moto', 'bike', 'soccer', 'football', 'basket', 'sport', 'drift', 'parking', 'drive'], max: 30 },
-    { id: 'pack-starter', name: 'Starter Vault', icon: 'package', description: 'The offline essentials: every bundled Flash game, ready without internet.', local: true, max: 30 }
+    { id: 'pack-starter', name: 'Starter Vault', icon: 'package', description: 'The offline essentials: every bundled Flash game, ready without internet.', local: true, max: 30 },
+    { id: 'pack-offline-all', name: 'Every Offline Game', icon: 'package-open', description: 'The complete offline vault: bundled exclusives plus the whole catalogued pack, cached locally in one go.', offlineAll: true, max: 1200 },
+    { id: 'pack-online-all', name: 'Every Online Game', icon: 'globe', description: 'Every instantly-playable online title, downloaded and stored for offline play.', onlineAll: true, max: 1200 },
+    { id: 'pack-everything', name: 'The Whole Vault', icon: 'archive', description: 'Every single game Flash Games can cache — offline pack, exclusives, clients and online titles straight from Lumin.', everything: true, max: 2400, recommended: true }
   ];
+
+  function isLuminPlayable(g) {
+    if (!g) return false;
+    if (g.zone !== 'LUMIN' && !(g.__raw || g.luminId)) return false;
+    return !!(findGameUrl(g?.__raw || g) || clean(g.rawUrl) || clean(g.url));
+  }
 
   function resolvePack(packId, games) {
     const def = PACK_DEFS.find((p) => p.id === packId);
     if (!def || !Array.isArray(games)) return [];
-    const pool = games.filter((g) => g && g.zone !== 'LUMIN' && (g.rawUrl || g.url));
+    const offlinePool = games.filter((g) => g && g.zone !== 'LUMIN' && (g.rawUrl || g.url));
+    const onlinePool = games.filter(isLuminPlayable);
     let picked;
-    if (def.local) {
-      picked = pool.filter((g) => /^\.\//.test(clean(g.rawUrl || g.url)));
+    if (def.onlineAll) {
+      picked = resolvePack('pack-everything', onlinePool);
+    } else if (def.everything) {
+      picked = resolvePack('pack-offline-all', offlinePool).concat(onlinePool);
+    } else if (def.offlineAll) {
+      picked = offlinePool.filter((g) => g.zone === 'OFFLINE PACK' || g.source === 'Flash Exclusive' || g.zone === 'FLASH EXCLUSIVE');
+    } else if (def.local) {
+      picked = offlinePool.filter((g) => /^\.\//.test(clean(g.rawUrl || g.url)));
     } else {
       const keys = def.match.map((k) => k.toLowerCase());
-      picked = pool.filter((g) => {
+      picked = offlinePool.filter((g) => {
         const hay = `${g.name} ${g.category} ${(g.tags || []).join(' ')}`.toLowerCase();
         return keys.some((k) => hay.includes(k));
       });
     }
     const seen = new Set(), out = [];
-    for (const g of [...picked, ...pool]) {
+    for (const g of [...picked, ...offlinePool]) {
       const key = g.rawUrl || g.url || g.id;
       if (seen.has(key)) continue;
       seen.add(key);
       out.push(g);
       if (out.length >= def.max) break;
+    }
+    if (def.onlineAll || def.everything) {
+      const seenIds = new Set(out.map((g) => String(g.id)));
+      for (const g of onlinePool) {
+        const key = findGameUrl(g?.__raw || g) || g.rawUrl || g.url || g.id;
+        if (seenIds.has(String(g.id))) continue;
+        seenIds.add(String(g.id));
+        out.push(g);
+        if (out.length >= def.max) break;
+      }
     }
     return out;
   }
@@ -829,14 +1230,30 @@
   async function installPack(packId, games, onProgress) {
     const list = resolvePack(packId, games);
     if (!list.length) throw new Error('This pack has no installable games right now.');
+    // Installed copies are reused, not re-downloaded: cache first, then the
+    // direct game source, and each failure just moves on.
+    const cache = await cacheHandle().catch(() => null);
+    const alreadyHave = async (game) => {
+      const urls = [...new Set([clean(game.rawUrl), clean(game.url)].filter(Boolean))];
+      try {
+        const cache = await cacheHandle();
+        for (const u of urls) { if (await cache.match(u).catch(() => null)) return true; }
+      } catch {}
+      if (game.id && (await getCachedGame(game.id).catch(() => null))?.html) return true;
+      return urls.some((u) => metaList().some((m) => clean(m?.url || m?.rawUrl) === u));
+    };
     let done = 0, failed = 0;
     const queue = list.slice();
     const worker = async () => {
       while (queue.length) {
         const game = queue.shift();
         try {
-          const cached = await getCachedGame(game.id).catch(() => null) || await getCachedGame(game.rawUrl || game.url).catch(() => null);
-          if (!cached?.html) await installGame(game);
+          if (await alreadyHave(game)) { /* cached copy reused */ }
+          else {
+            const source = (game.zone === 'LUMIN' || game.luminId) ? findGameUrl(game.__raw || game) : clean(game.rawUrl || game.url);
+            if (source) await installGame({ ...game, rawUrl: source, url: source });
+            else throw new Error('No playable source.');
+          }
         } catch { failed += 1; }
         done += 1;
         try { onProgress && onProgress(done, list.length); } catch {}
@@ -850,5 +1267,95 @@
     defs: PACK_DEFS.map((p) => ({ ...p })),
     resolve: resolvePack,
     install: installPack
+  });
+
+  /* ---------- eaglercraft launcher manifest ----------
+   * Clients live in ./eagler/ (files/ + imgs/ + clients.json). Entries with
+   * a plain "file"/"image" path resolve relative to ./eagler/; explicit
+   * "./…" paths (used by the bundled defaults) resolve from the app root. */
+
+  const EAGLER_MANIFEST_URL = './eagler/clients.json';
+  const EAGLER_CACHE_KEY = 'flashgames.eagler.v1';
+  const EAGLER_BUNDLED = [
+    { id: 'pixelclient-112', name: 'PixelClient 1.12.2', version: '1.12.2', file: './offline/PixelClient 1.12.2 WASM.html', image: './offline/pixelclient.svg', description: 'PixelClient: an Eaglercraft client with 20+ built-in mods.', tags: ['WASM', '1.12.2', 'Mods'], featured: true },
+    { id: 'pixelclient-18', name: 'PixelClient 1.8.8', version: '1.8.8', file: './offline/PixelClient 1.8.8 WASM.html', image: './offline/pixelclient.svg', description: 'PixelClient with 1.8 PVP and 20+ built-in mods.', tags: ['WASM', '1.8.8', 'PVP'] },
+    { id: 'astra-112', name: 'AstraClient 1.12', version: '1.12', file: './offline/astra112.html', image: './offline/astraclient.jpeg', description: 'One of the best clients.', tags: ['1.12'] },
+    { id: 'astra-18', name: 'AstraClient 1.8', version: '1.8', file: './offline/astra18.html', image: './offline/astraclient.jpeg', description: 'The 1.8 build of AstraClient — fast on low-end devices.', tags: ['1.8', 'PVP'] },
+    { id: 'resent-5', name: 'Resent Client 5.0', version: '5.0', file: './offline/eaglercraft.dev_Resent_Client_5.0_WASM.html', image: './offline/resentclient.png', description: 'Resent Client 5.0 — a module-based Eaglercraft client.', tags: ['WASM', 'Modules'] },
+    { id: 'shadownet', name: 'ShadowNet Client', version: '', file: './offline/eaglercraft.dev_ShadowNetClient_WASM.html', image: '', description: 'ShadowNet Eaglercraft client.', tags: ['WASM'] },
+    { id: 'tuffclient', name: 'Tuff Client', version: '', file: './offline/eaglercraft.dev_Tuff_Client_WASM.html', image: './offline/tuffclient.png', description: 'Anyone remember this?', tags: ['Classic'] }
+  ];
+
+  function resolveEaglerPath(value) {
+    const v = clean(value);
+    if (!v) return '';
+    if (/^[a-z][a-z0-9+.-]*:/i.test(v)) return v;      // absolute http(s)/data/etc
+    if (v.startsWith('./') || v.startsWith('/') || v.startsWith('../')) return v; // explicit from app root
+    return `./eagler/${v.replace(/^\/+/, '')}`;       // relative to ./eagler/
+  }
+
+  function normalizeEaglerClient(entry, index = 0) {
+    if (!entry || typeof entry !== 'object') return null;
+    const name = clean(entry.name || entry.title);
+    const file = clean(entry.file || entry.url || entry.path || entry.href);
+    if (!name || !file) return null;
+    const url = resolveEaglerPath(file);
+    if (!url) return null;
+    const slug = clean(entry.id)
+      || `${name}${entry.version ? `-${clean(entry.version)}` : ''}`
+      || `client-${index + 1}`;
+    return {
+      id: `eagler-${slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}`,
+      name, title: name,
+      url, rawUrl: url,
+      version: clean(entry.version),
+      zone: entry.zone || 'EAGLECRAFT',
+      category: 'Eaglercraft',
+      description: clean(entry.description || 'Eaglercraft client.'),
+      image: resolveEaglerPath(entry.image || entry.cover || entry.icon || ''),
+      cover: resolveEaglerPath(entry.image || entry.cover || entry.icon || ''),
+      tags: Array.isArray(entry.tags) ? entry.tags.map(clean).filter(Boolean) : ['Eaglercraft'],
+      featured: entry.featured === true,
+      source: 'Eaglercraft'
+    };
+  }
+
+  let eaglerPromise = null;
+
+  function loadEaglerClients() {
+    if (eaglerPromise) return eaglerPromise;
+    eaglerPromise = (async () => {
+      try {
+        const r = await fetch(`${EAGLER_MANIFEST_URL}?v=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
+        if (r.ok) {
+          const data = await r.json();
+          const parsed = (Array.isArray(data) ? data : data.clients || []).map(normalizeEaglerClient).filter(Boolean);
+          if (parsed.length) {
+            try { localStorage.setItem(EAGLER_CACHE_KEY, JSON.stringify({ clients: parsed, at: Date.now() })); } catch {}
+            return parsed;
+          }
+        }
+      } catch { /* offline below */ }
+      // Offline: last cached manifest, else the bundled defaults.
+      try {
+        const stored = JSON.parse(localStorage.getItem(EAGLER_CACHE_KEY) || 'null');
+        const cached = Array.isArray(stored?.clients) ? stored.clients : [];
+        if (cached.length) return cached.map(normalizeEaglerClient).filter(Boolean);
+      } catch {}
+      return EAGLER_BUNDLED.map(normalizeEaglerClient).filter(Boolean);
+    })();
+    return eaglerPromise.then(
+      (v) => { eaglerPromise = null; return v; },
+      (e) => {
+        eaglerPromise = null;
+        return EAGLER_BUNDLED.map(normalizeEaglerClient).filter(Boolean);
+      }
+    );
+  }
+
+  window.FlashEagler = Object.freeze({
+    load: loadEaglerClients,
+    defaults: () => EAGLER_BUNDLED.map(normalizeEaglerClient).filter(Boolean),
+    normalize: normalizeEaglerClient
   });
 })();

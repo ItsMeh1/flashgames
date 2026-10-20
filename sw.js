@@ -1,9 +1,11 @@
 /* Flash Games service worker — minimal offline shell, no HTML rewriting. */
-const CACHE_NAME = 'flashgames-v6';
+const CACHE_NAME = 'flashgames-v9';
 const APP_SHELL = [
   './', './index.html', './styles.css',
   './core.js', './app.js', './admin.js', './auth.js', './extras.js',
-  './manifest.json', './update.json', './offline.json', './offline/logo.png'
+  './manifest.json', './update.json', './offline.json',
+  './eagler/clients.json',
+  './offline/logo.png'
 ];
 
 self.addEventListener('install', (e) => {
@@ -61,7 +63,20 @@ self.addEventListener('fetch', (e) => {
       } catch (_) {}
       return (await c.match('./index.html')) || (await c.match(r, { ignoreSearch: true })) || Response.error();
     }
-    // Shell assets: cache first, then network.
+    // Shell assets: app code always goes network-first so users never run
+    // stale JS; the cache is only the offline fallback.
+    const staleShell = /\.(js|mjs|css|json)$/i.test(u.pathname) && u.origin === self.location.origin;
+    if (staleShell) {
+      let fresh = null;
+      try {
+        const n = await fetch(r, { cache: 'no-store' });
+        if (n.ok) { c.put(r.url, n.clone()).catch(() => {}); fresh = n; }
+      } catch (_) {}
+      if (fresh) return fresh;
+      const cached = await c.match(r, { ignoreSearch: true });
+      if (cached) return cached;
+      return new Response('Offline', { status: 503 });
+    }
     const hit = await c.match(r, { ignoreSearch: false });
     if (hit) return hit;
     try {

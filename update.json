@@ -1,22 +1,85 @@
 {
-  "version": "5.3.6",
+  "version": "5.4.0",
   "releases": [
+    {
+      "version": "5.4.0",
+      "date": "September 26, 2026",
+      "description": "don't worry, your welcome.",
+      "changes": [
+        {
+          "type": "edit",
+          "text": "Mega pack overhaul: The Whole Vault (recommended), Every Offline Game and Every Online Game sit front and center as big hero bundles, installs reuse cached games instead of re-downloading, and downloads now try the libcurl relay engine as a mirror. Fixed pill drift on hover and shell caching issues (service worker now always runs fresh app code)."
+        },
+        {
+          "type": "add",
+          "text": "Big quality wave: offline sign-in is error-free, Library+Store merged into one Games section with a centered switcher, a much smarter fuzzy search with filters, a cleaner options bar, 3 new mega-bundles (every offline game / every online game / the whole vault), and the game HUD no longer drifts."
+        },
+        {
+          "type": "add",
+          "text": "Made a new EaglerCraft section. Its a full launcher, build from scratch, made for Flash Games. It has all your favorite versions from Beta Indev to 1.5.2 to 26.3, its everything you could possibly wish for. All local, offline, private, no data retention, and it runs on your device."
+        },
+        {
+          "type": "add",
+          "text": "Added some more EaglerCraft models for the fun of it. These include: 26.3, 26.2, Pixel Client (all versions), Tuff Client (WASM only), and Astra Client. Get & play them in the EaglerCraft section."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed a bug where there is both a Home button and the Flash Games button, both of which redirect to the home page. Originally, there was only meant to be one of them."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed a bug that forced you to sign in and didn't let you make a new account"
+        },
+        {
+          "type": "fix",
+          "text": "Fixed a bug that made dev codes invalid for no reason"
+        },
+        {
+          "type": "fix",
+          "text": "Fixed a bug that forced you to sign in and didn't let you make a new account"
+        },
+        {
+          "type": "edit",
+          "text": "Temporarily removed all Cloud Gaming connections because they messed up the app & didn't work. Expect a fix in other updates."
+        },
+        {
+          "type": "edit",
+          "text": "Changed the way games are played & fetched to make it more efficent & faster"
+        },
+        {
+          "type": "remove",
+          "text": "Removed the home button"
+        }
+      ]
+    },
     {
       "version": "5.3.6",
       "date": "September 26, 2026",
       "description": "Admin Rebuild",
       "changes": [
-        {"type": "fix", "text": "Fixed maintenance lock never engaging. The panel now actually exports its status reader."},
-        {"type": "fix", "text": "Fixed member search losing focus after every keystroke."},
-        {"type": "add", "text": "Rebuilt administration from scratch: health metrics, searchable member directory, full profiles with suspension and age signals, moderation actions, release lock and catalogue controls."}
+        {
+          "type": "fix",
+          "text": "Fixed maintenance lock never engaging. The panel now actually exports its status reader."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed member search losing focus after every keystroke."
+        },
+        {
+          "type": "add",
+          "text": "Rebuilt administration from scratch: health metrics, searchable member directory, full profiles with suspension and age signals, moderation actions, release lock and catalogue controls."
+        }
       ]
     },
     {
       "version": "5.3.5",
       "date": "September 26, 2026",
-      "description": "One Game, One Name",
+      "description": "bug fixes!",
       "changes": [
-        {"type": "fix", "text": "The same game no longer appears twice under different names. Local games share one identity everywhere, old installs and favorites migrate automatically, and the library always shows the catalogue name."}
+        {
+          "type": "fix",
+          "text": "The same game no longer appears twice under different names. Local games share one identity everywhere, old installs and favorites migrate automatically, and the library always shows the catalogue name. finally done, made me mad."
+        }
       ]
     },
     {
@@ -24,8 +87,14 @@
       "date": "September 26, 2026",
       "description": "Cloud Arcade & Always-On Social",
       "changes": [
-        {"type": "add", "text": "Polished the cloud arcade: region and tunnel badges, numbered titles, host tags and Play buttons with live opening state."},
-        {"type": "edit", "text": "Confer now fills the whole social tab and stays mounted, so calls survive tab switches."}
+        {
+          "type": "add",
+          "text": "Polished the cloud arcade: region and connection badges, numbered titles, host tags and Play buttons with live opening state."
+        },
+        {
+          "type": "edit",
+          "text": "Confer now fills the whole social tab and stays mounted, so calls survive tab switches."
+        }
       ]
     },
     {
@@ -33,7 +102,10 @@
       "date": "September 26, 2026",
       "description": "Exclusive Shelf Fix",
       "changes": [
-        {"type": "fix", "text": "The Flash Exclusive collection is stocked again. Every bundled offline game now lives there, with no double listings."}
+        {
+          "type": "fix",
+          "text": "The Flash Exclusive collection is stocked again. Every bundled offline game now lives there, with no double listings."
+        }
       ]
     },
     {
@@ -41,7 +113,10 @@
       "date": "September 26, 2026",
       "description": "Duplicate Cleanup",
       "changes": [
-        {"type": "fix", "text": "Removed double listings. Games shared by the offline manifest and the exclusive shelf now show once."}
+        {
+          "type": "fix",
+          "text": "Removed double listings. Games shared by the offline manifest and the exclusive shelf now show once."
+        }
       ]
     },
     {
@@ -49,8 +124,14 @@
       "date": "September 26, 2026",
       "description": "Regional Cloud Routing",
       "changes": [
-        {"type": "fix", "text": "Cloud titles now detect nowgg.fun's region redirect and play from your regional host (e.g. 24.ip.nowgg.fun) instead of dying on DNS errors."},
-        {"type": "add", "text": "Your region is remembered, so repeat plays skip straight to the regional host."}
+        {
+          "type": "fix",
+          "text": "Cloud titles now detect nowgg.fun's region redirect and play from your regional host (e.g. 24.ip.nowgg.fun) instead of dying on DNS errors."
+        },
+        {
+          "type": "add",
+          "text": "Your region is remembered, so repeat plays skip straight to the regional host."
+        }
       ]
     },
     {
@@ -58,9 +139,18 @@
       "date": "September 26, 2026",
       "description": "Cloud Region Fix & RNG Rebuild",
       "changes": [
-        {"type": "fix", "text": "Fixed cloud games dying on region redirects. Titles verify through the engine, then the player navigates for real so geo-matching resolves natively."},
-        {"type": "add", "text": "Rebuilt Infinity RNG as Aurora Vault: new dock, arena stage, bento casino, pity meter and mobile tab bar. Save system untouched."},
-        {"type": "fix", "text": "Fixed Turbo Motor doing nothing, stale Hi-Lo reference, dead save-merge code and unreachable mobile tabs in RNG."}
+        {
+          "type": "fix",
+          "text": "Fixed cloud games dying on region redirects. Titles verify through the engine, then the player navigates for real so geo-matching resolves natively."
+        },
+        {
+          "type": "add",
+          "text": "Rebuilt Infinity RNG as Aurora Vault: new dock, arena stage, bento casino, pity meter and mobile tab bar. Save system untouched."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed Turbo Motor doing nothing, stale Hi-Lo reference, dead save-merge code and unreachable mobile tabs in RNG."
+        }
       ]
     },
     {
@@ -68,9 +158,18 @@
       "date": "September 26, 2026",
       "description": "Library Focus Update",
       "changes": [
-        {"type": "remove", "text": "Removed the Games section. The store now covers every collection and the library holds everything installed."},
-        {"type": "edit", "text": "Library took over the games icon."},
-        {"type": "fix", "text": "Custom URL installs now appear in the library immediately."}
+        {
+          "type": "remove",
+          "text": "Removed the Games section. The store now covers every collection and the library holds everything installed."
+        },
+        {
+          "type": "edit",
+          "text": "Library took over the games icon."
+        },
+        {
+          "type": "fix",
+          "text": "Custom URL installs now appear in the library immediately."
+        }
       ]
     },
     {
@@ -78,10 +177,22 @@
       "date": "September 25, 2026",
       "description": "Player, Store & Packs Update",
       "changes": [
-        {"type": "edit", "text": "The game player is now tab-fullscreen by default, with optional window fullscreen."},
-        {"type": "edit", "text": "All cloud traffic now loads through the vendored static fetch engine."},
-        {"type": "add", "text": "Added collection switching (Offline, Lumin, Exclusive) and a dedicated packs area in the store."},
-        {"type": "add", "text": "Added pack detail views so you can see and play every game inside a bundle."}
+        {
+          "type": "edit",
+          "text": "The game player is now tab-fullscreen by default, with optional window fullscreen."
+        },
+        {
+          "type": "edit",
+          "text": "All cloud traffic now loads through the vendored static fetch engine."
+        },
+        {
+          "type": "add",
+          "text": "Added collection switching (Offline, Lumin, Exclusive) and a dedicated packs area in the store."
+        },
+        {
+          "type": "add",
+          "text": "Added pack detail views so you can see and play every game inside a bundle."
+        }
       ]
     },
     {
@@ -89,12 +200,30 @@
       "date": "September 25, 2026",
       "description": "Access, Cloud, Packs & Navbar Update",
       "changes": [
-        {"type": "add", "text": "Added an access gate. An account or a developer code is now required to enter. Developer codes also unlock cloud gaming."},
-        {"type": "add", "text": "Added a static fetch engine (vendored) with graceful direct fallback."},
-        {"type": "add", "text": "Added 12 nowgg.fun cloud titles: Roblox, Rocket League, Minecraft, Among Us, PUBG, Free Fire, Genshin, COD, Blox Fruit, Adopt Me and more."},
-        {"type": "add", "text": "Added game packs in the store. One tap installs a whole bundle locally for offline play."},
-        {"type": "add", "text": "Added a condensing navbar pill on scroll with hover tooltips, plus a layout-stability pass so search no longer shifts the page."},
-        {"type": "fix", "text": "Restored the gameplay iframe to its original unsandboxed playback."}
+        {
+          "type": "add",
+          "text": "Added an access gate. An account or a developer code is now required to enter. Developer codes also unlock cloud gaming."
+        },
+        {
+          "type": "add",
+          "text": "Added a static fetch engine (vendored) with graceful direct fallback."
+        },
+        {
+          "type": "add",
+          "text": "Added 12 nowgg.fun cloud titles: Roblox, Rocket League, Minecraft, Among Us, PUBG, Free Fire, Genshin, COD, Blox Fruit, Adopt Me and more."
+        },
+        {
+          "type": "add",
+          "text": "Added game packs in the store. One tap installs a whole bundle locally for offline play."
+        },
+        {
+          "type": "add",
+          "text": "Added a condensing navbar pill on scroll with hover tooltips, plus a layout-stability pass so search no longer shifts the page."
+        },
+        {
+          "type": "fix",
+          "text": "Restored the gameplay iframe to its original unsandboxed playback."
+        }
       ]
     },
     {
@@ -102,12 +231,30 @@
       "date": "September 25, 2026",
       "description": "Slimdown & Reliability Update",
       "changes": [
-        {"type": "remove", "text": "Removed 30+ redundant hotfix stylesheets and scripts. The whole site now runs on one stylesheet and five scripts."},
-        {"type": "edit", "text": "New minimal interface: calmer surfaces, faster load, same features."},
-        {"type": "edit", "text": "Online games are now downloaded and cached before playing. If caching fails you get a clear error instead of a broken frame."},
-        {"type": "fix", "text": "Fixed library, search and favorites not refreshing on the Games tab."},
-        {"type": "fix", "text": "Fixed cloud games that refused to load inside the player. They now open in a new tab."},
-        {"type": "fix", "text": "Fixed stale service worker caching and broken manifest start URL."}
+        {
+          "type": "remove",
+          "text": "Removed 30+ redundant hotfix stylesheets and scripts. The whole site now runs on one stylesheet and five scripts."
+        },
+        {
+          "type": "edit",
+          "text": "New minimal interface: calmer surfaces, faster load, same features."
+        },
+        {
+          "type": "edit",
+          "text": "Online games are now downloaded and cached before playing. If caching fails you get a clear error instead of a broken frame."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed library, search and favorites not refreshing on the Games tab."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed cloud games that refused to load inside the player. They now open in a new tab."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed stale service worker caching and broken manifest start URL."
+        }
       ]
     },
     {
@@ -115,20 +262,62 @@
       "date": "September 11, 2026",
       "description": "Platform, Accounts & Cloud Update",
       "changes": [
-        {"type": "add", "text": "Added offline startup support for previously verified Firebase accounts using a local verified-session cache."},
-        {"type": "add", "text": "Restored account creation with username, profile picture, email, and password support."},
-        {"type": "add", "text": "Added clear account-creation lock messaging when registration is disabled or unavailable."},
-        {"type": "add", "text": "Added a rebuilt moderation-focused admin panel with member search, review filters, account status, verification, activity signals, roles, notes, restrictions, suspensions, and profile controls."},
-        {"type": "add", "text": "Added Flash Terminal with safe read-only diagnostics and an Alt/Option+T keyboard shortcut."},
-        {"type": "add", "text": "Added online-game caching through the same Flash Games install pipeline used for offline games."},
-        {"type": "add", "text": "Added cloud gaming provider access through Raccoon Cloud Games."},
-        {"type": "add", "text": "Added a loading screen that says Loading game... while slower games start."},
-        {"type": "edit", "text": "Improved game downloads so compatible alternate game URLs can be tried when a provider returns a 404 or not-found error."},
-        {"type": "edit", "text": "Improved the service worker app shell and cache versioning for the new platform features."},
-        {"type": "edit", "text": "Updated the app manifest and offline session handling for more reliable installed/offline use."},
-        {"type": "fix", "text": "Fixed the Flash Terminal not opening because its mount routine was never started."},
-        {"type": "fix", "text": "Fixed the cloud section having no provider entries despite the cloud-game system being present."},
-        {"type": "fix", "text": "Fixed several account and moderation UI paths while preserving the existing save and localStorage systems."}
+        {
+          "type": "add",
+          "text": "Added offline startup support for previously verified Firebase accounts using a local verified-session cache."
+        },
+        {
+          "type": "add",
+          "text": "Restored account creation with username, profile picture, email, and password support."
+        },
+        {
+          "type": "add",
+          "text": "Added clear account-creation lock messaging when registration is disabled or unavailable."
+        },
+        {
+          "type": "add",
+          "text": "Added a rebuilt moderation-focused admin panel with member search, review filters, account status, verification, activity signals, roles, notes, restrictions, suspensions, and profile controls."
+        },
+        {
+          "type": "add",
+          "text": "Added Flash Terminal with safe read-only diagnostics and an Alt/Option+T keyboard shortcut."
+        },
+        {
+          "type": "add",
+          "text": "Added online-game caching through the same Flash Games install pipeline used for offline games."
+        },
+        {
+          "type": "add",
+          "text": "Added cloud gaming provider access through Raccoon Cloud Games."
+        },
+        {
+          "type": "add",
+          "text": "Added a loading screen that says Loading game... while slower games start."
+        },
+        {
+          "type": "edit",
+          "text": "Improved game downloads so compatible alternate game URLs can be tried when a provider returns a 404 or not-found error."
+        },
+        {
+          "type": "edit",
+          "text": "Improved the service worker app shell and cache versioning for the new platform features."
+        },
+        {
+          "type": "edit",
+          "text": "Updated the app manifest and offline session handling for more reliable installed/offline use."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed the Flash Terminal not opening because its mount routine was never started."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed the cloud section having no provider entries despite the cloud-game system being present."
+        },
+        {
+          "type": "fix",
+          "text": "Fixed several account and moderation UI paths while preserving the existing save and localStorage systems."
+        }
       ]
     },
     {
@@ -136,16 +325,46 @@
       "date": "August 22, 2026",
       "description": "Flash Games Redesigned: v2",
       "changes": [
-        {"type": "add", "text": "Added a new changelog system (this one your seeing!)"},
-        {"type": "add", "text": "Added another 300 offline games for downloadable offline play"},
-        {"type": "add", "text": "All new store for downloading new games"},
-        { "type": "add", "text": "Added Confer to Flash Games in the social tab for video calling, voice calling, screensharing, and messaging with friends while playing. Expect discord functionality in Flash Games later on." },
-        {"type": "add", "text": "New stats page for all players"},
-        {"type": "add", "text": "Themes & preferences"},
-        {"type": "edit", "text": "Fixed a bug where your data wouldn't exactly save & you couldn't enter your account."},
-        {"type": "edit", "text": "Fixed a bug where the page wouldn't load at all & the stylesheet was broken."},
-        {"type": "remove", "test": "Removed a bunch of accounts for testing & from link leaks"},
-        {"type": "remove", "test": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."}
+        {
+          "type": "add",
+          "text": "Added a new changelog system (this one your seeing!)"
+        },
+        {
+          "type": "add",
+          "text": "Added another 300 offline games for downloadable offline play"
+        },
+        {
+          "type": "add",
+          "text": "All new store for downloading new games"
+        },
+        {
+          "type": "add",
+          "text": "Added Confer to Flash Games in the social tab for video calling, voice calling, screensharing, and messaging with friends while playing. Expect discord functionality in Flash Games later on."
+        },
+        {
+          "type": "add",
+          "text": "New stats page for all players"
+        },
+        {
+          "type": "add",
+          "text": "Themes & preferences"
+        },
+        {
+          "type": "edit",
+          "text": "Fixed a bug where your data wouldn't exactly save & you couldn't enter your account."
+        },
+        {
+          "type": "edit",
+          "text": "Fixed a bug where the page wouldn't load at all & the stylesheet was broken."
+        },
+        {
+          "type": "remove",
+          "test": "Removed a bunch of accounts for testing & from link leaks"
+        },
+        {
+          "type": "remove",
+          "test": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."
+        }
       ]
     },
     {
@@ -153,10 +372,22 @@
       "date": "???",
       "description": "Performance & Bug Patch",
       "changes": [
-        {"type": "add", "text": "Added a better system for performance mode, rather the old system."},
-        {"type": "add", "text": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."},
-        { "type": "add", "text": "Removed spam accounts & accounts created during link leaks." },
-        {"type": "add", "text": "Lots of bug fixes."}
+        {
+          "type": "add",
+          "text": "Added a better system for performance mode, rather the old system."
+        },
+        {
+          "type": "add",
+          "text": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."
+        },
+        {
+          "type": "add",
+          "text": "Removed spam accounts & accounts created during link leaks."
+        },
+        {
+          "type": "add",
+          "text": "Lots of bug fixes."
+        }
       ]
     },
     {
@@ -164,8 +395,14 @@
       "date": "???",
       "description": "Accounts",
       "changes": [
-        {"type": "add", "text": "Added accounts, profile chips, data saving, and more!"},
-        {"type": "edit", "text": "Lots of bug fixes."}
+        {
+          "type": "add",
+          "text": "Added accounts, profile chips, data saving, and more!"
+        },
+        {
+          "type": "edit",
+          "text": "Lots of bug fixes."
+        }
       ]
     },
     {
@@ -173,10 +410,22 @@
       "date": "???",
       "description": "Liquid Glass & Persistence",
       "changes": [
-        {"type": "add", "text": "Liquid Glass Display"},
-        {"type": "add", "text": "Game Installer"},
-        {"type": "add", "text": "Home-page navigation system"},
-        {"type": "edit", "text": "Changelog redesign"}
+        {
+          "type": "add",
+          "text": "Liquid Glass Display"
+        },
+        {
+          "type": "add",
+          "text": "Game Installer"
+        },
+        {
+          "type": "add",
+          "text": "Home-page navigation system"
+        },
+        {
+          "type": "edit",
+          "text": "Changelog redesign"
+        }
       ]
     },
     {
@@ -184,10 +433,22 @@
       "date": "???",
       "description": "Flash CLI",
       "changes": [
-        {"type": "add", "text": "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline."},
-        {"type": "add", "text": "<code>flash health</code> Check your system health."},
-        {"type": "add", "text": "<code>flash init</code> Prepare Flash Games if it hasn't been already."},
-        {"type": "add", "text": "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update. Adding more."}
+        {
+          "type": "add",
+          "text": "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline."
+        },
+        {
+          "type": "add",
+          "text": "<code>flash health</code> Check your system health."
+        },
+        {
+          "type": "add",
+          "text": "<code>flash init</code> Prepare Flash Games if it hasn't been already."
+        },
+        {
+          "type": "add",
+          "text": "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update. Adding more."
+        }
       ]
     }
   ]

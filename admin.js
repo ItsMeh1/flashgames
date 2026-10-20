@@ -23,7 +23,8 @@
     loading: false,
     loadError: '',
     query: '',
-    filter: 'all'
+    filter: 'all',
+    tab: 'overview'
   };
 
   /* ---------- access ---------- */
@@ -465,7 +466,47 @@
     }
   }
 
-  /* ---------- dashboard ---------- */
+  /* ---------- dashboard: tabbed control center ---------- */
+
+  const TABS = [
+    { id: 'overview', label: 'Overview', icon: 'layout-dashboard' },
+    { id: 'members', label: 'Members', icon: 'users-round' },
+    { id: 'releases', label: 'Releases & locks', icon: 'rocket' },
+    { id: 'catalogue', label: 'Catalogue', icon: 'library-big' },
+    { id: 'system', label: 'System & data', icon: 'activity' },
+    { id: 'codes', label: 'Access codes', icon: 'key-round' }
+  ];
+
+  function lsTotal() {
+    try {
+      let total = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        total += (String(k).length + String(localStorage.getItem(k) || '').length) * 2;
+      }
+      return total;
+    } catch { return 0; }
+  }
+  const fmtBytes = (n) => !Number.isFinite(n) ? '—' : n >= 1e9 ? `${(n / 1e9).toFixed(2)} GB` : n >= 1e6 ? `${(n / 1e6).toFixed(1)} MB` : n >= 1e3 ? `${Math.round(n / 1e3)} KB` : `${n} B`;
+
+  function flaggedMembers(users) {
+    return users
+      .map((x) => ({ x, signals: riskOf(x) }))
+      .filter((row) => row.signals.length)
+      .sort((a, b) => b.signals.length - a.signals.length || (b.x.createdAt || 0) - (a.x.createdAt || 0));
+  }
+
+  function memberMiniRow(row) {
+    const { x, signals } = row;
+    return `<button type="button" class="admin-mini-row" data-open-members="${esc(x.id)}">` +
+      `<span class="avatar"><img src="${esc(avatar(photoOf(x)))}" alt="" loading="lazy" onerror="this.onerror=null;this.src='./offline/logo.png'"></span>` +
+      `<span class="admin-mini-copy"><strong>${esc(fullName(x))}</strong><small>${esc(x.email || x.id)}</small></span>` +
+      `<span class="admin-member-meta">${statusPill(x)}<span class="admin-risk-badge warn">${signals.length} signal${signals.length === 1 ? '' : 's'}</span></span></button>`;
+  }
+
+  function maskCode(code) {
+    return String(code).replace(/./g, (ch, i) => (ch === '-' ? '-' : i > 3 && i < String(code).length - 2 ? '•' : ch));
+  }
 
   async function render(target, user, profile) {
     if (!target) return false;
@@ -480,6 +521,7 @@
 
     const [maintenance, updates] = await Promise.all([readMaintenance(), FlashData.loadUpdates()]);
     const catalogue = FlashData.getCachedCatalogue ? FlashData.getCachedCatalogue() : { games: [] };
+    const sync = FlashData.getSyncMeta ? FlashData.getSyncMeta() : {};
     let users = [];
     try {
       users = await loadUsers();
@@ -488,34 +530,116 @@
     }
 
     const restricted = users.filter((x) => x.banned || x.disabled || Number(x.suspendedUntil) > Date.now()).length;
-    const risky = users.filter((x) => riskOf(x).length).length;
+    const risky = flaggedMembers(users);
     const unverified = users.filter((x) => x.verified === false).length;
     const version = updates.version || '0.0.0';
+    const installedCount = await (async () => {
+      try { return (await window.FlashGamesStore?.getAllCachedGames?.()).length || 0; } catch { return 0; }
+    })();
+    const bridge = window.FlashBridge?.status?.() || { mode: 'idle' };
+    const dev = !!(window.FlashAccess?.isDeveloper?.());
+    const codes = Array.isArray(window.FlashAccess?.codes) ? window.FlashAccess.codes : [];
+    const recentMembers = [...users].filter((x) => x.createdAt)
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      .slice(0, 5)
+      .map((x) => ({ x, signals: riskOf(x) }));
+
+    state.tab = TABS.some((t) => t.id === state.tab) ? state.tab : 'overview';
+    const tabHead = `<div class="admin-tabs">${TABS.map((t) => `<button type="button" class="admin-tab${t.id === state.tab ? ' active' : ''}" data-admin-tab="${t.id}">${icon(t.icon)}<span>${t.label}</span></button>`).join('')}</div>`;
+
+    /* ----- panes ----- */
+
+    const paneOverview =
+      `<section class="admin-pane${state.tab === 'overview' ? ' active' : ''}" data-admin-pane="overview">` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">HEALTH CHECK</span><h2>${(() => { const w = risky.length + restricted; return w ? `${w} member${w === 1 ? '' : 's'} need attention` : 'All members healthy'; })()}</h2><p>${users.length.toLocaleString()} member records · ${unverified.toLocaleString()} unverified${users.length >= 1000 ? ' · showing the first 1000' : ''}</p></div>` +
+      `<div class="admin-actions"><button type="button" class="btn" data-admin-goto="members">${icon('users-round')} Members</button><button type="button" class="btn primary" id="openMemberManagement">${icon('shield-check')} Open moderation</button></div></div>` +
+      `<div class="admin-metric-grid">` +
+      `<div><strong>${users.length.toLocaleString()}</strong><small>Total members</small></div>` +
+      `<div class="warn"><strong>${risky.length.toLocaleString()}</strong><small>Needs review</small></div>` +
+      `<div class="bad"><strong>${restricted.toLocaleString()}</strong><small>Restricted</small></div>` +
+      `<div><strong>${unverified.toLocaleString()}</strong><small>Unverified</small></div>` +
+      `<div><strong>${catalogue.games.length.toLocaleString()}</strong><small>Catalogue games</small></div>` +
+      `<div><strong>${esc(version)}</strong><small>App version</small></div></div></div>` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">NEWEST ACCOUNTS</span><h2>Recent signups</h2><p>The freshest member records. Click through for the full moderation view.</p></div></div>` +
+      `<div class="admin-mini-list">${recentMembers.map(memberMiniRow).join('') || `<div class="admin-members-empty">${icon('users-round')}<strong>No member records</strong><span>Accounts appear here once users register.</span></div>`}</div></section>`;
+
+    const paneMembers =
+      `<section class="admin-pane${state.tab === 'members' ? ' active' : ''}" data-admin-pane="members">` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">MODERATION QUEUE</span><h2>${risky.length ? `${risky.length} flagged member${risky.length === 1 ? '' : 's'}` : 'Queue is clear'}</h2><p>Profiles with verification, suspension or abuse signals. The full tool supports search, filters, roles, bans and notes.</p></div>` +
+      `<button type="button" class="btn primary" id="openMemberManagement">${icon('shield-check')} Full moderation</button></div>` +
+      `<div class="admin-mini-list">${risky.slice(0, 8).map(memberMiniRow).join('') || `<div class="admin-members-empty">${icon('shield-check')}<strong>No flags on any member</strong><span>Bans and suspensions will surface here.</span></div>`}</div></div></section>`;
+
+    const paneReleases =
+      `<section class="admin-pane${state.tab === 'releases' ? ' active' : ''}" data-admin-pane="releases">` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">RELEASE LOCK</span><h2>${maintenance.enabled ? 'Update lock is ACTIVE' : 'Site is public'}</h2><p>${esc(maintenance.message || 'Use maintenance mode while publishing a release — normal users see an update screen.')}</p></div>` +
+      `<div class="admin-actions"><button type="button" class="btn primary" id="adminMaintenanceOn">${icon('lock')} Lock</button><button type="button" class="btn" id="adminMaintenanceOff">${icon('lock-open')} Open</button></div></div>` +
+      `<label class="admin-inline-label">Maintenance message</label><textarea id="adminMaintenanceMessage" class="admin-input" rows="2">${esc(maintenance.message || 'Flash Games is being updated. Please check back soon.')}</textarea></div>` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">CHANGELOG</span><h2>v${esc(version)}</h2><p>${(updates.releases || []).length.toLocaleString()} published release entries.</p></div>` +
+      `<button type="button" class="btn" data-route="updates">${icon('history')} Open changelog</button></div></section>`;
+
+    const paneCatalogue =
+      `<section class="admin-pane${state.tab === 'catalogue' ? ' active' : ''}" data-admin-pane="catalogue">` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">CATALOGUE · v${esc(version)}</span><h2>${catalogue.games.length.toLocaleString()} games cached</h2><p>Last remote sync ${sync.at ? new Date(sync.at).toLocaleString() : 'not yet'} via ${esc(sync.source || 'network')}.</p></div>` +
+      `<div class="admin-actions"><button type="button" class="btn primary" id="refreshCatalogue">${icon('refresh-cw')} Refresh listing</button><button type="button" class="btn" id="clearGameCacheAdmin">${icon('trash-2')} Clear installed cache</button></div></div>` +
+      `<div class="admin-metric-grid three">` +
+      `<div><strong>${catalogue.games.length.toLocaleString()}</strong><small>Store catalogue entries</small></div>` +
+      `<div><strong>${installedCount.toLocaleString()}</strong><small>User-installed games</small></div>` +
+      `<div><strong>${window.FlashEagler ? 'Eagler + Flash' : 'Flash'}</strong><small>Launchers in build</small></div></div>` +
+      `<p class="panel-note">Catalogue listings come from the GitHub API with an ungh.cc mirror fallback. A healthy cache serves instantly; remote listings refresh in the background every 30 minutes.</p></section>`;
+
+    const paneSystem = await (async () => {
+      let storeRows = [];
+      if ('caches' in window) {
+        try {
+          storeRows = await Promise.all((await caches.keys()).map(async (k) => ({ k, n: (await (await caches.open(k)).keys()).length })));
+        } catch {}
+      }
+      const estimate = navigator.storage?.estimate ? await navigator.storage.estimate().catch(() => null) : null;
+      return `<section class="admin-pane${state.tab === 'system' ? ' active' : ''}" data-admin-pane="system">` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">RUNTIME</span><h2>System status</h2><p>What the control center sees about this device and session.</p></div></div>` +
+      `<div class="admin-metric-grid three">` +
+      `<div><strong>${navigator.serviceWorker ? 'Supported' : 'None'}</strong><small>Service worker</small></div>` +
+      `<div class="${window.__flashFirebase?.auth ? '' : 'warn'}"><strong>${window.__flashFirebase?.auth ? 'Connected' : 'Blocked'}</strong><small>Firebase</small></div>` +
+      `<div class="${bridge.engine ? '' : 'warn'}"><strong>${bridge.engine ? 'WASM loaded' : 'Not warmed'}</strong><small>Fetch engine</small></div>` +
+      `<div><strong>${esc(bridge.endpointUrl || bridge.mode || '—')}</strong><small>Engine endpoint</small></div>` +
+      `<div><strong>${esc(bridge.region || 'auto')}</strong><small>Cloud region</small></div>` +
+      `<div><strong>${storeRows.length}</strong><small>Cache stores</small></div>` +
+      `<div><strong>${fmtBytes(lsTotal())}</strong><small>localStorage used</small></div>` +
+      `<div><strong>${estimate ? fmtBytes(estimate.usage) : '—'}</strong><small>Origin quota used</small></div>` +
+      `<div><strong>${navigator.onLine ? 'Online' : 'Offline'}</strong><small>Network</small></div></div>` +
+      (storeRows.length ? `<p class="panel-note">${storeRows.map((r) => `${esc(r.k)} · ${r.n} items`).join('<br>')}</p>` : '') + `</div>` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">PRIVACY</span><h2>What moderation can see</h2></div></div>` +
+      `<p class="panel-note">Moderation is limited to data members' own app writes to Firestore: username, email, profile photo, verification state, restriction history, moderator notes, and optional activity counters. The tool cannot read passwords, browser storage, or device data.</p></section></section>`;
+    })();
+
+    const paneCodes =
+      `<section class="admin-pane${state.tab === 'codes' ? ' active' : ''}" data-admin-pane="codes">` +
+      `<div class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">DEVELOPER CODES</span><h2>Recovery access</h2><p>Codes unlock this device without an account when sign-in is impossible. Stored locally until revoked.</p></div>` +
+      `<span class="admin-risk-badge ${dev ? 'good' : 'warn'}" data-admin-codestate>${dev ? 'Device unlocked' : 'Device locked'}</span></div>` +
+      `<ul class="admin-code-list">${codes.map((code) => `<li class="admin-code-row"><code data-code>${esc(maskCode(code))}</code><span class="admin-code-actions"><button type="button" class="icon-btn" data-admin-reveal aria-label="Reveal code">${icon('eye')}</button><button type="button" class="icon-btn" data-admin-copy aria-label="Copy code">${icon('copy')}</button></span></li>`).join('')}</ul>` +
+      `<div class="admin-actions" style="margin-top:16px">` +
+      `<input class="admin-input" id="adminCodeProbe" type="text" placeholder="Validate a code…" style="margin:0 0 10px">` +
+      `<div class="row"><button type="button" class="btn" id="adminCodeValidate">${icon('badge-check')} Validate</button>` +
+      `<button type="button" class="btn" id="adminCodeUnlockThis">${icon('unlock')} Unlock this device</button>` +
+      `<button type="button" class="btn ${dev ? 'danger' : ''}" id="adminCodeLockThis" ${dev ? '' : 'disabled'}>${icon('lock')} Lock this device</button></div></div></section>`;
 
     target.innerHTML =
-      `<div class="admin-shell glass"><div class="admin-head"><div><span class="eyebrow">MODERATION CONTROL CENTER</span><h1>Administration</h1>` +
-      `<p>Review members, account health, and stored abuse signals.</p></div>` +
+      `<div class="admin-shell glass"><div class="admin-head"><div><span class="eyebrow">CONTROL CENTER</span><h1>Administration</h1>` +
+      `<p>Six workspaces: member health, moderation, releases, catalogue, runtime and recovery codes.</p></div>` +
       `<span class="admin-role">${icon('shield-check')} ${esc(profile.role || 'staff')}</span></div>` +
-      `<div class="admin-compact-grid">` +
-      `<section class="admin-panel"><span class="eyebrow">MEMBER HEALTH</span><h2>At a glance</h2><div class="admin-metrics">` +
-      `<div><strong>${users.length.toLocaleString()}</strong><small>Total members</small></div>` +
-      `<div><strong>${risky.toLocaleString()}</strong><small>Needs review</small></div>` +
-      `<div><strong>${restricted.toLocaleString()}</strong><small>Restricted</small></div></div>` +
-      `<div class="admin-actions" style="margin-top:14px"><button class="btn primary" id="openMemberManagement">${icon('shield-check')} Open moderation</button></div></section>` +
-      `<section class="admin-panel"><span class="eyebrow">VERIFICATION</span><h2>${unverified.toLocaleString()} unverified</h2>` +
-      `<p>Review new or unverified accounts before granting additional trust.</p></section></div>` +
-      `<section class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">RELEASE CONTROL</span>` +
-      `<h2>${maintenance.enabled ? 'Update lock active' : 'Site is public'}</h2>` +
-      `<p>${esc(maintenance.message || 'Use maintenance mode before publishing a release.')}</p></div>` +
-      `<div class="admin-actions"><button class="btn primary" id="adminMaintenanceOn">${icon('lock')} Lock</button>` +
-      `<button class="btn" id="adminMaintenanceOff">${icon('lock-open')} Open</button></div></div>` +
-      `<textarea id="adminMaintenanceMessage" class="admin-input" rows="2">${esc(maintenance.message || 'Flash Games is being updated. Please check back soon.')}</textarea></section>` +
-      `<section class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">CATALOGUE · v${esc(version)}</span><h2>Games</h2>` +
-      `<p>${catalogue.games.length.toLocaleString()} cached games.</p></div>` +
-      `<div class="admin-actions"><button class="btn" id="refreshCatalogue">${icon('refresh-cw')} Refresh</button>` +
-      `<button class="btn" id="clearGameCacheAdmin">${icon('trash-2')} Clear cache</button></div></div></section>` +
-      `<section class="admin-panel"><div class="admin-section-head"><div><span class="eyebrow">ACCOUNT DATA</span><h2>What moderation can see</h2>` +
-      `<p>UID, account dates, verification, restrictions, notes, and activity counters when those fields are present in Firestore.</p></div></div></section></div>`;
+      tabHead +
+      `${paneOverview}${paneMembers}${paneReleases}${paneCatalogue}${paneSystem}${paneCodes}</div>`;
+
+    /* ----- wiring ----- */
+
+    const setTab = (id) => {
+      state.tab = TABS.some((t) => t.id === id) ? id : 'overview';
+      target.querySelectorAll('[data-admin-tab]').forEach((b) => b.classList.toggle('active', b.dataset.adminTab === state.tab));
+      target.querySelectorAll('[data-admin-pane]').forEach((p) => p.classList.toggle('active', p.dataset.adminPane === state.tab));
+    };
+    target.querySelectorAll('[data-admin-tab]').forEach((b) => { b.onclick = () => setTab(b.dataset.adminTab); });
+    target.querySelectorAll('[data-admin-goto]').forEach((b) => { b.onclick = () => setTab(b.dataset.adminGoto); });
+    target.querySelectorAll('[data-open-members]').forEach((b) => { b.onclick = () => openMembers(); });
 
     const message = () => $('#adminMaintenanceMessage', target)?.value.trim() || 'Flash Games is being updated. Please check back soon.';
 
@@ -551,11 +675,49 @@
         await FlashGamesStore.clearGameCache();
         toast('Installed cache cleared', 'The store catalogue was left untouched.', 'success');
         window.dispatchEvent(new CustomEvent('flashgames:library-changed'));
+        await render(target, user, profile);
       } catch (error) {
         toast('Clear failed', error.message || 'The cache could not be cleared.', 'error');
       }
     };
     $('#openMemberManagement', target).onclick = () => openMembers();
+
+    /* access codes */
+    const codesPane = $('.admin-pane[data-admin-pane="codes"]', target);
+    codesPane?.addEventListener('click', async (e) => {
+      const row = e.target.closest('.admin-code-row');
+      if (row && e.target.closest('[data-admin-reveal]')) {
+        const codeEl = row.querySelector('[data-code]');
+        const idx = Array.from(codesPane.querySelectorAll('.admin-code-row')).indexOf(row);
+        const revealed = codeEl.dataset.revealed === '1';
+        codeEl.textContent = revealed ? maskCode(codes[idx] || '') : (codes[idx] || '');
+        codeEl.dataset.revealed = revealed ? '0' : '1';
+        try { e.target.closest('[data-admin-reveal]').innerHTML = icon(revealed ? 'eye' : 'eye-off'); } catch {}
+        icons(e.target.closest('[data-admin-reveal]'));
+        return;
+      }
+      if (row && e.target.closest('[data-admin-copy]')) {
+        const idx = Array.from(codesPane.querySelectorAll('.admin-code-row')).indexOf(row);
+        try { await navigator.clipboard.writeText(codes[idx] || ''); toast('Code copied', 'Paste it carefully — copy once, use once.', 'success'); }
+        catch { toast('Copy failed', 'Clipboard access was blocked.', 'error'); }
+      }
+    });
+    $('#adminCodeValidate', target).onclick = () => {
+      const value = $('#adminCodeProbe', target)?.value || '';
+      const ok = !!window.FlashAccess?.unlockWithCode?.(value);
+      toast(ok ? 'Code is valid' : 'Invalid code', ok ? 'The device is now unlocked (this also applied the unlock).' : 'That code did not match any recovery code.', ok ? 'success' : 'error');
+      if (ok) render(target, user, profile);
+    };
+    $('#adminCodeUnlockThis', target).onclick = () => {
+      const probe = $('#adminCodeProbe', target)?.value || '';
+      if (!probe.trim()) { toast('Enter a code', 'Type the recovery code in the field first.', 'info'); return; }
+      $('#adminCodeValidate', target).click();
+    };
+    $('#adminCodeLockThis', target).onclick = () => {
+      window.FlashAccess?.lock?.();
+      toast('Device locked', 'Developer access was removed from this device.', 'success');
+      render(target, user, profile);
+    };
 
     icons(target);
     return true;

@@ -31,9 +31,8 @@ window.__flashFirebase = null;
 <header class="topbar glass" id="topbar">
   <a class="brand" href="#home" data-route="home" data-label="Flash Games" aria-label="Flash Games"><span class="brand-mark"><img src="./offline/logo.png" alt=""></span><span>Flash <b>Games</b></span></a>
   <nav class="desktop-nav" aria-label="Primary">
-    <button class="nav-item active" data-route="home" data-label="Home"><i data-lucide="house"></i><span>Home</span></button>
-    <button class="nav-item" data-route="library" data-label="Library"><i data-lucide="gamepad-2"></i><span>Library</span></button>
-    <button class="nav-item" data-route="store" data-label="Store"><i data-lucide="store"></i><span>Store</span></button>
+    <button class="nav-item" data-route="eagler" data-label="Eaglercraft"><i data-lucide="blocks"></i><span>Eaglercraft</span></button>
+    <button class="nav-item" data-route="games" data-label="Games"><i data-lucide="gamepad-2"></i><span>Games</span></button>
     <button class="nav-item" data-route="social" data-label="Social"><i data-lucide="users"></i><span>Social</span></button>
     <button class="nav-item" data-route="cloud" data-label="Cloud"><i data-lucide="cloud"></i><span>Cloud</span></button>
     <button class="nav-item" data-route="updates" data-label="Updates"><i data-lucide="history"></i><span>Updates</span></button>
@@ -48,25 +47,26 @@ window.__flashFirebase = null;
 </header>
 <main id="app" tabindex="-1">
   <section class="view active" id="homeView" data-view="home"></section>
-  <section class="view" id="libraryView" data-view="library"></section>
-  <section class="view" id="storeView" data-view="store"></section>
+  <section class="view" id="eaglerView" data-view="eagler"></section>
+  <section class="view" id="gamesView" data-view="games"></section>
   <section class="view" id="socialView" data-view="social"></section>
   <section class="view" id="cloudView" data-view="cloud"></section>
   <section class="view" id="updatesView" data-view="updates"></section>
   <section class="view" id="adminView" data-view="admin"></section>
 </main>
 <nav class="bottom-dock glass" aria-label="Mobile navigation">
-  <button class="dock-item active" data-route="home"><i data-lucide="house"></i><span>Home</span></button>
-  <button class="dock-item" data-route="library"><i data-lucide="gamepad-2"></i><span>Library</span></button>
-  <button class="dock-item" data-route="store"><i data-lucide="store"></i><span>Store</span></button>
+  <button class="dock-item" data-route="eagler"><i data-lucide="blocks"></i><span>Mine</span></button>
+  <button class="dock-item" data-route="games"><i data-lucide="store"></i><span>Games</span></button>
   <button class="dock-item" data-route="social"><i data-lucide="users"></i><span>Social</span></button>
   <button class="dock-item" id="mobileProfile"><i data-lucide="user-round"></i><span>Profile</span></button>
 </nav>
 <div class="modal-backdrop" id="searchBackdrop" hidden>
   <section class="search-modal glass" role="dialog" aria-modal="true">
     <div class="panel-head"><div><span class="eyebrow">QUICK FIND</span><h2>Search games</h2></div><button class="icon-btn" data-close="searchBackdrop" aria-label="Close"><i data-lucide="x"></i></button></div>
-    <label class="command-search"><i data-lucide="search"></i><input id="searchInput" autocomplete="off" placeholder="Search games, genres, tags…"><kbd>ESC</kbd></label>
+    <label class="command-search"><i data-lucide="search"></i><input id="searchInput" autocomplete="off" spellcheck="false" placeholder="Search everything — fuzzy matching, filters, actions…"><kbd>ESC</kbd></label>
+    <div id="searchChips" class="search-chips"></div>
     <div id="searchResults" class="search-results"></div>
+    <div class="search-hints"><kbd>↑↓</kbd> browse <kbd>↵</kbd> play <kbd>esc</kbd> close</div>
   </section>
 </div>
 <aside class="side-panel glass" id="profilePanel" hidden>
@@ -91,14 +91,14 @@ window.__flashFirebase = null;
     <input class="range" id="blurRange" type="range" min="8" max="36" value="20">
     <button class="setting-action" id="toggleMotion"><span><i data-lucide="sparkles"></i><span><strong>Motion</strong><small>Enable interface animations.</small></span></span><span class="switch on"><i></i></span></button>
     <button class="setting-action" id="togglePerformance"><span><i data-lucide="gauge"></i><span><strong>Performance mode</strong><small>Reduce interface effects.</small></span></span><span class="switch"><i></i></span></button>
+    <button class="setting-action" id="openDiagnostics"><span><i data-lucide="stethoscope"></i><span><strong>Diagnostics</strong><small>System health and connectivity checks.</small></span></span><i data-lucide="chevron-right"></i></button>
     <button class="setting-action" id="clearLibrary"><span><i data-lucide="trash-2"></i><span><strong>Clear library</strong><small>Remove installed games.</small></span></span><i data-lucide="chevron-right"></i></button>
   </div>
 </aside>
-<div class="modal-backdrop" id="notificationsBackdrop" hidden>
-  <section class="notification-modal glass" role="dialog" aria-modal="true">
-    <div class="panel-head"><div><span class="eyebrow">ACTIVITY</span><h2>Notifications</h2></div><button class="icon-btn" data-close="notificationsBackdrop" aria-label="Close"><i data-lucide="x"></i></button></div>
-    <div id="notificationList" class="notification-list"></div>
-  </section>
+<div class="notif-drop glass" id="notifDrop" hidden>
+  <div class="notif-drop-head"><span class="eyebrow">ACTIVITY</span><button class="icon-btn" id="notifClose" aria-label="Close"><i data-lucide="x"></i></button></div>
+  <div id="downloadsList" class="dl-list"></div>
+  <div id="notificationList" class="notification-list"></div>
 </div>
 <div class="modal-backdrop admin-members-backdrop" id="userManagementBackdrop" hidden>
   <section class="admin-members-modal glass" role="dialog" aria-modal="true">
