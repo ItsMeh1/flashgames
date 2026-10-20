@@ -1,0 +1,88 @@
+{
+  "title": "Eaglercraft",
+  "subtitle": "Pick a client, press play. Everything runs offline once cached.",
+  "clients": [
+    {
+      "id": "pixelclient-112",
+      "name": "PixelClient 1.12.2",
+      "version": "1.12.2",
+      "file": "./offline/PixelClient 1.12.2 WASM.html",
+      "image": "./offline/pixelclient.svg",
+      "description": "PixelClient: an Eaglercraft client with 20+ built-in mods.",
+      "tags": ["WASM", "1.12.2", "Mods"],
+      "featured": true
+    },
+    {
+      "id": "pixelclient-18",
+      "name": "PixelClient 1.8.8",
+      "version": "1.8.8",
+      "file": "./offline/PixelClient 1.8.8 WASM.html",
+      "image": "./offline/pixelclient.svg",
+      "description": "PixelClient with 1.8 PVP and 20+ built-in mods.",
+      "tags": ["WASM", "1.8.8", "PVP"]
+    },
+    {
+      "id": "astra-112",
+      "name": "AstraClient 1.12",
+      "version": "1.12",
+      "file": "./offline/astra112.html",
+      "image": "./offline/astraclient.jpeg",
+      "description": "One of the best clients.",
+      "tags": ["1.12"]
+    },
+    {
+      "id": "astra-18",
+      "name": "AstraClient 1.8",
+      "version": "1.8",
+      "file": "./offline/astra18.html",
+      "image": "./offline/astraclient.jpeg",
+      "description": "The 1.8 build of AstraClient — fast on low-end devices.",
+      "tags": ["1.8", "PVP"]
+    },
+    {
+      "id": "resent-5",
+      "name": "Resent Client 5.0",
+      "version": "5.0",
+      "file": "./offline/eaglercraft.dev_Resent_Client_5.0_WASM.html",
+      "image": "./offline/resentclient.png",
+      "description": "Resent Client 5.0 — a module-based Eaglercraft client.",
+      "tags": ["WASM", "Modules"]
+    },
+    {
+      "id": "shadownet",
+      "name": "ShadowNet Client",
+      "version": "",
+      "file": "./offline/eaglercraft.dev_ShadowNetClient_WASM.html",
+      "image": "",
+      "description": "ShadowNet Eaglercraft client.",
+      "tags": ["WASM"]
+    },
+    {
+      "id": "tuffclient",
+      "name": "Tuff Client",
+      "version": "",
+      "file": "./offline/eaglercraft.dev_Tuff_Client_WASM.html",
+      "image": "./offline/tuffclient.png",
+      "description": "Anyone remember this?",
+      "tags": ["Classic"]
+    },
+    {
+      "id": "26.2",
+      "name": "26.2: Chaos Cubed!",
+      "version": "26.2",
+      "file": "./offline/26.2.html",
+      "image": "./offline/26.2.png",
+      "description": "One of the latest versions of Eagler, some of the MOST features.",
+      "tags": ["Classic", "26.2", "2026", "New", "WASM", "U1"]
+    },
+    {
+      "id": "26.3",
+      "name": "26.3: Wilderness Bound!",
+      "version": "26.3",
+      "file": "./offline/26.3.html",
+      "image": "./offline/26.3.png",
+      "description": "Latest Java drop! Theres litterally nothing ahead of this.",
+      "tags": ["Classic", "WASM", "U1", "2026"]
+    }
+  ]
+}
