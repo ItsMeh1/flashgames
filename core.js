@@ -532,7 +532,7 @@
         text += step.value;
       }
       const now = Date.now();
-      if (now - lastPaint > 150) {
+      if (now - lastPaint > 80) {
         lastPaint = now;
         onProgress({ loaded, total, pct: total ? Math.min(99, Math.round((loaded / total) * 100)) : null });
       }
@@ -545,10 +545,12 @@
   async function attemptUrl(url, onProgress) {
     // Cap how long a dead host can stall the ladder.
     const ctl = new AbortController();
-    const abort = setTimeout(() => ctl.abort(), 60000);
+    const abort = setTimeout(() => ctl.abort(), 30000);
     try {
       const res = await fetch(url, { cache: 'no-store', redirect: 'follow', signal: ctl.signal });
       if (!res.ok) throw new Error(`Download failed (${res.status}).`);
+      const totalRaw = Number(res?.headers?.get?.('content-length') || 0);
+      if (totalRaw > 0) onProgress({ loaded: 0, total: totalRaw, pct: 0, mirror: url });
       return validateGameHtml(await drainResponse(res, onProgress, true));
     } finally { clearTimeout(abort); }
   }
@@ -566,21 +568,35 @@
         return validateGameHtml(await hit.text());
       }
     } catch { /* cache unavailable, keep downloading */ }
-    // Mirror ladder: direct → libcurl relay engine (when live) → proxies.
-    const engineOk = (() => {
-      try {
-        const status = window.FlashBridge?.status?.();
-        return !!(status && status.engine && window.FlashBridge.fetchText);
-      } catch { return false; }
-    })();
-    const fetchPlain = async (u, viaEngine = false) => {
-      on({ loaded: 0, total: 0, pct: null, mirror: u !== source || viaEngine });
-      if (viaEngine) return validateGameHtml(await window.FlashBridge.fetchText(u));
+    // Mirror ladder: CDN (GitHub files) → direct → relay engine → proxies.
+    // The engine step boots the WASM relay on demand — a freshly opened
+    // page has it cold, and direct fetches die on CORS-walled hosts.
+    const fetchPlain = async (u) => {
+      on({ loaded: 0, total: 0, pct: null, mirror: u !== source });
       return attemptUrl(u, on);
     };
-    const ladder = [() => fetchPlain(source)];
-    if (engineOk) ladder.push(() => fetchPlain(source, true));
-    for (const mirror of mirrorUrls(source)) ladder.push(() => fetchPlain(mirror));
+    const engineStep = async () => {
+      if (!window.FlashBridge?.ensure || !window.FlashBridge?.fetchText) throw new Error('Relay engine unavailable.');
+      if (!window.FlashBridge?.status?.().engine) {
+        try { await Promise.race([window.FlashBridge.ensure(), new Promise((_, rej) => setTimeout(() => rej(new Error('Engine boot timed out.')), 6000))]); } catch {}
+      }
+      on({ loaded: 0, total: 0, pct: null, mirror: true });
+      return validateGameHtml(await window.FlashBridge.fetchText(source, 12000));
+    };
+    const ghRaw = /^https?:\/\/raw\.githubusercontent\.com\//i.test(source);
+    const mirrors = mirrorUrls(source);
+    const cdnMirrors = ghRaw ? mirrors.filter((m) => /cdn\.jsdelivr\.net/i.test(m)) : [];
+    const steps = [];
+    const pushUrl = (u, viaEngine = false) => { if (u && !steps.some((x) => x.url === u && x.viaEngine === viaEngine)) steps.push({ url: u, viaEngine }); };
+    // CDN copy first when the canonical file is on GitHub raw — it is
+    // closer to the player, always CORS-ready, and rarely rate-limited.
+    for (const u of cdnMirrors) pushUrl(u);
+    pushUrl(source);
+    for (const m of mirrors) if (!cdnMirrors.includes(m)) pushUrl(m);
+    let ladder = steps.map((step) => () => fetchPlain(step.url));
+    // Engine after direct, before the public proxies.
+    const directCount = ladder.length;
+    ladder.splice(Math.min(2, directCount), 0, engineStep);
     const errors = [];
     for (const step of ladder) {
       try {
@@ -845,14 +861,17 @@
     finally { bridge.engineAttempt = null; }
   }
 
-  async function bodyToText(res) {
+  async function bodyToText(res, idleMs = 0) {
     if (!res) throw new Error('Empty response.');
     if (typeof res.text === 'function') return await res.text();
     if (res.body && typeof res.body.getReader === 'function') {
       const chunks = [];
       const reader = res.body.getReader();
+      const readIdle = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error('Stalled while downloading.')), ms));
+      let step = null;
       for (;;) {
-        const step = await reader.read();
+        try { step = idleMs > 0 ? await Promise.race([reader.read(), readIdle(idleMs)]) : await reader.read(); }
+        catch (e) { try { reader.cancel(); } catch {} throw e; }
         if (step.done) break;
         if (step.value) chunks.push(step.value);
       }
@@ -942,6 +961,8 @@
               engine.fetch(current, { headers: fetchHeaders(FETCH_HEADERS) }),
               new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out.')), timeoutMs))
             ]);
+            // timeoutMs caps the HEADERS only — a slow-but-moving body is
+            // fine; only a stalled body gets cut (20s of silence).
             const status = Number(res && res.status);
             if ([301, 302, 303, 307, 308].includes(status)) {
               const next = responseLocation(res, current);
@@ -951,7 +972,7 @@
               continue;
             }
             if (!Number.isFinite(status) || status < 200 || status >= 400) throw new Error(`Request failed (${Number.isFinite(status) ? status : 'unknown'}).`);
-            const text = await bodyToText(res);
+            const text = await bodyToText(res, 20000);
             if (!text) throw new Error('Empty page.');
             bridge.endpointUrl = endpoint;
             bridge.status = 'live';
@@ -969,9 +990,8 @@
     bridge.status = 'direct';
     throw lastErr;
   }
-  // Cloud titles verify through the engine, then open top-level.
-  // (Regional pages send X-Frame-Options: SAMEORIGIN, so framing them is
-  // impossible — a new tab also lets region routing, login and media work.)
+  // Cloud titles open in the sandboxed player frame. Region + reachability
+  // probes stay parallel and capped so the frame appears in ~1-3s.
   function clearBlobs() {
     try {
       for (const u of bridge.blobs || []) { try { URL.revokeObjectURL(u); } catch {} }
@@ -1037,44 +1057,7 @@
     ]).catch(() => false);
   }
 
-  function handoffCard(name) {
-    const safe = esc(name || 'Cloud game');
-    return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Playing</title>` +
-    `<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0d12;color:#f2f4f8;font-family:system-ui,sans-serif;padding:24px;box-sizing:border-box}` +
-    `.card{max-width:440px;text-align:center;background:#141824;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:36px 30px}` +
-    `h1{font-size:20px;margin:0 0 10px}p{color:#9aa1b2;font-size:14px;line-height:1.6;margin:0}</style></head><body><div class="card">` +
-    `<h1>${safe} is playing</h1><p>${safe} launched its own hosting session, which needs to run outside the player. Come back here to browse.</p>` +
-    `</div></body></html>`;
-  }
-
-  function disarmHandoff() {
-    try {
-      const h = bridge._handoff;
-      if (h && h.frame && h.onLoad) h.frame.removeEventListener('load', h.onLoad);
-    } catch {}
-    bridge._handoff = null;
-  }
-
-  // The launcher self-navigates to its regional session host on Play.
-  // When that hop breaks framing, park a status card in the frame instead —
-  // nothing is ever handed off to a browser tab.
-  function armHandoff(predicted, name) {
-    disarmHandoff();
-    const frame = document.getElementById('gameFrame');
-    if (!frame) return;
-    let loads = 0;
-    const onLoad = () => {
-      loads += 1;
-      if (loads < 2) return;
-      disarmHandoff();
-      try {
-        frame.removeAttribute('sandbox');
-        frame.srcdoc = handoffCard(name);
-      } catch {}
-    };
-    try { frame.addEventListener('load', onLoad); } catch {}
-    bridge._handoff = { frame, onLoad };
-  }
+  function disarmHandoff() { /* retired: the frame is never handed off; the launcher runs sandboxed, in-frame */ }
 
   async function openCloud(url, name) {
     const base = clean(url);
@@ -1082,23 +1065,24 @@
     if (!/^https?:\/\//i.test(base)) throw new Error('Only http(s) cloud URLs are supported.');
     const apex = base;
     disarmHandoff();
-    // Device IP first (best-effort): relayed calls carry user geography.
-    try { await learnClientIp(); } catch {}
-    // Engine verification (warms region learning; proves relay egress).
-    try {
-      await Promise.race([
-        engineFetchText(regionalUrl(base)),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out.')), 15000))
-      ]);
-    } catch {}
-    // Region the same way their launcher derives it (STUN first octet).
+    // Everything warm-up runs in PARALLEL and never blocks framing: the IP
+    // lookup and one relayed request teach the engine our region, and the
+    // STUN octet picks the regional door. Recompute 'predicted' as soon as
+    // the octet answers — typically well under a second.
     let predicted = regionalUrl(base);
-    try {
-      const octet = await detectOctet();
-      if (octet) predicted = toRegional(base, octet);
-    } catch {}
-    // Preflight both doors in parallel: apex for framing, regional fallback.
-    const [apexOk, regionOk] = await Promise.all([deviceReachable(apex), deviceReachable(predicted)]);
+    const octetTask = detectOctet().catch(() => null).then((octet) => {
+      try { if (octet) predicted = toRegional(base, octet); } catch {}
+      return octet;
+    });
+    // Warm the relay engine in the background (no blocking, no verify round).
+    try { engineFetchText(regionalUrl(base)).catch(() => {}); } catch {}
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const regionTask = octetTask.then(() =>
+      Promise.race([deviceReachable(predicted, 6000), wait(6000).then(() => false)])
+    );
+    try { await learnClientIp().catch(() => {}); } catch {}
+    const apexOk = await Promise.race([deviceReachable(apex, 6000), wait(6000).then(() => false)]);
+    const regionOk = await regionTask;
     if (!apexOk && !regionOk) {
       return 'tab-unreachable';
     }
@@ -1122,7 +1106,6 @@
     } catch {
       return 'framing';
     }
-    armHandoff(predicted, name);
     return 'framing';
   }
 
@@ -1159,7 +1142,7 @@
         () => window.FlashBridge.status()
       );
     },
-    fetchText: (url) => engineFetchText(url),
+    fetchText: (url, timeoutMs = 12000) => engineFetchText(url, timeoutMs),
     lastUrl: () => bridge.lastFinalUrl || '',
     reset() { try { disarmHandoff(); } catch {} try { clearBlobs(); } catch {} },
     open: openCloud
@@ -1259,7 +1242,7 @@
         try { onProgress && onProgress(done, list.length); } catch {}
       }
     };
-    await Promise.all([worker(), worker(), worker(), worker()]);
+    await Promise.all([worker(), worker(), worker(), worker(), worker(), worker()]);
     return { total: list.length, installed: done - failed, failed };
   }
 

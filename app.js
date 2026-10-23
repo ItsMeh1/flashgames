@@ -57,8 +57,8 @@
     const pct = indeterminate ? null : Math.max(4, Math.min(100, entry.pct));
     const note = entry.status === 'error' ? 'Failed'
       : entry.status === 'done' ? 'Done'
-      : indeterminate ? 'Downloading…'
-      : `${entry.pct}% · ${dlBytes(entry.loaded)}${entry.total ? ` of ${dlBytes(entry.total)}` : ''}`;
+      : indeterminate ? `${dlBytes(entry.loaded) || 'Downloading'}…${entry.speed ? ` · ${dlBytes(entry.speed)}/s` : ''}`
+      : `${entry.pct}% · ${dlBytes(entry.loaded)}${entry.total ? ` of ${dlBytes(entry.total)}` : ''}${entry.speed ? ` · ${dlBytes(entry.speed)}/s` : ''}`;
     return `<div class="dl-row ${entry.status}" data-dl-id="${esc(entry.id)}">` +
       `<div class="dl-row-top"><span class="dl-name">${active || entry.status === 'error' ? icon(entry.status === 'error' ? 'triangle-alert' : 'loader-circle') : icon('circle-check')}<b>${esc(entry.name)}</b></span><span class="dl-note">${esc(note)}</span></div>` +
       (entry.status === 'error' ? `<div class="dl-error">${esc(entry.error || 'Download failed on all mirrors.')}</div>` : `<div class="dl-bar ${indeterminate ? 'indeterminate' : ''}">${indeterminate ? '<i></i>' : `<i style="width:${pct}%"></i>`}</div>`) +
@@ -67,23 +67,27 @@
 
   function dlOrder(entry) { return entry.status === 'active' ? 0 : entry.status === 'error' ? 1 : 2; }
 
+  const dlPaintCache = { dock: '', list: '' };
   function paintDownloads() {
     const entries = [...state.downloads.values()].sort((a, b) => dlOrder(a) - dlOrder(b) || a.startedAt - b.startedAt);
+    const rowsHtml = entries.length ? entries.map((entry) => `${entry.id}|${entry.name}|${entry.status}|${entry.error}|${entry.pct}|${entry.speed}|${Math.round(entry.loaded)}|${Math.round(entry.total)}`).join('') : '';
+    // DOM + icon refresh only when content actually changed (this runs on
+    // every progress tick — repainting and re-scanning lucide icons 12x/s
+    // across the shell was a major lag source).
     const dock = $('#dlDock');
     if (dock) {
       const fresh = entries.filter((e) => e.status !== 'done' || Date.now() - (e.doneAt || 0) < 2600);
       dock.hidden = !fresh.length;
       if (fresh.length) {
         const activeCount = fresh.filter((e) => e.status === 'active').length;
-        dock.innerHTML = `<div class="dl-dock-head">${icon('download')}<span>Downloads</span><b>${activeCount ? `${activeCount} active` : 'Done'}</b></div>${fresh.map(dlRowHtml).join('')}`;
-        refreshIcons(dock);
-      }
+        const html = `<div class="dl-dock-head">${icon('download')}<span>Downloads</span><b>${activeCount ? `${activeCount} active` : 'Done'}</b></div>${fresh.map(dlRowHtml).join('')}`;
+        if (html !== dlPaintCache.dock) { dlPaintCache.dock = html; dock.innerHTML = html; refreshIcons(dock); }
+      } else dlPaintCache.dock = '';
     }
-    const list = $('#notificationList'), dlList = $('#downloadsList');
-    if (dlList && list) {
+    const dlList = $('#downloadsList');
+    if (dlList) {
       dlList.hidden = !entries.length;
-      dlList.innerHTML = entries.length ? entries.map(dlRowHtml).join('') : '';
-      refreshIcons(dlList);
+      if (rowsHtml !== dlPaintCache.list) { dlPaintCache.list = rowsHtml; dlList.innerHTML = entries.length ? entries.map(dlRowHtml).join('') : ''; refreshIcons(dlList); }
     }
     updateNotifBadge();
   }
@@ -100,7 +104,7 @@
     const key = dlKey(game);
     const prev = state.downloads.get(key);
     if (prev && prev.status === 'active') { toast('Already downloading', `${game.name} is in your download queue.`); return Promise.reject(new Error('busy')); }
-    const entry = { id: key, name: game.name || 'Game', pct: null, loaded: 0, total: 0, status: 'active', startedAt: Date.now(), doneAt: 0, error: '' };
+    const entry = { id: key, name: game.name || 'Game', pct: null, loaded: 0, total: 0, status: 'active', startedAt: Date.now(), doneAt: 0, error: '', speed: 0, lastLoaded: 0, lastTick: Date.now() };
     state.downloads.set(key, entry);
     paintDownloads();
     const finish = (ok, err) => {
@@ -117,6 +121,12 @@
           entry.pct = p?.pct ?? null;
           entry.loaded = p?.loaded ?? 0;
           entry.total = p?.total ?? 0;
+          const now = Date.now();
+          if (entry.loaded > entry.lastLoaded && now > entry.lastTick + 120) {
+            entry.speed = Math.max(101, Math.round(((entry.loaded - entry.lastLoaded) / (now - entry.lastTick)) * 1000));
+            entry.lastLoaded = entry.loaded;
+            entry.lastTick = now;
+          }
           paintDownloads();
         } });
         finish(true);
@@ -143,7 +153,7 @@
   function setTheme(theme) {
     state.theme = theme; localStorage.setItem('flashgames.theme', theme);
     document.documentElement.dataset.theme = theme === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : theme;
-    $$('#themeChoices button').forEach((button) => button.classList.toggle('active', button.dataset.theme === theme));
+    $$('.theme-choices button').forEach((button) => button.classList.toggle('active', button.dataset.theme === theme));
   }
 
   function applyPreferences() {
@@ -151,10 +161,13 @@
     document.documentElement.style.setProperty('--opacity', String(state.opacity / 100));
     document.documentElement.style.setProperty('--blur', `${state.blur}px`);
     document.body.classList.toggle('performance-boost', state.performance); document.body.classList.toggle('reduce-motion', !state.motion);
-    if ($('#opacityRange')) $('#opacityRange').value = String(state.opacity); if ($('#blurRange')) $('#blurRange').value = String(state.blur);
-    if ($('#opacityValue')) $('#opacityValue').textContent = `${state.opacity}%`; if ($('#blurValue')) $('#blurValue').textContent = `${state.blur}px`;
-    if ($('#accentPicker')) $('#accentPicker').value = state.accent;
-    $('#toggleMotion .switch')?.classList.toggle('on', state.motion); $('#togglePerformance .switch')?.classList.toggle('on', state.performance); setTheme(state.theme);
+    $$('.opacity-range').forEach((el) => { el.value = String(state.opacity); }); $$('.blur-range').forEach((el) => { el.value = String(state.blur); });
+    $$('.opacity-value').forEach((el) => { el.textContent = `${state.opacity}%`; }); $$('.blur-value').forEach((el) => { el.textContent = `${state.blur}px`; });
+    $$('.accent-picker').forEach((el) => { el.value = state.accent; });
+    $$('.toggle-motion .switch').forEach((el) => el.classList.toggle('on', state.motion));
+    $$('.toggle-performance .switch').forEach((el) => el.classList.toggle('on', state.performance));
+    document.body.classList.toggle('perf-plus', localStorage.getItem('flashgames.perfplus') === '1');
+    setTheme(state.theme);
   }
 
   function avatarSource(value) {
@@ -401,8 +414,15 @@
     if (state.gamesSection === 'store') { renderStore(); return; }
     target.dataset.storeMode = 'mine';
     const count = state.installed.length;
-    target.innerHTML = `${gamesSwitchHtml()}<div class="page-head"><div><span class="eyebrow">MY GAMES</span><h1>Your games</h1><p>${count ? `${count} installed — every one cached locally and launched offline.` : 'Nothing installed yet — install once, play forever offline.'}</p></div><button class="btn" data-games-section="store">${icon('compass')} Browse all games</button></div><div class="game-grid">${sortGames(state.installed).map((game) => libraryCard(game)).join('') || emptyState('Your library is empty', 'Install any game from the collection and it stays available offline.', 'library')}</div>`;
+    const games = sortGames(state.installed);
+    const shown = games.slice(0, GRID_BATCH);
+    const rest = count - shown.length;
+    target.innerHTML = `${gamesSwitchHtml()}<div class="page-head"><div><span class="eyebrow">MY GAMES</span><h1>Your games</h1><p>${count ? `${count} installed — every one cached locally and launched offline.` : 'Nothing installed yet — install once, play forever offline.'}</p></div><button class="btn" data-games-section="store">${icon('compass')} Browse all games</button></div><div class="game-grid">${shown.map((game) => libraryCard(game)).join('') || emptyState('Your library is empty', 'Install any game from the collection and it stays available offline.', 'library')}</div>${rest > 0 ? `<div class="load-more-wrap"><button class="btn" id="loadAllInstalled">${icon('chevrons-down')} Show ${rest} more</button></div>` : ''}`;
     refreshIcons(target);
+    $('#loadAllInstalled')?.addEventListener('click', () => {
+      target.querySelector('#loadAllInstalled')?.remove();
+      target.querySelector('.game-grid').insertAdjacentHTML('beforeend', games.slice(GRID_BATCH).map((game) => libraryCard(game)).join(''));
+    });
   }
 
   const MEGA_PACK_IDS = ['pack-everything', 'pack-offline-all', 'pack-online-all'];
@@ -454,9 +474,8 @@
     if (!card || !prog) return;
     const bar = card.querySelector('.pack-progress > i');
     if (bar) bar.style.width = `${Math.round((prog.done / Math.max(1, prog.total)) * 100)}%`;
-    const btn = card.querySelector('[data-pack-action]');
-    if (btn) btn.innerHTML = `${icon('loader-circle')}<span>Installing ${prog.done}/${prog.total}…</span>`;
-    refreshIcons(card);
+    const btn = card.querySelector('[data-pack-action="install"]');
+    if (btn) { btn.innerHTML = `${icon('loader-circle')}<span>Installing ${prog.done}/${prog.total}…</span>`; refreshIcons(btn); }
   }
 
   function openPackDetail(packId) {
@@ -609,7 +628,7 @@
     // Built once and never rebuilt: tearing the iframe down drops live calls.
     if (!target.dataset.shell) {
       target.dataset.shell = '1';
-      target.innerHTML = `<div class="social-fill"><iframe id="conferFrame" src="https://itsmeh1.github.io/confer/confer.html?.amplify.com" title="Confer" allow="camera; microphone; display-capture; fullscreen"></iframe><button class="social-float" id="conferReload" aria-label="Reload Confer">${icon('refresh-cw')}<span>Reload</span></button></div>`;
+      target.innerHTML = `<div class="social-fill"><iframe id="conferFrame" src="./confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen"></iframe><button class="social-float" id="conferReload" aria-label="Reload Confer">${icon('refresh-cw')}<span>Reload</span></button></div>`;
       $('#conferReload').addEventListener('click', () => {
         const frame = $('#conferFrame');
         if (frame) frame.src = frame.src;
@@ -625,6 +644,76 @@
     target.innerHTML = `<div class="page-head"><div><span class="eyebrow">CHANGELOG</span><h1>What's new</h1><p>Current version ${esc(state.updates.version)}.</p></div></div><div class="timeline">${(state.updates.releases || []).map((release) => `<article class="release glass"><div class="release-head"><div><strong>${esc(release.version || 'Update')}</strong><span>${esc(release.date || release.published || '')}</span></div>${icon('sparkles')}</div><p>${esc(release.description || release.summary || '')}</p>${Array.isArray(release.changes) ? release.changes.map((change) => `<div class="log-item">${changeIcon(change.type || change.kind)}<span>${esc(change.text || change.description || change.title || change)}</span></div>`).join('') : ''}</article>`).join('') || emptyState('No changelog entries', 'Published releases will appear here.', 'history')}</div>`;
     refreshIcons(target);
   }
+
+  function settingsGroup(title, eyebrow, rows, hint) {
+    return `<section class="settings-group glass"><div class="group-head"><div><span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2></div>${hint ? `<span class="ghost-hint">${esc(hint)}</span>` : ''}</div><div class="settings-list">${rows.join('')}</div></section>`;
+  }
+
+  function settingsToggleRow(cls, glyph, title, text) {
+    return `<button class="setting-action ${cls}" type="button"><span>${icon(glyph)}<span><strong>${esc(title)}</strong><small>${esc(text)}</small></span></span><span class="switch"><i></i></span></button>`;
+  }
+
+  function settingsLinkRow(cls, glyph, title, text) {
+    return `<button class="setting-action ${cls}" type="button"${cls === 'open-diagnostics' ? '' : ''}><span>${icon(glyph)}<span><strong>${esc(title)}</strong><small>${esc(text)}</small></span></span>${icon('chevron-right')}</button>`;
+  }
+
+  async function renderSettingsPage() {
+    const target = $('#settingsView'); if (!target) return;
+    const appearance = settingsGroup('Appearance', 'PERSONALIZE', [
+      `<div class="setting"><div><strong>Theme</strong><small>Choose your interface.</small></div><div class="segmented theme-choices"><button data-theme="dark">Dark</button><button data-theme="light">Light</button><button data-theme="system">Auto</button></div></div>`,
+      `<div class="setting"><div><strong>Accent</strong><small>Interface color.</small></div><input class="color-picker accent-picker" type="color" value="${esc(state.accent)}"></div>`,
+      `<div class="setting"><div class="range-wrap"><div><strong>Glass opacity</strong><small>How solid windows look.</small></div><output class="opacity-value">${state.opacity}%</output><input class="range opacity-range" type="range" min="35" max="85" value="${state.opacity}"></div></div>`,
+      `<div class="setting"><div class="range-wrap"><div><strong>Blur</strong><small>Background softness.</small></div><output class="blur-value">${state.blur}px</output><input class="range blur-range" type="range" min="8" max="36" value="${state.blur}"></div></div>`
+    ], 'Applies instantly — saved on this device.');
+    const behavior = settingsGroup('Motion & Performance', 'INTERFACE', [
+      settingsToggleRow('toggle-motion', 'sparkles', 'Motion', 'Enable interface animations.'),
+      settingsToggleRow('toggle-performance', 'gauge', 'Performance mode', 'Reduce interface effects while playing.')
+    ], 'Reduced effects help low-end machines.');
+    const storage = settingsGroup('Storage', 'THIS DEVICE', [
+      `<div class="setting"><div class="range-wrap"><div><strong>Storage used</strong><small id="storageUsedText">Measuring your device…</small></div><div class="storage-meter"><i id="storageUsedBar"></i></div></div></div>`,
+      `<div class="setting"><div><strong>Installed games</strong><small id="settingsInstalledCount">0 locally cached.</small></div>${icon('library-big')}</div>`,
+      settingsLinkRow('clear-library', 'trash-2', 'Clear library', 'Removes every locally installed game file.')
+    ], 'Browser quota for this origin.');
+    const account = state.user
+      ? `<div class="setting"><div><strong>Account</strong><small>${esc(state.user.email || 'Signed in')}${window.FlashAccess?.isDeveloper?.() ? ' — developer access' : ''}</small></div>${icon('user-round')}</div>`
+      : `<div class="setting"><div><strong>Account</strong><small>Local mode — creations stay on this device.</small></div>${icon('user-round')}</div>`;
+    const cloakChoice = localStorage.getItem('flashgames.cloak.auto');
+    const cloak = settingsGroup('Cloak', 'PRIVACY', [
+      `<button class="setting-action cloak-launch" type="button"><span>${icon('ghost')}<span><strong>Launch in about:blank</strong><small>Runs the entire app inside a plain blank tab.</small></span></span>${icon('chevron-right')}</button>`,
+      `<div class="setting"><div><strong>Start automatically</strong><small>${cloakChoice === '1' ? 'Cloak launches at startup.' : cloakChoice === '0' ? 'Disabled — you will not be asked.' : 'You will be asked at the next startup.'}</small></div><button class="btn" data-setting-action="cloak-reset" type="button">${icon('rotate-ccw')} Ask again</button></div>`,
+      `<div class="setting"><div><strong>How to leave</strong><small>The bottom-left Leave button — or Shift+End — swaps the tab for a plain about:blank.</small></div>${icon('ghost')}</div>`
+    ], 'User-initiated. Nothing opens tabs on its own.');
+    const help = settingsGroup('Help', 'SUPPORT', [
+      account,
+      settingsLinkRow('open-diagnostics', 'stethoscope', 'Diagnostics', 'System health and connectivity checks.'),
+      `<button class="setting-action" type="button" data-route="updates"><span>${icon('history')}<span><strong>Release notes</strong><small>What changed in each update.</small></span></span>${icon('chevron-right')}</button>`,
+      `<button class="setting-action" type="button" data-route="games"><span>${icon('gamepad-2')}<span><strong>Browse Games</strong><small>Back to the library and store.</small></span></span>${icon('chevron-right')}</button>`
+    ], 'Everything here stays on your device.');
+    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">SETTINGS</span><h1>Settings</h1><p>Personalize Flash Games, manage storage, and control how the app behaves on this device.</p></div></div><div class="settings-page">${appearance}${behavior}${storage}${cloak}${help}</div>`;
+    applyPreferences();
+    paintStorageMeter(target);
+    refreshIcons(target);
+  }
+
+  async function paintStorageMeter(target) {
+    const bar = target?.querySelector('#storageUsedBar'); const text = target?.querySelector('#storageUsedText');
+    const count = target?.querySelector('#settingsInstalledCount');
+    if (count) count.textContent = `${state.installed?.length || 0} locally cached.`;
+    try {
+      const estimate = await navigator.storage?.estimate?.();
+      if (!estimate || !bar || !text) return;
+      const used = estimate.usage || 0, quota = estimate.quota || 0;
+      const pct = quota > 0 ? Math.min(100, Math.max(2, Math.round((used / quota) * 100))) : 0;
+      const usedText = dlBytes(used) || '0 B';
+      const quotaText = dlBytes(quota) ? ` of ${dlBytes(quota)}` : '';
+      text.textContent = `${usedText}${quotaText} used`;
+      bar.style.width = `${pct}%`;
+    } catch {
+      if (text) text.textContent = 'Storage info unavailable.';
+      if (bar) bar.style.width = '0%';
+    }
+  }
+
 
   function memberLevel() { const minutes = Math.floor(state.stats.time / 60000); if (state.stats.played >= 100 || minutes >= 600) return 'Elite Member'; if (state.stats.played >= 30 || minutes >= 120 || state.stats.installs >= 30) return 'Dedicated Member'; if (state.stats.played >= 5 || state.stats.installs >= 5) return 'Active Member'; return 'New Member'; }
 
@@ -699,10 +788,10 @@
       state.gamesSection = route === 'library' ? 'mine' : 'store';
       route = legacy[route];
     }
-    const valid = ['home', 'eagler', 'games', 'social', 'cloud', 'updates', 'admin']; state.route = valid.includes(route) ? route : 'home';
+    const valid = ['home', 'eagler', 'games', 'social', 'cloud', 'updates', 'admin', 'settings']; state.route = valid.includes(route) ? route : 'home';
     if (location.hash !== `#${state.route}`) history.replaceState(null, '', `#${state.route}`);
     $$('.view').forEach((view) => view.classList.toggle('active', view.dataset.view === state.route)); $$('.nav-item, .dock-item').forEach((button) => button.classList.toggle('active', button.dataset.route === state.route));
-    if (state.route === 'home') paintView(renderHome); if (state.route === 'eagler') paintView(renderEagler); if (state.route === 'games') paintView(renderGames); if (state.route === 'social') paintView(renderSocial); if (state.route === 'cloud') paintView(renderCloud); if (state.route === 'updates') paintView(renderUpdates); if (state.route === 'admin') paintView(renderAdmin);
+    if (state.route === 'home') paintView(renderHome); if (state.route === 'eagler') paintView(renderEagler); if (state.route === 'games') paintView(renderGames); if (state.route === 'social') paintView(renderSocial); if (state.route === 'cloud') paintView(renderCloud); if (state.route === 'updates') paintView(renderUpdates); if (state.route === 'admin') paintView(renderAdmin); if (state.route === 'settings') paintView(renderSettingsPage);
     requestAnimationFrame(refreshNavIndicator);
   }
   function refreshNavIndicator() { const nav = $('.desktop-nav'), active = $('.desktop-nav .nav-item.active'), indicator = $('.nav-indicator'); if (!nav || !active || !indicator) return; const a = active.getBoundingClientRect(), n = nav.getBoundingClientRect(); indicator.style.transform = `translate3d(${a.left - n.left}px,0,0)`; indicator.style.width = `${a.width}px`; }
@@ -813,6 +902,7 @@
       ].slice(0, 12)));
     }
     frame.src = url;
+    frame.setAttribute('data-last-src', url);
     overlay.hidden = false;
     document.body.classList.add('player-open');
     state.stats.played += 1;
@@ -844,6 +934,9 @@
       state.stats.installs += 1;
       saveStats();
       await loadInstalled();
+      const stored = await FlashGamesStore.getCachedGame(game.id).catch(() => null)
+        || await FlashGamesStore.getCachedGame(`online-${game.luminId}`).catch(() => null)
+        || { ...game, rawUrl: remote, url: remote };
       openPlayer(await FlashGamesStore.launch(stored), game);
     } catch (error) {
       toast('Could not play online game', error.message || 'The game could not be cached for local playback.', 'error');
@@ -870,7 +963,9 @@
     }
   }
 
-  function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) { frame.removeAttribute('sandbox'); frame.removeAttribute('srcdoc'); frame.src = 'about:blank'; } try { window.FlashBridge?.reset?.(); } catch {} if (overlay) overlay.hidden = true; document.body.classList.remove('player-open'); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; } }
+  function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) { frame.removeAttribute('sandbox'); frame.removeAttribute('srcdoc'); frame.src = 'about:blank'; } try { window.FlashBridge?.reset?.(); } catch {} if (overlay) overlay.hidden = true; document.body.classList.remove('player-open');
+  const conferWin = document.getElementById('conferWindow'); if (conferWin) conferWin.remove();
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; } }
   function rerenderRoute() { if (state.route === 'games') paintView(renderGames); else if (state.route === 'home') paintView(renderHome); }
   async function installGame(game) {
     try {
@@ -925,7 +1020,7 @@
     if (event.target.closest('#openSearch')) { openSearch(); return; }
     if (event.target.closest('#openProfile') || event.target.closest('#mobileProfile')) { openPanel('profilePanel'); return; }
     if (event.target.closest('#openSettings')) { closePanel('profilePanel'); openPanel('settingsPanel'); return; }
-    if (event.target.closest('#openDiagnostics')) { window.FlashExtras?.openDiagnostics?.(); return; }
+    if (event.target.closest('.open-diagnostics, #openDiagnostics')) { window.FlashExtras?.openDiagnostics?.(); return; }
     if (event.target.closest('#openStats')) { renderStats(); return; }
     if (event.target.closest('#closePlayer')) { closePlayer(); return; }
     const category = event.target.closest('[data-category]'); if (category) { state.category = category.dataset.category; renderStore(); return; }
@@ -933,18 +1028,20 @@
     const searchGame = event.target.closest('[data-search-game]'); if (searchGame) { const game = gamesUniverse().find((item) => item.id === searchGame.dataset.searchGame); if (game) { closePanel('searchBackdrop'); playGame(game); } return; }
     const action = event.target.closest('[data-game-action]'); if (!action) return;
     const card = action.closest('[data-game-id]'); const id = action.dataset.gameId || card?.dataset.gameId; const game = gamesUniverse().find((item) => item.id === id) || state.installed.find((item) => item.id === id); if (!game) return;
-    if (action.dataset.gameAction === 'play') playGame(game); if (action.dataset.gameAction === 'install' && game.zone !== 'LUMIN') installGame(game); if (action.dataset.gameAction === 'remove') removeGame(game); if (action.dataset.gameAction === 'favorite') toggleFavourite(game);
+    if (action.dataset.gameAction === 'play') playGame(game); if (action.dataset.gameAction === 'install' && game.zone === 'LUMIN') { playGame(game); return; } if (action.dataset.gameAction === 'install') installGame(game); if (action.dataset.gameAction === 'remove') removeGame(game); if (action.dataset.gameAction === 'favorite') toggleFavourite(game);
     if (action.dataset.gameAction === 'boost') { state.performance = !state.performance; localStorage.setItem('flashgames.performance', state.performance ? '1' : '0'); applyPreferences(); toast(state.performance ? 'Performance mode on' : 'Performance mode off', 'Only interface effects are reduced.', 'success'); }
   }
 
   function handleSettings() {
-    $$('#themeChoices button').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.theme)));
-    $('#accentPicker')?.addEventListener('input', (event) => { state.accent = event.target.value; localStorage.setItem('flashgames.accent', state.accent); applyPreferences(); });
-    $('#opacityRange')?.addEventListener('input', (event) => { state.opacity = Number(event.target.value); localStorage.setItem('flashgames.opacity', String(state.opacity)); applyPreferences(); });
-    $('#blurRange')?.addEventListener('input', (event) => { state.blur = Number(event.target.value); localStorage.setItem('flashgames.blur', String(state.blur)); applyPreferences(); });
-    $('#toggleMotion')?.addEventListener('click', () => { state.motion = !state.motion; localStorage.setItem('flashgames.motion', state.motion ? '1' : '0'); applyPreferences(); });
-    $('#togglePerformance')?.addEventListener('click', () => { state.performance = !state.performance; localStorage.setItem('flashgames.performance', state.performance ? '1' : '0'); applyPreferences(); });
-    $('#clearLibrary')?.addEventListener('click', () => confirmDialog('Clear library?', 'All locally installed game files will be removed.', async () => { await FlashGamesStore.clearGameCache(); await loadInstalled(); renderProfile(); toast('Library cleared', 'Your installed games were removed.', 'success'); setRoute('games'); }, true));
+    $$('.theme-choices button').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.theme)));
+    $$('.accent-picker').forEach((picker) => picker.addEventListener('input', (event) => { state.accent = event.target.value; localStorage.setItem('flashgames.accent', state.accent); applyPreferences(); }));
+    $$('.opacity-range').forEach((range) => range.addEventListener('input', (event) => { state.opacity = Number(event.target.value); localStorage.setItem('flashgames.opacity', String(state.opacity)); applyPreferences(); }));
+    $$('.blur-range').forEach((range) => range.addEventListener('input', (event) => { state.blur = Number(event.target.value); localStorage.setItem('flashgames.blur', String(state.blur)); applyPreferences(); }));
+    $$('.toggle-motion').forEach((row) => row.addEventListener('click', () => { state.motion = !state.motion; localStorage.setItem('flashgames.motion', state.motion ? '1' : '0'); applyPreferences(); }));
+    $$('.toggle-performance').forEach((row) => row.addEventListener('click', () => { state.performance = !state.performance; localStorage.setItem('flashgames.performance', state.performance ? '1' : '0'); applyPreferences(); }));
+    $$('.cloak-launch').forEach((row) => row.addEventListener('click', () => window.FlashCloak?.launch?.()));
+    $$('[data-setting-action="cloak-reset"]').forEach((row) => row.addEventListener('click', () => confirmDialog('Reset cloak prompt?', 'You will be asked whether to run cloaked the next time Flash Games starts.', async () => { localStorage.removeItem('flashgames.cloak.auto'); toast('Reset', 'You will be asked at the next startup.', 'success'); rerenderRoute(); })));
+    $$('.clear-library').forEach((row) => row.addEventListener('click', () => confirmDialog('Clear library?', 'All locally installed game files will be removed.', async () => { await FlashGamesStore.clearGameCache(); await loadInstalled(); renderProfile(); toast('Library cleared', 'Your installed games were removed.', 'success'); setRoute('games'); }, true)));
   }
 
   function handleSearch() {
@@ -973,10 +1070,59 @@
 
   function handleGlobalKeys(event) { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openSearch(); } if (event.key === 'Escape') { document.getElementById('packDetailBackdrop')?.remove(); document.getElementById('diagBackdrop')?.remove(); document.getElementById('flashStatsBackdrop')?.remove(); document.getElementById('customInstallBackdrop')?.remove(); const notifDrop = $('#notifDrop'); if (notifDrop) notifDrop.hidden = true; closePanel('searchBackdrop'); closePanel('profilePanel'); closePanel('settingsPanel'); closePanel('userManagementBackdrop'); closePlayer(); } }
 
+  function askCloakOnBoot() {
+    try {
+      if (window.__CLOAKED__) return;
+      const choice = localStorage.getItem('flashgames.cloak.auto');
+      if (choice === '0') return;
+      if (choice === '1' && window.FlashCloak) { window.FlashCloak.launch(); return; }
+      confirmDialog('Run cloaked?', 'Launch Flash Games inside a plain about:blank tab with an exit button. Your PWA window stays untouched. Change this later in Settings.', async () => {
+        localStorage.setItem('flashgames.cloak.auto', '1');
+        window.FlashCloak?.launch?.();
+      }, false);
+    } catch {}
+  }
   async function init() {
     // Popup shield: nothing in Flash Games is ever meant to open in a new
     // tab — main window or framed client, the API is dead on arrival.
-    try { window.open = function() { return null; }; } catch {}
+    // Popup shield: games never spawn tabs. The one exception is the user-
+    // initiated Cloak, which captures native window.open BEFORE the shield.
+    try {
+      const nativeOpen = window.open.bind(window);
+      window.open = function() { return null; };
+      window.FlashCloak = Object.freeze({
+        EXIT_PAGE(msg) {
+          const note = String(msg || 'You can close this tab.');
+          return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>about:blank</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0d12;color:#e8eaf2;font-family:system-ui,sans-serif}p{opacity:.85;font-size:15px;max-width:70%;text-align:center}</style></head><body><p>${esc(note)}</p></body></html>`;
+        },
+        async launch() {
+          if (window.__CLOAKED__) { toast('Already cloaked', 'This tab is already an about:blank session.'); return; }
+          // Open FIRST (sync, inside the click gesture). Any await before
+          // window.open drops the activation and browsers block the popup.
+          const win = nativeOpen('about:blank');
+          if (!win) { toast('Popup blocked', 'Cloak needs one popup for this launch — allow it and try again.', 'error'); return; }
+          try { win.document.write('<!DOCTYPE html><title>Flash Games</title><p style="display:grid;place-items:center;min-height:90vh;margin:0;color:#9aa1b2">Loading cloaked session…</p>'); } catch {}
+          const fallback = () => { try { win.document.open(); win.document.write(window.FlashCloak.EXIT_PAGE()); win.document.close(); } catch {} };
+          let html = '';
+          try { html = await fetch('./index.html', { cache: 'force-cache' }).then((r) => r.ok ? r.text() : ''); } catch { html = ''; }
+          if (!html || !/<html/i.test(html)) { fallback(); toast('Cloak unavailable', "The app shell couldn't be read from this location.", 'error'); return; }
+          const baseHref = String(location.href).replace(/[?#].*$/, '').replace(/[^/]*$/, '').replace(/"/g, '%22');
+          const exitScript = '<script>(function(){var ex=function(){try{document.open();document.write(' + JSON.stringify(window.FlashCloak.EXIT_PAGE()) + ');document.close();}catch(e){window.close();}};window.__flashCloakExit=ex;var b=document.getElementById("cloakExit");if(b)b.onclick=ex;document.addEventListener("keydown",function(e){if(e.shiftKey&&(e.key==="End"||e.code==="End")){e.preventDefault();ex();}});})()<\/script>';
+          const exitButton = '<button id="cloakExit" style="position:fixed;bottom:14px;left:14px;z-index:2147483647;opacity:.4;background:#141824;color:#e8eaf2;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 14px;font:600 12.5px system-ui,sans-serif;cursor:pointer">Leave</button>';
+          let shell = html;
+          const headInject = `<base href="${baseHref}">
+<script>window.__CLOAKED__ = true;<\/script>`;
+          shell = /<base\s/i.test(shell) ? shell.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${headInject}`) : shell.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${headInject}`);
+          shell = shell.replace(/<\/body>/i, (m) => `${exitButton}\n${exitScript}\n${m}`);
+          try {
+            const doc = win.document;
+            doc.open(); doc.write(shell); doc.close();
+            toast('Cloaked', 'Flash Games is running in an about:blank tab. Press Leave to blank it.', 'success');
+          } catch (error) { fallback(); win.close(); toast('Cloak failed', error.message || 'The tab could not be written.', 'error'); }
+        }
+      });
+    } catch {}
+
     const dlDock = document.createElement('div');
     dlDock.id = 'dlDock'; dlDock.className = 'dl-dock'; dlDock.hidden = true;
     document.body.appendChild(dlDock);
@@ -990,6 +1136,8 @@
       if (state.route === 'games') paintView(renderGames); else rerenderRoute();
     });
     handleSettings(); handleSearch(); applyPreferences(); refreshIcons();
+    setTimeout(() => { if (navigator.onLine) { try { window.FlashBridge?.ensure?.().catch?.(() => {}); } catch {} } }, 1500);
+    setTimeout(askCloakOnBoot, 1400);
     ensureEaglerClients().catch(() => {});
     try {
       await loadInstalled(); state.favourites = FlashGamesStore.getFavourites();

@@ -1,9 +1,21 @@
 {
-  "version": "5.4.0",
+  "version": "5.4.1",
   "releases": [
     {
+      "version": "5.4.1",
+      "date": "October 22, 2026",
+      "description": "Call, Screenshare, Message, Text, and Send files with this new update!",
+      "changes": [
+        { "type": "add", "text": "Add a social overlay when playing games, so that you can socialize with others while playing, or just watch them play without them getting disturbed from needing to switch to the Social tab" },
+        { "type": "add", "text": "Add new optimization features which should hopefully fix up the lag" },
+        { "type": "edit", "text": "Finally support cloakings (in settings)" },
+        { "type": "edit", "text": "Finally support confer locally" },
+        { "type": "remove", "text": "DELETED that old and annoying settings page. Hated it, now theres a new & better one." }
+      ]
+    },
+    {
       "version": "5.4.0",
-      "date": "September 26, 2026",
+      "date": "October 19, 2026",
       "description": "don't worry, your welcome.",
       "changes": [
         {

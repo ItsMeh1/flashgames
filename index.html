@@ -37,6 +37,7 @@ window.__flashFirebase = null;
     <button class="nav-item" data-route="cloud" data-label="Cloud"><i data-lucide="cloud"></i><span>Cloud</span></button>
     <button class="nav-item" data-route="updates" data-label="Updates"><i data-lucide="history"></i><span>Updates</span></button>
     <button class="nav-item hidden" id="adminNav" data-route="admin" data-label="Admin"><i data-lucide="shield-check"></i><span>Admin</span></button>
+      <button class="nav-item" data-route="settings" data-label="Settings"><i data-lucide="settings-2"></i><span>Settings</span></button>
     <span class="nav-indicator"></span>
   </nav>
   <div class="top-actions">
@@ -53,12 +54,14 @@ window.__flashFirebase = null;
   <section class="view" id="cloudView" data-view="cloud"></section>
   <section class="view" id="updatesView" data-view="updates"></section>
   <section class="view" id="adminView" data-view="admin"></section>
+    <section class="view" id="settingsView" data-view="settings"></section>
 </main>
 <nav class="bottom-dock glass" aria-label="Mobile navigation">
   <button class="dock-item" data-route="eagler"><i data-lucide="blocks"></i><span>Mine</span></button>
   <button class="dock-item" data-route="games"><i data-lucide="store"></i><span>Games</span></button>
   <button class="dock-item" data-route="social"><i data-lucide="users"></i><span>Social</span></button>
-  <button class="dock-item" id="mobileProfile"><i data-lucide="user-round"></i><span>Profile</span></button>
+  <button class="dock-item" data-route="settings"><i data-lucide="settings-2"></i><span>Settings</span></button>
+    <button class="dock-item" id="mobileProfile"><i data-lucide="user-round"></i><span>Profile</span></button>
 </nav>
 <div class="modal-backdrop" id="searchBackdrop" hidden>
   <section class="search-modal glass" role="dialog" aria-modal="true">
@@ -83,16 +86,14 @@ window.__flashFirebase = null;
 <aside class="side-panel glass" id="settingsPanel" hidden>
   <div class="panel-head"><div><span class="eyebrow">PERSONALIZE</span><h2>Settings</h2></div><button class="icon-btn" data-close="settingsPanel" aria-label="Close"><i data-lucide="x"></i></button></div>
   <div class="settings-list">
-    <div class="setting"><div><strong>Theme</strong><small>Choose your interface.</small></div><div class="segmented" id="themeChoices"><button data-theme="dark">Dark</button><button data-theme="light">Light</button><button data-theme="system">Auto</button></div></div>
-    <div class="setting"><div><strong>Accent</strong><small>Interface color.</small></div><input class="color-picker" id="accentPicker" type="color" value="#8b5cf6"></div>
-    <div class="setting"><div><strong>Glass opacity</strong><output id="opacityValue">66%</output></div></div>
-    <input class="range" id="opacityRange" type="range" min="35" max="85" value="66">
-    <div class="setting"><div><strong>Blur</strong><output id="blurValue">20px</output></div></div>
-    <input class="range" id="blurRange" type="range" min="8" max="36" value="20">
-    <button class="setting-action" id="toggleMotion"><span><i data-lucide="sparkles"></i><span><strong>Motion</strong><small>Enable interface animations.</small></span></span><span class="switch on"><i></i></span></button>
-    <button class="setting-action" id="togglePerformance"><span><i data-lucide="gauge"></i><span><strong>Performance mode</strong><small>Reduce interface effects.</small></span></span><span class="switch"><i></i></span></button>
-    <button class="setting-action" id="openDiagnostics"><span><i data-lucide="stethoscope"></i><span><strong>Diagnostics</strong><small>System health and connectivity checks.</small></span></span><i data-lucide="chevron-right"></i></button>
-    <button class="setting-action" id="clearLibrary"><span><i data-lucide="trash-2"></i><span><strong>Clear library</strong><small>Remove installed games.</small></span></span><i data-lucide="chevron-right"></i></button>
+    <div class="setting"><div><strong>Theme</strong><small>Choose your interface.</small></div><div class="segmented theme-choices"><button data-theme="dark">Dark</button><button data-theme="light">Light</button><button data-theme="system">Auto</button></div></div>
+    <div class="setting"><div><strong>Accent</strong><small>Interface color.</small></div><input class="color-picker accent-picker" type="color" value="#8b5cf6"></div>
+    <div class="setting"><div class="range-wrap"><div><strong>Glass opacity</strong><output class="opacity-value">66%</output></div><input class="range opacity-range" type="range" min="35" max="85" value="66"></div></div>
+    <div class="setting"><div class="range-wrap"><div><strong>Blur</strong><output class="blur-value">20px</output></div><input class="range blur-range" type="range" min="8" max="36" value="20"></div></div>
+    <button class="setting-action toggle-motion" type="button"><span><i data-lucide="sparkles"></i><span><strong>Motion</strong><small>Enable interface animations.</small></span></span><span class="switch on"><i></i></span></button>
+    <button class="setting-action toggle-performance" type="button"><span><i data-lucide="gauge"></i><span><strong>Performance mode</strong><small>Reduce interface effects.</small></span></span><span class="switch"><i></i></span></button>
+    <button class="setting-action open-diagnostics" type="button"><span><i data-lucide="stethoscope"></i><span><strong>Diagnostics</strong><small>System health and connectivity checks.</small></span></span><i data-lucide="chevron-right"></i></button>
+    <button class="setting-action clear-library" type="button"><span><i data-lucide="trash-2"></i><span><strong>Clear library</strong><small>Remove installed games.</small></span></span><i data-lucide="chevron-right"></i></button>
   </div>
 </aside>
 <div class="notif-drop glass" id="notifDrop" hidden>

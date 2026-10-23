@@ -44,9 +44,14 @@
       shell.appendChild(notch);
       const controls = document.createElement('div');
       controls.className = 'player-controls';
+      const perfOn = localStorage.getItem('flashgames.perfplus') === '1';
       controls.innerHTML =
         `<button class="player-control" data-player-action="fullscreen">${icon('maximize')}<span>Fullscreen</span></button>` +
+        `<button class="player-control" data-player-action="restart">${icon('rotate-ccw')}<span>Restart game</span></button>` +
+        `<button class="player-control ${perfOn ? 'active' : ''}" data-player-action="perf">${icon('gauge')}<span>Performance+</span></button>` +
+        `<button class="player-control" data-player-action="social">${icon('users')}<span>Social</span></button>` +
         `<button class="player-control close" data-player-action="close">${icon('x')}<span>Close game</span></button>`;
+      if (perfOn) document.body.classList.add('perf-plus');
       shell.appendChild(controls);
       const show = () => {
         shell.classList.add('player-controls-visible');
@@ -55,6 +60,7 @@
       };
       notch.addEventListener('click', show);
       notch.addEventListener('mouseenter', show);
+      controls.addEventListener('mouseenter', show);
       controls.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-player-action]');
         if (!btn) return;
@@ -62,18 +68,187 @@
           if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
           else (shell.requestFullscreen || frame.requestFullscreen)?.call(shell).catch?.(() => frame.requestFullscreen?.().catch(() => {}));
         }
-        if (btn.dataset.playerAction === 'close') {
+        if (btn.dataset.playerAction === 'restart') {
+          const was = frame.getAttribute('data-last-src') || frame.src || '';
+          if (!was || was === 'about:blank') { toast('Nothing to restart', 'Load a game first.'); return; }
+          btn.disabled = true;
+          btn.innerHTML = `${icon('loader-circle')}<span>Restarting…</span>`;
+          icons(btn);
           frame.src = 'about:blank';
-          overlay.hidden = true;
-          document.body.classList.remove('player-open');
-          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+          window.setTimeout(() => {
+            frame.src = was;
+            btn.disabled = false;
+            btn.innerHTML = `${icon('rotate-ccw')}<span>Restart game</span>`;
+            icons(btn);
+          }, 60);
+          toast('Restarting', 'The game is reloading from the cached copy.');
+        }
+        if (btn.dataset.playerAction === 'social') {
+          openConferWindow();
+          toast('Confer window', 'Drag the header to move it. Fullscreen from the header.');
+        }
+        if (btn.dataset.playerAction === 'perf') {
+          const on = !document.body.classList.contains('perf-plus');
+          document.body.classList.toggle('perf-plus', on);
+          localStorage.setItem('flashgames.perfplus', on ? '1' : '0');
+          btn.classList.toggle('active', on);
+          toast(on ? 'Performance+ on' : 'Performance+ off', on ? 'All player animations and effects are disabled while playing.' : 'Interface effects restored.');
+        }
+        if (btn.dataset.playerAction === 'close') {
+          // Route through the app's real close (stats, bridge reset, blob cleanup).
+          document.getElementById('closePlayer')?.click();
         }
       });
     }
     return true;
   }
 
-  /* ---------- cloud links always open in a new tab ---------- */
+  /* ---------- Confer side window (draggable w/ inertia, resizable) ---------- */
+
+  function openConferWindow() {
+    let win = document.getElementById('conferWindow');
+    if (!win) {
+      win = document.createElement('div');
+      win.id = 'conferWindow';
+      win.className = 'confer-window';
+      const resizers = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map((d) => `<div class="resizer" data-dir="${d}"></div>`).join('');
+      win.innerHTML =
+        resizers +
+        `<div class="confer-window-bar" data-drag-handle>` +
+        `<span class="confer-window-title">${icon('users')}<span>Confer</span></span>` +
+        `<div class="confer-window-actions">` +
+        `<button class="confer-window-btn" data-win-action="full" aria-label="Fullscreen">${icon('maximize-2')}</button>` +
+        `<button class="confer-window-btn" data-win-action="close" aria-label="Close">${icon('x')}</button></div></div>` +
+        `<div class="confer-window-body"><iframe src="./confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen" referrerpolicy="no-referrer"></iframe></div>` +
+        `<span class="confer-window-grip" aria-hidden="true">${icon('grip-horizontal')}</span>`;
+      document.body.appendChild(win);
+      icons(win);
+      wireConferWindow(win);
+    }
+    win.hidden = false;
+  }
+
+  function wireConferWindow(win) {
+    // All movement runs through translate3d (GPU composite), left/top stay at
+    // 0. Physics: critically-damped follow while dragging, inertia glide with
+    // soft wall bounce on release. The iframe gets pointer-events:none while
+    // interacting so drags never stutter when crossing its area.
+    const body = win.querySelector('.confer-window-body');
+    const interact = (on) => win.classList.toggle('interacting', on);
+    const MIN_W = 300, MIN_H = 220, EDGE = 10;
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const geom = () => ({ x: win.__x || 0, y: win.__y || 0, w: win.offsetWidth, h: win.offsetHeight });
+    const setGeom = (g) => {
+      win.__x = g.x; win.__y = g.y;
+      if (g.w) win.style.width = `${Math.round(g.w)}px`;
+      if (g.h) win.style.height = `${Math.round(g.h)}px`;
+      win.style.transform = `translate3d(${Math.round(g.x)}px, ${Math.round(g.y)}px, 0)`;
+    };
+    // Initial placement (center-ish): handled via transform, no centering CSS.
+    const placeInitial = () => {
+      const w = Math.min(420, window.innerWidth * 0.92), h = Math.min(640, window.innerHeight * 0.74);
+      setGeom({ x: clamp((window.innerWidth - w) / 2, 8, window.innerWidth - w - 8), y: 84, w, h });
+    };
+    placeInitial();
+
+    let raf = 0;
+    const step = () => {
+      const w = win.offsetWidth, h = win.offsetHeight;
+      const dragging = win.__drag, resizing = win.__resize;
+      if (dragging) {
+        win.__pos.x += (win.__target.x - win.__pos.x) * 0.5;
+        win.__pos.y += (win.__target.y - win.__pos.y) * 0.5;
+        win.__vel.x = (win.__pos.x - win.__last.x) || 0;
+        win.__vel.y = (win.__pos.y - win.__last.y) || 0;
+        win.__last.x = win.__pos.x; win.__last.y = win.__pos.y;
+      } else if (!resizing) {
+        win.__vel.x = clamp(win.__vel.x, -18, 18);
+        win.__vel.y = clamp(win.__vel.y, -18, 18);
+        win.__pos.x += win.__vel.x; win.__pos.y += win.__vel.y;
+        win.__vel.x *= 0.9; win.__vel.y *= 0.9;
+      }
+      // Soft walls: bounce instead of hard clamp.
+      if (win.__pos.x < 8) { win.__pos.x = 8; win.__vel.x = Math.abs(win.__vel.x) * 0.3; }
+      if (win.__pos.y < 8) { win.__pos.y = 8; win.__vel.y = Math.abs(win.__vel.y) * 0.3; }
+      if (win.__pos.x + w > window.innerWidth - 8) { win.__pos.x = window.innerWidth - 8 - w; win.__vel.x = -Math.abs(win.__vel.x) * 0.3; }
+      if (win.__pos.y + 44 > window.innerHeight - 8) { win.__pos.y = window.innerHeight - 8 - Math.min(h, win.__y !== undefined ? 44 : h); }
+      setGeom({ x: win.__pos.x, y: win.__pos.y });
+      const settled = !dragging && !resizing && Math.abs(win.__vel.x) < 0.35 && Math.abs(win.__vel.y) < 0.35;
+      if (settled) { raf = 0; return; }
+      raf = requestAnimationFrame(step);
+    };
+    const startLoop = () => { if (!raf) { win.__last = { x: win.__pos.x, y: win.__pos.y }; raf = requestAnimationFrame(step); } };
+
+    const bar = win.querySelector('[data-drag-handle]');
+    bar.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('[data-win-action]') || e.target.closest('.resizer')) return;
+      const g = geom();
+      win.__resize = null;
+      win.__drag = true;
+      win.__pos = { x: g.x, y: g.y };
+      win.__vel = { x: 0, y: 0 };
+      win.__target = { x: g.x, y: g.y };
+      win.__grab = { dx: e.clientX - g.x, dy: e.clientY - g.y };
+      try { bar.setPointerCapture(e.pointerId); } catch {}
+      interact(true);
+      startLoop();
+    });
+    bar.addEventListener('pointermove', (e) => {
+      if (!win.__drag) return;
+      win.__target.x = clamp(e.clientX - win.__grab.dx, -win.offsetWidth + 80, window.innerWidth - 80);
+      win.__target.y = clamp(e.clientY - win.__grab.dy, 8, window.innerHeight - 56);
+    });
+    ['pointerup', 'pointercancel'].forEach((t) => bar.addEventListener(t, () => {
+      win.__drag = false; interact(false); startLoop();
+    }));
+
+    win.querySelectorAll('.resizer').forEach((handle) => {
+      handle.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        const dir = handle.dataset.dir;
+        const g = geom();
+        win.__drag = false;
+        win.__resize = { dir, x0: e.clientX, y0: e.clientY, w: g.w, h: g.h, gx: g.x, gy: g.y };
+        try { handle.setPointerCapture(e.pointerId); } catch {}
+        interact(true);
+        const move = (ev) => {
+          const r = win.__resize; if (!r) return;
+          const dx = ev.clientX - r.x0, dy = ev.clientY - r.y0;
+          const maxW = window.innerWidth * 0.92, maxH = window.innerHeight * 0.9;
+          let { w, h, gx, gy } = r;
+          if (r.dir.includes('e')) w = clamp(r.w + dx, MIN_W, maxW);
+          if (r.dir.includes('s')) h = clamp(r.h + dy, MIN_H, maxH);
+          if (r.dir.includes('w')) { w = clamp(r.w - dx, MIN_W, maxW); gx = r.gx + (r.w - w); }
+          if (r.dir.includes('n')) { h = clamp(r.h - dy, MIN_H, maxH); gy = r.gy + (r.h - h); }
+          setGeom({ x: gx, y: gy, w, h });
+        };
+        const end = () => {
+          win.__resize = null;
+          interact(false);
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', end);
+          window.removeEventListener('pointercancel', end);
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', end);
+        window.addEventListener('pointercancel', end);
+      });
+    });
+
+    const dbl = win.querySelector('[data-drag-handle]');
+    dbl.addEventListener('dblclick', (e) => {
+      if (e.target.closest('[data-win-action]')) return;
+      if (document.fullscreenElement === win) document.exitFullscreen().catch(() => {});
+      else win.requestFullscreen?.().catch?.(() => {});
+    });
+    win.querySelector('[data-win-action="full"]').onclick = () => {
+      if (document.fullscreenElement === win) document.exitFullscreen().catch(() => {});
+      else win.requestFullscreen?.().catch?.(() => {});
+    };
+    win.querySelector('[data-win-action="close"]').onclick = () => { if (raf) cancelAnimationFrame(raf); win.remove(); };
+  }
+
+  /* ---------- cloud links always open in a new tab ---------- */  /* ---------- cloud links always open in a new tab ---------- */
 
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-cloud-url]');
