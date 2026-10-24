@@ -621,6 +621,80 @@
           }
         }
       ]
+    },
+    {
+      "id": "confer",
+      "title": "Say Hello to Confer",
+      "subtitle": "Learn more about Confer & connecting with others during play",
+      "cover": "https://i.imgur.com/21QTUcw.png",
+      "coverAlt": "Introducing Confer",
+      "date": "October 19, 2026",
+      "author": "Flash",
+      "readTimeMinutes": 3,
+      "tags": ["confer"],
+      "hero": {
+        "type": "image",
+        "src": "https://i.imgur.com/21QTUcw.png",
+        "alt": "Flash Games 5.4 hero banner",
+        "caption": "Say Hello to Confer"
+      },
+      "introduction": "Learn more about how to use Confer and how it works",
+      "sections": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "What is Confer?"
+        },
+        {
+          "type": "paragraph",
+          "text": "Confer is Flash Games way of communicating with your friends while playing. Confer is integrated in the following platforms:"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            "Flash Games' Social tab",
+            "While playing a game via the Social button in the options notch (Social Game Overlay)",
+            "Confer's dedicated app & website"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "All platforms that Confer is supported on can connect with eachother, meaning you can connect with your friend via the Social tab, but they can be using the social game overlay. Always make sure your version of Confer and Flash Games are on the latest update."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "How does it work?"
+        },
+        {
+          "type": "paragraph",
+          "text": "Your devices create a WebRTC connection to eachother and send encrypted data packets to eachother. They are end-to-end encrypted. If required, your router will forward the packets if the distance between both devices is too far for your devices to send the information. You may recieve some lag because encoding and decoding encrypted data packets takes some time without a server. We do not currently nor plan to use a server to store your information. Not only that, Confer offers the following services:"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            { "text": "HD Video & Voice", "detail": "Camera/mic toggle, device selection, mirror preview" },
+            { "text": "Screen Sharing", "detail": "Share entire screen, window, or browser tab with audio" },
+            { "text": "Messaging", "detail": "Text chat with file attachments (images, videos, documents)" },
+            { "text": "Room Codes", "detail": "Simple 6-16 character alphanumeric codes for private rooms" },
+            { "text": "E2E Encryption", "detail": "DTLS-SRTP for media, encrypted data channels for messages" },
+            { "text": "File Sharing", "detail": "Share entire files over Confer's messaging service" }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 1,
+          "text": "❤️🔥🙏 thanks for using flash!"
+        },
+        {
+          "type": "conclusion",
+          "text": "what are you waiting for? go use confer already.",
+          "cta": {
+            "text": "BET",
+            "action": "route:social"
+          }
+        }
+      ]
     }
   ]
 }
