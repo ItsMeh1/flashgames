@@ -186,6 +186,112 @@
   .call-ended-overlay .ended-icon{width:64px;height:64px;border-radius:50%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);margin-bottom:4px}
   .call-ended-overlay p{max-width:360px;text-align:center;color:var(--text-secondary);font-size:14px;line-height:1.5}
   @media(min-width:768px){.local-media-off{width:20%;max-width:240px;min-width:140px;bottom:20px;right:20px;border-radius:14px}.media-status-badge{right:20px;bottom:88px}}
+
+  /* ============================================================
+     Compact / widget sizes — only kicks in when the viewport is
+     really small. Normal phone, tablet and desktop layouts above
+     are untouched. Tune the thresholds here if you want.
+       compact: width <= 360px  OR  height <= 400px
+       tiny:    width <= 280px  OR  height <= 300px
+     ============================================================ */
+  @media (max-width:360px),(max-height:400px){
+    .app{width:100%;height:100%;margin:0;border:none;border-radius:0}
+    .landing-body,.auth-body{justify-content:flex-start;overflow-y:auto;padding:12px;gap:8px}
+    .landing-body::before,.landing-body::after{content:"";flex:1 0 0}
+    .landing-body>*,.auth-body>*{flex-shrink:0}
+    #host-ui,#join-ui{gap:8px!important}
+    .brand-icon{width:40px;height:40px;border-radius:12px;margin-bottom:0}
+    .brand-icon svg{width:22px;height:22px}
+    .landing-body h1{font-size:20px}
+    .tagline{font-size:12px;margin-bottom:2px}
+    .btn{padding:9px 14px;font-size:14px;border-radius:10px}
+    .btn[style]{font-size:13px!important;padding:8px 12px!important}
+    .btn-ghost{font-size:12px;padding:6px}
+    .auth-head{margin-bottom:0}
+    .auth-head h2{font-size:16px}
+    .code-input,#room-code-display{padding:10px 12px;font-size:18px!important;letter-spacing:.12em!important;border-radius:10px}
+    .code-input::placeholder{font-size:13px}
+    .name-input{padding:9px 12px;font-size:14px;border-radius:10px}
+    .field-label{font-size:11px;margin-bottom:-2px}
+    .hint{font-size:11px;line-height:1.4}
+    .sdp-box{min-height:70px;padding:10px;font-size:11px;border-radius:10px}
+    .waiting-state{padding:10px 12px;font-size:12px;border-radius:10px}
+    .waiting-state strong{font-size:13px}
+
+    .app-header{padding:6px 8px;gap:6px}
+    .call-title{font-size:12px}
+    .call-time{font-size:10px}
+    .header-toggle{width:30px;height:30px;border-radius:8px}
+    .back-btn{padding:4px}
+    .quality-select{min-width:72px;padding:5px 20px 5px 8px;font-size:11px;border-radius:8px}
+    .quality-wrap:after{right:8px}
+    .dropdown-menu{min-width:140px;top:38px}
+    .dropdown-item{padding:8px 10px;font-size:13px}
+
+    #video-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:1px;padding:1px}
+    #myVideo,.local-media-off{width:28%;max-width:90px;min-width:56px;aspect-ratio:4/3;bottom:52px;right:6px;border-radius:8px}
+    .local-media-off{font-size:10px;gap:4px}
+    .local-media-off svg{width:16px;height:16px}
+    .media-status-badge{right:auto;left:6px;bottom:52px;padding:4px 8px;font-size:10px}
+    #screenPreview{top:6px;right:6px;width:34%;max-width:140px;min-width:80px;border-radius:8px}
+    .screen-pip,.peer-list{top:6px;left:6px;padding:4px 8px;font-size:10px}
+    .remote-label{font-size:10px;bottom:4px;left:4px;padding:2px 6px}
+    .remote-audio-badge{top:4px;right:4px;padding:3px 6px;font-size:10px}
+    .remote-media-off{font-size:11px;gap:4px}
+    .call-controls{bottom:6px;left:0;right:0;transform:none;margin:0 auto;width:max-content;gap:5px;padding:5px 8px;border-radius:18px;max-width:calc(100% - 12px);flex-wrap:wrap}
+    .app-header .back-btn{position:static;transform:none;flex-shrink:0}
+    .ctrl{width:34px;height:34px}
+    .ctrl svg{width:16px;height:16px}
+
+    .msg-list{padding:8px;gap:6px}
+    .bubble{font-size:12.5px;padding:6px 10px;border-radius:12px}
+    .msg-content,.bubble{max-width:90%}
+    .msg-content .bubble{max-width:100%}
+    .msg-sender{font-size:10px;margin:0 6px 3px}
+    .msg-system .bubble{font-size:11px}
+    .system-notice{font-size:11px;padding:4px 8px}
+    .msg-input-bar{padding:6px 8px;gap:6px}
+    .msg-input{padding:7px 12px;font-size:13px}
+    .send-btn,.attach-btn{width:30px;height:30px}
+    .send-btn svg,.attach-btn svg{width:15px;height:15px}
+    .file-card{padding:8px;gap:8px;border-radius:12px}
+    .file-card-preview{max-height:120px}
+    .file-type-icon{width:32px;height:32px;flex-basis:32px;border-radius:9px}
+    .file-card-btn{min-height:28px;padding:5px 8px;font-size:11px}
+    .mobile-tabs .tab-label{flex-direction:row;justify-content:center;gap:5px;padding:7px;font-size:11px}
+    .tab-label svg{width:14px;height:14px}
+
+    .overlay{padding:12px;gap:8px;overflow-y:auto;justify-content:flex-start;justify-content:safe center}
+    .overlay>*{flex-shrink:0}
+    .overlay h3{font-size:15px}
+    .overlay .sdp-box{height:70px!important}
+    #peer-panel{padding-top:44px!important}
+    #peer-panel>div{padding:12px!important;border-radius:12px!important}
+    #peer-panel h3{font-size:14px!important;margin-bottom:8px!important}
+    #peer-panel-list{max-height:45vh!important}
+    .peer-row{padding:7px 9px}
+    .peer-row span{font-size:12px}
+    .call-ended-overlay .ended-icon{width:44px;height:44px}
+    .call-ended-overlay p{font-size:12px}
+    .toast{top:8px;max-width:calc(100% - 16px);padding:7px 12px;font-size:12px;white-space:normal;text-align:center}
+    .fs-hint{font-size:11px;top:8px;padding:4px 10px}
+  }
+
+  @media (max-width:280px),(max-height:300px){
+    .brand-icon,.tagline,.call-time,.quality-wrap{display:none}
+    .landing-body h1{font-size:16px}
+    .auth-body .hint{display:none}
+    .app-header{padding:4px 6px}
+    .header-toggle{width:26px;height:26px}
+    .ctrl{width:30px;height:30px}
+    .ctrl svg{width:14px;height:14px}
+    .call-controls{gap:4px;padding:4px 6px;bottom:4px}
+    #myVideo,.local-media-off{max-width:64px;min-width:44px;bottom:44px}
+    .media-status-badge{bottom:44px}
+    .mobile-tabs .tab-label{padding:5px;font-size:10px}
+    .msg-list{padding:6px}
+    .msg-input-bar{padding:4px 6px}
+  }
 </style>
 <base target="_blank">
 </head>
@@ -206,8 +312,10 @@
       <div id="host-ui" style="display:none;width:100%;flex-direction:column;gap:12px;align-items:center;">
         <label class="field-label" for="host-name">Your name</label>
         <input id="host-name" class="name-input" maxlength="24" autocomplete="nickname" placeholder="Enter your name" onkeydown="if(event.key==='Enter')document.getElementById('btn-start-host').click()">
-        <div id="room-code-display" class="code-input" style="cursor:text;user-select:all;font-size:26px;letter-spacing:.4em;"></div>
-        <p class="hint">Share this code so peers can encrypt messages. Everyone needs their own invite link.</p>
+        <label class="field-label" for="room-code-display">Room code</label>
+        <input id="room-code-display" class="code-input" type="text" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Choose a room code" style="font-size:24px;letter-spacing:.25em;" onkeydown="if(event.key==='Enter')document.getElementById('btn-start-host').click()">
+        <button id="btn-random-code" type="button" class="btn btn-secondary" style="max-width:200px;font-size:13px;padding:8px 12px;">Generate random code</button>
+        <p class="hint">Pick your own code (6–16 letters or numbers) or keep the random one. Longer codes are harder to guess.</p>
         <button id="btn-start-host" class="btn btn-primary" style="max-width:280px;">Create Invite</button>
         <textarea id="host-offer" class="sdp-box" style="display:none;" readonly placeholder="Encoded offer will appear here…"></textarea>
         <div id="host-actions" style="display:none;gap:10px;width:100%;justify-content:center;flex-wrap:wrap;">
@@ -222,7 +330,7 @@
       <div id="join-ui" style="display:none;width:100%;flex-direction:column;gap:12px;align-items:center;">
         <label class="field-label" for="join-name">Your name</label>
         <input id="join-name" class="name-input" maxlength="24" autocomplete="nickname" placeholder="Enter your name" onkeydown="if(event.key==='Enter')document.getElementById('btn-start-join').click()">
-        <input id="join-code" class="code-input" type="text" placeholder="Enter room code" maxlength="8" autocomplete="off">
+        <input id="join-code" class="code-input" type="text" placeholder="Enter room code" maxlength="16" autocomplete="off">
         <p class="hint">Enter the room code the host gave you.</p>
         <button id="btn-start-join" class="btn btn-primary" style="max-width:280px;">Next Step</button>
         <textarea id="join-offer" class="sdp-box" style="display:none;" placeholder="Paste the host's encoded offer here…"></textarea>
@@ -1610,7 +1718,7 @@ function route() {
       $("#join-ui").style.display = "none";
       if (!mesh) initMesh();
       if (!mesh.roomCode) mesh.roomCode = new LanChat().roomCode;
-      $("#room-code-display").textContent = mesh.roomCode;
+      if (!$("#room-code-display").value) $("#room-code-display").value = mesh.roomCode;
       setupCrypto(mesh.roomCode);
     } else if (mode === "join") {
       $("#auth-title").textContent = "Join Room";
@@ -1904,6 +2012,9 @@ window.endCall = (options = {}) => {
   $("#join-actions").style.display = "none"; $("#join-waiting").style.display = "none"; $("#btn-verify").style.display = "none";
   $("#btn-start-join").style.display = "inline-flex";
   $("#host-name").value = "";
+  $("#room-code-display").value = "";
+  $("#room-code-display").readOnly = false;
+  $("#btn-random-code").style.display = "";
   $("#join-name").value = "";
   $("#stream-quality").value = "auto";
   if (showEnded) showCallEnded("Call ended", reason);
@@ -1997,6 +2108,23 @@ window.enterInviteAnswer = () => {
  *   POST /room/CODE/join, GET /room/CODE/poll, POST /room/CODE/signal, POST /room/CODE/leave
  * Server error messages are readable here, so failures show their real cause.
  */
+
+// Room codes: 6–16 letters or numbers, chosen by the host. Must match worker.js.
+const CONFER_CODE_RE = /^[A-Z0-9]{6,16}$/;
+function conferCleanCode(value) {
+  return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+$("#room-code-display").addEventListener("input", (e) => {
+  const clean = conferCleanCode(e.target.value);
+  if (clean !== e.target.value) e.target.value = clean;
+});
+$("#join-code").addEventListener("input", (e) => {
+  const clean = conferCleanCode(e.target.value);
+  if (clean !== e.target.value) e.target.value = clean;
+});
+$("#btn-random-code").addEventListener("click", () => {
+  $("#room-code-display").value = new LanChat().roomCode;
+});
 
 // Deployed Worker URL, without a trailing slash.
 const CONFER_SIGNALING_WORKER = "https://conferweb.omarabuelfoutouh.workers.dev";
@@ -2272,7 +2400,9 @@ async function conferHandleRoomPacket(packet, socket) {
 
 function conferPrepareRoomUI(role, code) {
   if (role === "host") {
-    $("#room-code-display").textContent = code;
+    $("#room-code-display").value = code;
+    $("#room-code-display").readOnly = true;
+    $("#btn-random-code").style.display = "none";
     const hostHint = $("#host-ui .hint");
     if (hostHint) hostHint.textContent = "Share this room code. People can join without copying offers or answers.";
     $("#host-offer").style.display = "none";
@@ -2298,7 +2428,14 @@ $("#btn-start-host").addEventListener("click", async (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
   if (!mesh) initMesh();
-  if (!mesh.roomCode) mesh.roomCode = new LanChat().roomCode;
+  const chosenCode = conferCleanCode($("#room-code-display").value) || new LanChat().roomCode;
+  if (!CONFER_CODE_RE.test(chosenCode)) {
+    showToast("Room code must be 6–16 letters or numbers.");
+    $("#room-code-display").focus();
+    return;
+  }
+  mesh.roomCode = chosenCode;
+  $("#room-code-display").value = chosenCode;
   mesh.displayName = ($("#host-name").value.trim() || "Guest").slice(0, 24);
   mesh.isHost = true;
   await setupCrypto(mesh.roomCode);
@@ -2329,9 +2466,9 @@ $("#btn-start-host").addEventListener("click", async (event) => {
 $("#btn-start-join").addEventListener("click", async (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
-  const code = $("#join-code").value.trim().toUpperCase();
-  if (!/^[A-HJ-NP-Z2-9]{6}$/.test(code)) {
-    showToast("Enter a valid 6-character room code.");
+  const code = conferCleanCode($("#join-code").value);
+  if (!CONFER_CODE_RE.test(code)) {
+    showToast("Enter a valid room code (6–16 letters or numbers).");
     return;
   }
   const displayName = ($("#join-name").value.trim() || "Guest").slice(0, 24);

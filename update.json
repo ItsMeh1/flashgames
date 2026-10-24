@@ -1,6 +1,17 @@
 {
-  "version": "5.4.1",
+  "version": "5.4.2",
   "releases": [
+    {
+      "version": "5.4.2",
+      "date": "October 23, 2026",
+      "description": "Major bug patches",
+      "changes": [
+        { "type": "edit", "text": "Fixed the overlays from moving away from your mouse" },
+        { "type": "edit", "text": "Fix social widget, so it lets you make room codes." },
+        { "type": "edit", "text": "Give the cloaking popup a don't show again checkbox" },
+        { "type": "edit", "text": "Fixed some devices still not supporting confer locally" }
+      ]
+    },
     {
       "version": "5.4.1",
       "date": "October 22, 2026",
