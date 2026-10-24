@@ -8,11 +8,12 @@
 
   const state = {
     route: location.hash.replace('#', '') || 'home', games: [], installed: [], favourites: new Set(), onlineGames: [], flashExclusiveGames: Array.isArray(window.FlashExclusiveGames) ? window.FlashExclusiveGames : [], eaglerClients: [], downloads: new Map(), gamesSection: localStorage.getItem('flashgames.section') === 'mine' ? 'mine' : 'store', storeSection: 'all', storeView: 'games',
-    user: null, profile: {}, updates: { version: '0.0.0', releases: [] }, notifications: [],
+    user: null, profile: {}, updates: { version: '0.0.0', releases: [] }, articles: [], notifications: [],
     query: '', category: 'All', sort: localStorage.getItem('flashgames.sort') || 'featured', searchIndex: 0, stats: loadStats(),
     theme: localStorage.getItem('flashgames.theme') || 'dark', accent: localStorage.getItem('flashgames.accent') || '#8b5cf6',
     opacity: Number(localStorage.getItem('flashgames.opacity') || 66), blur: Number(localStorage.getItem('flashgames.blur') || 20),
-    motion: localStorage.getItem('flashgames.motion') !== '0', performance: localStorage.getItem('flashgames.performance') === '1',
+    motion: localStorage.getItem('flashgames.motion') !== '0', performance: localStorage.getItem('flashgames.performance') === '1', cloakAuto: localStorage.getItem('flashgames.cloak.auto') === '1',
+    updatesView: 'whatsnew',
     objectUrl: null, gameStartedAt: 0, searchTimer: null
   };
 
@@ -166,6 +167,7 @@
     $$('.accent-picker').forEach((el) => { el.value = state.accent; });
     $$('.toggle-motion .switch').forEach((el) => el.classList.toggle('on', state.motion));
     $$('.toggle-performance .switch').forEach((el) => el.classList.toggle('on', state.performance));
+    $$('.toggle-cloak-auto .switch').forEach((el) => el.classList.toggle('on', state.cloakAuto));
     document.body.classList.toggle('perf-plus', localStorage.getItem('flashgames.perfplus') === '1');
     setTheme(state.theme);
   }
@@ -639,10 +641,73 @@
   }
 
   function changeIcon(type) { if (type === 'add') return `<span class="change-icon log-add">${icon('plus')}</span>`; if (type === 'remove') return `<span class="change-icon log-remove">${icon('x')}</span>`; return `<span class="change-icon log-edit">${icon('hammer')}</span>`; }
+
+  function updatesSwitchHtml() {
+    const whatsnew = state.updatesView === 'whatsnew';
+    return `<div class="games-switch updates-switch" role="tablist" aria-label="Updates sections">` +
+      `<button class="${whatsnew ? 'active' : ''}" data-updates-view="whatsnew">${icon('history')} <span>What's New</span></button>` +
+      `<button class="${whatsnew ? '' : 'active'}" data-updates-view="articles">${icon('newspaper')} <span>Articles</span></button></div>`;
+  }
+
   function renderUpdates() {
     const target = $('#updatesView'); if (!target) return;
-    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">CHANGELOG</span><h1>What's new</h1><p>Current version ${esc(state.updates.version)}.</p></div></div><div class="timeline">${(state.updates.releases || []).map((release) => `<article class="release glass"><div class="release-head"><div><strong>${esc(release.version || 'Update')}</strong><span>${esc(release.date || release.published || '')}</span></div>${icon('sparkles')}</div><p>${esc(release.description || release.summary || '')}</p>${Array.isArray(release.changes) ? release.changes.map((change) => `<div class="log-item">${changeIcon(change.type || change.kind)}<span>${esc(change.text || change.description || change.title || change)}</span></div>`).join('') : ''}</article>`).join('') || emptyState('No changelog entries', 'Published releases will appear here.', 'history')}</div>`;
+    if (state.updatesView === 'whatsnew') {
+      target.innerHTML = `<div class="page-head"><div><span class="eyebrow">CHANGELOG</span><h1>What's New</h1><p>Current version ${esc(state.updates.version)}.</p></div></div>${updatesSwitchHtml()}<div class="timeline">${(state.updates.releases || []).map((release) => `<article class="release glass"><div class="release-head"><div><strong>${esc(release.version || 'Update')}</strong><span>${esc(release.date || release.published || '')}</span></div>${icon('sparkles')}</div><p>${esc(release.description || release.summary || '')}</p>${Array.isArray(release.changes) ? release.changes.map((change) => `<div class="log-item">${changeIcon(change.type || change.kind)}<span>${esc(change.text || change.description || change.title || change)}</span></div>`).join('') : ''}</article>`).join('') || emptyState('No changelog entries', 'Published releases will appear here.', 'history')}</div>`;
+    } else {
+      target.innerHTML = `<div class="page-head"><div><span class="eyebrow">ARTICLES</span><h1>Articles</h1><p>Guides, announcements, and deep dives.</p></div></div>${updatesSwitchHtml()}<div class="articles-grid">${(state.articles || []).map((article) => `<article class="article-card" data-article-id="${esc(article.id)}"><img class="article-cover" src="${esc(article.cover)}" alt="" loading="lazy"><span class="article-category">${esc(article.tags?.[0] || 'Article')}</span><div class="article-body"><div class="article-meta"><time class="article-date">${esc(article.date)}</time><span class="dot"></span><span class="article-author">${esc(article.author)}</span><span class="dot"></span><span class="article-read-time">${article.readTimeMinutes || 5} min read</span></div><h2 class="article-title">${esc(article.title)}</h2><div class="article-excerpt">${esc(article.subtitle || article.introduction?.slice(0, 180) || '')}…</div><div class="article-tags">${(article.tags || []).slice(1).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div></div></article>`).join('') || emptyState('No articles yet', 'Articles will appear here.', 'newspaper')}</div>`;
+    }
     refreshIcons(target);
+    $$('#updatesView .updates-switch button').forEach((b) => b.addEventListener('click', () => { state.updatesView = b.dataset.updatesView; renderUpdates(); }));
+    $$('#updatesView .article-card').forEach((card) => card.addEventListener('click', () => openArticle(card.dataset.articleId)));
+  }
+
+  function renderArticleSections(sections) {
+    if (!Array.isArray(sections)) return '';
+    return sections.map(s => {
+      switch (s.type) {
+        case 'heading':
+          return `<h${s.level || 2}>${esc(s.text)}</h${s.level || 2}>`;
+        case 'paragraph':
+          return `<p>${esc(s.text)}</p>`;
+        case 'bulletList':
+          return `<ul>${s.items.map(item => typeof item === 'string' ? `<li>${esc(item)}</li>` : `<li><strong>${esc(item.text)}</strong>${item.detail ? ` — ${esc(item.detail)}` : ''}</li>`).join('')}</ul>`;
+        case 'numberedList':
+          return `<ol>${s.items.map(item => `<li>${esc(item)}</li>`).join('')}</ol>`;
+        case 'image':
+          return `<figure><img src="${esc(s.src)}" alt="${esc(s.alt || '')}" loading="lazy"><figcaption>${esc(s.caption || '')}</figcaption></figure>`;
+        case 'graph':
+          return `<div class="article-graph"><h4>${esc(s.title)}</h4><pre class="mermaid">${esc(s.data)}</pre></div>`;
+        case 'quote':
+          return `<blockquote><p>${esc(s.text)}</p><footer>— ${esc(s.author)}${s.role ? `, ${esc(s.role)}` : ''}</footer></blockquote>`;
+        case 'conclusion':
+          let html = `<section class="article-conclusion"><p>${esc(s.text)}</p>`;
+          if (s.cta) {
+            html += `<button class="btn primary" data-cta="${esc(s.cta.action)}">${icon('arrow-right')} ${esc(s.cta.text)}</button>`;
+          }
+          html += `</section>`;
+          return html;
+        default:
+          return '';
+      }
+    }).join('');
+  }
+
+  function openArticle(id) {
+    const article = (state.articles || []).find(a => a.id === id);
+    if (!article) return;
+    const target = $('#updatesView'); if (!target) return;
+    const readTime = article.readTimeMinutes || 5;
+    const heroHtml = article.hero ? (article.hero.type === 'image' ? `<img class="article-cover-full" src="${esc(article.hero.src)}" alt="${esc(article.hero.alt || '')}" loading="eager">` : '') : `<img class="article-cover-full" src="${esc(article.cover)}" alt="" loading="eager">`;
+    const sectionsHtml = renderArticleSections(article.sections);
+    target.innerHTML = `<div class="page-head"><div><span class="eyebrow">ARTICLE</span><h1>${esc(article.title)}</h1><p>${esc(article.date)} • ${esc(article.author)} • ${readTime} min read</p></div><button class="btn" data-action="back-to-articles">${icon('arrow-left')} Back</button></div><div class="article-full"><div class="article-hero">${heroHtml}<div class="article-hero-meta"><div class="article-header-meta"><time>${esc(article.date)}</time><span class="dot"></span><span>${esc(article.author)}</span><span class="dot"></span><span>${readTime} min read</span></div><div class="article-header-tags">${(article.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>${article.subtitle ? `<p class="article-subtitle">${esc(article.subtitle)}</p>` : ''}<h1 class="article-full-title">${esc(article.title)}</h1></div></div><div class="article-content">${sectionsHtml}</div></div>`;
+    refreshIcons(target);
+    target.querySelector('[data-action="back-to-articles"]')?.addEventListener('click', () => { state.updatesView = 'articles'; renderUpdates(); });
+    target.querySelector('[data-cta]')?.addEventListener('click', (e) => {
+      const action = e.currentTarget.dataset.cta;
+      if (action.startsWith('route:')) {
+        setRoute(action.slice(6));
+      }
+    });
   }
 
   function settingsGroup(title, eyebrow, rows, hint) {
@@ -677,10 +742,9 @@
     const account = state.user
       ? `<div class="setting"><div><strong>Account</strong><small>${esc(state.user.email || 'Signed in')}${window.FlashAccess?.isDeveloper?.() ? ' — developer access' : ''}</small></div>${icon('user-round')}</div>`
       : `<div class="setting"><div><strong>Account</strong><small>Local mode — creations stay on this device.</small></div>${icon('user-round')}</div>`;
-    const cloakChoice = localStorage.getItem('flashgames.cloak.auto');
     const cloak = settingsGroup('Cloak', 'PRIVACY', [
       `<button class="setting-action cloak-launch" type="button"><span>${icon('ghost')}<span><strong>Launch in about:blank</strong><small>Runs the entire app inside a plain blank tab.</small></span></span>${icon('chevron-right')}</button>`,
-      `<div class="setting"><div><strong>Start automatically</strong><small>${cloakChoice === '1' ? 'Cloak launches at startup.' : cloakChoice === '0' ? 'Disabled — you will not be asked.' : 'You will be asked at the next startup.'}</small></div><button class="btn" data-setting-action="cloak-reset" type="button">${icon('rotate-ccw')} Ask again</button></div>`,
+      settingsToggleRow('toggle-cloak-auto', 'ghost', 'Auto-launch cloak', 'Open the cloaked about:blank tab automatically on startup.'),
       `<div class="setting"><div><strong>How to leave</strong><small>The bottom-left Leave button — or Shift+End — swaps the tab for a plain about:blank.</small></div>${icon('ghost')}</div>`
     ], 'User-initiated. Nothing opens tabs on its own.');
     const help = settingsGroup('Help', 'SUPPORT', [
@@ -693,6 +757,7 @@
     applyPreferences();
     paintStorageMeter(target);
     refreshIcons(target);
+    handleSettings();
   }
 
   async function paintStorageMeter(target) {
@@ -1039,8 +1104,8 @@
     $$('.blur-range').forEach((range) => range.addEventListener('input', (event) => { state.blur = Number(event.target.value); localStorage.setItem('flashgames.blur', String(state.blur)); applyPreferences(); }));
     $$('.toggle-motion').forEach((row) => row.addEventListener('click', () => { state.motion = !state.motion; localStorage.setItem('flashgames.motion', state.motion ? '1' : '0'); applyPreferences(); }));
     $$('.toggle-performance').forEach((row) => row.addEventListener('click', () => { state.performance = !state.performance; localStorage.setItem('flashgames.performance', state.performance ? '1' : '0'); applyPreferences(); }));
+    $$('.toggle-cloak-auto').forEach((row) => row.addEventListener('click', () => { state.cloakAuto = !state.cloakAuto; localStorage.setItem('flashgames.cloak.auto', state.cloakAuto ? '1' : '0'); applyPreferences(); }));
     $$('.cloak-launch').forEach((row) => row.addEventListener('click', () => window.FlashCloak?.launch?.()));
-    $$('[data-setting-action="cloak-reset"]').forEach((row) => row.addEventListener('click', () => confirmDialog('Reset cloak prompt?', 'You will be asked whether to run cloaked the next time Flash Games starts.', async () => { localStorage.removeItem('flashgames.cloak.auto'); toast('Reset', 'You will be asked at the next startup.', 'success'); rerenderRoute(); })));
     $$('.clear-library').forEach((row) => row.addEventListener('click', () => confirmDialog('Clear library?', 'All locally installed game files will be removed.', async () => { await FlashGamesStore.clearGameCache(); await loadInstalled(); renderProfile(); toast('Library cleared', 'Your installed games were removed.', 'success'); setRoute('games'); }, true)));
   }
 
@@ -1082,6 +1147,39 @@
       }, false);
     } catch {}
   }
+
+  function checkStartupNotifications() {
+    try {
+      const lastSeenUpdate = localStorage.getItem('flashgames.lastSeenUpdate') || '0.0.0';
+      const lastSeenArticle = localStorage.getItem('flashgames.lastSeenArticle') || '';
+      const currentVersion = state.updates?.version || '0.0.0';
+      const latestArticle = state.articles?.[0]?.id || '';
+
+      if (currentVersion !== lastSeenUpdate) {
+        localStorage.setItem('flashgames.lastSeenUpdate', currentVersion);
+        setTimeout(() => {
+          confirmDialog('New Update!', `Version ${esc(currentVersion)} is now available.`, () => {
+            setRoute('updates');
+            state.updatesView = 'whatsnew';
+            renderUpdates();
+          }, false, 'View Update');
+        }, 800);
+      }
+
+      if (latestArticle && latestArticle !== lastSeenArticle) {
+        localStorage.setItem('flashgames.lastSeenArticle', latestArticle);
+        setTimeout(() => {
+          confirmDialog('New Article!', `New article: "${esc(state.articles[0].title)}"`, () => {
+            setRoute('updates');
+            state.updatesView = 'articles';
+            renderUpdates();
+            setTimeout(() => openArticle(latestArticle), 100);
+          }, false, 'Read Article');
+        }, 1200);
+      }
+    } catch {}
+  }
+
   async function init() {
     // Popup shield: nothing in Flash Games is ever meant to open in a new
     // tab — main window or framed client, the API is dead on arrival.
@@ -1141,8 +1239,9 @@
     ensureEaglerClients().catch(() => {});
     try {
       await loadInstalled(); state.favourites = FlashGamesStore.getFavourites();
-      const [catalogue, updates] = await Promise.all([FlashData.loadGames(), FlashData.loadUpdates()]); state.games = catalogue.games || []; state.updates = updates;
+      const [catalogue, updates] = await Promise.all([FlashData.loadGames(), FlashData.loadUpdates()]); state.games = catalogue.games || []; state.updates = updates; state.articles = updates.articles || [];
       renderProfile(); renderNotifications(); updateAdminVisibility(); setRoute(state.route);
+      checkStartupNotifications();
       const auth = window.__flashFirebase?.auth; if (auth) auth.onAuthStateChanged((user) => loadUserProfile(user));
       if (state.games.length === 0) toast('Game catalogue unavailable', 'GitHub could not be reached. Existing installed games are still available.', 'error');
       if (state.games.length >= 300) toast('Catalogue ready', `${state.games.length.toLocaleString()} games are available.`, 'success');

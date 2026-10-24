@@ -3,7 +3,7 @@
   "name": "Flash Games",
   "short_name": "Flash Games",
   "description": "Your centralized, offline-ready game vault.",
-  "start_url": "./index.html",
+  "start_url": "./?.amplify.com",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

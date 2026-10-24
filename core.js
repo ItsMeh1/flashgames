@@ -331,8 +331,9 @@
       if (!r.ok) throw new Error();
       const data = await r.json();
       const releases = Array.isArray(data) ? data : data.releases || [];
-      return { version: clean(data.version || releases[0]?.version || '0.0.0'), releases };
-    } catch { return { version: '0.0.0', releases: [] }; }
+      const articles = Array.isArray(data.articles) ? data.articles : [];
+      return { version: clean(data.version || releases[0]?.version || '0.0.0'), releases, articles };
+    } catch { return { version: '0.0.0', releases: [], articles: [] }; }
   }
 
   async function loadNotifications(uid) {

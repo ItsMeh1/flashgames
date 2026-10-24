@@ -474,5 +474,153 @@
         }
       ]
     }
+  ],
+  "articles": [
+    {
+      "id": "introducing-5.4",
+      "title": "Introducing: Flash v5.4",
+      "subtitle": "Everything in the newest update. Monumental changes.",
+      "cover": "https://i.imgur.com/9y6SJnq.png",
+      "coverAlt": "Introducing 5.4",
+      "date": "October 24, 2026",
+      "author": "Flash",
+      "readTimeMinutes": 8,
+      "tags": ["release", "major", "eagler", "confer", "cloud"],
+      "hero": {
+        "type": "image",
+        "src": "https://i.imgur.com/9y6SJnq.png",
+        "alt": "Flash Games 5.4 hero banner",
+        "caption": "Version 5.4 — The most ambitious update since launch"
+      },
+      "introduction": "After three months of intensive development, Flash Games 5.4 lands today. This isn't just an incremental patch — it's a fundamental rebuild of how the platform works. We've added a full Eaglercraft launcher with 15+ Minecraft versions, built Confer from scratch for peer-to-peer video calls, integrated cloud gaming via nowgg.fun, and rewrote the entire game installation pipeline. Here's the complete breakdown.",
+      "sections": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Eaglercraft: A Complete Launcher Built In"
+        },
+        {
+          "type": "paragraph",
+          "text": "We've built a full Eaglercraft launcher, from scratch, to suit your gaming needs. From 1.8 to 26.3, we have nearly every version you'll ever need."
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            "Classics — 1.8.8, 1.12",
+            "Modern — 26.2, 26.3",
+            "Custom clients — Pixel Client (1.8.8, 1.12.2), Tuff Client (WASM), Astra Client, Resent Client 5.0, ShadowNet Client"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Every client downloads once via our new install engine, then runs completely offline. No accounts, no telemetry, no data collection. The WASM builds are heavyweight (~50-120MB), but after the first launch they start instantly."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Confer: Peer-to-Peer Video Calls, No Servers"
+        },
+        {
+          "type": "paragraph",
+          "text": "Confer is our new communication service that you can use during games & even out of them. Create & join rooms, plus do more. All features are:"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Core Features"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            { "text": "HD Video & Voice", "detail": "Camera/mic toggle, device selection, mirror preview" },
+            { "text": "Screen Sharing", "detail": "Share entire screen, window, or browser tab with audio" },
+            { "text": "Messaging", "detail": "Text chat with file attachments (images, videos, documents)" },
+            { "text": "Room Codes", "detail": "Simple 6-16 character alphanumeric codes for private rooms" },
+            { "text": "E2E Encryption", "detail": "DTLS-SRTP for media, encrypted data channels for messages" },
+            { "text": "File Sharing", "detail": "Share entire files over Confer's messaging service" }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Confer lives in the Social tab and stays connected across route changes — your calls survive tab switches. It also works if the person on the other end is playing a game, with a dedicated view while your playing any game. Activate it in the notch."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Cloud Gaming"
+        },
+        {
+          "type": "paragraph",
+          "text": "Verified accounts and developer codes now unlock 12 cloud titles streamed via our providers. You can play games ranging from Roblox, Rocket League, or even Fortnite."
+        },
+        {
+          "type": "image",
+          "src": "https://frogiee.one/stuff/pictures/nowggfun2.png?.amplify.com",
+          "alt": "Cloud gaming titles grid",
+          "caption": "Roblox, Rocket League, Minecraft, Among Us, and more. Roblox is shown for visual purposes only"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            "Regional routing — automatic host detection per region",
+            "Connection badges — know when a game is working or not",
+            "Numbered grid — consistent ordering across sessions",
+            "Queue to play & get in fast"
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Architecture Rebuild: libcurl Relay & Offline-First"
+        },
+        {
+          "type": "paragraph",
+          "text": "We now use a new, built-in and integrated game loader & fetcher which is 2x faster & more efficent for all games."
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Key Improvements"
+        },
+        {
+          "type": "numberedList",
+          "items": [
+            "Installs reuse cached games instead of re-downloading every time",
+            "Mega bundles: 'The Whole Vault', 'Every Offline Game', 'Every Online Game' for quick game access ofline",
+            "Always running the latest-version of Flash",
+            "Game HUD no longer drifts on hover",
+            "Unified Games section: Library + Store merged with centered switcher"
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Optimization"
+        },
+        {
+          "type": "paragraph",
+          "text": "Along with thousands of games, cloud games, and Eaglercraft versions, comes lag and latency. Our new optimization systems help out with this:"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            "Motion — enables/disables all interface animations, but keeps games running crisp on your GPU (unless game doesn't allow it)",
+            "Performance Mode — reduces visual effects, disables blur/glass while gaming, offloading all useless elements for performance."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Both persist in localStorage and apply instantly without reload."
+        },
+        {
+          "type": "conclusion",
+          "text": "Thanks for reading! Go and treat yourself to some Eaglercraft.",
+          "cta": {
+            "text": "yeah, why not?",
+            "action": "route:eagler"
+          }
+        }
+      ]
+    }
   ]
 }
