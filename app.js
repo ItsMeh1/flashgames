@@ -13,7 +13,7 @@
     theme: localStorage.getItem('flashgames.theme') || 'dark', accent: localStorage.getItem('flashgames.accent') || '#8b5cf6',
     opacity: Number(localStorage.getItem('flashgames.opacity') || 66), blur: Number(localStorage.getItem('flashgames.blur') || 20),
     motion: localStorage.getItem('flashgames.motion') !== '0', performance: localStorage.getItem('flashgames.performance') === '1', cloakAuto: localStorage.getItem('flashgames.cloak.auto') === '1',
-    updatesView: 'whatsnew',
+    updatesView: 'whatsnew', socialView: 'confer',
     objectUrl: null, gameStartedAt: 0, searchTimer: null
   };
 
@@ -184,26 +184,32 @@
   function currentPfp() { return state.profile.pfp || state.profile.photoURL || state.profile.photo || state.profile.avatar || state.user?.photoURL || ''; }
   function gameCover(game) { return game.cover || './offline/logo.png'; }
   function luminImageToken(game) { return game?.__raw?.image_token || game?.__raw?.imageToken || game?.__raw?.thumbnail_token || game?.__raw?.thumbnailToken || game?.__raw?.image?.token || ''; }
+  const luminImgCache = new Map();
   async function hydrateLuminImages(root=document) {
     if(!window.Lumin?.getImageUrl) return;
     const cards=[...root.querySelectorAll('[data-lumin-id]')];
-    await Promise.allSettled(cards.map(async card=>{
+    const pending=[];
+    for (const card of cards) {
       const game=state.onlineGames.find(g=>String(g.id)===String(card.dataset.gameId));
-      if(!game) return;
+      if(!game) continue;
       const raw=game.__raw || game;
       const token=raw.image_token || raw.imageToken || game.image_token || game.imageToken || luminImageToken(game);
       const img=card.querySelector('img[data-lumin-image]');
-      if(!img || !token) return;
-      try {
-        const url=await window.Lumin.getImageUrl(token);
-        if(typeof url==='string' && url) {
-          game.cover=url;
-          img.src=url;
-        }
-      } catch(error) {
-        console.warn('[Flash Games] Lumin thumbnail failed for', game.name, error);
-      }
-    }));
+      if(!img || !token) continue;
+      const cached=luminImgCache.get(token);
+      if (cached) { img.src=cached; if (!game.cover) game.cover=cached; continue; }
+      pending.push((async () => {
+        try {
+          const url=await window.Lumin.getImageUrl(token);
+          if(typeof url==='string' && url) {
+            luminImgCache.set(token, url);
+            game.cover=url;
+            img.src=url;
+          }
+        } catch { /* thumbnail optional */ }
+      })());
+    }
+    if (pending.length) await Promise.allSettled(pending);
   }
   function installedSet() { return new Set(state.installed.map((game) => game.id)); }
 
@@ -625,19 +631,77 @@
     observeSentinel('store', () => updateStoreGrid(false));
   }
 
+  function renderMermaid(root = document) {
+    if (!window.mermaid) return;
+    const nodes = root.querySelectorAll('.mermaid');
+    if (!nodes.length) return;
+    mermaid.run({ nodes, suppressErrors: true }).then(() => {
+      nodes.forEach(n => n.removeAttribute('data-mermaid-src'));
+    }).catch(() => {
+      nodes.forEach(n => {
+        if (n.dataset.mermaidSrc) {
+          n.textContent = n.dataset.mermaidSrc;
+          n.classList.add('mermaid-fallback');
+        }
+      });
+    });
+  }
+
+  function sizeSocialClearance() {
+    const fill = document.querySelector('.social-fill');
+    if (!fill) return;
+    let top = 68, bottom = 0;
+    try {
+      const tb = document.getElementById('topbar');
+      if (tb) { const r = tb.getBoundingClientRect(); if (r.height > 0) top = Math.round(r.bottom) + 8; }
+      const dock = document.querySelector('.bottom-dock');
+      if (dock && dock.getBoundingClientRect().height > 0) bottom = Math.round(window.innerHeight - dock.getBoundingClientRect().top) + 8;
+    } catch {}
+    fill.style.setProperty('--social-top', `${top}px`);
+    fill.style.setProperty('--social-bottom', `${bottom}px`);
+  }
+
   function renderSocial() {
     const target = $('#socialView'); if (!target) return;
-    // Built once and never rebuilt: tearing the iframe down drops live calls.
     if (!target.dataset.shell) {
       target.dataset.shell = '1';
-      target.innerHTML = `<div class="social-fill"><iframe id="conferFrame" src="./confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen"></iframe><button class="social-float" id="conferReload" aria-label="Reload Confer">${icon('refresh-cw')}<span>Reload</span></button></div>`;
-      $('#conferReload').addEventListener('click', () => {
-        const frame = $('#conferFrame');
-        if (frame) frame.src = frame.src;
-        toast('Reloading Confer', 'Reconnecting your session…');
-      });
+      target.innerHTML = `<div class="social-fill">
+        <iframe id="conferFrame" src="./confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen" class="social-frame-active"></iframe>
+        <iframe id="discordFrame" src="about:blank" title="Discord" allow="fullscreen" class="social-frame-hidden"></iframe>
+        <div class="social-pill" role="tablist" aria-label="Social">
+          <button class="social-pill-btn" data-social-view="confer">${icon('message-square')} <span>Confer</span></button>
+          <button class="social-pill-btn" data-social-view="discord"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.675 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.083.083 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .085-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.007-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 0 7.351-2.143 9.116-5.454a.07.07 0 0 1 .077.01c.14.11.29.212.44.3.05.027.104.007.134-.033a13.879 13.879 0 0 0 1.227 1.992.076.076 0 0 0 .085.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.43-4.61-.23-9.294-1.387-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg> <span>Discord</span></button>
+        </div>
+      </div>`;
+      $('#conferReload')?.remove(); // Remove old reload button if exists
+      $$('#socialView .social-pill-btn').forEach((b) => b.addEventListener('click', () => { state.socialView = b.dataset.socialView; switchSocialView(); }));
       refreshIcons(target);
     }
+    switchSocialView();
+    requestAnimationFrame(sizeSocialClearance);
+  }
+
+function switchSocialView() {
+    const conferFrame = $('#conferFrame');
+    const discordFrame = $('#discordFrame');
+    const pillBtns = $$('#socialView .social-pill-btn');
+    if (!conferFrame || !discordFrame) return;
+    if (state.socialView === 'confer') {
+      conferFrame.classList.remove('social-frame-hidden');
+      conferFrame.classList.add('social-frame-active');
+      discordFrame.classList.remove('social-frame-active');
+      discordFrame.classList.add('social-frame-hidden');
+      if (discordFrame.src !== 'about:blank') discordFrame.src = 'about:blank';
+    } else {
+      discordFrame.classList.remove('social-frame-hidden');
+      discordFrame.classList.add('social-frame-active');
+      conferFrame.classList.remove('social-frame-active');
+      conferFrame.classList.add('social-frame-hidden');
+      if (discordFrame.src === 'about:blank' || discordFrame.src.includes('about:blank')) {
+        discordFrame.src = './discord.html';
+      }
+    }
+    pillBtns.forEach((b) => b.classList.toggle('active', b.dataset.socialView === state.socialView));
   }
 
   function changeIcon(type) { if (type === 'add') return `<span class="change-icon log-add">${icon('plus')}</span>`; if (type === 'remove') return `<span class="change-icon log-remove">${icon('x')}</span>`; return `<span class="change-icon log-edit">${icon('hammer')}</span>`; }
@@ -676,9 +740,14 @@
         case 'image':
           return `<figure><img src="${esc(s.src)}" alt="${esc(s.alt || '')}" loading="lazy"><figcaption>${esc(s.caption || '')}</figcaption></figure>`;
         case 'graph':
-          return `<div class="article-graph"><h4>${esc(s.title)}</h4><pre class="mermaid">${esc(s.data)}</pre></div>`;
+        case 'mermaid':
+          return `<div class="article-graph"><h4>${esc(s.title)}</h4><pre class="mermaid" data-mermaid-src="${esc(s.data)}">${s.data}</pre></div>`;
         case 'quote':
           return `<blockquote><p>${esc(s.text)}</p><footer>— ${esc(s.author)}${s.role ? `, ${esc(s.role)}` : ''}</footer></blockquote>`;
+        case 'code':
+          return `<pre><code class="language-${esc(s.language || 'text')}">${esc(s.code)}</code></pre>`;
+        case 'hr':
+          return `<hr>`;
         case 'conclusion':
           let html = `<section class="article-conclusion"><p>${esc(s.text)}</p>`;
           if (s.cta) {
@@ -708,6 +777,38 @@
         setRoute(action.slice(6));
       }
     });
+    if (window.mermaid) {
+      const nodes = target.querySelectorAll('.mermaid');
+      if (nodes.length) {
+        mermaid.run({ nodes, suppressErrors: true }).then(() => {
+          nodes.forEach(n => n.removeAttribute('data-mermaid-src'));
+        }).catch(() => {
+          nodes.forEach(n => {
+            if (n.dataset.mermaidSrc) {
+              n.textContent = n.dataset.mermaidSrc;
+              n.classList.add('mermaid-fallback');
+            }
+          });
+        });
+      }
+    } else {
+      // Mermaid not loaded yet, retry after a short delay
+      setTimeout(() => {
+        if (window.mermaid) {
+          const nodes = target.querySelectorAll('.mermaid');
+          if (nodes.length) {
+            mermaid.run({ nodes, suppressErrors: true }).catch(() => {
+              nodes.forEach(n => {
+                if (n.dataset.mermaidSrc) {
+                  n.textContent = n.dataset.mermaidSrc;
+                  n.classList.add('mermaid-fallback');
+                }
+              });
+            });
+          }
+        }
+      }, 500);
+    }
   }
 
   function settingsGroup(title, eyebrow, rows, hint) {
@@ -743,7 +844,8 @@
       ? `<div class="setting"><div><strong>Account</strong><small>${esc(state.user.email || 'Signed in')}${window.FlashAccess?.isDeveloper?.() ? ' — developer access' : ''}</small></div>${icon('user-round')}</div>`
       : `<div class="setting"><div><strong>Account</strong><small>Local mode — creations stay on this device.</small></div>${icon('user-round')}</div>`;
     const cloak = settingsGroup('Cloak', 'PRIVACY', [
-      `<button class="setting-action cloak-launch" type="button"><span>${icon('ghost')}<span><strong>Launch in about:blank</strong><small>Runs the entire app inside a plain blank tab.</small></span></span>${icon('chevron-right')}</button>`,
+      `<button class="setting-action cloak-launch" type="button"><span>${icon('ghost')}<span><strong>Launch in about:blank window</strong><small>The whole app runs natively in a blank window — no address bar.</small></span></span>${icon('chevron-right')}</button>`,
+      `<button class="setting-action cloak-launch-tab" type="button"><span>${icon('app-window')}<span><strong>Launch in about:blank tab</strong><small>Same fully native app, as an ordinary browser tab.</small></span></span>${icon('chevron-right')}</button>`,
       settingsToggleRow('toggle-cloak-auto', 'ghost', 'Auto-launch cloak', 'Open the cloaked about:blank tab automatically on startup.'),
       `<div class="setting"><div><strong>How to leave</strong><small>The bottom-left Leave button — or Shift+End — swaps the tab for a plain about:blank.</small></div>${icon('ghost')}</div>`
     ], 'User-initiated. Nothing opens tabs on its own.');
@@ -858,6 +960,7 @@
     $$('.view').forEach((view) => view.classList.toggle('active', view.dataset.view === state.route)); $$('.nav-item, .dock-item').forEach((button) => button.classList.toggle('active', button.dataset.route === state.route));
     if (state.route === 'home') paintView(renderHome); if (state.route === 'eagler') paintView(renderEagler); if (state.route === 'games') paintView(renderGames); if (state.route === 'social') paintView(renderSocial); if (state.route === 'cloud') paintView(renderCloud); if (state.route === 'updates') paintView(renderUpdates); if (state.route === 'admin') paintView(renderAdmin); if (state.route === 'settings') paintView(renderSettingsPage);
     requestAnimationFrame(refreshNavIndicator);
+    requestAnimationFrame(() => renderMermaid());
   }
   function refreshNavIndicator() { const nav = $('.desktop-nav'), active = $('.desktop-nav .nav-item.active'), indicator = $('.nav-indicator'); if (!nav || !active || !indicator) return; const a = active.getBoundingClientRect(), n = nav.getBoundingClientRect(); indicator.style.transform = `translate3d(${a.left - n.left}px,0,0)`; indicator.style.width = `${a.width}px`; }
   function openPanel(id) { const panel = document.getElementById(id); if (panel) panel.hidden = false; if (id === 'profilePanel') { renderProfile(); renderStats(); } if (id === 'settingsPanel') renderSettings(); refreshIcons(panel || document); }
@@ -923,6 +1026,8 @@
     scored.sort((a, b) => b.score - a.score || (a.game.name || '').localeCompare(b.game.name || '', undefined, { numeric: true }));
     return scored.slice(0, 48).map((entry) => entry.game);
   }
+
+  window.addEventListener('resize', sizeSocialClearance, { passive: true });
 
   function renderSearchResults() {
     const target = $('#searchResults'); if (!target) return;
@@ -1105,7 +1210,8 @@
     $$('.toggle-motion').forEach((row) => row.addEventListener('click', () => { state.motion = !state.motion; localStorage.setItem('flashgames.motion', state.motion ? '1' : '0'); applyPreferences(); }));
     $$('.toggle-performance').forEach((row) => row.addEventListener('click', () => { state.performance = !state.performance; localStorage.setItem('flashgames.performance', state.performance ? '1' : '0'); applyPreferences(); }));
     $$('.toggle-cloak-auto').forEach((row) => row.addEventListener('click', () => { state.cloakAuto = !state.cloakAuto; localStorage.setItem('flashgames.cloak.auto', state.cloakAuto ? '1' : '0'); applyPreferences(); }));
-    $$('.cloak-launch').forEach((row) => row.addEventListener('click', () => window.FlashCloak?.launch?.()));
+    $$('.cloak-launch').forEach((row) => row.addEventListener('click', () => { try { localStorage.setItem('flashgames.cloak.mode', 'app'); } catch {} window.FlashCloak?.launch?.('app'); }));
+    $$('.cloak-launch-tab').forEach((row) => row.addEventListener('click', () => { try { localStorage.setItem('flashgames.cloak.mode', 'tab'); } catch {} window.FlashCloak?.launch?.('tab'); }));
     $$('.clear-library').forEach((row) => row.addEventListener('click', () => confirmDialog('Clear library?', 'All locally installed game files will be removed.', async () => { await FlashGamesStore.clearGameCache(); await loadInstalled(); renderProfile(); toast('Library cleared', 'Your installed games were removed.', 'success'); setRoute('games'); }, true)));
   }
 
@@ -1139,12 +1245,29 @@
     try {
       if (window.__CLOAKED__) return;
       const choice = localStorage.getItem('flashgames.cloak.auto');
-      if (choice === '0') return;
-      if (choice === '1' && window.FlashCloak) { window.FlashCloak.launch(); return; }
-      confirmDialog('Run cloaked?', 'Launch Flash Games inside a plain about:blank tab with an exit button. Your PWA window stays untouched. Change this later in Settings.', async () => {
-        localStorage.setItem('flashgames.cloak.auto', '1');
-        window.FlashCloak?.launch?.();
-      }, false);
+      if (choice === '0') return;                       // never
+      if (choice === '1' && window.FlashCloak) { window.FlashCloak.launch(); return; } // always
+      const backdrop = document.createElement('div');
+      backdrop.id = 'cloakAskBackdrop'; backdrop.className = 'modal-backdrop';
+      backdrop.innerHTML =
+        `<section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="cloakAskTitle">` +
+        `<div class="panel-head"><div><span class="eyebrow">CLOAK</span><h2 id="cloakAskTitle">Browse under about:blank?</h2></div><button class="icon-btn" data-cloak-later aria-label="Close"><i data-lucide="x"></i></button></div>` +
+        `<p class="panel-note">Flash Games runs natively inside about:blank — every script, game and save loads directly into it. An app-style window hides the address bar completely. Your current window stays untouched.</p>` +
+        `<label class="cloak-ask-toggle"><input type="checkbox" id="cloakDontAsk"><span><strong>Don't show this again</strong><small>Apply this answer at every startup.</small></span></label>` +
+        `<div class="dialog-actions"><button class="btn" id="cloakLater">Not now</button><button class="btn primary" id="cloakYes"><i data-lucide="ghost"></i> Open app window</button></div></section>`;
+      document.body.appendChild(backdrop);
+      const close = () => backdrop.remove();
+      backdrop.addEventListener('click', (e) => { if (e.target === backdrop || e.target.closest('[data-cloak-later]')) close(); });
+      const decide = (value, launch, mode) => {
+        const dont = backdrop.querySelector('#cloakDontAsk')?.checked;
+        if (dont) localStorage.setItem('flashgames.cloak.auto', value); // '0' never / '1' always
+        try { if (mode) localStorage.setItem('flashgames.cloak.mode', mode); } catch {}
+        close();
+        if (launch) window.FlashCloak?.launch?.(mode);
+      };
+      backdrop.querySelector('#cloakLater')?.addEventListener('click', () => decide('0', false, null));
+      backdrop.querySelector('#cloakYes')?.addEventListener('click', () => decide('1', true, 'app'));
+      window.lucide?.createIcons?.({ root: backdrop, attrs: { 'stroke-width': 1.5 } });
     } catch {}
   }
 
@@ -1180,7 +1303,18 @@
     } catch {}
   }
 
+  function autoLightMode() {
+    try {
+      if (localStorage.getItem('flashgames.performance')) return; // user's own choice
+      const mem = Number(navigator.deviceMemory || 0);
+      const cores = Number(navigator.hardwareConcurrency || 0);
+      const lite = (mem > 0 && mem <= 4) || (cores > 0 && cores <= 4);
+      if (lite) { localStorage.setItem('flashgames.performance', '1'); state.performance = true; toast('Lite graphics on', 'This device is modest — interface effects were disabled for 60fps.', 'info'); }
+    } catch {}
+  }
+
   async function init() {
+    autoLightMode();
     // Popup shield: nothing in Flash Games is ever meant to open in a new
     // tab — main window or framed client, the API is dead on arrival.
     // Popup shield: games never spawn tabs. The one exception is the user-
@@ -1193,11 +1327,20 @@
           const note = String(msg || 'You can close this tab.');
           return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>about:blank</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0d12;color:#e8eaf2;font-family:system-ui,sans-serif}p{opacity:.85;font-size:15px;max-width:70%;text-align:center}</style></head><body><p>${esc(note)}</p></body></html>`;
         },
-        async launch() {
+        async launch(mode) {
           if (window.__CLOAKED__) { toast('Already cloaked', 'This tab is already an about:blank session.'); return; }
+          let useMode = mode || 'app';
+          try { useMode = mode || localStorage.getItem('flashgames.cloak.mode') || 'app'; } catch {}
           // Open FIRST (sync, inside the click gesture). Any await before
           // window.open drops the activation and browsers block the popup.
-          const win = nativeOpen('about:blank');
+          // 'app' = maximized popup window: no address bar, no tabs, at a real
+          // about:blank URL. 'tab' = an ordinary browser tab.
+          const appLike = useMode !== 'tab';
+          const W = Math.min(Number(screen?.availWidth) || 1280, 16000);
+          const H = Math.min(Number(screen?.availHeight) || 800, 16000);
+          const win = appLike
+            ? nativeOpen('about:blank', 'fgcloak', `popup=1,left=0,top=0,width=${W},height=${H}`)
+            : nativeOpen('about:blank');
           if (!win) { toast('Popup blocked', 'Cloak needs one popup for this launch — allow it and try again.', 'error'); return; }
           try { win.document.write('<!DOCTYPE html><title>Flash Games</title><p style="display:grid;place-items:center;min-height:90vh;margin:0;color:#9aa1b2">Loading cloaked session…</p>'); } catch {}
           const fallback = () => { try { win.document.open(); win.document.write(window.FlashCloak.EXIT_PAGE()); win.document.close(); } catch {} };
@@ -1215,7 +1358,8 @@
           try {
             const doc = win.document;
             doc.open(); doc.write(shell); doc.close();
-            toast('Cloaked', 'Flash Games is running in an about:blank tab. Press Leave to blank it.', 'success');
+            if (appLike) { try { win.focus(); } catch {} }
+            toast('Cloaked', appLike ? 'Flash Games is running natively in a blank app window. Press Leave to blank it.' : 'Flash Games is running natively in an about:blank tab. Press Leave to blank it.', 'success');
           } catch (error) { fallback(); win.close(); toast('Cloak failed', error.message || 'The tab could not be written.', 'error'); }
         }
       });
@@ -1225,6 +1369,10 @@
     dlDock.id = 'dlDock'; dlDock.className = 'dl-dock'; dlDock.hidden = true;
     document.body.appendChild(dlDock);
     document.addEventListener('click', handleClick); document.addEventListener('keydown', handleGlobalKeys); window.addEventListener('hashchange', () => setRoute(location.hash.replace('#', '') || 'home')); window.addEventListener('resize', () => requestAnimationFrame(refreshNavIndicator), { passive: true }); window.addEventListener('flashgames:library-changed', async () => { await loadInstalled(); rerenderRoute(); renderProfile(); });
+    // Initialize mermaid early so it's ready when articles render
+    if (window.mermaid) {
+      mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { primaryColor: '#8b5cf6', primaryTextColor: '#fff', primaryBorderColor: '#8b5cf6', lineColor: '#9aa1b2', secondaryColor: '#1a1a2e', tertiaryColor: '#2a2a3e' }, suppressErrors: true, logLevel: 'error' });
+    }
     // Background refreshes replay into the UI without a reload: the newest
     // listing simply repaints whatever view is open.
     window.addEventListener('flashgames:catalogue-updated', (event) => {
@@ -1234,6 +1382,7 @@
       if (state.route === 'games') paintView(renderGames); else rerenderRoute();
     });
     handleSettings(); handleSearch(); applyPreferences(); refreshIcons();
+    renderMermaid();
     setTimeout(() => { if (navigator.onLine) { try { window.FlashBridge?.ensure?.().catch?.(() => {}); } catch {} } }, 1500);
     setTimeout(askCloakOnBoot, 1400);
     ensureEaglerClients().catch(() => {});

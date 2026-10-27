@@ -67,6 +67,15 @@
       "tags": ["Classic"]
     },
     {
+      "id": "1.21",
+      "name": "1.21 SE for Flash",
+      "version": "26.2",
+      "file": "./offline/1.21.html",
+      "image": "",
+      "description": "Most efficient & fast version of Eaglercraft.",
+      "tags": ["1.21", "SE"]
+    },
+    {
       "id": "26.2",
       "name": "26.2: Chaos Cubed!",
       "version": "26.2",

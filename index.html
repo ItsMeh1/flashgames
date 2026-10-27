@@ -9,7 +9,8 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./offline/logo.png">
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>window.lucide = window.lucide || { createIcons() {} };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>window.lucide = window.lucide || { createIcons() {} };</script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
@@ -25,7 +26,7 @@ window.__flashFirebase = null;
 })();
 </script>
 <link rel="stylesheet" href="./styles.css">
-<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});</script>
+<script>if (!window.__CLOAKED__ && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});</script>
 </head>
 <body>
 <header class="topbar glass" id="topbar">

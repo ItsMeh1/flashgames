@@ -61,13 +61,12 @@
   .video-stage{position:relative;flex:1;overflow:hidden;width:100%;height:100%}
   #video-grid{position:absolute;top:0;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;padding:2px;overflow:auto}
   #video-grid video{width:100%;height:100%;object-fit:cover;border-radius:6px;background:var(--surface-strong)}
-  #myVideo{position:absolute;bottom:16px;right:16px;width:26%;max-width:200px;min-width:110px;aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:var(--surface-raised);z-index:5;cursor:pointer;transition:transform .15s ease}
-  #myVideo:hover{transform:scale(1.02)}
-  #screenPreview{position:absolute;top:12px;right:12px;width:32%;max-width:260px;min-width:140px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--surface-raised);box-shadow:0 4px 24px rgba(0,0,0,0.4);display:none;z-index:4;cursor:pointer;transition:transform .15s ease}
-  #screenPreview:hover{transform:scale(1.02)}
-  .screen-pip{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.55);color:#fff;padding:5px 10px;border-radius:20px;font-size:11px;display:none;align-items:center;gap:6px;backdrop-filter:blur(8px);z-index:4}
+  #video-grid video.remote-screen-video{object-fit:contain;background:#000}
+  #myVideo{position:absolute;bottom:16px;right:16px;width:26%;max-width:200px;min-width:110px;aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:var(--surface-raised);z-index:5;cursor:pointer}
+  #screenPreview{position:absolute;top:12px;right:12px;width:32%;max-width:260px;min-width:140px;aspect-ratio:16/9;object-fit:contain;background:#000;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--surface-raised);display:none;z-index:4;cursor:pointer}
+  .screen-pip{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.78);color:#fff;padding:5px 10px;border-radius:20px;font-size:11px;display:none;align-items:center;gap:6px;z-index:4}
   .screen-pip.active{display:flex}
-  .call-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 18px;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);border-radius:24px;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:5;border:1px solid rgba(255,255,255,0.06)}
+  .call-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 18px;background:rgba(14,14,17,0.88);border-radius:24px;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:5;border:1px solid rgba(255,255,255,0.06)}
   .ctrl{width:44px;height:44px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .08s ease,opacity .15s ease;background:rgba(255,255,255,0.1);color:#fff}
   .ctrl:active{transform:scale(.9)}
   .ctrl-screen.active{background:var(--accent)}
@@ -151,25 +150,24 @@
   .overlay h3{color:var(--text);font-size:18px;font-weight:600}
   .toast{position:absolute;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface-raised);color:var(--text);padding:10px 18px;border-radius:10px;font-size:13px;border:1px solid var(--border);opacity:0;transition:all .3s ease;z-index:300;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .peer-list{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.55);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;z-index:4;backdrop-filter:blur(8px);cursor:pointer;transition:background .15s ease;border:1px solid rgba(255,255,255,0.06);user-select:none}
+  .peer-list{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.78);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;z-index:4;cursor:pointer;transition:background .15s ease;border:1px solid rgba(255,255,255,0.06);user-select:none}
   .peer-list:hover{background:rgba(0,0,0,0.7)}
   .local-media-off{position:absolute;bottom:16px;right:16px;width:26%;max-width:200px;min-width:110px;aspect-ratio:3/4;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:var(--surface-raised);z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text-secondary);font-size:12px;text-align:center;padding:12px}
   .local-media-off svg{color:var(--text-tertiary)}
   .local-media-off.hidden,.media-status-badge.hidden{display:none}
-  .media-status-badge{position:absolute;right:16px;bottom:78px;z-index:7;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(20,20,23,.9);border:1px solid var(--border);color:var(--text-secondary);font-size:11px;backdrop-filter:blur(8px)}
+  .media-status-badge{position:absolute;right:16px;bottom:78px;z-index:7;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(20,20,23,.96);border:1px solid var(--border);color:var(--text-secondary);font-size:11px;}
   .remote-tile{position:relative;min-height:0;background:var(--surface-strong);border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.04)}
   .remote-tile video{position:absolute;inset:0}
   .remote-media-off{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--surface-raised);color:var(--text-secondary);font-size:13px;text-align:center;z-index:2}
   .remote-media-off.hidden{display:none}
-  .remote-audio-badge{position:absolute;right:8px;top:8px;bottom:auto;display:flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid var(--border);border-radius:999px;background:rgba(20,20,23,.9);color:var(--text-secondary);font-size:11px;backdrop-filter:blur(8px);z-index:4}
+  .remote-audio-badge{position:absolute;right:8px;top:8px;bottom:auto;display:flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid var(--border);border-radius:999px;background:rgba(20,20,23,.96);color:var(--text-secondary);font-size:11px;z-index:4}
   .remote-audio-badge.hidden{display:none}
   .remote-label{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.5);color:#fff;padding:3px 8px;border-radius:6px;font-size:11px;z-index:3;pointer-events:none;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .remote-screen-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;display:none;z-index:2;cursor:pointer;transition:transform .15s ease}
-  .remote-screen-video:hover{transform:scale(1.01)}
+  .remote-screen-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;border-radius:6px;display:none;z-index:2;cursor:pointer}
   #fs-overlay{display:none;position:fixed;inset:0;background:#000;z-index:500;align-items:center;justify-content:center;cursor:pointer}
   #fs-overlay.active{display:flex}
   #fs-video{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}
-  .fs-hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;opacity:.6;font-size:13px;pointer-events:none;background:rgba(0,0,0,0.4);padding:6px 12px;border-radius:20px;backdrop-filter:blur(8px)}
+  .fs-hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;opacity:.6;font-size:13px;pointer-events:none;background:rgba(0,0,0,0.7);padding:6px 12px;border-radius:20px;}
   .peer-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border-radius:10px;gap:10px}
   .peer-row span{font-size:14px;color:var(--text);word-break:break-all;}
   .peer-row button{background:transparent;border:1px solid var(--danger);color:var(--danger);padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s ease;white-space:nowrap}
@@ -507,6 +505,50 @@
 
 <script type="module">
 
+/* ===================== Video / screen-share tuning ===================== */
+// Camera presets (sender-side limits).
+const CAMERA_PRESETS = {
+  high:   { maxBitrate: 2_500_000, maxFramerate: 30, scale: 1 },
+  medium: { maxBitrate: 1_200_000, maxFramerate: 30, scale: 1.25 },
+  low:    { maxBitrate:   600_000, maxFramerate: 24, scale: 1.75 }
+};
+// Screen-share presets. The screen is limited AT CAPTURE (width/height/fps), so the browser never
+// captures, scales and encodes a full-resolution desktop. This is what keeps low-end Chromebooks smooth.
+// "auto" is deliberately conservative: 720p at 15 fps is plenty for slides, docs and most games.
+const SCREEN_PRESETS = {
+  auto:   { width: 1280, height: 720,  fps: 15, maxBitrate: 2_000_000 },
+  high:   { width: 1920, height: 1080, fps: 30, maxBitrate: 4_000_000 },
+  medium: { width: 1280, height: 720,  fps: 15, maxBitrate: 1_500_000 },
+  low:    { width: 854,  height: 480,  fps: 10, maxBitrate:   800_000 }
+};
+// "motion" keeps the frame rate smooth when the machine or network is struggling (the encoder lowers
+// sharpness instead of dropping frames). Change to "detail" if you mostly share text and slides.
+const SCREEN_CONTENT_HINT = "motion";
+
+function screenCaptureConstraints(quality) {
+  const p = SCREEN_PRESETS[quality] || SCREEN_PRESETS.auto;
+  return {
+    video: {
+      width:  { ideal: p.width,  max: p.width },
+      height: { ideal: p.height, max: p.height },
+      frameRate: { ideal: p.fps, max: p.fps }
+    },
+    audio: false
+  };
+}
+async function tuneScreenTrack(track, quality) {
+  if (!track) return;
+  const p = SCREEN_PRESETS[quality] || SCREEN_PRESETS.auto;
+  try { track.contentHint = SCREEN_CONTENT_HINT; } catch {}
+  try {
+    await track.applyConstraints({
+      width:  { ideal: p.width,  max: p.width },
+      height: { ideal: p.height, max: p.height },
+      frameRate: { ideal: p.fps, max: p.fps }
+    });
+  } catch {}
+}
+
 /* ===================== LanChat Module ===================== */
 class LanChat {
   constructor(options = {}) {
@@ -593,7 +635,7 @@ class LanChat {
       if (event.track && !targetStream.getTracks().some((t) => t.id === event.track.id)) {
         targetStream.addTrack(event.track);
       }
-      if (!isScreen && this.remoteVideoElement) {
+      if (!isScreen && this.remoteVideoElement && this.remoteVideoElement.srcObject !== this.remoteStream) {
         this.remoteVideoElement.srcObject = this.remoteStream;
       }
       if (isScreen) {
@@ -702,35 +744,35 @@ class LanChat {
     this._emit("onlocalstream", this.localStream);
     this._emit("onstatechange", this.state);
   }
+  async _tuneSender(sender, kind) {
+    if (!sender?.track) return;
+    try {
+      const params = sender.getParameters();
+      if (!params.encodings?.length) params.encodings = [{}];
+      const enc = params.encodings[0];
+      if (kind === "screen") {
+        const p = SCREEN_PRESETS[this.streamQuality] || SCREEN_PRESETS.auto;
+        enc.maxBitrate = p.maxBitrate;
+        enc.maxFramerate = p.fps;
+        // Capture is already limited; this is a safety net for browsers that ignore capture constraints.
+        const w = sender.track.getSettings?.().width || 0;
+        enc.scaleResolutionDownBy = w > p.width ? Math.min(4, w / p.width) : 1;
+      } else {
+        const p = CAMERA_PRESETS[this.streamQuality];
+        if (!p) {
+          delete enc.maxBitrate; delete enc.maxFramerate; delete enc.scaleResolutionDownBy;
+        } else {
+          enc.maxBitrate = p.maxBitrate; enc.maxFramerate = p.maxFramerate; enc.scaleResolutionDownBy = p.scale;
+        }
+      }
+      await sender.setParameters(params);
+    } catch {}
+  }
   async _applyVideoQuality() {
     if (!this.pc) return;
-    const presets = {
-      high: { maxBitrate: 4_000_000, maxFramerate: 30, scaleResolutionDownBy: 1 },
-      medium: { maxBitrate: 1_800_000, maxFramerate: 30, scaleResolutionDownBy: 1.25 },
-      low: { maxBitrate: 700_000, maxFramerate: 24, scaleResolutionDownBy: 1.75 }
-    };
-    const preset = presets[this.streamQuality];
-    for (const transceiver of this.pc.getTransceivers().filter(t => t.receiver?.track?.kind === "video")) {
-      const sender = transceiver.sender;
-      if (!sender?.track) continue;
-      try {
-        const params = sender.getParameters();
-        if (!params.encodings?.length) params.encodings = [{}];
-        const encoding = params.encodings[0];
-        if (!preset) {
-          delete encoding.maxBitrate;
-          delete encoding.maxFramerate;
-          delete encoding.scaleResolutionDownBy;
-        } else {
-          encoding.maxBitrate = preset.maxBitrate;
-          encoding.maxFramerate = preset.maxFramerate;
-          encoding.scaleResolutionDownBy = preset.scaleResolutionDownBy;
-        }
-        await sender.setParameters(params);
-      } catch {}
-    }
+    await this._tuneSender(this._senderFor("camera"), "camera");
+    await this._tuneSender(this._senderFor("screen"), "screen");
   }
-
   async _syncLocalTracksToPeer() {
     if (!this.pc) return;
     await this._replaceSlot("audio", this.localStream.getAudioTracks()[0] || null);
@@ -778,10 +820,10 @@ class LanChat {
   async shareScreen() {
     if (!navigator.mediaDevices?.getDisplayMedia) throw new Error("Screen sharing is not supported.");
     this.stopScreenShare();
-    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+    const stream = await navigator.mediaDevices.getDisplayMedia(screenCaptureConstraints(this.streamQuality));
     this.screenStream = stream;
     const screenTrack = stream.getVideoTracks()[0];
-    if (screenTrack) { try { screenTrack.contentHint = "detail"; } catch {} }
+    if (screenTrack) tuneScreenTrack(screenTrack, this.streamQuality);
     this._emit("onscreenstream", this.screenStream);
     if (this.pc) {
       for (const track of stream.getTracks()) await this._replaceSlot("screen", track, stream);
@@ -1131,9 +1173,10 @@ class ConferMesh {
     };
     lc.onscreenstream = (stream) => {
       if (stream && stream.getTracks().length > 0) {
-        remoteScreenVideo.srcObject = stream;
+        // Re-assigning the same stream reloads the <video> and causes a visible stall, so only assign on change.
+        if (remoteScreenVideo.srcObject !== stream) remoteScreenVideo.srcObject = stream;
         remoteScreenVideo.style.display = "block";
-        remoteScreenVideo.play().catch(() => {});
+        if (remoteScreenVideo.paused) remoteScreenVideo.play().catch(() => {});
         remoteVideo.style.display = "none";
         remoteStatus.classList.add("hidden");
       } else {
@@ -1346,6 +1389,8 @@ class ConferMesh {
 
   async setStreamQuality(quality) {
     this.streamQuality = ["auto", "high", "medium", "low"].includes(quality) ? quality : "auto";
+    const liveScreenTrack = this.screenStream?.getVideoTracks?.()[0];
+    if (liveScreenTrack) await tuneScreenTrack(liveScreenTrack, this.streamQuality);
     await Promise.all(Array.from(this.peers.values()).map(async ({ lc }) => {
       lc.streamQuality = this.streamQuality;
       if (lc.pc && lc.pc.connectionState !== "closed") await lc._applyVideoQuality();
@@ -1414,7 +1459,7 @@ class ConferMesh {
   async addScreenToAll(stream) {
     this.screenStream = stream;
     const screenTrack = stream?.getVideoTracks?.()[0];
-    if (screenTrack) { try { screenTrack.contentHint = "detail"; } catch {} }
+    if (screenTrack) await tuneScreenTrack(screenTrack, this.streamQuality);
     const peers = Array.from(this.peers.values());
     await Promise.all(peers.map(async ({ lc }) => {
       if (!lc.pc || lc.pc.connectionState === "closed") return;
@@ -1925,7 +1970,7 @@ window.toggleScreen = async () => {
     isScreenOn = false;
   } else {
     try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+      const stream = await navigator.mediaDevices.getDisplayMedia(screenCaptureConstraints($("#stream-quality").value));
       $("#screenPreview").srcObject = stream; $("#screenPreview").style.display = "block";
       $("#screen-indicator").classList.add("active");
       await mesh.addScreenToAll(stream);

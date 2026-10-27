@@ -7,6 +7,27 @@
         "cover": "./offline/astraclient.jpeg"
     },
     {
+        "name": "GTA 3",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/gta3/index.html",
+        "cover": "https://upload.wikimedia.org/wikipedia/en/b/be/GTA3boxcover.jpg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original"
+    },
+    {
+        "name": "Cuphead",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/cuphead.html",
+        "cover": "https://upload.wikimedia.org/wikipedia/en/e/eb/Cuphead_%28artwork%29.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail_unscaled"
+    },
+     {
+        "name": "Among Us",
+        "category": "Standard",
+        "zone": "OFFLINE",
+        "url": "./offline/amongus.html",
+        "cover": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAFwAXAMBIgACEQEDEQH/xAAbAAADAAMBAQAAAAAAAAAAAAAEBQYCAwcAAf/EADsQAAIBAwMBBgMFBgUFAAAAAAECAwAEEQUSITEGE0FRYYEicbEUMpGh4RUjQlLR8Aczc8HiFiUmYnL/xAAaAQADAQEBAQAAAAAAAAAAAAACAwQFAQAG/8QAJBEAAgIBBAICAwEAAAAAAAAAAQIAAxEEEiExQVEFIhMjcWH/2gAMAwEAAhEDEQA/AOS16vhOKsoLWy0Lszpd9eXVpa3Op75d8+mJevsBwqhX+FFwQxI+I7gOi1SzYgASOyK9kVW9tezotNOXW7RLaOPd3V3b224Ro+fhkjB6I6lDt/hLAdDwy1vQrS27ddmbWGFFtXgt1nATAZ4CRNu8zhOfnQb57E5+XAGc193VcXbR9n7/ALWanbWlq7QX0UVqk8CugSVmkYbSCOUUL6BjjFG63oOlx9me0KWFsgkivTfWjjhlh7mBzHn+ULOTj/1965vncTnRZQM7hjx9KIt4d5+IcYyc+X61baow7PWtzrGn20C3cgsrW3kaBHEKC2jklcKwI3MWVckHqal4SZYjMMbpGZjwAMk+Q4HtQWPxEXsVWZWzW0TkXVuZEJGCEVtvXwPz8KC1NbRZw1mwKt4DIx7Hp8qfWVuG7N60zkGRJbUq4UZQFpAcHwzxR/Z/T7P/AKfe9urWG6NndXN1skTPfCO2DKjHxTcckdCAa8lmBiBVzgSGBDDIII9K+0w1fXLvWe5bUI7Q3EWQbiG2SF5AcYDbAFIGOOM8nml+aoBlE1M3U1df+Vza0dM7MTXjLbWFluiSRRGp+zRDPxnaGJ9z7VBHkEedWV72h0yXTpms1v8A9o3T2Ek6yxIsUZt0KkKwYk5PIyopTwhGegd5qXZ2/tdand7y51hbMrcOWkeaSS3yDnyELdelEW07anbaxrbEs2nXWqvFk9FmhGz880OO0Ogwag99Zrqcgk1d9TcT28aCNjHKFUEOc/E69ccA/Kkeia3Dpug61pjMXbUo4ERh91CjksSfUH8qAAnqFHHaIC47N30+ADcfsq5cf/Vs6/VTTtnzdabaTgLFPdCxmHmJdPgj592H4UltNT06e3jsdUgu3sZNPhtbgW4TfuilZkK5OCNrbTnzPlWvVdVa+jlkETxXbapJfJj7qAoiovnkbB4eFBmdxM+3CSxdlNMWZcSxMglHkws7fj60n12xh7OX7adDetfyRf55Nt3IibAOF+JtwwevH9KfV9b0nXb7UDqttfx2E9zFcwpa7O8VliEbIQxxtYAcg8YHXpUrrdxJqWpXmoSoEe4maQqOQoJ4HrgYHtXsgjBgOgYfaF6NO1xpGvQ7cZtoZgPPZPGCfwc0VEdRtuztreaXIsU9rd3d8WfoY44oEYYwQ2e8IweCMigdPvrfTJzDcRyzW09vJbXEcRAcxOMEgnjcDhhnxArN9dsbWe0s7W3u5NFhs5rSZZSq3EomJMjjGVVgdu0cj4Bk88cXnmT0Ln7D+QHVkstT0f8Aben2iWU8VwsF9aQ57kF1ZkkjB+6p2MCuSAQMcGkQbinGqalpkOlDStCjvDDJOtxdXF6EWSZ1BVECoSFRQzHqSS3hgUkqleo8zyLuNGwRZrVAnSj1BSElVXI5yc0snJxOia7ldkA9Tim/Z3UdOtLUR3VhbO+4lpLiEyCQeA4HFI7ieSX4HCBVOfhH61lBOwwgjJx1K+Fa2l0v69tnBibGz1KVxZXNxJJpkPc22RiIEkIccgZ5x5Z+lamltE+Bpo9wPO3LEehxmlMIuJ37i2V5DL8QhXoeOp9vPii/2PedGngTH8Idjj8Bj8DWRZSTY2zkZmgq1VIPzNg+oZGYJztilRmH8IPP4dawmtgyMpHBGDQU+nXsEJlfZNGnLFGJKDz5AI+Y6Uy0y4+1wd1JgyIMhsDLj9P760l0ZO4bJWy7q2yIsNtsXklm8WPjQtxAVxuGMjIp9PCMdDmls8XWuq0mKgDERzR0P7Uznj60EYmJOFY+1UKYsiGW69KaW6dKCtcgY8xj8800tU6UlzGLMJ9NjFtI8Fvvk643H8QB9KVW6fvDASCzn4ueQPHPl+tWFqo8qE7QnbdQRkghIS/Bz1P/ABNHXr7K62X359SjTaZbb1HiH/4f2A1V9VggKC8YJsz4oCTge4H5U4m7P6jDIUksyD6lR9TXN455rS5S4tZZIZl5WSNsEe9UkP8AiL2njTa95FOduzfNCC2PLjFOrs2jEHWfHW2Ws685lXZaLLBIs94Yooo/ifJB4HXPhiud6fPHDed5FkQrMQv+mTj8hg+1Z6t2k1bV0Md7dnuT1ijUIp+eOvvmhLZdwZD0dCDStS4dZT8doHqJ/J5GMSquYucHwpLfOI3EexnYgnCgZxx54p7DIbiwt5fGSJWPzxUw93HJdTys3BOxDj+EdP8Ac+9Bo6Ra+D0JKRzzAbgyby8kLCMdAxyPfBrVmA9bdD8qLndZpEjU5BPNArgZHhuOM/OtfYqcL1AIxDrbwpvadRnkUntiBgngeJpxbBxGZO6m7odZO6baB5k4wKxLCBOLHNrg4/pSntE3/cJfSBF/Nv601s2XAw2fOkGrzd5d3T+BkCD5KAPqDSQMkCaWgH7c+gYtKhhg1rMbeAz8q21kASOFJHoKtOJphczUiHOWrfAcTLWJBHUEfMV5Dh1PqKFgCpAnR9WEqNM/e6Ki5IxvTI8MMRUpPbrayGCWTY6YH3SykeByOnyNUemTtHpt0EXc8UjMF8+Af9zU5NHKZA7kSNMc7wc5NO+ODZYjqYWoXbYw/wBM1BkhcuJFk4IAXg5ofGABmtr47wiMMyqOSBnP6VisbOMqMitGTmMtFt1vLtY2mSFUXeS2DnBHQH++KvNMuGsri0gh1H7ZHMxR4mjUMnjlWXAOMcg+HOa5rZH9/FkA/GPrXTuzVnbxRG4SId8crvPJ256ZPhXzussqVNrLkmCiOTuB4mN9o1hZfanVI7csrT282MBSoLPEfQjJx8/5RXPpmJRA33j8TfM10nto2OzVwpAIZ415HT416VzSc5lPpikaDL8mbOjGEZvfEztk7yTkcDk1Q6XolzqMH2jv47aBv8stGXZx54yMCktnGriFDnEsiq2Dzgtg/lV2jlFCIAqqMAAdBT7Duck+I/Val6FCVnBPJMktUsJLG4NrO6yKybkkVdoYdOmTgg+vlSVwVYqfCq7tQN1vbyH7yzAA+hyCPp+FS94MSj1FFSdrbfBjK7WvoDt2OIx0mbbLKmeJIw4+Y4P1Fary2jYsUZowxyyr0P8AT2oa2YrJbEfzFfYg0TcMaKpmQnaZla8bbSffMBlbupCyLlSOVHoMcfl+FLZgXlYq7oueADj++c0dcGl0hO6rUufbtmeWM//Z"
+    },
+    {
         "name": "Astra Client 1.12",
         "category": "Standard",
         "zone": "OFFLINE",

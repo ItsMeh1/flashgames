@@ -490,7 +490,10 @@
   function updateCondensed() {
     condensedTick = false;
     const y = window.scrollY || document.documentElement.scrollTop || 0;
-    document.body.classList.toggle('nav-condensed', y > 140);
+    const condensed = y > 140;
+    if (document.body.classList.contains('nav-condensed') !== condensed) {
+      document.body.classList.toggle('nav-condensed', condensed);
+    }
   }
   function onScroll() {
     if (condensedTick) return;

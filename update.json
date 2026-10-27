@@ -1,6 +1,20 @@
 {
-  "version": "5.4.2",
+  "version": "5.4.3",
   "releases": [
+    {
+      "version": "5.4.3",
+      "date": "October 23, 2026",
+      "description": "a massssive update.",
+      "changes": [
+        { "type": "add", "text": "Added some new games" },
+        { "type": "add", "text": "Added a new, dedicated 1.21 SuperEfficient Optimized EaglerCraft client. Its extremely fast and now completely compatible with Flash Games." },
+        { "type": "add", "text": "Added the first WebPorts to Flash Games! Expect more to come." },
+        { "type": "add", "text": "Added a better Discord tab to talk with Discord users" },
+        { "type": "add", "text": "Added an Articles section! Learn more about the behind-the-scenes about Flash Games & more." },
+        { "type": "edit", "text": "Fix Confer from being soo laggy." },
+        { "type": "edit", "text": "Fixed some devices still not supporting confer locally" }
+      ]
+    },
     {
       "version": "5.4.2",
       "date": "October 23, 2026",
@@ -382,11 +396,11 @@
         },
         {
           "type": "remove",
-          "test": "Removed a bunch of accounts for testing & from link leaks"
+          "text": "Removed a bunch of accounts for testing & from link leaks"
         },
         {
           "type": "remove",
-          "test": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."
+          "text": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."
         }
       ]
     },
@@ -477,10 +491,178 @@
   ],
   "articles": [
     {
+  "id": "introducing-5-4-3",
+  "title": "Introducing: 5.4.3",
+  "subtitle": "A massive Flash Games update — new games, a faster EaglerCraft client, WebPorts, Discord improvements, and more.",
+  "cover": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
+  "coverAlt": "Flash Games version 5.4.3 update announcement",
+  "date": "October 23, 2026",
+  "author": "Flash Games Team",
+  "readTimeMinutes": 5,
+  "tags": ["update", "release", "5.4.3", "eaglercraft", "webports"],
+  "hero": {
+    "type": "image",
+    "src": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
+    "alt": "Flash Games 5.4.3 release banner",
+    "caption": "Flash Games 5.4.3 — a massive update with plenty of new things to explore."
+  },
+  "introduction": "It's finally here! Flash Games 5.4.3 is a massive update packed with new features, performance improvements, and more ways to enjoy Flash Games. From a dedicated, optimized EaglerCraft client to our first WebPorts and a brand-new Articles section, there's a lot to explore. Here's everything that's new.",
+  "sections": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "New Games, New Ways to Play"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've added some new games to Flash Games! Whether you're looking for something new to try or just want another game to add to your rotation, there's more to explore. Head over to the games section and see what's waiting for you."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "A Faster EaglerCraft Experience"
+    },
+    {
+      "type": "paragraph",
+      "text": "One of the biggest additions in 5.4.3 is a dedicated SuperEfficient Optimized EaglerCraft client for Minecraft 1.21. It's designed to be extremely fast and is now completely compatible with Flash Games."
+    },
+    {
+      "type": "paragraph",
+      "text": "This gives players a dedicated way to jump into EaglerCraft while benefiting from the optimization work behind the new client. If you've been waiting for a better EaglerCraft experience on Flash Games, this is one of the highlights of the update."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Introducing WebPorts"
+    },
+    {
+      "type": "paragraph",
+      "text": "Flash Games now has its first WebPorts! This marks the beginning of something new for the platform, bringing more possibilities for what can be added in the future."
+    },
+    {
+      "type": "quote",
+      "text": "This is only the beginning. Expect more WebPorts to come!",
+      "author": "Flash Games Team",
+      "role": "Update Announcement"
+    },
+    {
+      "type": "paragraph",
+      "text": "We're excited to see where WebPorts go from here. Keep an eye out for future additions as the collection grows."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "A Better Discord Tab"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've added an improved Discord tab to make it easier to talk with Discord users. It's another step toward making Flash Games more than just a place to play games — it's a place to connect, too."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Introducing the Articles Section"
+    },
+    {
+      "type": "paragraph",
+      "text": "You're reading it right now! Version 5.4.3 introduces a brand-new Articles section where you can learn more about Flash Games, its development, behind-the-scenes details, new features, and much more."
+    },
+    {
+      "type": "paragraph",
+      "text": "Instead of keeping everything behind the scenes, we now have a dedicated place to share updates, explain what we're working on, and give you a closer look at the platform. Expect more articles as Flash Games continues to evolve."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Confer Improvements"
+    },
+    {
+      "type": "paragraph",
+      "text": "We've also made improvements to Confer, focusing on two important issues that could get in the way of using it."
+    },
+    {
+      "type": "bulletList",
+      "items": [
+        {
+          "text": "Reduced lag",
+          "detail": "Fixed issues that were making Confer excessively laggy, improving the overall experience."
+        },
+        {
+          "text": "Improved local compatibility",
+          "detail": "Fixed issues that prevented Confer from working locally on some devices."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "These fixes should make Confer more usable for affected players and help provide a smoother, more reliable experience across supported devices."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Everything New in 5.4.3"
+    },
+    {
+      "type": "bulletList",
+      "items": [
+        {
+          "text": "New games",
+          "detail": "More games have been added to the Flash Games collection."
+        },
+        {
+          "text": "SuperEfficient Optimized EaglerCraft 1.21",
+          "detail": "A dedicated, extremely fast client that is now completely compatible with Flash Games."
+        },
+        {
+          "text": "First WebPorts",
+          "detail": "The first WebPorts have arrived, with more planned for the future."
+        },
+        {
+          "text": "Improved Discord tab",
+          "detail": "A better way to talk with Discord users."
+        },
+        {
+          "text": "New Articles section",
+          "detail": "Discover behind-the-scenes information, platform updates, and more."
+        },
+        {
+          "text": "Confer performance fix",
+          "detail": "Fixed excessive lag affecting Confer."
+        },
+        {
+          "text": "Confer compatibility fix",
+          "detail": "Fixed local compatibility issues on some devices."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "What's Next?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Version 5.4.3 is a big step forward for Flash Games. With new games, a dedicated optimized EaglerCraft client, the arrival of WebPorts, an improved Discord tab, and the launch of Articles, there's more to discover than ever."
+    },
+    {
+      "type": "paragraph",
+      "text": "And we're not stopping here. More WebPorts and more improvements are on the horizon. Thank you for playing, exploring, and being part of Flash Games!"
+    },
+    {
+      "type": "conclusion",
+      "text": "Flash Games 5.4.3 is here, and it's a massive one. Jump in, try the new features, explore the Articles section, and see what's new for yourself. We'll see you in Flash Games!",
+      "cta": {
+        "text": "Explore Flash Games",
+        "action": "route:home"
+      }
+    }
+  ]
+    },
+    {
       "id": "introducing-5.4",
       "title": "Introducing: Flash v5.4",
       "subtitle": "Everything in the newest update. Monumental changes.",
-      "cover": "https://i.imgur.com/9y6SJnq.png",
+      "cover": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
       "coverAlt": "Introducing 5.4",
       "date": "October 24, 2026",
       "author": "Flash",
@@ -488,7 +670,7 @@
       "tags": ["release", "major", "eagler", "confer", "cloud"],
       "hero": {
         "type": "image",
-        "src": "https://i.imgur.com/9y6SJnq.png",
+        "src": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
         "alt": "Flash Games 5.4 hero banner",
         "caption": "Version 5.4 — The most ambitious update since launch"
       },
@@ -626,7 +808,7 @@
       "id": "confer",
       "title": "Say Hello to Confer",
       "subtitle": "Learn more about Confer & connecting with others during play",
-      "cover": "https://i.imgur.com/21QTUcw.png",
+      "cover": "https://i.imgur.com/21QTUcw.png?.amplify.com",
       "coverAlt": "Introducing Confer",
       "date": "October 19, 2026",
       "author": "Flash",
@@ -634,7 +816,7 @@
       "tags": ["confer"],
       "hero": {
         "type": "image",
-        "src": "https://i.imgur.com/21QTUcw.png",
+        "src": "https://i.imgur.com/21QTUcw.png?.amplify.com",
         "alt": "Flash Games 5.4 hero banner",
         "caption": "Say Hello to Confer"
       },
