@@ -11,7 +11,6 @@
 
   /* ---------- player: loader + controls ---------- */
 
-  let hideTimer = 0;
 
   function ensurePlayer() {
     const overlay = document.getElementById('playerOverlay');
@@ -53,14 +52,20 @@
         `<button class="player-control close" data-player-action="close">${icon('x')}<span>Close game</span></button>`;
       if (perfOn) document.body.classList.add('perf-plus');
       shell.appendChild(controls);
-      const show = () => {
-        shell.classList.add('player-controls-visible');
-        clearTimeout(hideTimer);
-        hideTimer = window.setTimeout(() => shell.classList.remove('player-controls-visible'), 2000);
-      };
-      notch.addEventListener('click', show);
-      notch.addEventListener('mouseenter', show);
-      controls.addEventListener('mouseenter', show);
+      // HUD hide fires ONLY after a real leave of both hotspots (notch+bar).
+      // Entering either disarms the pending hide; each bar hover is also a
+      // disarm. Touch has no resting pointer, so its grace is long.
+      let hudHideTimer = 0;
+      const touchUI = window.matchMedia?.('(hover: none)')?.matches ?? false;
+      const reveal = () => { window.clearTimeout(hudHideTimer); shell.classList.add('player-controls-visible'); };
+      const hide = () => shell.classList.remove('player-controls-visible');
+      const armHide = () => { window.clearTimeout(hudHideTimer); hudHideTimer = window.setTimeout(hide, touchUI ? 6000 : 900); };
+      notch.addEventListener('pointerenter', reveal);
+      notch.addEventListener('pointerleave', armHide);
+      notch.addEventListener('click', reveal);
+      controls.addEventListener('pointerenter', reveal);
+      controls.addEventListener('pointerleave', armHide);
+      controls.addEventListener('pointerdown', reveal);
       controls.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-player-action]');
         if (!btn) return;
@@ -71,16 +76,9 @@
         if (btn.dataset.playerAction === 'restart') {
           const was = frame.getAttribute('data-last-src') || frame.src || '';
           if (!was || was === 'about:blank') { toast('Nothing to restart', 'Load a game first.'); return; }
-          btn.disabled = true;
-          btn.innerHTML = `${icon('loader-circle')}<span>Restarting…</span>`;
-          icons(btn);
+          btn.classList.add('busy');
           frame.src = 'about:blank';
-          window.setTimeout(() => {
-            frame.src = was;
-            btn.disabled = false;
-            btn.innerHTML = `${icon('rotate-ccw')}<span>Restart game</span>`;
-            icons(btn);
-          }, 60);
+          window.setTimeout(() => { frame.src = was; btn.classList.remove('busy'); }, 60);
           toast('Restarting', 'The game is reloading from the cached copy.');
         }
         if (btn.dataset.playerAction === 'social') {

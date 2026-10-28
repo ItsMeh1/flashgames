@@ -382,17 +382,6 @@ textarea { background: var(--surface); border: 1px solid var(--line); border-rad
 .game-loader span { font-size: 13px; color: var(--muted); }
 .game-spinner { width: 38px; height: 38px; margin: 0 auto 8px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .18); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.player-notch { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 84px; height: 7px; border-radius: 0 0 8px 8px; background: rgba(255, 255, 255, .16); z-index: 6; transition: background .15s ease; }
-.player-notch:hover { background: rgba(255, 255, 255, .3); }
-/* The notch + its controls must never drift: pinned to the shell (not the
- * document), fading only — no translate/slide transitions on reveal, so the
- * HUD stays pixel-exact where it appeared. */
-.player-controls { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); display: flex; gap: 10px; z-index: 6; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
-.player-shell.player-controls-visible .player-controls { opacity: 1; pointer-events: auto; }
-body.player-open .player-controls, body.player-open .player-notch { transition: opacity .2s ease, background .15s ease; animation: none !important; }
-.player-control { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 12px; background: rgba(10, 10, 14, .72); color: #fff; font-size: 13px; font-weight: 650; border: 1px solid rgba(255, 255, 255, .18); backdrop-filter: blur(10px); }
-.player-control svg { width: 15px; height: 15px; }
-.player-control.close { background: rgba(220, 60, 75, .85); border-color: transparent; }
 
 /* bottom dock */
 .bottom-dock { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 60; display: none; gap: 4px; padding: 8px; border-radius: 20px; width: max-content; max-width: calc(100% - 24px); }
@@ -483,7 +472,6 @@ body.performance-boost .game-card:hover .cover img { transform: none; }
  * It only touches the app shell — iframes (games) keep their own styles. */
 body.performance-boost * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 body.performance-boost *, body.performance-boost *::before, body.performance-boost *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; filter: none !important; text-shadow: none !important; box-shadow: none !important; }
-body.performance-boost *:hover { transform: none !important; }
 body.performance-boost .dashboard, body.performance-boost .store-hero, body.performance-boost .hero, body.performance-boost .eagler-hero { background: var(--surface) !important; }
 body.performance-boost .live-pill, body.performance-boost .conn-dot { animation: none !important; }
 /* While a game is running, the shell keeps zero running animations so the
@@ -929,16 +917,28 @@ input.color-picker::-webkit-color-swatch { border-radius: 7px; border: none; }
 .storage-meter i { display: block; height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #3ec396)); transition: width .6s ease; }
 .settings-list .setting > .range-wrap { flex: 1 1 auto; }
 
-/* player notch extra controls — liquid glass, icon-first */
-.player-controls { display: flex; gap: 8px; padding: 10px 12px; border-radius: 16px; background: rgba(18, 20, 30, .38); border: 1px solid rgba(255, 255, 255, .1); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); box-shadow: 0 10px 34px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .08); }
-.player-control { display: inline-flex; align-items: center; gap: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid transparent; background: rgba(255, 255, 255, .04); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background .18s, border-color .18s, box-shadow .18s; }
-.player-control svg { flex: none; }
+/* player HUD — always-labeled static bar, ONE rule set. Zero hover-driven
+ * layout: hover changes colors only, never size/position — the pill
+ * physically cannot move, re-center, or flicker. Solid dark surface with NO
+ * backdrop-filter (blur re-samples the game's pixels every GPU frame). */
+.player-notch { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 84px; height: 7px; padding: 0; border: 0; border-radius: 0 0 8px 8px; background: rgba(255, 255, 255, .16); z-index: 6; cursor: pointer; transition: background .15s ease; }
+.player-notch:hover { background: rgba(255, 255, 255, .3); }
+.player-controls { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 8px; border-radius: 15px; z-index: 6; opacity: 0; pointer-events: none; transition: opacity .18s ease; background: rgba(12, 13, 18, .92); border: 1px solid rgba(255, 255, 255, .12); box-shadow: 0 12px 30px rgba(0, 0, 0, .45); }
+.player-shell.player-controls-visible .player-controls { opacity: 1; pointer-events: auto; }
+.player-control { display: inline-flex; align-items: center; gap: 0; padding: 8px 10px; border-radius: 10px; border: 1px solid transparent; background: rgba(255, 255, 255, .04); color: var(--text); font-size: 12.5px; font-weight: 650; cursor: pointer; transition: background .14s ease, border-color .14s ease; }
+.player-control svg { width: 15px; height: 15px; flex: none; }
+/* Old expanding labels: open on hover ONLY (never on the bar itself), and the
+ * bar's centering translateX(-50%) must survive hover — growth re-centers, so
+ * the hovered button stays under the cursor instead of fleeing right. */
 .player-control span { display: inline-block; max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap; transition: max-width .22s ease, opacity .18s ease, margin .18s ease; }
-.player-control:hover, .player-control:focus-visible { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .12); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 4px 14px rgba(0, 0, 0, .25); }
-.player-control:hover span, .player-control:focus-visible span, .controls-always-labels .player-control span { max-width: 140px; opacity: 1; margin-left: 8px; }
+.player-control:hover span, .player-control:focus-visible span { max-width: 150px; opacity: 1; margin-left: 8px; }
+@media (hover: none) { .player-controls .player-control span { max-width: 180px; opacity: 1; margin-left: 8px; } }
+.player-control:hover, .player-control:focus-visible { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .1); }
 .player-control.active { background: color-mix(in srgb, var(--accent) 18%, transparent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent-ink); }
-.player-control.close:hover { border-color: color-mix(in srgb, var(--bad) 40%, transparent); color: var(--bad); }
-.player-notch { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.player-control.close:hover { background: color-mix(in srgb, var(--bad) 22%, transparent); border-color: color-mix(in srgb, var(--bad) 40%, transparent); color: var(--bad); }
+.player-control.busy svg { animation: spin .8s linear infinite; }
+@media (max-width: 640px) { .player-controls { flex-wrap: wrap; max-width: min(92vw, 420px); justify-content: center; } .player-control { padding: 8px 9px; font-size: 11.5px; } }
+body.player-open .player-controls, body.player-open .player-notch { animation: none !important; }
 
 /* Confer side window (draggable, fullscreenable) */
 .confer-window { position: fixed; top: 0; left: 0; transform: translate3d(0, 0, 0); will-change: transform; width: min(420px, 92vw); height: min(640px, 74vh); min-width: 300px; min-height: 220px; display: flex; flex-direction: column; border-radius: 18px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(13, 15, 22, .82); backdrop-filter: blur(20px) saturate(1.5); -webkit-backdrop-filter: blur(20px) saturate(1.5); box-shadow: 0 30px 80px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .1); z-index: 1400; }
@@ -998,3 +998,24 @@ body.performance-boost .topbar .nav-item span, body.perf-plus .topbar .nav-item 
 .cloak-ask-toggle input { accent-color: var(--accent); width: 17px; height: 17px; flex: none; }
 .cloak-ask-toggle strong { display: block; font-size: 13.5px; }
 .cloak-ask-toggle small { color: var(--muted); font-size: 12.5px; }
+
+/* setup optimizer */
+.optimizer-card { width: min(540px, 94vw); }
+.optimizer-q { display: flex; flex-direction: column; gap: 8px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 13px; margin-bottom: 10px; }
+.optimizer-q strong { font-size: 13.5px; }
+.oz-hint { color: var(--muted); font-size: 12px; }
+.optimizer-card .segmented { align-self: flex-start; }
+.optimizer-steps { list-style: none; display: grid; gap: 10px; padding: 6px 4px 14px; }
+.optimizer-steps li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); transition: color .2s ease; }
+.optimizer-steps li[data-state="run"] { color: var(--text); }
+.optimizer-steps li[data-state="run"] .oz-dot { border-color: var(--accent); border-top-color: transparent; animation: spin .8s linear infinite; }
+.optimizer-steps li[data-state="done"] { color: var(--text); }
+.optimizer-steps li[data-state="done"] .oz-dot { background: var(--accent); border-color: var(--accent); }
+.oz-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); flex: none; }
+.optimizer-facts { padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 92%, transparent); font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+.optimizer-plan { display: grid; gap: 8px; margin-bottom: 12px; }
+.optimizer-plan label { display: flex; gap: 10px; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+.optimizer-plan label:hover { border-color: var(--line-strong); }
+.optimizer-plan input { accent-color: var(--accent); width: 16px; height: 16px; flex: none; margin-top: 2px; }
+.optimizer-plan strong { display: block; font-size: 13px; }
+.optimizer-plan small { color: var(--muted); font-size: 12px; }

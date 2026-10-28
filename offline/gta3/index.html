@@ -1,7 +1,7 @@
-<!DOCTYPE html>
-<!-- saved from url=(0093)https://raw.githack.com/larpinguser/HelloWorldScriptBasicFunctionCSharpIsCool/main/index.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GTA III</title>
 <style>
@@ -31,7 +31,7 @@
 </style>
 </head>
 <body>
-<div id="loading">Preparing... (0/409)</div>
+<div id="loading">Loading GTA III...</div>
 <script>
   window.addEventListener('unhandledrejection', function(e) {
     if (e.reason && e.reason.name && e.reason.name.indexOf('DocumentError') !== -1) {
@@ -50,6 +50,15 @@
 </script>
 <script>
   (function() {
+    // re3.data is split into re3.chunk.0..N. Local copies are used when they
+    // exist next to this file; otherwise the chunks stream from the port's
+    // GitHub source (raw.githubusercontent serves them with CORS *). re3.js
+    // and re3.wasm are vendored locally, so only the data streams.
+    // jsDelivr mirrors the repo with CORS plus a 7-day browser cache — the
+    // second launch reuses cached chunks instead of re-streaming ~776 MB.
+    var MIRROR = 'https://cdn.jsdelivr.net/gh/larpinguser/HelloWorldScriptBasicFunctionCSharpIsCool@main/';
+    var chunkBase = null; // resolved on first use: '' (local) or MIRROR
+
     var ORIG_FETCH = window.fetch;
     window.fetch = function(url, opts) {
       if (typeof url === 'string' && /re3\.data$/i.test(url) && !/\.(chunk|part)/.test(url)) {
@@ -57,25 +66,53 @@
       }
       return ORIG_FETCH.call(this, url, opts);
     };
+
+    function setStatus(text) {
+      var el = document.getElementById('loading');
+      if (el) el.textContent = text;
+    }
+
+    function chunkUrl(i) { return chunkBase + 're3.chunk.' + i; }
+
+    async function resolveBase() {
+      chunkBase = '';
+      try {
+        var probe = await ORIG_FETCH.call(window, 're3.chunk.0');
+        if (probe.ok) return await probe.arrayBuffer();
+      } catch (e) {}
+      chunkBase = MIRROR;
+      return null;
+    }
+
     async function loadDataParts() {
+      var first = await resolveBase();
       var parts = [];
-      for (var i = 0; ; i++) {
-        var resp = await ORIG_FETCH.call(window, 're3.chunk.' + i);
+      if (first) parts.push(first);
+      var total = first ? first.byteLength : 0;
+      for (var i = first ? 1 : 0; ; i++) {
+        var resp;
+        try { resp = await ORIG_FETCH.call(window, chunkUrl(i), { cache: 'force-cache' }); }
+        catch (err) { break; }
         if (!resp.ok) break;
-        parts.push(await resp.arrayBuffer());
+        var part = await resp.arrayBuffer();
+        parts.push(part);
+        total += part.byteLength;
+        setStatus('Loading GTA III data… part ' + parts.length + '/39 · ' + Math.round(total / 1048576) + ' MB');
       }
-      var total = parts.reduce(function(s, p) { return s + p.byteLength; }, 0);
-      var combined = new Uint8Array(total);
-      var offset = 0;
-      for (var pi = 0; pi < parts.length; pi++) {
-        combined.set(new Uint8Array(parts[pi]), offset);
-        offset += parts[pi].byteLength;
+      if (!parts.length) {
+        throw new Error('No re3.chunk files found (local or mirror).');
       }
-      return new Response(combined, {
+      // Disk-backed Blob instead of a full in-RAM concat: keeps peak memory
+      // near one copy of the data instead of two-plus.
+      var blob = new Blob(parts, { type: 'application/octet-stream' });
+      parts.length = 0; // let the array copies fall out of the heap
+      setStatus('Assembling ' + Math.round(total / 1048576) + ' MB…');
+      return new Response(blob, {
         status: 200,
         headers: { 'Content-Type': 'application/octet-stream' }
       });
     }
+
     var origGetContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function(type, attrs) {
       if (type.indexOf('webgl') === 0 || type.indexOf('experimental-webgl') === 0) {
@@ -153,8 +190,7 @@
     }
   };
   Module.setStatus('Loading...');
-</script><canvas id="canvas" class="emscripten"></canvas>
-<script src="./re3.js"></script>
-
-
-</body></html>
+</script>
+<script src="re3.js"></script>
+</body>
+</html>

@@ -833,7 +833,8 @@ function switchSocialView() {
     ], 'Applies instantly — saved on this device.');
     const behavior = settingsGroup('Motion & Performance', 'INTERFACE', [
       settingsToggleRow('toggle-motion', 'sparkles', 'Motion', 'Enable interface animations.'),
-      settingsToggleRow('toggle-performance', 'gauge', 'Performance mode', 'Reduce interface effects while playing.')
+      settingsToggleRow('toggle-performance', 'gauge', 'Performance mode', 'Reduce interface effects while playing.'),
+      `<button class="setting-action optimizer-open" type="button"><span>${icon('sliders-horizontal')}<span><strong>Setup Optimizer</strong><small>Run guided device tests, pick a target FPS, and auto-tune to reach it.</small></span></span>${icon('chevron-right')}</button>`
     ], 'Reduced effects help low-end machines.');
     const storage = settingsGroup('Storage', 'THIS DEVICE', [
       `<div class="setting"><div class="range-wrap"><div><strong>Storage used</strong><small id="storageUsedText">Measuring your device…</small></div><div class="storage-meter"><i id="storageUsedBar"></i></div></div></div>`,
@@ -1212,6 +1213,7 @@ function switchSocialView() {
     $$('.toggle-cloak-auto').forEach((row) => row.addEventListener('click', () => { state.cloakAuto = !state.cloakAuto; localStorage.setItem('flashgames.cloak.auto', state.cloakAuto ? '1' : '0'); applyPreferences(); }));
     $$('.cloak-launch').forEach((row) => row.addEventListener('click', () => { try { localStorage.setItem('flashgames.cloak.mode', 'app'); } catch {} window.FlashCloak?.launch?.('app'); }));
     $$('.cloak-launch-tab').forEach((row) => row.addEventListener('click', () => { try { localStorage.setItem('flashgames.cloak.mode', 'tab'); } catch {} window.FlashCloak?.launch?.('tab'); }));
+    $$('.optimizer-open').forEach((row) => row.addEventListener('click', () => openOptimizer()));
     $$('.clear-library').forEach((row) => row.addEventListener('click', () => confirmDialog('Clear library?', 'All locally installed game files will be removed.', async () => { await FlashGamesStore.clearGameCache(); await loadInstalled(); renderProfile(); toast('Library cleared', 'Your installed games were removed.', 'success'); setRoute('games'); }, true)));
   }
 
@@ -1240,6 +1242,206 @@ function switchSocialView() {
   }
 
   function handleGlobalKeys(event) { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openSearch(); } if (event.key === 'Escape') { document.getElementById('packDetailBackdrop')?.remove(); document.getElementById('diagBackdrop')?.remove(); document.getElementById('flashStatsBackdrop')?.remove(); document.getElementById('customInstallBackdrop')?.remove(); const notifDrop = $('#notifDrop'); if (notifDrop) notifDrop.hidden = true; closePanel('searchBackdrop'); closePanel('profilePanel'); closePanel('settingsPanel'); closePanel('userManagementBackdrop'); closePlayer(); } }
+
+  const ozSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  function optimizerBenchmark(withLoad, ms = 1400) {
+    return new Promise((resolve) => {
+      const cv = document.createElement('canvas');
+      cv.width = 240; cv.height = 140;
+      cv.style.cssText = 'position:fixed;left:-9999px;top:0;width:240px;height:140px;z-index:-1';
+      document.body.appendChild(cv);
+      const ctx = cv.getContext('2d');
+      let frames = 0;
+      const t0 = performance.now();
+      const tick = () => {
+        frames++;
+        if (withLoad) {
+          const t = performance.now();
+          ctx.fillStyle = '#0b0d12'; ctx.fillRect(0, 0, 240, 140);
+          ctx.fillStyle = '#8b5cf6';
+          for (let i = 0; i < 220; i++) {
+            const x = (Math.sin(t / 300 + i) * 110 + 120) | 0;
+            const y = (Math.cos(t / 430 + i * 1.7) * 60 + 70) | 0;
+            ctx.fillRect(x, y, 3, 3);
+          }
+        }
+        const dt = performance.now() - t0;
+        if (dt >= ms) { cv.remove(); resolve(frames / (dt / 1000)); return; }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function optimizerStorageSpeed() {
+    try {
+      const blob = 'x'.repeat(256 * 1024);
+      const probe = 'flashgames.oz-probe';
+      const t0 = performance.now();
+      for (let i = 0; i < 16; i++) localStorage.setItem(probe, blob + String(i % 10));
+      for (let i = 0; i < 16; i++) localStorage.getItem(probe);
+      const dt = performance.now() - t0;
+      localStorage.removeItem(probe);
+      return 5.24 / (dt / 1000);
+    } catch { return 0; }
+  }
+
+  function openOptimizer() {
+    document.getElementById('optimizerBackdrop')?.remove();
+    const oz = {
+      target: Number(localStorage.getItem('flashgames.optimizer.target')) || 60,
+      feel: localStorage.getItem('flashgames.optimizer.feel') || 'balanced',
+      session: localStorage.getItem('flashgames.optimizer.session') || 'long'
+    };
+    const backdrop = document.createElement('div');
+    backdrop.id = 'optimizerBackdrop'; backdrop.className = 'modal-backdrop';
+    backdrop.innerHTML =
+      `<section class="modal-card optimizer-card" role="dialog" aria-modal="true">` +
+      `<div class="panel-head"><div><span class="eyebrow">SETUP OPTIMIZER</span><h2>Get your target FPS</h2></div><button class="icon-btn" data-optimizer-close aria-label="Close"><i data-lucide="x"></i></button></div>` +
+      `<div id="optimizerBody"></div>` +
+      `<p class="panel-note" id="optimizerStatus"></p></section>`;
+    document.body.appendChild(backdrop);
+    refreshIcons(backdrop);
+    const body = () => backdrop.querySelector('#optimizerBody');
+    const status = () => backdrop.querySelector('#optimizerStatus');
+    const close = () => backdrop.remove();
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop || e.target.closest('[data-optimizer-close]')) close(); });
+
+    const seg = (cls, items, cur, fmt) => `<div class="segmented ${cls}">${items.map(([key, label]) => `<button data-${fmt(1)}="${key}" class="${cur === key ? 'active' : ''}">${label}</button>`).join('')}</div>`;
+
+    function mark(t, st) {
+      const li = backdrop.querySelector(`.optimizer-steps [data-t="${t}"]`);
+      if (li) { li.dataset.state = st; li.querySelector('.oz-dot')?.classList.add(st); }
+    }
+
+    function stepIntro() {
+      body().innerHTML =
+        `<p class="panel-note">This walkthrough measures your device, asks a few questions, and tunes Flash Games itself so gameplay and interface hit your target FPS — or better where the hardware allows.</p>` +
+        `<div class="dialog-actions"><button class="btn primary" id="optimizerBegin">Run tests</button></div>`;
+      body().querySelector('#optimizerBegin')?.addEventListener('click', stepQuestions);
+    }
+
+    function stepQuestions() {
+      body().innerHTML =
+        `<div class="optimizer-q"><strong>Target FPS</strong>${seg('optimizer-target', [['30','30'],['60','60'],['120','120']], String(oz.target), () => 'target')}<small class="oz-hint">What smoothness should feel like. 60 is the sane default; 120 for high-refresh screens.</small></div>` +
+        `<div class="optimizer-q"><strong>Interface feel</strong>${seg('optimizer-feel', [['fast','Max speed'],['balanced','Balanced'],['full','Full effects']], oz.feel, () => 'feel')}<small class="oz-hint">Full effects stay enabled only if your device clearly has headroom.</small></div>` +
+        `<div class="optimizer-q"><strong>Session style</strong>${seg('optimizer-session', [['short','Shorter bursts'],['long','Long sessions']], oz.session, () => 'session')}<small class="oz-hint">Long sessions get extra in-game relief (Performance+).</small></div>` +
+        `<div class="dialog-actions"><button class="btn primary" id="optimizerRun">Start tests</button></div>`;
+      const wire = (cls, key, cast) => body().querySelectorAll(`.${cls} button`).forEach((b) => b.addEventListener('click', () => {
+        oz[key] = cast ? Number(b.dataset[key]) : b.dataset[key];
+        b.parentElement.querySelectorAll('button').forEach((x) => x.classList.toggle('active', x === b));
+      }));
+      wire('optimizer-target', 'target', true);
+      wire('optimizer-feel', 'feel', false);
+      wire('optimizer-session', 'session', false);
+      body().querySelector('#optimizerRun')?.addEventListener('click', stepTests);
+    }
+
+    async function stepTests() {
+      body().innerHTML =
+        `<ul class="optimizer-steps">` +
+        `<li data-t="device"><span class="oz-dot"></span><span>Device profile (cores · memory · network)</span></li>` +
+        `<li data-t="storage"><span class="oz-dot"></span><span>Storage speed</span></li>` +
+        `<li data-t="fps"><span class="oz-dot"></span><span>Idle FPS (interface baseline)</span></li>` +
+        `<li data-t="load"><span class="oz-dot"></span><span>Loaded FPS (render stress)</span></li></ul>` +
+        `<div class="dialog-actions"><span class="panel-note">Measuring…</span></div>`;
+      status().textContent = '';
+      try {
+        mark('device', 'run');
+        const mem = Number(navigator.deviceMemory || 0), cores = Number(navigator.hardwareConcurrency || 0);
+        const conn = navigator.connection || {};
+        oz.hw = { memory: mem, cores, net: conn.effectiveType ? conn.effectiveType + (conn.downlink ? ' · ~' + conn.downlink + ' Mbps' : '') : '—' };
+        await ozSleep(180); mark('device', 'done');
+        mark('storage', 'run');
+        oz.storageMps = optimizerStorageSpeed();
+        await ozSleep(120); mark('storage', 'done');
+        mark('fps', 'run');
+        oz.fpsIdle = await optimizerBenchmark(false, 1400);
+        mark('fps', 'done');
+        mark('load', 'run');
+        oz.fpsLoad = await optimizerBenchmark(true, 1400);
+        mark('load', 'done');
+        await ozSleep(220);
+        stepResults();
+      } catch { status().textContent = 'A test failed — try again.'; }
+    }
+
+    function stepResults() {
+      const need = oz.fpsLoad < oz.target - 3;
+      const headroom = oz.fpsIdle / Math.max(1, oz.target);
+      const plan = [
+        { checked: need || (oz.hw.memory > 0 && oz.hw.memory <= 4), label: 'Performance mode', why: 'Solid surfaces — no glass compositing while rendering' },
+        { checked: (need || oz.feel !== 'full') && headroom < 1.35, label: 'Motion off', why: 'Reclaims the animation frame budget' },
+        { checked: oz.target >= 90 || need, label: 'Minimal glass', why: 'Blur 14px · opacity 52%' },
+        { checked: oz.session !== 'short' && (need || oz.target >= 60), label: 'Player Performance+', why: 'HUD effects off during games' }
+      ];
+      const net = oz.hw.cores ? `${oz.hw.cores} cores · ${oz.hw.memory ? oz.hw.memory + ' GB' : 'mem n/a'} · ${oz.hw.net}` : '—';
+      body().innerHTML =
+        `<div class="optimizer-facts">${net} · storage ~${oz.storageMps.toFixed(1)} MB/s · idle ${Math.round(oz.fpsIdle)} fps · loaded ${Math.round(oz.fpsLoad)} fps</div>` +
+        `<div class="optimizer-plan">${plan.map((p, i) => `<label><input type="checkbox" data-oz-item="${i}" ${p.checked ? 'checked' : ''}><span><strong>${p.label}</strong><small>${p.why}</small></span></label>`).join('')}</div>` +
+        `<div class="dialog-actions"><button class="btn primary" id="optimizerApply">Apply optimizations</button></div>`;
+      body().querySelector('#optimizerApply')?.addEventListener('click', () => {
+        body().querySelectorAll('[data-oz-item]').forEach((cb) => { plan[Number(cb.dataset.ozItem)].checked = cb.checked; });
+        applyPlan(plan);
+        stepDone();
+      });
+    }
+
+    function applyPlan(plan) {
+      plan.forEach((p) => {
+        if (p.label === 'Performance mode') localStorage.setItem('flashgames.performance', p.checked ? '1' : '0');
+        if (p.label === 'Motion off') localStorage.setItem('flashgames.motion', p.checked ? '0' : '1');
+        if (p.label === 'Minimal glass') { localStorage.setItem('flashgames.opacity', '52'); localStorage.setItem('flashgames.blur', '14'); }
+        if (p.label === 'Player Performance+') localStorage.setItem('flashgames.perfplus', p.checked ? '1' : '0');
+      });
+      localStorage.setItem('flashgames.optimizer.done', '1');
+      localStorage.setItem('flashgames.optimizer.target', String(oz.target));
+      localStorage.setItem('flashgames.optimizer.feel', oz.feel);
+      localStorage.setItem('flashgames.optimizer.session', oz.session);
+      state.performance = localStorage.getItem('flashgames.performance') === '1';
+      state.motion = localStorage.getItem('flashgames.motion') !== '0';
+      state.opacity = Number(localStorage.getItem('flashgames.opacity')) || state.opacity;
+      state.blur = Number(localStorage.getItem('flashgames.blur')) || state.blur;
+      applyPreferences(); rerenderRoute();
+      toast('Optimized', `Target ${oz.target} FPS profile applied.`, 'success');
+    }
+
+    async function stepDone() {
+      body().innerHTML = `<p class="panel-note">Applied. Quick re-check…</p>`;
+      status().textContent = '';
+      const after = await optimizerBenchmark(false, 1000);
+      body().innerHTML =
+        `<h3>Done</h3>` +
+        `<p class="panel-note">Idle ~${Math.round(after)} fps (was ~${Math.round(oz.fpsIdle)}). The ${oz.target} FPS profile is saved — re-run anytime from Settings ⇢ Setup Optimizer.</p>` +
+        `<div class="dialog-actions"><button class="btn primary" data-optimizer-close>Finish</button></div>`;
+    }
+
+    stepIntro();
+  }
+
+  function noticeOptimizer() {
+    try {
+      if (window.__CLOAKED__) return; if (window.__OZN_SEEN__) return;
+      window.__OZN_SEEN__ = true;
+      if (localStorage.getItem('flashgames.optimizer.done') === '1' || localStorage.getItem('flashgames.optimizer.notice') === '0') return;
+      const backdrop = document.createElement('div');
+      backdrop.id = 'optimizerNotice'; backdrop.className = 'modal-backdrop';
+      backdrop.innerHTML =
+        `<section class="modal-card" role="dialog" aria-modal="true">` +
+        `<div class="panel-head"><div><span class="eyebrow">NEW IN 5.4.3</span><h2>Setup Optimizer</h2></div><button class="icon-btn" data-ozn-close aria-label="Close"><i data-lucide="x"></i></button></div>` +
+        `<p class="panel-note">A guided walkthrough: quick device tests, you set a target FPS, and Flash Games tunes itself to reach it — or better.</p>` +
+        `<label class="cloak-ask-toggle"><input type="checkbox" id="optimizerDontNotice"><span><strong>Don't show again</strong><small>Dismisses this startup prompt for good.</small></span></label>` +
+        `<div class="dialog-actions"><button class="btn" id="optimizerLater">Not now</button><button class="btn primary" id="optimizerGo"><i data-lucide="sliders-horizontal"></i> Open it</button></div></section>`;
+      document.body.appendChild(backdrop);
+      refreshIcons(backdrop);
+      const close = () => backdrop.remove();
+      const stay = () => { if (backdrop.querySelector('#optimizerDontNotice')?.checked) localStorage.setItem('flashgames.optimizer.notice', '0'); };
+      backdrop.addEventListener('click', (e) => { if (e.target === backdrop || e.target.closest('[data-ozn-close]')) { stay(); close(); } });
+      backdrop.querySelector('#optimizerLater')?.addEventListener('click', () => { stay(); close(); });
+      backdrop.querySelector('#optimizerGo')?.addEventListener('click', () => { close(); openOptimizer(); });
+    } catch {}
+  }
 
   function askCloakOnBoot() {
     try {
@@ -1385,6 +1587,7 @@ function switchSocialView() {
     renderMermaid();
     setTimeout(() => { if (navigator.onLine) { try { window.FlashBridge?.ensure?.().catch?.(() => {}); } catch {} } }, 1500);
     setTimeout(askCloakOnBoot, 1400);
+    setTimeout(noticeOptimizer, 2400);
     ensureEaglerClients().catch(() => {});
     try {
       await loadInstalled(); state.favourites = FlashGamesStore.getFavourites();
