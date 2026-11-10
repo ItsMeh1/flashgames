@@ -1,6 +1,8 @@
 {
   "title": "Eaglercraft",
-  "subtitle": "Pick a client, press play. Everything runs offline once cached.",
+  "subtitle": "Every client from the All of Eaglercraft archive — one library, one click.",
+  "generatedFrom": "https://github.com/MilkdromedaStudios/all-of-eaglercraft/blob/main/filename-map.json",
+  "updatedAt": "2026-11-07",
   "clients": [
     {
       "id": "pixelclient-112",
@@ -9,7 +11,11 @@
       "file": "./offline/PixelClient 1.12.2 WASM.html",
       "image": "./offline/pixelclient.svg",
       "description": "PixelClient: an Eaglercraft client with 20+ built-in mods.",
-      "tags": ["WASM", "1.12.2", "Mods"],
+      "tags": [
+        "WASM",
+        "1.12.2",
+        "Mods"
+      ],
       "featured": true
     },
     {
@@ -19,7 +25,11 @@
       "file": "./offline/PixelClient 1.8.8 WASM.html",
       "image": "./offline/pixelclient.svg",
       "description": "PixelClient with 1.8 PVP and 20+ built-in mods.",
-      "tags": ["WASM", "1.8.8", "PVP"]
+      "tags": [
+        "WASM",
+        "1.8.8",
+        "PVP"
+      ]
     },
     {
       "id": "astra-112",
@@ -28,7 +38,9 @@
       "file": "./offline/astra112.html",
       "image": "./offline/astraclient.jpeg",
       "description": "One of the best clients.",
-      "tags": ["1.12"]
+      "tags": [
+        "1.12"
+      ]
     },
     {
       "id": "astra-18",
@@ -37,7 +49,10 @@
       "file": "./offline/astra18.html",
       "image": "./offline/astraclient.jpeg",
       "description": "The 1.8 build of AstraClient — fast on low-end devices.",
-      "tags": ["1.8", "PVP"]
+      "tags": [
+        "1.8",
+        "PVP"
+      ]
     },
     {
       "id": "resent-5",
@@ -46,7 +61,10 @@
       "file": "./offline/eaglercraft.dev_Resent_Client_5.0_WASM.html",
       "image": "./offline/resentclient.png",
       "description": "Resent Client 5.0 — a module-based Eaglercraft client.",
-      "tags": ["WASM", "Modules"]
+      "tags": [
+        "WASM",
+        "Modules"
+      ]
     },
     {
       "id": "shadownet",
@@ -55,7 +73,9 @@
       "file": "./offline/eaglercraft.dev_ShadowNetClient_WASM.html",
       "image": "",
       "description": "ShadowNet Eaglercraft client.",
-      "tags": ["WASM"]
+      "tags": [
+        "WASM"
+      ]
     },
     {
       "id": "tuffclient",
@@ -64,7 +84,9 @@
       "file": "./offline/eaglercraft.dev_Tuff_Client_WASM.html",
       "image": "./offline/tuffclient.png",
       "description": "Anyone remember this?",
-      "tags": ["Classic"]
+      "tags": [
+        "Classic"
+      ]
     },
     {
       "id": "1.21",
@@ -73,7 +95,10 @@
       "file": "./offline/1.21.html",
       "image": "",
       "description": "Most efficient & fast version of Eaglercraft.",
-      "tags": ["1.21", "SE"]
+      "tags": [
+        "1.21",
+        "SE"
+      ]
     },
     {
       "id": "26.2",
@@ -82,7 +107,14 @@
       "file": "./offline/26.2.html",
       "image": "./offline/26.2.png",
       "description": "One of the latest versions of Eagler, some of the MOST features.",
-      "tags": ["Classic", "26.2", "2026", "New", "WASM", "U1"]
+      "tags": [
+        "Classic",
+        "26.2",
+        "2026",
+        "New",
+        "WASM",
+        "U1"
+      ]
     },
     {
       "id": "26.3",
@@ -91,7 +123,1674 @@
       "file": "./offline/26.3.html",
       "image": "./offline/26.3.png",
       "description": "Latest Java drop! Theres litterally nothing ahead of this.",
-      "tags": ["Classic", "WASM", "U1", "2026"]
+      "tags": [
+        "Classic",
+        "WASM",
+        "U1",
+        "2026"
+      ]
+    },
+    {
+      "id": "up-1-21-11-17-wasm",
+      "name": "1.21.11 17 WASM",
+      "version": "1.21.11",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/1.21.11%2017%20WASM.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.21.11 — WASM build.",
+      "tags": [
+        "WASM",
+        "1.21.11"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-3tern4l-client-v2-1",
+      "name": "3TERN4L Client V2.1",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/3TERN4L%20Client%20V2.1.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-actx-wasm-v1-8-0",
+      "name": "ActX WASM v1.8.0",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/ActX%20WASM%20v1.8.0.html",
+      "image": "",
+      "description": "Community Eaglercraft client — WASM build.",
+      "tags": [
+        "WASM",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-alpha-1-0-1-01-js",
+      "name": "Alpha 1.0.1 01 JS",
+      "version": "1.0.1",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Alpha%201.0.1%2001%20JS.html",
+      "image": "",
+      "description": "A piece of Eaglercraft history — Alpha 1.0.1 01 JS.",
+      "tags": [
+        "JS",
+        "1.0.1",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Legacy"
+    },
+    {
+      "id": "up-archmc-eaglercraft-26-2",
+      "name": "ArchMC Eaglercraft 26.2",
+      "version": "26.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/ArchMC%20Eaglercraft%2026.2.html",
+      "image": "",
+      "description": "Minecraft 26.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "26.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-archmc-eaglercraft-26-3",
+      "name": "ArchMC Eaglercraft 26.3",
+      "version": "26.3",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/ArchMC%20Eaglercraft%2026.3.html",
+      "image": "",
+      "description": "Minecraft 26.3 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "26.3"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-astra-1-8-new",
+      "name": "Astra 1.8 New",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Astra%201.8%20New.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.8 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-astra-js",
+      "name": "Astra JS",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Astra%20JS.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-astra-wasm",
+      "name": "Astra WASM",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Astra%20WASM.html",
+      "image": "",
+      "description": "Community Eaglercraft client — WASM build.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-auraclientbeta",
+      "name": "AuraClientBeta",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/AuraClientBeta.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-autoclient",
+      "name": "AutoClient",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/AutoClient.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-best-hacked-minecraft-no-ai",
+      "name": "Best Hacked Minecraft No AI",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Best%20Hacked%20Minecraft%20No%20AI.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-camo-client",
+      "name": "Camo Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Camo%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-archimedes-client",
+      "name": "Archimedes Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Archimedes%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-codercraft",
+      "name": "CoderCraft",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/CoderCraft.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-dragonx-client",
+      "name": "DragonX Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/DragonX%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-gx-client",
+      "name": "GX Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/GX%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-justin-client",
+      "name": "Justin Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Justin%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-kerosene-client",
+      "name": "Kerosene Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Kerosene%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-lambda-client",
+      "name": "Lambda Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Lambda%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-mega-client",
+      "name": "Mega Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Mega%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-clminceraft-i-notmine-v6",
+      "name": "clMinceraft I NotMine V6",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/clMinceraft%20I%20NotMine%20V6.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-nit-client",
+      "name": "Nit Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Nit%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-nova-client",
+      "name": "Nova Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Nova%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-pi-client",
+      "name": "Pi Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Pi%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-prism-client",
+      "name": "Prism Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Prism%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-reborn-client",
+      "name": "Reborn Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Reborn%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-solar-client",
+      "name": "Solar Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Solar%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-uwu-client",
+      "name": "UwU Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/UwU%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-wurst-client",
+      "name": "Wurst Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Wurst%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-zeta-client",
+      "name": "Zeta Client",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Zeta%20Client.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-deathclient-1-4-1-1-8-intl",
+      "name": "DeathClient 1.4.1 1.8 Intl",
+      "version": "1.4.1",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/DeathClient%201.4.1%201.8%20Intl.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.4.1 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.4.1",
+        "PVP",
+        "Intl"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-deathclient-1-4-1-1-8-wasm",
+      "name": "DeathClient 1.4.1 1.8 WASM",
+      "version": "1.4.1",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/DeathClient%201.4.1%201.8%20WASM.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.4.1 — WASM build.",
+      "tags": [
+        "WASM",
+        "1.4.1",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-demon",
+      "name": "demon",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/demon.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-dragonx-intl-v6",
+      "name": "DragonX Intl V6",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/DragonX%20Intl%20V6.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "Intl"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-dragonx-v4",
+      "name": "DragonX V4",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/DragonX%20V4.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-dragonx-outspect",
+      "name": "DragonX Outspect",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/DragonX%20Outspect.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eaglercraft-1-11-2",
+      "name": "Eaglercraft 1.11.2",
+      "version": "1.11.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.11.2.html",
+      "image": "",
+      "description": "Minecraft 1.11.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.11.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-12-en",
+      "name": "Eaglercraft 1.12 EN",
+      "version": "1.12",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.12%20EN.html",
+      "image": "",
+      "description": "Minecraft 1.12 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.12"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-12-intl",
+      "name": "Eaglercraft 1.12 Intl",
+      "version": "1.12",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.12%20Intl.html",
+      "image": "",
+      "description": "Minecraft 1.12 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.12",
+        "Intl"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-12-2-wasm",
+      "name": "Eaglercraft 1.12.2 WASM",
+      "version": "1.12.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.12.2%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.12.2 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.12.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-13-2-en",
+      "name": "Eaglercraft 1.13.2 EN",
+      "version": "1.13.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.13.2%20EN.html",
+      "image": "",
+      "description": "Minecraft 1.13.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.13.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-14-aether",
+      "name": "Eaglercraft 1.14 Aether",
+      "version": "1.14",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.14%20Aether.html",
+      "image": "",
+      "description": "Minecraft 1.14 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.14",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-14-4-wasm",
+      "name": "Eaglercraft 1.14.4 WASM",
+      "version": "1.14.4",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.14.4%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.14.4 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.14.4"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-15-2-js-en",
+      "name": "Eaglercraft 1.15.2 JS EN",
+      "version": "1.15.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.15.2%20JS%20EN.html",
+      "image": "",
+      "description": "Minecraft 1.15.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.15.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-15-2-wasm",
+      "name": "Eaglercraft 1.15.2 WASM",
+      "version": "1.15.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.15.2%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.15.2 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.15.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-4-7",
+      "name": "Eaglercraft 1.4.7",
+      "version": "1.4.7",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.4.7.html",
+      "image": "",
+      "description": "Minecraft 1.4.7 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.4.7"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-12-2",
+      "name": "Eaglercraft IR 1.12.2",
+      "version": "1.12.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.12.2.html",
+      "image": "",
+      "description": "Minecraft 1.12.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.12.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-12-2-wasm",
+      "name": "Eaglercraft IR 1.12.2 WASM",
+      "version": "1.12.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.12.2%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.12.2 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.12.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-2-5",
+      "name": "Eaglercraft IR 1.2.5",
+      "version": "1.2.5",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.2.5.html",
+      "image": "",
+      "description": "Minecraft 1.2.5 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.2.5"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-5-2",
+      "name": "Eaglercraft IR 1.5.2",
+      "version": "1.5.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.5.2.html",
+      "image": "",
+      "description": "Minecraft 1.5.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.5.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-6-4",
+      "name": "Eaglercraft IR 1.6.4",
+      "version": "1.6.4",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.6.4.html",
+      "image": "",
+      "description": "Minecraft 1.6.4 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.6.4"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-8-8",
+      "name": "Eaglercraft IR 1.8.8",
+      "version": "1.8.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.8.8.html",
+      "image": "",
+      "description": "Minecraft 1.8.8 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.8.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-1-8-8-wasm",
+      "name": "Eaglercraft IR 1.8.8 WASM",
+      "version": "1.8.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%201.8.8%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.8.8 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.8.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-a1-2-6",
+      "name": "Eaglercraft IR a1.2.6",
+      "version": "a1.2.6",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20a1.2.6.html",
+      "image": "",
+      "description": "Minecraft a1.2.6 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "a1.2.6",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-b1-1",
+      "name": "Eaglercraft IR b1.1",
+      "version": "b1.1",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20b1.1.html",
+      "image": "",
+      "description": "Minecraft b1.1 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "b1.1",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-b1-3",
+      "name": "Eaglercraft IR b1.3",
+      "version": "b1.3",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20b1.3.html",
+      "image": "",
+      "description": "Minecraft b1.3 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "b1.3",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-b1-7-3",
+      "name": "Eaglercraft IR b1.7.3",
+      "version": "b1.7.3",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20b1.7.3.html",
+      "image": "",
+      "description": "Minecraft b1.7.3 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "b1.7.3",
+        "PVP",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-c0-30-wasm",
+      "name": "Eaglercraft IR c0.30 WASM",
+      "version": "c0.30",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20c0.30%20WASM.html",
+      "image": "",
+      "description": "Minecraft c0.30 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "c0.30",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-pixelclient-1-8-8-wasm",
+      "name": "Eaglercraft IR PixelClient 1.8.8 WASM",
+      "version": "1.8.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20PixelClient%201.8.8%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.8.8 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.8.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ir-winston-horror",
+      "name": "Eaglercraft IR Winston Horror",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20IR%20Winston%20Horror.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-explore",
+      "name": "Eaglercraft Explore",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Explore.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-lite",
+      "name": "Eaglercraft Lite",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Lite.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-magic",
+      "name": "Eaglercraft Magic",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Magic.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-skyfactory",
+      "name": "Eaglercraft Skyfactory",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Skyfactory.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-tech",
+      "name": "Eaglercraft Tech",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Tech.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-ultimate",
+      "name": "Eaglercraft Ultimate",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Ultimate.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-vanilla",
+      "name": "Eaglercraft Vanilla",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Vanilla.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-explore",
+      "name": "Eaglercraft WASM JSPI Explore",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Explore.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-lite",
+      "name": "Eaglercraft WASM JSPI Lite",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Lite.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-magic",
+      "name": "Eaglercraft WASM JSPI Magic",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Magic.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-skyfactory",
+      "name": "Eaglercraft WASM JSPI Skyfactory",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Skyfactory.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-tech",
+      "name": "Eaglercraft WASM JSPI Tech",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Tech.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-ultimate",
+      "name": "Eaglercraft WASM JSPI Ultimate",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Ultimate.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-wasm-jspi-vanilla",
+      "name": "Eaglercraft WASM JSPI Vanilla",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20WASM%20JSPI%20Vanilla.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-weird-chest-thing",
+      "name": "Eaglercraft Weird Chest Thing",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Weird%20Chest%20Thing.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-16-u3",
+      "name": "Eaglercraft 1.16 u3",
+      "version": "1.16",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.16%20u3.html",
+      "image": "",
+      "description": "Minecraft 1.16 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.16"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-1-17",
+      "name": "Eaglercraft 1.17",
+      "version": "1.17",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%201.17.html",
+      "image": "",
+      "description": "Minecraft 1.17 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.17"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-26-2-modded",
+      "name": "Eaglercraft 26.2 Modded",
+      "version": "26.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%2026.2%20Modded.html",
+      "image": "",
+      "description": "Minecraft 26.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "26.2",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-26-2-u2",
+      "name": "Eaglercraft 26.2 u2",
+      "version": "26.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%2026.2%20u2.html",
+      "image": "",
+      "description": "Minecraft 26.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "26.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraft-custom-1-12-2-beta",
+      "name": "Eaglercraft Custom 1.12.2 Beta",
+      "version": "1.12.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eaglercraft%20Custom%201.12.2%20Beta.html",
+      "image": "",
+      "description": "Minecraft 1.12.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.12.2",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-13-wasm",
+      "name": "EaglercraftX 1.13 WASM",
+      "version": "1.13",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.13%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.13 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.13"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-7-10-en",
+      "name": "EaglercraftX 1.7.10 EN",
+      "version": "1.7.10",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.7.10%20EN.html",
+      "image": "",
+      "description": "Minecraft 1.7.10 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.7.10",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-7-10-wasm",
+      "name": "EaglercraftX 1.7.10 WASM",
+      "version": "1.7.10",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.7.10%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.7.10 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.7.10",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-8-en",
+      "name": "EaglercraftX 1.8 EN",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.8%20EN.html",
+      "image": "",
+      "description": "Minecraft 1.8 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-8-en-2",
+      "name": "EaglercraftX 1.8 EN (2)",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.8%20EN%20(2).html",
+      "image": "",
+      "description": "Minecraft 1.8 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-8-en-copy",
+      "name": "EaglercraftX 1.8 EN copy",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.8%20EN%20copy.html",
+      "image": "",
+      "description": "Minecraft 1.8 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-8-intl",
+      "name": "EaglercraftX 1.8 Intl",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.8%20Intl.html",
+      "image": "",
+      "description": "Minecraft 1.8 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP",
+        "Intl"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-8-intl-2",
+      "name": "EaglercraftX 1.8 Intl (2)",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.8%20Intl%20(2).html",
+      "image": "",
+      "description": "Minecraft 1.8 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP",
+        "Intl"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-1-8-wasm",
+      "name": "EaglercraftX 1.8 WASM",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.8%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.8 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftx-194",
+      "name": "EaglercraftX 194",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%20194.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftz-1-20-u4-beta-intl",
+      "name": "EaglercraftZ 1.20 u4 Beta Intl",
+      "version": "1.20",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftZ%201.20%20u4%20Beta%20Intl.html",
+      "image": "",
+      "description": "Minecraft 1.20 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "1.20",
+        "Intl",
+        "Legacy"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftz-1-20u3-intl",
+      "name": "EaglercraftZ 1.20u3 Intl",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftZ%201.20u3%20Intl.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "Intl"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercraftz-1-20u3-wasm",
+      "name": "EaglercraftZ 1.20u3 WASM",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftZ%201.20u3%20WASM.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglercreate-fast-wasm",
+      "name": "EaglerCreate fast WASM",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglerCreate%20fast%20WASM.html",
+      "image": "",
+      "description": "Community Eaglercraft client — WASM build.",
+      "tags": [
+        "WASM",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eaglerforge-v1-1-8-en",
+      "name": "EaglerForge v1 1.8 EN",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglerForge%20v1%201.8%20EN.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.8 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eaglerforge-v1-1-8-intl",
+      "name": "EaglerForge v1 1.8 Intl",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglerForge%20v1%201.8%20Intl.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.8 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eaglerlite-v1-7-2",
+      "name": "EaglerLite v1.7.2",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglerLite%20v1.7.2.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eagler-modpack-1-12-2-new",
+      "name": "Eagler Modpack 1.12.2 New",
+      "version": "1.12.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eagler%20Modpack%201.12.2%20New.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.12.2 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.12.2",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eaglymc-u6-js",
+      "name": "EaglyMC u6 JS",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglyMC%20u6%20JS.html",
+      "image": "",
+      "description": "Classic Eaglercraft build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eaglymc-u6-wasm",
+      "name": "EaglyMC u6 WASM",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglyMC%20u6%20WASM.html",
+      "image": "",
+      "description": "Classic Eaglercraft build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eclient-1-5-2",
+      "name": "eClient 1 5 2",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/eClient%201%205%202.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eclipse-wasm",
+      "name": "Eclipse WASM",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Eclipse%20WASM.html",
+      "image": "",
+      "description": "Community Eaglercraft client — WASM build.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eclipseclient-1-19-js",
+      "name": "EclipseClient 1.19 JS",
+      "version": "1.19",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EclipseClient%201.19%20JS.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.19 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.19"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-entropyx-1-8",
+      "name": "EntropyX 1.8",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EntropyX%201.8.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.8 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-entropyx-1-8-wasm",
+      "name": "EntropyX 1.8 WASM",
+      "version": "1.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EntropyX%201.8%20WASM.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.8 — WASM build.",
+      "tags": [
+        "WASM",
+        "1.8",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-evilcraft-1-21-11",
+      "name": "EVILcraft 1.21.11",
+      "version": "1.21.11",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EVILcraft%201.21.11.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.21.11 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.21.11"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-immersive-engineering-1-12-new",
+      "name": "Immersive Engineering 1.12 New",
+      "version": "1.12",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/Immersive%20Engineering%201.12%20New.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.12 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.12",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-jei-biomes-o-plenty-1-8-8",
+      "name": "JEI Biomes O Plenty 1.8.8",
+      "version": "1.8.8",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/JEI%20Biomes%20O%20Plenty%201.8.8.html",
+      "image": "",
+      "description": "Community Eaglercraft client for 1.8.8 — JavaScript build.",
+      "tags": [
+        "JS",
+        "1.8.8",
+        "PVP",
+        "Mods"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-eaglercraftx-1-20-6-wasm",
+      "name": "EaglercraftX 1.20.6 WASM",
+      "version": "1.20.6",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EaglercraftX%201.20.6%20WASM.html",
+      "image": "",
+      "description": "Minecraft 1.20.6 build with WebAssembly acceleration from the All of Eaglercraft archive.",
+      "tags": [
+        "WASM",
+        "1.20.6"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "up-eb-client-nextgen-cu7",
+      "name": "EB Client Nextgen CU7",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/EB%20Client%20Nextgen%20CU7.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-liquidbounce",
+      "name": "LiquidBounce",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/LiquidBounce.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-ravena-notanorange",
+      "name": "RavenA NotAnOrange",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/RavenA%20NotAnOrange.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-ravenbs",
+      "name": "RavenBS",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/RavenBS.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS",
+        "PVP"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-tungsahur1-21-11",
+      "name": "TungSahur1.21.11",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/TungSahur1.21.11.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-v1-0-7-js-1",
+      "name": "v1.0.7 JS 1",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/v1.0.7%20JS%201.html",
+      "image": "",
+      "description": "Community Eaglercraft client — JavaScript build.",
+      "tags": [
+        "JS"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-v1-0-7-wasm-1",
+      "name": "v1.0.7 WASM 1",
+      "version": "",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/v1.0.7%20WASM%201.html",
+      "image": "",
+      "description": "Community Eaglercraft client — WASM build.",
+      "tags": [
+        "WASM"
+      ],
+      "featured": false,
+      "category": "Clients"
+    },
+    {
+      "id": "up-wispcraft-eaglercraft-26-2-u2",
+      "name": "WispCraft Eaglercraft 26.2 u2",
+      "version": "26.2",
+      "file": "https://raw.githubusercontent.com/MilkdromedaStudios/all-of-eaglercraft/main/WispCraft%20Eaglercraft%2026.2%20u2.html",
+      "image": "",
+      "description": "Minecraft 26.2 build from the All of Eaglercraft archive.",
+      "tags": [
+        "JS",
+        "26.2"
+      ],
+      "featured": false,
+      "category": "Vanilla"
+    },
+    {
+      "id": "wurstx",
+      "name": "WurstX Client",
+      "version": "1.12",
+      "file": "./offline/wurstx.html",
+      "image": "",
+      "description": "Minecraft client with the Wurst hack client",
+      "tags": [
+        "WASM",
+        "1.12"
+      ],
+      "featured": false,
+      "category": "Clients"
     }
   ]
 }

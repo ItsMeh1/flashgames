@@ -1,9 +1,9 @@
 /* Flash Games service worker — minimal offline shell, no HTML rewriting. */
-const CACHE_NAME = 'flashgames-v9';
+const CACHE_NAME = 'flashgames-v37';
 const APP_SHELL = [
-  './', './index.html', './styles.css',
-  './core.js', './app.js', './admin.js', './auth.js', './extras.js',
-  './manifest.json', './update.json', './offline.json',
+  './', './index.html', './styles.css', './quickq.css', './chat.css',
+  './core.js', './app.js', './admin.js', './auth.js', './extras.js', './quickq.js', './social-chat.js',
+  './legal.json', './manifest.json', './update.json', './offline.json',
   './eagler/clients.json',
   './offline/logo.png'
 ];

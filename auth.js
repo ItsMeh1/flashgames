@@ -97,7 +97,7 @@
       if (db) {
         await db.collection('users').doc(cred.user.uid).set({
           displayName: username, username, email, photoURL: pfp || '',
-          role: 'member', verified: false, createdAt: Date.now()
+          role: 'member', verified: false, ultra: false, createdAt: Date.now()
         }, { merge: true }).catch(() => {});
       }
       notify('Account created', 'Welcome to Flash Games.', 'success');
@@ -285,7 +285,7 @@
         if (db) {
           await db.collection('users').doc(cred.user.uid).set({
             displayName: username, username, email, photoURL: '',
-            role: 'member', verified: false, createdAt: Date.now()
+            role: 'member', verified: false, ultra: false, createdAt: Date.now()
           }, { merge: true }).catch(() => {});
         }
         notify('Account created', `Welcome to Flash Games, ${username}.`, 'success');

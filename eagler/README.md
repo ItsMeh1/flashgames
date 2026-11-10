@@ -41,3 +41,15 @@ Schema notes:
 Bundled defaults (see `core.js` → `EAGLER_BUNDLED`) point at the existing
 `offline/` builds, so the launcher works even before clients.json gains new
 entries.
+
+## All of Eaglercraft archive
+
+`clients.json` includes every build listed in
+[`MilkdromedaStudios/all-of-eaglercraft`](https://github.com/MilkdromedaStudios/all-of-eaglercraft/blob/main/filename-map.json).
+Upstream builds use their public raw GitHub URL and are downloaded into the
+local cache on first launch. The existing bundled builds keep their local
+`./offline/…` paths so they work without a network request.
+
+Settings ⇢ Appearance ⇢ Interface switches between **Flash+** (the launcher-first
+UI) and **Classic** (the previous UI). The choice is stored locally, so reverting
+does not remove any clients or data.

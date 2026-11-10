@@ -49,6 +49,7 @@
         `<button class="player-control" data-player-action="restart">${icon('rotate-ccw')}<span>Restart game</span></button>` +
         `<button class="player-control ${perfOn ? 'active' : ''}" data-player-action="perf">${icon('gauge')}<span>Performance+</span></button>` +
         `<button class="player-control" data-player-action="social">${icon('users')}<span>Social</span></button>` +
+        `<button class="player-control" data-player-action="gm">${icon('gamepad-2')}<span>Game mode</span></button>` +
         `<button class="player-control close" data-player-action="close">${icon('x')}<span>Close game</span></button>`;
       if (perfOn) document.body.classList.add('perf-plus');
       shell.appendChild(controls);
@@ -85,6 +86,9 @@
           openConferWindow();
           toast('Confer window', 'Drag the header to move it. Fullscreen from the header.');
         }
+        if (btn.dataset.playerAction === 'gm') {
+          window.GameMode?.toggle?.(); // Game Mode syncs the button's active state itself
+        }
         if (btn.dataset.playerAction === 'perf') {
           const on = !document.body.classList.contains('perf-plus');
           document.body.classList.toggle('perf-plus', on);
@@ -102,6 +106,9 @@
   }
 
   /* ---------- Confer side window (draggable w/ inertia, resizable) ---------- */
+
+  window.FlashConfer = { open: () => openConferWindow() }; // used by Game Mode's Confer widget
+  window.FlashFloatWindow = { wire: wireConferWindow }; // shared Confer-style floating window
 
   function openConferWindow() {
     let win = document.getElementById('conferWindow');
@@ -126,14 +133,14 @@
     win.hidden = false;
   }
 
-  function wireConferWindow(win) {
+  function wireConferWindow(win, opts = {}) {
     // All movement runs through translate3d (GPU composite), left/top stay at
     // 0. Physics: critically-damped follow while dragging, inertia glide with
     // soft wall bounce on release. The iframe gets pointer-events:none while
     // interacting so drags never stutter when crossing its area.
     const body = win.querySelector('.confer-window-body');
     const interact = (on) => win.classList.toggle('interacting', on);
-    const MIN_W = 300, MIN_H = 220, EDGE = 10;
+    const MIN_W = opts.minWidth || 300, MIN_H = opts.minHeight || 220;
     const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
     const geom = () => ({ x: win.__x || 0, y: win.__y || 0, w: win.offsetWidth, h: win.offsetHeight });
     const setGeom = (g) => {
@@ -144,8 +151,9 @@
     };
     // Initial placement (center-ish): handled via transform, no centering CSS.
     const placeInitial = () => {
-      const w = Math.min(420, window.innerWidth * 0.92), h = Math.min(640, window.innerHeight * 0.74);
-      setGeom({ x: clamp((window.innerWidth - w) / 2, 8, window.innerWidth - w - 8), y: 84, w, h });
+      const wantedW = opts.width || 420, wantedH = opts.height || 640;
+      const w = Math.min(wantedW, window.innerWidth * 0.92), h = Math.min(wantedH, window.innerHeight * (opts.viewportHeight || 0.74));
+      setGeom({ x: clamp((window.innerWidth - w) / 2, 8, window.innerWidth - w - 8), y: opts.top || 84, w, h });
     };
     placeInitial();
 
@@ -243,10 +251,13 @@
       if (document.fullscreenElement === win) document.exitFullscreen().catch(() => {});
       else win.requestFullscreen?.().catch?.(() => {});
     };
-    win.querySelector('[data-win-action="close"]').onclick = () => { if (raf) cancelAnimationFrame(raf); win.remove(); };
+    win.querySelector('[data-win-action="close"]').onclick = () => {
+      if (raf) cancelAnimationFrame(raf);
+      if (opts.onClose) opts.onClose(win); else win.remove();
+    };
   }
 
-  /* ---------- cloud links always open in a new tab ---------- */  /* ---------- cloud links always open in a new tab ---------- */
+  /* ---------- cloud links: launch through the bridge (in-player framing) ---------- */
 
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-cloud-url]');
@@ -261,7 +272,7 @@
       btn.disabled = true;
       btn.innerHTML = `${icon('loader-circle')}<span>Opening…</span>`;
       icons(btn);
-      toast('Loading title', `Fetching ${label} from nowgg.fun…`);
+      toast('Loading title', `Connecting to ${label}…`);
       window.FlashBridge.open(url, label).then((mode) => {
         if (mode === 'framing') toast('Opening', `${label} is loading in the player.`, 'success');
         if (mode === 'tab-unreachable') {
@@ -488,7 +499,7 @@
   function updateCondensed() {
     condensedTick = false;
     const y = window.scrollY || document.documentElement.scrollTop || 0;
-    const condensed = y > 140;
+    const condensed = y > 140 || document.body.classList.contains('social-route');
     if (document.body.classList.contains('nav-condensed') !== condensed) {
       document.body.classList.toggle('nav-condensed', condensed);
     }

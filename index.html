@@ -25,7 +25,10 @@ window.__flashFirebase = null;
   } catch (e) { console.error('Flash Games Firebase initialization failed:', e); }
 })();
 </script>
+<script>try{document.documentElement.dataset.ui=localStorage.getItem('flashgames.ui')==='classic'?'classic':'v2';}catch(e){document.documentElement.dataset.ui='v2';}</script>
 <link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./quickq.css">
+<link rel="stylesheet" href="./chat.css">
 <script>if (!window.__CLOAKED__ && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});</script>
 </head>
 <body>
@@ -34,6 +37,7 @@ window.__flashFirebase = null;
   <nav class="desktop-nav" aria-label="Primary">
     <button class="nav-item" data-route="eagler" data-label="Eaglercraft"><i data-lucide="blocks"></i><span>Eaglercraft</span></button>
     <button class="nav-item" data-route="games" data-label="Games"><i data-lucide="gamepad-2"></i><span>Games</span></button>
+    <button class="nav-item" data-route="quickq" data-label="QuickQ"><i data-lucide="swords"></i><span>QuickQ</span></button>
     <button class="nav-item" data-route="social" data-label="Social"><i data-lucide="users"></i><span>Social</span></button>
     <button class="nav-item" data-route="cloud" data-label="Cloud"><i data-lucide="cloud"></i><span>Cloud</span></button>
     <button class="nav-item" data-route="updates" data-label="Updates"><i data-lucide="history"></i><span>Updates</span></button>
@@ -51,6 +55,7 @@ window.__flashFirebase = null;
   <section class="view active" id="homeView" data-view="home"></section>
   <section class="view" id="eaglerView" data-view="eagler"></section>
   <section class="view" id="gamesView" data-view="games"></section>
+  <section class="view" id="quickqView" data-view="quickq"></section>
   <section class="view" id="socialView" data-view="social"></section>
   <section class="view" id="cloudView" data-view="cloud"></section>
   <section class="view" id="updatesView" data-view="updates"></section>
@@ -60,6 +65,7 @@ window.__flashFirebase = null;
 <nav class="bottom-dock glass" aria-label="Mobile navigation">
   <button class="dock-item" data-route="eagler"><i data-lucide="blocks"></i><span>Mine</span></button>
   <button class="dock-item" data-route="games"><i data-lucide="store"></i><span>Games</span></button>
+  <button class="dock-item" data-route="quickq"><i data-lucide="swords"></i><span>QuickQ</span></button>
   <button class="dock-item" data-route="social"><i data-lucide="users"></i><span>Social</span></button>
   <button class="dock-item" data-route="settings"><i data-lucide="settings-2"></i><span>Settings</span></button>
     <button class="dock-item" id="mobileProfile"><i data-lucide="user-round"></i><span>Profile</span></button>
@@ -88,12 +94,14 @@ window.__flashFirebase = null;
   <div class="panel-head"><div><span class="eyebrow">PERSONALIZE</span><h2>Settings</h2></div><button class="icon-btn" data-close="settingsPanel" aria-label="Close"><i data-lucide="x"></i></button></div>
   <div class="settings-list">
     <div class="setting"><div><strong>Theme</strong><small>Choose your interface.</small></div><div class="segmented theme-choices"><button data-theme="dark">Dark</button><button data-theme="light">Light</button><button data-theme="system">Auto</button></div></div>
-    <div class="setting"><div><strong>Accent</strong><small>Interface color.</small></div><input class="color-picker accent-picker" type="color" value="#8b5cf6"></div>
+    <div class="setting"><div><strong>Accent</strong><small>Tints the page background and interface accents.</small></div><input class="color-picker accent-picker" type="color" value="#ff5c35"></div>
     <div class="setting"><div class="range-wrap"><div><strong>Glass opacity</strong><output class="opacity-value">66%</output></div><input class="range opacity-range" type="range" min="35" max="85" value="66"></div></div>
     <div class="setting"><div class="range-wrap"><div><strong>Blur</strong><output class="blur-value">20px</output></div><input class="range blur-range" type="range" min="8" max="36" value="20"></div></div>
     <button class="setting-action toggle-motion" type="button"><span><i data-lucide="sparkles"></i><span><strong>Motion</strong><small>Enable interface animations.</small></span></span><span class="switch on"><i></i></span></button>
     <button class="setting-action toggle-performance" type="button"><span><i data-lucide="gauge"></i><span><strong>Performance mode</strong><small>Reduce interface effects.</small></span></span><span class="switch"><i></i></span></button>
     <button class="setting-action open-diagnostics" type="button"><span><i data-lucide="stethoscope"></i><span><strong>Diagnostics</strong><small>System health and connectivity checks.</small></span></span><i data-lucide="chevron-right"></i></button>
+    <button class="setting-action open-legal" type="button"><span><i data-lucide="file-text"></i><span><strong>Terms & privacy</strong><small>Read the rules and how your data is handled.</small></span></span><i data-lucide="chevron-right"></i></button>
+    <button class="setting-action" id="openSupport" type="button"><span><i data-lucide="life-buoy"></i><span><strong>Support & feedback</strong><small>Open the support form without leaving Flash+.</small></span></span><i data-lucide="chevron-right"></i></button>
     <button class="setting-action clear-library" type="button"><span><i data-lucide="trash-2"></i><span><strong>Clear library</strong><small>Remove installed games.</small></span></span><i data-lucide="chevron-right"></i></button>
   </div>
 </aside>
@@ -119,6 +127,49 @@ window.__flashFirebase = null;
     <div class="dialog-actions"><button class="btn" id="dialogCancel">Cancel</button><button class="btn primary" id="dialogConfirm">Continue</button></div>
   </section>
 </div>
+<div class="modal-backdrop support-backdrop" id="supportBackdrop" hidden>
+  <section class="support-modal glass" role="dialog" aria-modal="true" aria-labelledby="supportTitle">
+    <div class="support-head">
+      <div><span class="eyebrow">SUPPORT</span><h2 id="supportTitle">Support &amp; feedback</h2><p>Send a bug report, feature idea, or question through the feedback form.</p></div>
+      <button class="icon-btn" data-close="supportBackdrop" aria-label="Close support form"><i data-lucide="x"></i></button>
+    </div>
+    <div class="support-frame-wrap">
+      <iframe class="support-frame" id="supportFrame" src="https://docs.google.com/forms/d/e/1FAIpQLSc96h2QmFattAVrsBr5dw7vLmfYznp_z0zLcLLKe6wnZuHGtQ/viewform?embedded=true" width="640" height="561" frameborder="0" marginheight="0" marginwidth="0" title="Support and feedback form" loading="lazy">Loading…</iframe>
+    </div>
+  </section>
+</div>
+<div class="consent-gate" id="consentGate" hidden>
+  <section class="consent-modal glass" role="dialog" aria-modal="true" aria-labelledby="consentTitle" aria-describedby="consentIntro">
+    <header class="consent-head">
+      <div class="consent-title-group">
+        <h1 id="consentTitle">Terms &amp; privacy</h1>
+        <p class="consent-subtitle" id="consentSubtitle">Clear rules for playing, and a plain account of what stays on your device.</p>
+      </div>
+    </header>
+    <div class="consent-scroll" id="consentScroll" tabindex="0">
+      <div class="consent-summary" id="consentIntro">
+        <div>
+          <strong id="consentSummaryTitle">Independent, local-first gaming.</strong>
+          <p id="consentSummaryText">Flash Games is an independent browser game portal. It is not affiliated with, endorsed by, or sponsored by the games or platforms it links to.</p>
+        </div>
+      </div>
+      <div id="legalLoading" class="consent-loading">Loading terms…</div>
+      <div class="consent-tabs" id="legalTabs" role="tablist" aria-label="Legal documents"></div>
+      <div id="legalPanes"></div>
+    </div>
+    <footer class="consent-foot">
+      <label class="consent-check gl-checkbox" id="consentCheckWrap">
+        <input class="gl-checkbox__input" type="checkbox" id="consentCheck">
+        <span class="gl-checkbox__box" aria-hidden="true">
+          <svg class="gl-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg>
+        </span>
+        <span class="gl-checkbox__label"><strong>I agree to the Terms &amp; Conditions and Privacy Policy.</strong><small>Required to use Flash Games. Stored on this device.</small></span>
+      </label>
+      <div class="consent-actions"><button class="btn" id="consentClose" type="button" hidden>Close</button><button class="btn primary" id="consentAccept" type="button" disabled>Accept &amp; continue</button></div>
+      <p class="consent-meta" id="legalVersion">Review anytime in Settings.</p>
+    </footer>
+  </section>
+</div>
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 <div class="player-overlay" id="playerOverlay" hidden>
   <div class="player-shell glass">
@@ -130,6 +181,8 @@ window.__flashFirebase = null;
 <script src="./admin.js"></script>
 <script src="./auth.js"></script>
 <script src="./extras.js"></script>
+<script src="./quickq.js"></script>
+<script src="./social-chat.js"></script>
 <script src="./app.js"></script>
 </body>
 </html>

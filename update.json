@@ -1,662 +1,347 @@
 {
-  "version": "5.4.3",
+  "version": "5.4.4",
   "releases": [
     {
+      "version": "5.4.4",
+      "date": "November 7, 2026",
+      "description": "Flash+ now includes the complete fifteen-table QuickQ arcade, live table chat and spectating, a rebuilt Social Chat with usernames, public channels, Reels, and Live, a softer visual polish, the rebuilt Eaglercraft launcher, and first-run terms.",
+      "changes": [
+        {
+          "type": "add",
+          "text": "Added QuickQ, a fifteen-game arcade with Connect 4, Battleship, Uno, Chess, Checkers, Reversi, Dominoes, Blackjack, Crazy Eights, Memory, Tic-Tac-Toe, Mancala, Go Fish, Dots & Boxes, and Nim. Every table has custom artwork and can be played with bots or a friend."
+        },
+        {
+          "type": "add",
+          "text": "QuickQ opens game-first: choose a table, pick two to four seats where supported, set ranked or casual play, and fill empty chairs with bots. Uno, Dominoes, Blackjack, Crazy Eights, Go Fish, and Memory support 2–4 seats; the rest are two-player tables."
+        },
+        {
+          "type": "edit",
+          "text": "QuickQ includes direct peer rooms, bot turns, multiplayer card hands, table chat, voice chat, read-only spectating, and a device-local rating that starts at 500."
+        },
+        {
+          "type": "edit",
+          "text": "Rebuilt Chat under Social around usernames instead of room codes. Choose a username once, then join automatically created public channels for general chat, gaming, creative work, and help. Other people can find and privately message you by that username."
+        },
+        {
+          "type": "add",
+          "text": "Added text and voice chat with typing notes, online presence, unread counts, and private messages. Channel voice calls connect people directly in the browser."
+        },
+        {
+          "type": "add",
+          "text": "Added Reels: share a short video up to 15 MB and three minutes with everyone in a channel, watch it in a focused player, and leave likes or views. Videos are cached on your device and sent directly between people, with no Firebase or video backend."
+        },
+        {
+          "type": "add",
+          "text": "Added Live: share a game or screen with channel members in a low-latency peer connection, with the channel chat beside the video. Streams support up to six viewers and are built for small channel hangs, not public broadcasts."
+        },
+        {
+          "type": "edit",
+          "text": "Polished Flash+ while keeping its soft, rounded shell: a customizable accent that tints the page background, soft fills and highlights, calmer surfaces, and warm orange as the default accent."
+        },
+        {
+          "type": "edit",
+          "text": "About:blank cloaking no longer draws a visible Leave button; Shift+End still clears the cloaked session."
+        },
+        {
+          "type": "add",
+          "text": "Added Terms & Conditions and a Privacy Policy in a compact tabbed reader. First-time visitors must read and accept them before using the app, and can review them again from Settings."
+        },
+        {
+          "type": "edit",
+          "text": "Cloud navigation is now fully delegated to the Flash API. The app no longer adds its own retry budget, relay benchmark, or URL-change handling on top of nowgg's launcher."
+        },
+        {
+          "type": "edit",
+          "text": "Cached games now retain their original document base URL, so Ruffle player scripts, relative game assets and SWFs resolve from the provider instead of the app shell."
+        },
+        {
+          "type": "add",
+          "text": "Support & feedback opens the embedded feedback form, and the privacy policy explains the form provider’s role in processing responses."
+        },
+        {
+          "type": "add",
+          "text": "Downloads that need a proxy now use fp.js first: the tunnel is lazy-loaded after direct and CDN paths fail, then the legacy relay engine remains as a last resort."
+        },
+        {
+          "type": "edit",
+          "text": "Renamed the launcher-first interface from Nova to Flash+ everywhere in the app and Settings."
+        },
+        {
+          "type": "edit",
+          "text": "The Flash+ top bar now rests 40px from the top of the viewport, and its condensed state is a real pill instead of a misshapen strip."
+        },
+        {
+          "type": "edit",
+          "text": "Social is now a true fullscreen tab, and the nav bar automatically condenses into its pill state when you open it."
+        },
+        {
+          "type": "edit",
+          "text": "Rebuilt the Eaglercraft launcher: a readable version library on the left, a large selected-build panel on the right, cleaner filters, search, sorting and one-click play, install, favorite and remove actions."
+        },
+        {
+          "type": "edit",
+          "text": "Game Mode was rebuilt from the ground up with 17 widget types: FPS, frame time, memory, connection, keystrokes, input stats, controller, clock, date, session timer, stopwatch, battery, now playing, Confer, plus your own notes, counters and links."
+        },
+        {
+          "type": "add",
+          "text": "Every widget is now yours to shape: rename it, swap its icon, pick a look (solid, outline, ghost, accent or light) and tune size, opacity, corners and accent colour per widget."
+        },
+        {
+          "type": "add",
+          "text": "Create your own widgets in the editor — a note pinned over the game, a tap counter for deaths and wins, or a one-tap link — then drag everything exactly where you want it."
+        },
+        {
+          "type": "edit",
+          "text": "About:blank cloaking now loads the entire app into the blank window: markup, styles and all five scripts are inlined. Nothing is framed, and games, packs and assets still load normally."
+        },
+        {
+          "type": "edit",
+          "text": "Cloaking finally opens its own window instead of a tab — every launch uses a fresh window name and a real popup feature string, so browsers stop retargeting the old tab."
+        },
+        {
+          "type": "edit",
+          "text": "Cloud games now show the regional host immediately (including 24.ip.nowgg.fun) and correct themselves in the background, instead of waiting on slow probes and then framing the wrong host."
+        },
+        {
+          "type": "edit",
+          "text": "Cloud sessions now count towards your stats, Restart works for them, and a status pill says when a host is unreachable instead of leaving a silent blank frame."
+        },
+        {
+          "type": "edit",
+          "text": "The app shell cache was refreshed so every device picks up 5.4.4 properly."
+        }
+      ]
+    },
+    {
       "version": "5.4.3",
-      "date": "October 23, 2026",
-      "description": "a massssive update.",
-      "changes": [
-        { "type": "add", "text": "Added some new games" },
-        { "type": "add", "text": "Added a new, dedicated 1.21 SuperEfficient Optimized EaglerCraft client. Its extremely fast and now completely compatible with Flash Games." },
-        { "type": "add", "text": "Added the first WebPorts to Flash Games! Expect more to come." },
-        { "type": "add", "text": "Added a better Discord tab to talk with Discord users" },
-        { "type": "add", "text": "Added an Articles section! Learn more about the behind-the-scenes about Flash Games & more." },
-        { "type": "edit", "text": "Fix Confer from being soo laggy." },
-        { "type": "edit", "text": "Fixed some devices still not supporting confer locally" }
-      ]
-    },
-    {
-      "version": "5.4.2",
-      "date": "October 23, 2026",
-      "description": "Major bug patches",
-      "changes": [
-        { "type": "edit", "text": "Fixed the overlays from moving away from your mouse" },
-        { "type": "edit", "text": "Fix social widget, so it lets you make room codes." },
-        { "type": "edit", "text": "Give the cloaking popup a don't show again checkbox" },
-        { "type": "edit", "text": "Fixed some devices still not supporting confer locally" }
-      ]
-    },
-    {
-      "version": "5.4.1",
-      "date": "October 22, 2026",
-      "description": "Call, Screenshare, Message, Text, and Send files with this new update!",
-      "changes": [
-        { "type": "add", "text": "Add a social overlay when playing games, so that you can socialize with others while playing, or just watch them play without them getting disturbed from needing to switch to the Social tab" },
-        { "type": "add", "text": "Add new optimization features which should hopefully fix up the lag" },
-        { "type": "edit", "text": "Finally support cloakings (in settings)" },
-        { "type": "edit", "text": "Finally support confer locally" },
-        { "type": "remove", "text": "DELETED that old and annoying settings page. Hated it, now theres a new & better one." }
-      ]
-    },
-    {
-      "version": "5.4.0",
-      "date": "October 19, 2026",
-      "description": "don't worry, your welcome.",
+      "date": "October 29, 2026",
+      "description": "Game Mode, the new Operations admin deck, and cloak everywhere.",
       "changes": [
         {
-          "type": "edit",
-          "text": "Mega pack overhaul: The Whole Vault (recommended), Every Offline Game and Every Online Game sit front and center as big hero bundles, installs reuse cached games instead of re-downloading, and downloads now try the libcurl relay engine as a mirror. Fixed pill drift on hover and shell caching issues (service worker now always runs fresh app code)."
+          "type": "add",
+          "text": "Added some new games"
         },
         {
           "type": "add",
-          "text": "Big quality wave: offline sign-in is error-free, Library+Store merged into one Games section with a centered switcher, a much smarter fuzzy search with filters, a cleaner options bar, 3 new mega-bundles (every offline game / every online game / the whole vault), and the game HUD no longer drifts."
+          "text": "Added a new, dedicated 1.21 SuperEfficient Optimized EaglerCraft client. Its extremely fast and now completely compatible with Flash Games."
         },
         {
           "type": "add",
-          "text": "Made a new EaglerCraft section. Its a full launcher, build from scratch, made for Flash Games. It has all your favorite versions from Beta Indev to 1.5.2 to 26.3, its everything you could possibly wish for. All local, offline, private, no data retention, and it runs on your device."
+          "text": "Added the first WebPorts to Flash Games! Expect more to come."
         },
         {
           "type": "add",
-          "text": "Added some more EaglerCraft models for the fun of it. These include: 26.3, 26.2, Pixel Client (all versions), Tuff Client (WASM only), and Astra Client. Get & play them in the EaglerCraft section."
+          "text": "Added a better Discord tab to talk with Discord users"
         },
         {
-          "type": "fix",
-          "text": "Fixed a bug where there is both a Home button and the Flash Games button, both of which redirect to the home page. Originally, there was only meant to be one of them."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed a bug that forced you to sign in and didn't let you make a new account"
-        },
-        {
-          "type": "fix",
-          "text": "Fixed a bug that made dev codes invalid for no reason"
-        },
-        {
-          "type": "fix",
-          "text": "Fixed a bug that forced you to sign in and didn't let you make a new account"
+          "type": "add",
+          "text": "Added an Articles section! Learn more about the behind-the-scenes about Flash Games & more."
         },
         {
           "type": "edit",
-          "text": "Temporarily removed all Cloud Gaming connections because they messed up the app & didn't work. Expect a fix in other updates."
+          "text": "Fix Confer from being soo laggy."
         },
         {
           "type": "edit",
-          "text": "Changed the way games are played & fetched to make it more efficent & faster"
-        },
-        {
-          "type": "remove",
-          "text": "Removed the home button"
-        }
-      ]
-    },
-    {
-      "version": "5.3.6",
-      "date": "September 26, 2026",
-      "description": "Admin Rebuild",
-      "changes": [
-        {
-          "type": "fix",
-          "text": "Fixed maintenance lock never engaging. The panel now actually exports its status reader."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed member search losing focus after every keystroke."
+          "text": "Fixed some devices still not supporting confer locally"
         },
         {
           "type": "add",
-          "text": "Rebuilt administration from scratch: health metrics, searchable member directory, full profiles with suspension and age signals, moderation actions, release lock and catalogue controls."
-        }
-      ]
-    },
-    {
-      "version": "5.3.5",
-      "date": "September 26, 2026",
-      "description": "bug fixes!",
-      "changes": [
-        {
-          "type": "fix",
-          "text": "The same game no longer appears twice under different names. Local games share one identity everywhere, old installs and favorites migrate automatically, and the library always shows the catalogue name. finally done, made me mad."
-        }
-      ]
-    },
-    {
-      "version": "5.3.4",
-      "date": "September 26, 2026",
-      "description": "Cloud Arcade & Always-On Social",
-      "changes": [
+          "text": "GAME MODE has landed! Build your own in-game HUD in Settings: FPS, keystrokes, clock, session timer, Confer and battery widgets — place them anywhere by dragging, and open it all inside any game with a shortcut you choose."
+        },
         {
           "type": "add",
-          "text": "Polished the cloud arcade: region and connection badges, numbered titles, host tags and Play buttons with live opening state."
+          "text": "The Admin section was deleted and rebuilt from zero. It is now an Operations deck with bans, kicks, timed suspensions, a global shutdown switch and a full member console."
         },
         {
           "type": "edit",
-          "text": "Confer now fills the whole social tab and stays mounted, so calls survive tab switches."
-        }
-      ]
-    },
-    {
-      "version": "5.3.3",
-      "date": "September 26, 2026",
-      "description": "Exclusive Shelf Fix",
-      "changes": [
-        {
-          "type": "fix",
-          "text": "The Flash Exclusive collection is stocked again. Every bundled offline game now lives there, with no double listings."
-        }
-      ]
-    },
-    {
-      "version": "5.3.2",
-      "date": "September 26, 2026",
-      "description": "Duplicate Cleanup",
-      "changes": [
-        {
-          "type": "fix",
-          "text": "Removed double listings. Games shared by the offline manifest and the exclusive shelf now show once."
-        }
-      ]
-    },
-    {
-      "version": "5.3.1",
-      "date": "September 26, 2026",
-      "description": "Regional Cloud Routing",
-      "changes": [
-        {
-          "type": "fix",
-          "text": "Cloud titles now detect nowgg.fun's region redirect and play from your regional host (e.g. 24.ip.nowgg.fun) instead of dying on DNS errors."
-        },
-        {
-          "type": "add",
-          "text": "Your region is remembered, so repeat plays skip straight to the regional host."
-        }
-      ]
-    },
-    {
-      "version": "5.3.0",
-      "date": "September 26, 2026",
-      "description": "Cloud Region Fix & RNG Rebuild",
-      "changes": [
-        {
-          "type": "fix",
-          "text": "Fixed cloud games dying on region redirects. Titles verify through the engine, then the player navigates for real so geo-matching resolves natively."
-        },
-        {
-          "type": "add",
-          "text": "Rebuilt Infinity RNG as Aurora Vault: new dock, arena stage, bento casino, pity meter and mobile tab bar. Save system untouched."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed Turbo Motor doing nothing, stale Hi-Lo reference, dead save-merge code and unreachable mobile tabs in RNG."
-        }
-      ]
-    },
-    {
-      "version": "5.2.1",
-      "date": "September 26, 2026",
-      "description": "Library Focus Update",
-      "changes": [
-        {
-          "type": "remove",
-          "text": "Removed the Games section. The store now covers every collection and the library holds everything installed."
+          "text": "Cloaking in a new window finally works on every browser — Safari and Chrome on macOS included. If the custom window is refused it silently falls back to a plain blank window instead of doing nothing."
         },
         {
           "type": "edit",
-          "text": "Library took over the games icon."
-        },
-        {
-          "type": "fix",
-          "text": "Custom URL installs now appear in the library immediately."
-        }
-      ]
-    },
-    {
-      "version": "5.2.0",
-      "date": "September 25, 2026",
-      "description": "Player, Store & Packs Update",
-      "changes": [
-        {
-          "type": "edit",
-          "text": "The game player is now tab-fullscreen by default, with optional window fullscreen."
+          "text": "Game Mode widgets now receive keystrokes and clicks from all kinds of games, including ones that run inside their own embedded frames."
         },
         {
           "type": "edit",
-          "text": "All cloud traffic now loads through the vendored static fetch engine."
-        },
-        {
-          "type": "add",
-          "text": "Added collection switching (Offline, Lumin, Exclusive) and a dedicated packs area in the store."
-        },
-        {
-          "type": "add",
-          "text": "Added pack detail views so you can see and play every game inside a bundle."
-        }
-      ]
-    },
-    {
-      "version": "5.1.0",
-      "date": "September 25, 2026",
-      "description": "Access, Cloud, Packs & Navbar Update",
-      "changes": [
-        {
-          "type": "add",
-          "text": "Added an access gate. An account or a developer code is now required to enter. Developer codes also unlock cloud gaming."
-        },
-        {
-          "type": "add",
-          "text": "Added a static fetch engine (vendored) with graceful direct fallback."
-        },
-        {
-          "type": "add",
-          "text": "Added 12 nowgg.fun cloud titles: Roblox, Rocket League, Minecraft, Among Us, PUBG, Free Fire, Genshin, COD, Blox Fruit, Adopt Me and more."
-        },
-        {
-          "type": "add",
-          "text": "Added game packs in the store. One tap installs a whole bundle locally for offline play."
-        },
-        {
-          "type": "add",
-          "text": "Added a condensing navbar pill on scroll with hover tooltips, plus a layout-stability pass so search no longer shifts the page."
-        },
-        {
-          "type": "fix",
-          "text": "Restored the gameplay iframe to its original unsandboxed playback."
-        }
-      ]
-    },
-    {
-      "version": "5.0.0",
-      "date": "September 25, 2026",
-      "description": "Slimdown & Reliability Update",
-      "changes": [
-        {
-          "type": "remove",
-          "text": "Removed 30+ redundant hotfix stylesheets and scripts. The whole site now runs on one stylesheet and five scripts."
-        },
-        {
-          "type": "edit",
-          "text": "New minimal interface: calmer surfaces, faster load, same features."
-        },
-        {
-          "type": "edit",
-          "text": "Online games are now downloaded and cached before playing. If caching fails you get a clear error instead of a broken frame."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed library, search and favorites not refreshing on the Games tab."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed cloud games that refused to load inside the player. They now open in a new tab."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed stale service worker caching and broken manifest start URL."
-        }
-      ]
-    },
-    {
-      "version": "4.7.1",
-      "date": "September 11, 2026",
-      "description": "Platform, Accounts & Cloud Update",
-      "changes": [
-        {
-          "type": "add",
-          "text": "Added offline startup support for previously verified Firebase accounts using a local verified-session cache."
-        },
-        {
-          "type": "add",
-          "text": "Restored account creation with username, profile picture, email, and password support."
-        },
-        {
-          "type": "add",
-          "text": "Added clear account-creation lock messaging when registration is disabled or unavailable."
-        },
-        {
-          "type": "add",
-          "text": "Added a rebuilt moderation-focused admin panel with member search, review filters, account status, verification, activity signals, roles, notes, restrictions, suspensions, and profile controls."
-        },
-        {
-          "type": "add",
-          "text": "Added Flash Terminal with safe read-only diagnostics and an Alt/Option+T keyboard shortcut."
-        },
-        {
-          "type": "add",
-          "text": "Added online-game caching through the same Flash Games install pipeline used for offline games."
-        },
-        {
-          "type": "add",
-          "text": "Added cloud gaming provider access through Raccoon Cloud Games."
-        },
-        {
-          "type": "add",
-          "text": "Added a loading screen that says Loading game... while slower games start."
-        },
-        {
-          "type": "edit",
-          "text": "Improved game downloads so compatible alternate game URLs can be tried when a provider returns a 404 or not-found error."
-        },
-        {
-          "type": "edit",
-          "text": "Improved the service worker app shell and cache versioning for the new platform features."
-        },
-        {
-          "type": "edit",
-          "text": "Updated the app manifest and offline session handling for more reliable installed/offline use."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed the Flash Terminal not opening because its mount routine was never started."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed the cloud section having no provider entries despite the cloud-game system being present."
-        },
-        {
-          "type": "fix",
-          "text": "Fixed several account and moderation UI paths while preserving the existing save and localStorage systems."
-        }
-      ]
-    },
-    {
-      "version": "4.5.4",
-      "date": "August 22, 2026",
-      "description": "Flash Games Redesigned: v2",
-      "changes": [
-        {
-          "type": "add",
-          "text": "Added a new changelog system (this one your seeing!)"
-        },
-        {
-          "type": "add",
-          "text": "Added another 300 offline games for downloadable offline play"
-        },
-        {
-          "type": "add",
-          "text": "All new store for downloading new games"
-        },
-        {
-          "type": "add",
-          "text": "Added Confer to Flash Games in the social tab for video calling, voice calling, screensharing, and messaging with friends while playing. Expect discord functionality in Flash Games later on."
-        },
-        {
-          "type": "add",
-          "text": "New stats page for all players"
-        },
-        {
-          "type": "add",
-          "text": "Themes & preferences"
-        },
-        {
-          "type": "edit",
-          "text": "Fixed a bug where your data wouldn't exactly save & you couldn't enter your account."
-        },
-        {
-          "type": "edit",
-          "text": "Fixed a bug where the page wouldn't load at all & the stylesheet was broken."
-        },
-        {
-          "type": "remove",
-          "text": "Removed a bunch of accounts for testing & from link leaks"
-        },
-        {
-          "type": "remove",
-          "text": "All new accounts created after link leaks <b>will</b> be deleted at once. Verify your account or speak with a member of staff to verify your account."
-        }
-      ]
-    },
-    {
-      "version": "4.5.3",
-      "date": "???",
-      "description": "Performance & Bug Patch",
-      "changes": [
-        {
-          "type": "add",
-          "text": "Added a better system for performance mode, rather the old system."
-        },
-        {
-          "type": "add",
-          "text": "Fixed lots of bugs which caused data to not save at all & accounts to crash and even sometimes corrupt."
-        },
-        {
-          "type": "add",
-          "text": "Removed spam accounts & accounts created during link leaks."
-        },
-        {
-          "type": "add",
-          "text": "Lots of bug fixes."
-        }
-      ]
-    },
-    {
-      "version": "4.5.0",
-      "date": "???",
-      "description": "Accounts",
-      "changes": [
-        {
-          "type": "add",
-          "text": "Added accounts, profile chips, data saving, and more!"
-        },
-        {
-          "type": "edit",
-          "text": "Lots of bug fixes."
-        }
-      ]
-    },
-    {
-      "version": "4.0.0",
-      "date": "???",
-      "description": "Liquid Glass & Persistence",
-      "changes": [
-        {
-          "type": "add",
-          "text": "Liquid Glass Display"
-        },
-        {
-          "type": "add",
-          "text": "Game Installer"
-        },
-        {
-          "type": "add",
-          "text": "Home-page navigation system"
-        },
-        {
-          "type": "edit",
-          "text": "Changelog redesign"
-        }
-      ]
-    },
-    {
-      "version": "3.2.0",
-      "date": "???",
-      "description": "Flash CLI",
-      "changes": [
-        {
-          "type": "add",
-          "text": "<code>flash install {url}</code> Install any game that isn't in Flash Games already & play it offline."
-        },
-        {
-          "type": "add",
-          "text": "<code>flash health</code> Check your system health."
-        },
-        {
-          "type": "add",
-          "text": "<code>flash init</code> Prepare Flash Games if it hasn't been already."
-        },
-        {
-          "type": "add",
-          "text": "A bunch of more, just run <code>flash help</code> to figure them out. I don't wanna write them all in one update. Adding more."
+          "text": "Older changelog entries were retired. The app shell cache was refreshed so every device picks up 5.4.3 properly."
         }
       ]
     }
   ],
   "articles": [
     {
-  "id": "introducing-5-4-3",
-  "title": "Introducing: 5.4.3",
-  "subtitle": "A massive Flash Games update — new games, a faster EaglerCraft client, WebPorts, Discord improvements, and more.",
-  "cover": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
-  "coverAlt": "Flash Games version 5.4.3 update announcement",
-  "date": "October 23, 2026",
-  "author": "Flash Games Team",
-  "readTimeMinutes": 5,
-  "tags": ["update", "release", "5.4.3", "eaglercraft", "webports"],
-  "hero": {
-    "type": "image",
-    "src": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
-    "alt": "Flash Games 5.4.3 release banner",
-    "caption": "Flash Games 5.4.3 — a massive update with plenty of new things to explore."
-  },
-  "introduction": "It's finally here! Flash Games 5.4.3 is a massive update packed with new features, performance improvements, and more ways to enjoy Flash Games. From a dedicated, optimized EaglerCraft client to our first WebPorts and a brand-new Articles section, there's a lot to explore. Here's everything that's new.",
-  "sections": [
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "New Games, New Ways to Play"
-    },
-    {
-      "type": "paragraph",
-      "text": "We've added some new games to Flash Games! Whether you're looking for something new to try or just want another game to add to your rotation, there's more to explore. Head over to the games section and see what's waiting for you."
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "A Faster EaglerCraft Experience"
-    },
-    {
-      "type": "paragraph",
-      "text": "One of the biggest additions in 5.4.3 is a dedicated SuperEfficient Optimized EaglerCraft client for Minecraft 1.21. It's designed to be extremely fast and is now completely compatible with Flash Games."
-    },
-    {
-      "type": "paragraph",
-      "text": "This gives players a dedicated way to jump into EaglerCraft while benefiting from the optimization work behind the new client. If you've been waiting for a better EaglerCraft experience on Flash Games, this is one of the highlights of the update."
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Introducing WebPorts"
-    },
-    {
-      "type": "paragraph",
-      "text": "Flash Games now has its first WebPorts! This marks the beginning of something new for the platform, bringing more possibilities for what can be added in the future."
-    },
-    {
-      "type": "quote",
-      "text": "This is only the beginning. Expect more WebPorts to come!",
+      "id": "introducing-5-4-3",
+      "title": "Introducing: 5.4.3",
+      "subtitle": "A massive Flash Games update — new games, a faster EaglerCraft client, WebPorts, Discord improvements, and more.",
+      "cover": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
+      "coverAlt": "Flash Games version 5.4.3 update announcement",
+      "date": "October 23, 2026",
       "author": "Flash Games Team",
-      "role": "Update Announcement"
-    },
-    {
-      "type": "paragraph",
-      "text": "We're excited to see where WebPorts go from here. Keep an eye out for future additions as the collection grows."
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "A Better Discord Tab"
-    },
-    {
-      "type": "paragraph",
-      "text": "We've added an improved Discord tab to make it easier to talk with Discord users. It's another step toward making Flash Games more than just a place to play games — it's a place to connect, too."
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Introducing the Articles Section"
-    },
-    {
-      "type": "paragraph",
-      "text": "You're reading it right now! Version 5.4.3 introduces a brand-new Articles section where you can learn more about Flash Games, its development, behind-the-scenes details, new features, and much more."
-    },
-    {
-      "type": "paragraph",
-      "text": "Instead of keeping everything behind the scenes, we now have a dedicated place to share updates, explain what we're working on, and give you a closer look at the platform. Expect more articles as Flash Games continues to evolve."
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Confer Improvements"
-    },
-    {
-      "type": "paragraph",
-      "text": "We've also made improvements to Confer, focusing on two important issues that could get in the way of using it."
-    },
-    {
-      "type": "bulletList",
-      "items": [
+      "readTimeMinutes": 5,
+      "tags": [
+        "update",
+        "release",
+        "5.4.3",
+        "eaglercraft",
+        "webports"
+      ],
+      "hero": {
+        "type": "image",
+        "src": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
+        "alt": "Flash Games 5.4.3 release banner",
+        "caption": "Flash Games 5.4.3 — a massive update with plenty of new things to explore."
+      },
+      "introduction": "It's finally here! Flash Games 5.4.3 is a massive update packed with new features, performance improvements, and more ways to enjoy Flash Games. From a dedicated, optimized EaglerCraft client to our first WebPorts and a brand-new Articles section, there's a lot to explore. Here's everything that's new.",
+      "sections": [
         {
-          "text": "Reduced lag",
-          "detail": "Fixed issues that were making Confer excessively laggy, improving the overall experience."
+          "type": "heading",
+          "level": 2,
+          "text": "New Games, New Ways to Play"
         },
         {
-          "text": "Improved local compatibility",
-          "detail": "Fixed issues that prevented Confer from working locally on some devices."
+          "type": "paragraph",
+          "text": "We've added some new games to Flash Games! Whether you're looking for something new to try or just want another game to add to your rotation, there's more to explore. Head over to the games section and see what's waiting for you."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "A Faster EaglerCraft Experience"
+        },
+        {
+          "type": "paragraph",
+          "text": "One of the biggest additions in 5.4.3 is a dedicated SuperEfficient Optimized EaglerCraft client for Minecraft 1.21. It's designed to be extremely fast and is now completely compatible with Flash Games."
+        },
+        {
+          "type": "paragraph",
+          "text": "This gives players a dedicated way to jump into EaglerCraft while benefiting from the optimization work behind the new client. If you've been waiting for a better EaglerCraft experience on Flash Games, this is one of the highlights of the update."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Introducing WebPorts"
+        },
+        {
+          "type": "paragraph",
+          "text": "Flash Games now has its first WebPorts! This marks the beginning of something new for the platform, bringing more possibilities for what can be added in the future."
+        },
+        {
+          "type": "quote",
+          "text": "This is only the beginning. Expect more WebPorts to come!",
+          "author": "Flash Games Team",
+          "role": "Update Announcement"
+        },
+        {
+          "type": "paragraph",
+          "text": "We're excited to see where WebPorts go from here. Keep an eye out for future additions as the collection grows."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "A Better Discord Tab"
+        },
+        {
+          "type": "paragraph",
+          "text": "We've added an improved Discord tab to make it easier to talk with Discord users. It's another step toward making Flash Games more than just a place to play games — it's a place to connect, too."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Introducing the Articles Section"
+        },
+        {
+          "type": "paragraph",
+          "text": "You're reading it right now! Version 5.4.3 introduces a brand-new Articles section where you can learn more about Flash Games, its development, behind-the-scenes details, new features, and much more."
+        },
+        {
+          "type": "paragraph",
+          "text": "Instead of keeping everything behind the scenes, we now have a dedicated place to share updates, explain what we're working on, and give you a closer look at the platform. Expect more articles as Flash Games continues to evolve."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Confer Improvements"
+        },
+        {
+          "type": "paragraph",
+          "text": "We've also made improvements to Confer, focusing on two important issues that could get in the way of using it."
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            {
+              "text": "Reduced lag",
+              "detail": "Fixed issues that were making Confer excessively laggy, improving the overall experience."
+            },
+            {
+              "text": "Improved local compatibility",
+              "detail": "Fixed issues that prevented Confer from working locally on some devices."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "These fixes should make Confer more usable for affected players and help provide a smoother, more reliable experience across supported devices."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Everything New in 5.4.3"
+        },
+        {
+          "type": "bulletList",
+          "items": [
+            {
+              "text": "New games",
+              "detail": "More games have been added to the Flash Games collection."
+            },
+            {
+              "text": "SuperEfficient Optimized EaglerCraft 1.21",
+              "detail": "A dedicated, extremely fast client that is now completely compatible with Flash Games."
+            },
+            {
+              "text": "First WebPorts",
+              "detail": "The first WebPorts have arrived, with more planned for the future."
+            },
+            {
+              "text": "Improved Discord tab",
+              "detail": "A better way to talk with Discord users."
+            },
+            {
+              "text": "New Articles section",
+              "detail": "Discover behind-the-scenes information, platform updates, and more."
+            },
+            {
+              "text": "Confer performance fix",
+              "detail": "Fixed excessive lag affecting Confer."
+            },
+            {
+              "text": "Confer compatibility fix",
+              "detail": "Fixed local compatibility issues on some devices."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "What's Next?"
+        },
+        {
+          "type": "paragraph",
+          "text": "Version 5.4.3 is a big step forward for Flash Games. With new games, a dedicated optimized EaglerCraft client, the arrival of WebPorts, an improved Discord tab, and the launch of Articles, there's more to discover than ever."
+        },
+        {
+          "type": "paragraph",
+          "text": "And we're not stopping here. More WebPorts and more improvements are on the horizon. Thank you for playing, exploring, and being part of Flash Games!"
+        },
+        {
+          "type": "conclusion",
+          "text": "Flash Games 5.4.3 is here, and it's a massive one. Jump in, try the new features, explore the Articles section, and see what's new for yourself. We'll see you in Flash Games!",
+          "cta": {
+            "text": "Explore Flash Games",
+            "action": "route:home"
+          }
         }
       ]
-    },
-    {
-      "type": "paragraph",
-      "text": "These fixes should make Confer more usable for affected players and help provide a smoother, more reliable experience across supported devices."
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "Everything New in 5.4.3"
-    },
-    {
-      "type": "bulletList",
-      "items": [
-        {
-          "text": "New games",
-          "detail": "More games have been added to the Flash Games collection."
-        },
-        {
-          "text": "SuperEfficient Optimized EaglerCraft 1.21",
-          "detail": "A dedicated, extremely fast client that is now completely compatible with Flash Games."
-        },
-        {
-          "text": "First WebPorts",
-          "detail": "The first WebPorts have arrived, with more planned for the future."
-        },
-        {
-          "text": "Improved Discord tab",
-          "detail": "A better way to talk with Discord users."
-        },
-        {
-          "text": "New Articles section",
-          "detail": "Discover behind-the-scenes information, platform updates, and more."
-        },
-        {
-          "text": "Confer performance fix",
-          "detail": "Fixed excessive lag affecting Confer."
-        },
-        {
-          "text": "Confer compatibility fix",
-          "detail": "Fixed local compatibility issues on some devices."
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "level": 2,
-      "text": "What's Next?"
-    },
-    {
-      "type": "paragraph",
-      "text": "Version 5.4.3 is a big step forward for Flash Games. With new games, a dedicated optimized EaglerCraft client, the arrival of WebPorts, an improved Discord tab, and the launch of Articles, there's more to discover than ever."
-    },
-    {
-      "type": "paragraph",
-      "text": "And we're not stopping here. More WebPorts and more improvements are on the horizon. Thank you for playing, exploring, and being part of Flash Games!"
-    },
-    {
-      "type": "conclusion",
-      "text": "Flash Games 5.4.3 is here, and it's a massive one. Jump in, try the new features, explore the Articles section, and see what's new for yourself. We'll see you in Flash Games!",
-      "cta": {
-        "text": "Explore Flash Games",
-        "action": "route:home"
-      }
-    }
-  ]
     },
     {
       "id": "introducing-5.4",
@@ -667,7 +352,13 @@
       "date": "October 24, 2026",
       "author": "Flash",
       "readTimeMinutes": 8,
-      "tags": ["release", "major", "eagler", "confer", "cloud"],
+      "tags": [
+        "release",
+        "major",
+        "eagler",
+        "confer",
+        "cloud"
+      ],
       "hero": {
         "type": "image",
         "src": "https://i.imgur.com/9y6SJnq.png?.amplify.com",
@@ -714,12 +405,30 @@
         {
           "type": "bulletList",
           "items": [
-            { "text": "HD Video & Voice", "detail": "Camera/mic toggle, device selection, mirror preview" },
-            { "text": "Screen Sharing", "detail": "Share entire screen, window, or browser tab with audio" },
-            { "text": "Messaging", "detail": "Text chat with file attachments (images, videos, documents)" },
-            { "text": "Room Codes", "detail": "Simple 6-16 character alphanumeric codes for private rooms" },
-            { "text": "E2E Encryption", "detail": "DTLS-SRTP for media, encrypted data channels for messages" },
-            { "text": "File Sharing", "detail": "Share entire files over Confer's messaging service" }
+            {
+              "text": "HD Video & Voice",
+              "detail": "Camera/mic toggle, device selection, mirror preview"
+            },
+            {
+              "text": "Screen Sharing",
+              "detail": "Share entire screen, window, or browser tab with audio"
+            },
+            {
+              "text": "Messaging",
+              "detail": "Text chat with file attachments (images, videos, documents)"
+            },
+            {
+              "text": "Room Codes",
+              "detail": "Simple 6-16 character alphanumeric codes for private rooms"
+            },
+            {
+              "text": "E2E Encryption",
+              "detail": "DTLS-SRTP for media, encrypted data channels for messages"
+            },
+            {
+              "text": "File Sharing",
+              "detail": "Share entire files over Confer's messaging service"
+            }
           ]
         },
         {
@@ -734,12 +443,6 @@
         {
           "type": "paragraph",
           "text": "Verified accounts and developer codes now unlock 12 cloud titles streamed via our providers. You can play games ranging from Roblox, Rocket League, or even Fortnite."
-        },
-        {
-          "type": "image",
-          "src": "https://frogiee.one/stuff/pictures/nowggfun2.png?.amplify.com",
-          "alt": "Cloud gaming titles grid",
-          "caption": "Roblox, Rocket League, Minecraft, Among Us, and more. Roblox is shown for visual purposes only"
         },
         {
           "type": "bulletList",
@@ -813,7 +516,9 @@
       "date": "October 19, 2026",
       "author": "Flash",
       "readTimeMinutes": 3,
-      "tags": ["confer"],
+      "tags": [
+        "confer"
+      ],
       "hero": {
         "type": "image",
         "src": "https://i.imgur.com/21QTUcw.png?.amplify.com",
@@ -855,12 +560,30 @@
         {
           "type": "bulletList",
           "items": [
-            { "text": "HD Video & Voice", "detail": "Camera/mic toggle, device selection, mirror preview" },
-            { "text": "Screen Sharing", "detail": "Share entire screen, window, or browser tab with audio" },
-            { "text": "Messaging", "detail": "Text chat with file attachments (images, videos, documents)" },
-            { "text": "Room Codes", "detail": "Simple 6-16 character alphanumeric codes for private rooms" },
-            { "text": "E2E Encryption", "detail": "DTLS-SRTP for media, encrypted data channels for messages" },
-            { "text": "File Sharing", "detail": "Share entire files over Confer's messaging service" }
+            {
+              "text": "HD Video & Voice",
+              "detail": "Camera/mic toggle, device selection, mirror preview"
+            },
+            {
+              "text": "Screen Sharing",
+              "detail": "Share entire screen, window, or browser tab with audio"
+            },
+            {
+              "text": "Messaging",
+              "detail": "Text chat with file attachments (images, videos, documents)"
+            },
+            {
+              "text": "Room Codes",
+              "detail": "Simple 6-16 character alphanumeric codes for private rooms"
+            },
+            {
+              "text": "E2E Encryption",
+              "detail": "DTLS-SRTP for media, encrypted data channels for messages"
+            },
+            {
+              "text": "File Sharing",
+              "detail": "Share entire files over Confer's messaging service"
+            }
           ]
         },
         {

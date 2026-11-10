@@ -1,0 +1,135 @@
+{
+  "version": "2026-11-07.2",
+  "updated": "November 7, 2026",
+  "title": "Terms & privacy",
+  "subtitle": "Clear rules for playing, and a plain account of what stays on your device.",
+  "summary": {
+    "title": "Terms & Privacy in a nutshell:",
+    "text": "Flash Games has pretty simple terms & privacy policies. Flash Games is a branch of The Flash Project, which is only affiliated with games that are marked of so. Be nice, don't break rules, use common sense, blah blah blah. If you really want to then just read it."
+  },
+  "documents": {
+    "terms": {
+      "label": "Terms & Conditions",
+      "title": "Terms & Conditions",
+      "sections": [
+        {
+          "heading": "1. The Service",
+          "paragraphs": [
+            "Flash Games provides a browser-based catalog, offline game, cloud game playback, Eaglercraft clients, QuickQ peer-to-peer games, and optional social features. It is an independent project, not affiliated with, endorsed by, or sponsored by any game publisher, console platform, framework, company, or title/catalog listed. Flash Games is a branch of The Flash Project."
+          ]
+        },
+        {
+          "heading": "2. Accounts",
+          "paragraphs": [
+            "You must be at least 13 years old, or the minimum age required by applicable local law, and have permission from a parent or guardian if you are a minor. You are responsible for activity under your account, for keeping your sign-in credentials secure, and for the accuracy of the information you provide. We are not responsible for your actions and reserve the right to suspend, ban, or remove your account if it breaks these terms, or if required to by Federal or Applicable law."
+          ]
+        },
+        {
+          "heading": "3. Games and third-party services",
+          "paragraphs": [
+            "Games, cloud hosts, Eaglercraft clients, Ruffle content, and QuickQ's signaling service are operated by third parties and remain their property. Your use of them may also be governed by their terms and privacy policies. Cloud availability, save data, regional access, room connectivity, and compatibility are not guaranteed and can change without notice. We do not claim ownership of third-party games or content."
+          ]
+        },
+        {
+          "heading": "4. Acceptable Use",
+          "paragraphs": [
+            "Use Flash Games only for lawful, personal purposes. In QuickQ rooms, play fairly, do not harass or impersonate other players, and do not attempt to manipulate ratings, room codes, or another player's connection. Such actions are against Flash's terms and will result in your accounts suspension."
+          ],
+          "items": [
+            "Do not break the law, infringe intellectual property, distribute malware, or use the service to harm another person.",
+            "Do not attack, overload, scrape at scale, bypass access controls, or interfere with the app, its relays, or its service providers.",
+            "Do not use social or QuickQ features to harass, threaten, impersonate, or share content you do not have the right to share.",
+            "Do not try to evade age, account, region, or platform restrictions imposed by a third-party game or service."
+          ]
+        },
+        {
+          "heading": "5. Gameplay & Cloud Access",
+          "paragraphs": [
+            "Games are played on your device and may be stored if you wish to. Only access content you have the right to use. Cloud titles are routed through external providers; their availability, latency, and content are controlled by those third parties. Opening a third-party game does not grant you any license beyond what that provider offers."
+          ]
+        },
+        {
+          "heading": "6. Disclaimer",
+          "paragraphs": [
+            "The service is provided \u201cas is\u201d and \u201cas available.\u201d To the maximum extent permitted by law, we make no warranties of merchantability, fitness for a particular purpose, non-infringement, or uninterrupted availability, and we do not promise that any game, save, relay, room, rating, or third-party feature will work."
+          ]
+        },
+        {
+          "heading": "7. Limitation of Liability",
+          "paragraphs": [
+            "To the maximum extent permitted by law, Flash Games and its maintainers are not liable for indirect, incidental, special, consequential, or punitive damages, lost data, lost progress, account loss, or losses caused by third-party games or services. Nothing here limits rights that applicable consumer law does not allow to be limited."
+          ]
+        },
+        {
+          "heading": "8. Changes and Termination",
+          "paragraphs": [
+            "We may update these terms as the app changes. The updated date at the top controls. If a change is material, we may ask you to accept the new version before continuing. You may stop using Flash Games at any time; we may suspend access when necessary to protect the service or other users."
+          ]
+        },
+        {
+          "heading": "9. Moderation",
+          "paragraphs": [
+            "Flash Games' moderators and administration reserve the right to suspend or terminate your account if your actions break the rules and standards upheld in these terms. If you find someone breaking rules in online play, then please report them immedietly."
+          ]
+        },
+        {
+          "heading": "10. Contact",
+          "paragraphs": [
+            "Questions about these terms, QuickQ rooms, or your data can be sent through the support form. Include the room code and game name if your question is about a match."
+          ],
+          "contact": true
+        }
+      ]
+    },
+    "privacy": {
+      "label": "Privacy Policy",
+      "title": "Privacy Policy",
+      "sections": [
+        {
+          "heading": "1. Data We Collect",
+          "paragraphs": [
+            "Flash Games' wishes to be transparent on all data collected. When you create an account, data such as your profile picture, email, username, and moderation data are saved on an external server. Nothing else. When you play cloud games, you are connecting to an external server through public relays. You're connection stays encrypted, and all data sent to external providers not owned by us is explicitly for multiplayer reasons."
+          ]
+        },
+        {
+          "heading": "2. Social features and QuickQ",
+          "paragraphs": [
+            "QuickQ uses PeerJS to connect players directly. To open a room, the app loads PeerJS and its public signaling broker, which can see connection metadata such as your IP address, a temporary peer identifier, and the room code. Your display name, rating, selected game, and moves are sent directly to the other player while you share a room. Flash Games does not record calls, store room contents on a server, or keep a remote copy of your rating. QuickQ ratings and results are stored in this browser.",
+            "Camera, microphone, screen sharing, and presence access are requested only when you start a feature that needs them. Media is handled by the browser and the social provider you use; Flash Games does not record calls. Messages, rooms, and shared content may be visible to other participants and stored by the relevant provider. All data sent through servers is end-to-end encrypted."
+          ]
+        },
+        {
+          "heading": "3. Support and feedback",
+          "paragraphs": [
+            "The Support & feedback form is embedded from Google Forms. When you open or submit it, Google processes the form, your responses, and technical information such as your IP address and browser details under Google's own terms and privacy policy. Flash Games receives the answers you choose to submit so it can respond and improve the app. Do not include sensitive information you do not want shared with the form provider."
+          ]
+        },
+        {
+          "heading": "4. Service providers and links",
+          "paragraphs": [
+            "The app loads a catalog and artwork from GitHub, authentication from Google Firebase, PeerJS from a public CDN, QuickQ connections through the PeerJS signaling service, game content from third-party hosts, and code from public CDNs. Those services can receive your IP address and may use cookies or similar storage under their own policies. Flash Games does not sell personal information or run third-party advertising."
+          ]
+        },
+        {
+          "heading": "5. Retention and your choices",
+          "paragraphs": [
+            "You can clear local data through Settings \u2192 Clear library and your browser's site-data controls, and you can sign out at any time. Account and support records are kept only as long as needed to operate the service or meet legal obligations. You can ask for account deletion or a copy of your account data through Support."
+          ]
+        },
+        {
+          "heading": "6. Children",
+          "paragraphs": [
+            "Flash Games is not directed to children under 13. Do not submit personal information if you are under 13. If you believe a child has provided personal information, contact Support so it can be removed. We will try our best to respond as quickly as possible."
+          ]
+        },
+        {
+          "heading": "7. Changes and contact",
+          "paragraphs": [
+            "We may update this policy as the app or its providers change. The date above shows the current version. Material updates will be presented before they take effect. Privacy questions can be sent through the support form."
+          ],
+          "contact": true
+        }
+      ]
+    }
+  }
+}

@@ -506,6 +506,42 @@
     return text;
   }
 
+  /* fp.js is the preferred proxy tunnel. It is lazy-loaded only after direct
+   * and CDN paths fail, so the 2.2 MB page engine never slows normal loads. */
+  let flashProxyLoader = null;
+  function loadFlashProxy() {
+    if (window.Flash && typeof window.Flash.request === 'function') return Promise.resolve(window.Flash);
+    if (flashProxyLoader) return flashProxyLoader;
+    flashProxyLoader = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = './fp.js';
+      script.async = true;
+      script.onload = () => (window.Flash && typeof window.Flash.request === 'function')
+        ? resolve(window.Flash)
+        : reject(new Error('fp.js loaded without its Flash API.'));
+      script.onerror = () => reject(new Error('fp.js could not be loaded.'));
+      document.head.appendChild(script);
+    }).catch((error) => { flashProxyLoader = null; throw error; });
+    return flashProxyLoader;
+  }
+
+  async function flashProxyFetchText(url, timeoutMs = 35000) {
+    const Flash = await loadFlashProxy();
+    await Promise.race([
+      Flash.init(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('fp.js tunnel boot timed out.')), Math.min(timeoutMs, 18000)))
+    ]);
+    const res = await Promise.race([
+      Flash.request(url, { method: 'GET', headers: { Accept: 'text/html,application/xhtml+xml,*/*;q=0.8' } }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('fp.js request timed out.')), timeoutMs))
+    ]);
+    if (!res || !res.ok) throw new Error(`fp.js request failed (${res?.status || 'no response'}).`);
+    const bytes = res.body instanceof Uint8Array ? res.body : new Uint8Array(res.body || []);
+    const text = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+    if (!text) throw new Error('fp.js returned an empty response.');
+    return text;
+  }
+
   async function drainResponse(res, onProgress, atLeastOnce) {
     const reader = res?.body && typeof res.body.getReader === 'function' ? res.body.getReader() : null;
     const totalRaw = Number(res?.headers?.get?.('content-length') || 0);
@@ -569,12 +605,16 @@
         return validateGameHtml(await hit.text());
       }
     } catch { /* cache unavailable, keep downloading */ }
-    // Mirror ladder: CDN (GitHub files) → direct → relay engine → proxies.
-    // The engine step boots the WASM relay on demand — a freshly opened
-    // page has it cold, and direct fetches die on CORS-walled hosts.
+    // Mirror ladder: CDN (GitHub files) → direct → fp.js tunnel → public
+    // CORS proxies → the legacy relay engine as a last resort. fp.js is
+    // lazy-loaded, so normal downloads never pay for its tunnel boot.
     const fetchPlain = async (u) => {
       on({ loaded: 0, total: 0, pct: null, mirror: u !== source });
       return attemptUrl(u, on);
+    };
+    const flashStep = async () => {
+      on({ loaded: 0, total: 0, pct: null, mirror: true });
+      return validateGameHtml(await flashProxyFetchText(source));
     };
     const engineStep = async () => {
       if (!window.FlashBridge?.ensure || !window.FlashBridge?.fetchText) throw new Error('Relay engine unavailable.');
@@ -595,9 +635,11 @@
     pushUrl(source);
     for (const m of mirrors) if (!cdnMirrors.includes(m)) pushUrl(m);
     let ladder = steps.map((step) => () => fetchPlain(step.url));
-    // Engine after direct, before the public proxies.
+    // fp.js tunnel after the CDN/direct attempts, before the old public
+    // CORS proxies. The legacy relay engine stays as a last resort.
     const directCount = ladder.length;
-    ladder.splice(Math.min(2, directCount), 0, engineStep);
+    ladder.splice(Math.min(2, directCount), 0, flashStep);
+    ladder.push(engineStep);
     const errors = [];
     for (const step of ladder) {
       try {
@@ -703,6 +745,30 @@
     );
   }
 
+  /* Blob documents have no useful directory: a relative `ruffle.js`, SWF or
+   * texture resolves against the blob URL instead of the site it came from.
+   * That is what made cached Ruffle pages die before the player even loaded.
+   * Keep the provider's URL as the document base, and give Ruffle's player the
+   * script-access setting its older portal wrappers assume. */
+  function gameDocumentHtml(html, source) {
+    let doc = String(html || '');
+    if (!doc) return doc;
+    let base = '';
+    try { base = new URL(String(source || ''), location.href).href; } catch {}
+    if (base && !/<base\b/i.test(doc)) {
+      const tag = `<base href="${base.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">`;
+      if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + '\n' + tag);
+      else if (/<html(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<html(\s[^>]*)?>/i, (m) => m + '\n' + tag);
+      else doc = tag + '\n' + doc;
+    }
+    if (/RufflePlayer|ruffle-rs|\bruffle\b/i.test(doc) && !/allowScriptAccess/i.test(doc)) {
+      const boot = '<script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config=Object.assign({allowScriptAccess:true,autoplay:"on",unmuteOverlay:"hidden"},window.RufflePlayer.config||{});<\/script>';
+      if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + '\n' + boot);
+      else doc = boot + '\n' + doc;
+    }
+    return doc;
+  }
+
   async function launchGame(game, opts) {
     const source = clean(game?.rawUrl || game?.url || game?.id);
     if (!source) throw new Error('This game has no source URL.');
@@ -712,7 +778,8 @@
       const html = await downloadHtml(source, opts);
       cached = await putRecord({ ...(game || {}), rawUrl: source, url: source }, html);
     }
-    return URL.createObjectURL(new Blob([cached.html], { type: 'text/html' }));
+    const doc = gameDocumentHtml(cached.html, cached.rawUrl || source);
+    return URL.createObjectURL(new Blob([doc], { type: 'text/html' }));
   }
 
   window.FlashGamesStore = {
@@ -801,6 +868,10 @@
   const ENGINE_WASM = './vendor/libcurl/libcurl.wasm';
   const LINK_KEY = 'flashgames.link.v1';
   const LINK_DEFAULTS = ['wss://wisp.mercurywork.shop/', 'wss://wisp.terbiumon.top/wisp/', 'wss://nebulabridge.io/wisp/', 'wss://definitelyscience.com/wisp/', 'wss://invisibridge.com/wisp/'];
+  // window.open is stubbed by the app shell so games can never spawn tabs.
+  // This capture happens before that shield exists and is only used for
+  // windows the user explicitly asks for (cloak, cloud "Open window").
+  const nativeOpenWindow = window.open.bind(window);
   const bridge = { engine: null, engineError: '', endpointUrl: '', lastFinalUrl: '', region: '', status: 'idle', engineAttempt: null };
 
   function linkEndpoints() {
@@ -1060,58 +1131,155 @@
 
   function disarmHandoff() { /* retired: the frame is never handed off; the launcher runs sandboxed, in-frame */ }
 
+  /* ---------- cloud player: the Flash API tunnel, never a direct regional frame ---------- */
+
+  const cloudState = { url: '', name: '', framed: '' };
+  let cloudHideTimer = 0;
+  let cloudFlashFrame = null;
+
+  function cloudMount() {
+    const shell = document.querySelector('.player-shell');
+    if (!shell) return null;
+    let mount = document.getElementById('flashPlayerMount');
+    if (!mount) {
+      mount = document.createElement('div');
+      mount.id = 'flashPlayerMount';
+      mount.className = 'flash-player-mount';
+      mount.hidden = true;
+      shell.appendChild(mount);
+    }
+    return mount;
+  }
+
+  function resetCloudFlash() {
+    if (cloudFlashFrame) {
+      try { cloudFlashFrame.destroy(); } catch {}
+      cloudFlashFrame = null;
+    }
+    const mount = document.getElementById('flashPlayerMount');
+    if (mount) { mount.hidden = true; try { mount.innerHTML = ''; } catch {} }
+    const frame = document.getElementById('gameFrame');
+    if (frame) frame.hidden = false;
+  }
+
+  function cloudBar() {
+    let bar = document.getElementById('cloudBar');
+    if (bar) return bar;
+    bar = document.createElement('div');
+    bar.id = 'cloudBar';
+    bar.dataset.state = 'connecting';
+    bar.innerHTML =
+      '<span class="cloud-bar-dot" aria-hidden="true"></span>' +
+      '<span class="cloud-bar-text" data-cloud-text>Starting Flash API…</span>' +
+      '<button class="cloud-bar-btn" data-cloud-act="reload" type="button">Reload</button>' +
+      '<button class="cloud-bar-btn" data-cloud-act="window" type="button">Open window</button>';
+    (document.querySelector('.player-shell') || document.body).appendChild(bar);
+    bar.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-cloud-act]');
+      if (!btn) return;
+      e.preventDefault();
+      if (btn.dataset.cloudAct === 'reload') {
+        if (!cloudFlashFrame) return;
+        cloudSetBar('connecting', cloudState.url, 'Reloading through the Flash API…');
+        cloudFlashFrame.reload();
+        return;
+      }
+      if (btn.dataset.cloudAct === 'window') {
+        const dest = cloudState.url;
+        if (!dest) return;
+        let win = null;
+        try { win = nativeOpenWindow(dest, 'fgcloud_' + Date.now().toString(36), 'popup=1,width=1280,height=820,resizable=yes,scrollbars=yes'); } catch {}
+        if (win) { try { win.focus(); } catch {} }
+        else window.FlashUI?.toast?.('Popup blocked', 'Allow pop-ups for this site to open cloud games in their own window.', 'warn');
+      }
+    });
+    return bar;
+  }
+
+  function cloudSetBar(state, url, detail) {
+    const bar = cloudBar();
+    bar.dataset.state = state;
+    const host = hostOf(url) || 'the cloud host';
+    const text = detail || (
+      state === 'connecting' ? `Flash API · connecting to ${host}…`
+      : state === 'warn' ? `Flash API could not open ${host}.`
+      : state === 'offline' ? 'You appear to be offline.'
+      : `Connected to ${host}`
+    );
+    const label = bar.querySelector('[data-cloud-text]');
+    if (label) label.textContent = text;
+    window.clearTimeout(cloudHideTimer);
+    bar.classList.remove('cloud-bar-hide');
+    if (state === 'live') cloudHideTimer = window.setTimeout(() => bar.classList.add('cloud-bar-hide'), 2200);
+  }
+
   async function openCloud(url, name) {
     const base = clean(url);
     if (!base) throw new Error('This cloud game has no URL.');
     if (!/^https?:\/\//i.test(base)) throw new Error('Only http(s) cloud URLs are supported.');
-    const apex = base;
     disarmHandoff();
-    // Everything warm-up runs in PARALLEL and never blocks framing: the IP
-    // lookup and one relayed request teach the engine our region, and the
-    // STUN octet picks the regional door. Recompute 'predicted' as soon as
-    // the octet answers — typically well under a second.
-    let predicted = regionalUrl(base);
-    const octetTask = detectOctet().catch(() => null).then((octet) => {
-      try { if (octet) predicted = toRegional(base, octet); } catch {}
-      return octet;
-    });
-    // Warm the relay engine in the background (no blocking, no verify round).
-    try { engineFetchText(regionalUrl(base)).catch(() => {}); } catch {}
-    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    const regionTask = octetTask.then(() =>
-      Promise.race([deviceReachable(predicted, 6000), wait(6000).then(() => false)])
-    );
-    try { await learnClientIp().catch(() => {}); } catch {}
-    const apexOk = await Promise.race([deviceReachable(apex, 6000), wait(6000).then(() => false)]);
-    const regionOk = await regionTask;
-    if (!apexOk && !regionOk) {
-      return 'tab-unreachable';
-    }
-    // Frame the launcher in the player: real location, working STUN,
-    // correct regional self-navigation. If Framing fails the gameplay page
-    // tells the player in-app — never a tab.
+    clearBlobs();
+    resetCloudFlash();
+
     const overlay = document.getElementById('playerOverlay');
     const frame = document.getElementById('gameFrame');
-    if (!overlay || !frame) {
-      return 'framing';
-    }
+    const mount = cloudMount();
+    if (!overlay || !frame || !mount) return 'framing';
+
+    cloudState.url = base;
+    cloudState.name = name || 'Cloud game';
+    cloudState.framed = base;
+    cloudSetBar('connecting', base, 'Starting the Flash API tunnel…');
     overlay.hidden = false;
     document.body.classList.add('player-open');
     try { window.lucide?.createIcons?.({ root: overlay, attrs: { 'stroke-width': 1.5 } }); } catch {}
-    try {
-      frame.removeAttribute('sandbox');
-      frame.removeAttribute('srcdoc');
-      frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-modals');
-      frame.title = name || 'Cloud game';
-      frame.src = apexOk ? apex : predicted;
-    } catch {
-      return 'framing';
-    }
+
+    /* The Flash API renders a proxied document inside its own sandbox. The
+     * old path set gameFrame.src to the regional nowgg host, which browsers
+     * refuse to frame (and now.gg often refuses to connect to at all). */
+    frame.hidden = true;
+    frame.removeAttribute('srcdoc');
+    frame.setAttribute('data-last-src', '');
+    try { frame.src = 'about:blank'; } catch {}
+    mount.hidden = false;
+    mount.innerHTML = '';
+
+    try { window.dispatchEvent(new CustomEvent('flashgames:cloud-open', { detail: { url: base, name: cloudState.name, region: bridge.region || '' } })); } catch {}
+
+    (async () => {
+      try {
+        const Flash = await loadFlashProxy();
+        await Promise.race([
+          Flash.init(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Flash API boot timed out.')), 22000))
+        ]);
+        if (!cloudState.url) return;
+        cloudFlashFrame = Flash.attach(mount);
+        cloudFlashFrame.on('error', () => {
+          if (cloudState.url) cloudSetBar('warn', base, 'The Flash API tunnel hit an error. Try Reload or Open window.');
+        });
+        // Redirects, retries and the navigation budget belong to fp.js.
+        // The shell only attaches the frame and reports the result.
+        const ok = await cloudFlashFrame.goto(base);
+        if (!cloudState.url) return;
+        if (ok === false) throw new Error('The Flash API did not accept this URL.');
+        cloudState.framed = base;
+        cloudSetBar('live', base);
+      } catch (error) {
+        if (!cloudState.url) return;
+        const message = /timed out/i.test(String(error?.message || ''))
+          ? 'The Flash API tunnel timed out. Try Reload or Open window.'
+          : 'The Flash API could not open this title. Try Reload or Open window.';
+        cloudSetBar('warn', base, message);
+        try { console.warn('[Flash cloud]', error); } catch {}
+      }
+    })();
+
     return 'framing';
   }
 
   window.FlashBridge = Object.freeze({
-    status: () => ({ mode: bridge.status, region: bridge.region || '', endpointUrl: bridge.endpointUrl, engine: !!bridge.engine, engineError: bridge.engineError }),
+    status: () => ({ mode: bridge.status, region: bridge.region || '', endpointUrl: bridge.endpointUrl, engine: !!bridge.engine, engineError: bridge.engineError, flash: !!(window.Flash && window.Flash.attach) }),
     endpoints: linkEndpoints,
     setEndpoints(list) {
       try { localStorage.setItem(LINK_KEY, JSON.stringify(list)); } catch {}
@@ -1131,21 +1299,31 @@
     },
     ensure: () => loadEngine().then(() => window.FlashBridge.status(), () => window.FlashBridge.status()),
     prewarm() {
-      // Warm the WASM engine early (e.g. when the Cloud view opens) so the
-      // first Play click doesn't pay compile + instantiate latency.
-      return loadEngine().then(
-        (engine) => {
-          try {
-            if (engine && typeof engine.set_websocket === 'function') engine.set_websocket(linkEndpoints()[0]);
-          } catch {}
-          return window.FlashBridge.status();
-        },
-        () => window.FlashBridge.status()
-      );
+      // Cloud playback uses fp.js/Flash.attach, not the legacy fetch engine.
+      // Warm that engine while the Cloud view is open so Play is instant.
+      return loadFlashProxy()
+        .then((Flash) => Flash.init())
+        .then(() => window.FlashBridge.status(), () => window.FlashBridge.status());
     },
     fetchText: (url, timeoutMs = 12000) => engineFetchText(url, timeoutMs),
     lastUrl: () => bridge.lastFinalUrl || '',
-    reset() { try { disarmHandoff(); } catch {} try { clearBlobs(); } catch {} },
+    openWindow(url) {
+      const dest = String(url || '');
+      if (!/^https?:\/\//i.test(dest)) return null;
+      try {
+        const win = nativeOpenWindow(dest, 'fgwin_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), 'popup=1,width=1280,height=820,resizable=yes,scrollbars=yes');
+        if (win) { try { win.focus(); } catch {} }
+        return win;
+      } catch { return null; }
+    },
+    reset() {
+      cloudState.url = '';
+      cloudState.framed = '';
+      try { resetCloudFlash(); } catch {}
+      try { document.getElementById('cloudBar')?.classList.add('cloud-bar-hide'); } catch {}
+      try { disarmHandoff(); } catch {}
+      try { clearBlobs(); } catch {}
+    },
     open: openCloud
   });
 
@@ -1294,7 +1472,7 @@
       url, rawUrl: url,
       version: clean(entry.version),
       zone: entry.zone || 'EAGLECRAFT',
-      category: 'Eaglercraft',
+      category: clean(entry.category) || 'Eaglercraft',
       description: clean(entry.description || 'Eaglercraft client.'),
       image: resolveEaglerPath(entry.image || entry.cover || entry.icon || ''),
       cover: resolveEaglerPath(entry.image || entry.cover || entry.icon || ''),
