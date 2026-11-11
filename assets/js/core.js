@@ -757,14 +757,9 @@
     try { base = new URL(String(source || ''), location.href).href; } catch {}
     const boot = [];
     if (base && !/<base\b/i.test(doc)) boot.push(`<base href="${base.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">`);
-    // Eaglercraft gets a tiny pre-boot shim: WebGL 2 when available, the
-    // high-performance GPU, no MSAA, and an unsynchronised low-latency canvas.
-    try {
-      if (window.FlashEaglerGPU?.isEagler?.(game, source, doc)) {
-        const runtime = window.FlashEaglerGPU.inlineScript?.();
-        if (runtime && !doc.slice(0, 4096).includes('data-flash-eagler-gpu')) boot.push(runtime);
-      }
-    } catch {}
+    // Eaglercraft keeps its own renderer and VSync settings. Do not inject
+    // context overrides here: forcing WebGL 2 or context attributes changed
+    // the client's frame pacing and made the WASM builds slower.
     if (boot.length) {
       const block = '\n' + boot.join('\n');
       if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + block);

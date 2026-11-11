@@ -1,13 +1,8 @@
-/* Flash Games — automatic GPU tuning for Eaglercraft.
+/* Flash Games — read-only GPU status for Eaglercraft.
  *
- * Eaglercraft renders through WebGL, not WebGPU. The useful win available to
- * the launcher is to create every game context on the high-performance GPU,
- * prefer WebGL 2 when the browser supports it, and turn off context features
- * the game does not need (MSAA, preserved back buffers, compositor sync).
- *
- * This file has two jobs:
- *  1. inspect the device GPU for the launcher/player status chip
- *  2. supply the tiny runtime that is inserted before a cached client boots
+ * Eaglercraft chooses its own WebGL version, context attributes and VSync
+ * pacing. This module only inspects the device for the launcher/player status
+ * chip; it must never patch canvas context creation or eaglercraftXOpts.
  */
 (() => {
   'use strict';
@@ -47,19 +42,14 @@
       try {
         canvas = document.createElement('canvas');
         canvas.width = canvas.height = 32;
-        const attrs = {
-          powerPreference: 'high-performance',
-          failIfMajorPerformanceCaveat: false,
-          antialias: false,
-          alpha: false,
-          depth: true
-        };
+        // Use default attributes: this probe must not change GPU selection or
+        // create a high-performance context before the game boots.
         try {
-          gl = canvas.getContext('webgl2', attrs);
+          gl = canvas.getContext('webgl2');
           profile.webgl2 = !!gl;
         } catch {}
         if (!gl) {
-          try { gl = canvas.getContext('webgl', attrs) || canvas.getContext('experimental-webgl', attrs); } catch {}
+          try { gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl'); } catch {}
         }
         if (gl) {
           profile.webgl = true;
@@ -91,110 +81,9 @@
     return pending;
   }
 
-  // Runs inside the client iframe before any Eaglercraft script. Keep it ES5
-  // and self-contained so it also works while the app is offline.
-  const RUNTIME = `<script data-flash-eagler-gpu>
-(function () {
-  'use strict';
-  if (window.__FLASH_EAGLER_GPU__) return;
-  var probe = null, gl = null, webgl2 = false, renderer = '', vendor = '';
-  try {
-    probe = document.createElement('canvas');
-    probe.width = probe.height = 32;
-    var probeAttrs = { powerPreference: 'high-performance', failIfMajorPerformanceCaveat: false, antialias: false, alpha: false, depth: true };
-    try {
-      gl = probe.getContext('webgl2', probeAttrs);
-      webgl2 = !!gl;
-    } catch (e) {}
-    if (!gl) {
-      try { gl = probe.getContext('webgl', probeAttrs) || probe.getContext('experimental-webgl', probeAttrs); } catch (e) {}
-    }
-    if (gl) {
-      try {
-        var info = gl.getExtension('WEBGL_debug_renderer_info');
-        if (info) {
-          renderer = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) || '');
-          vendor = String(gl.getParameter(info.UNMASKED_VENDOR_WEBGL) || '');
-        } else {
-          renderer = String(gl.getParameter(gl.RENDERER) || '');
-          vendor = String(gl.getParameter(gl.VENDOR) || '');
-        }
-      } catch (e) {}
-      try { var lose = gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext(); } catch (e) {}
-    }
-  } catch (e) {}
-  try { if (probe) { probe.width = probe.height = 0; probe = null; } } catch (e) {}
-
-  var software = /swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic|mesa offscreen|apple software/i.test(renderer + ' ' + vendor);
-  var stats = window.__FLASH_EAGLER_GPU__ = {
-    active: true, webgl2: webgl2, webgl: !!gl, software: software,
-    renderer: renderer || 'Unknown GPU', vendor: vendor, tunedContexts: 0
-  };
-  try {
-    document.documentElement.setAttribute('data-flash-eagler-gpu', 'on');
-    if (webgl2) document.documentElement.setAttribute('data-flash-eagler-webgl2', 'on');
-  } catch (e) {}
-
-  var GPU_ATTRS = {
-    powerPreference: 'high-performance',
-    failIfMajorPerformanceCaveat: false,
-    antialias: false,
-    desynchronized: true
-  };
-  function tune(type, attrs) {
-    if (type !== 'webgl' && type !== 'webgl2' && type !== 'experimental-webgl') return attrs;
-    var next = {};
-    if (attrs && typeof attrs === 'object') {
-      var keys = Object.keys(attrs);
-      for (var i = 0; i < keys.length; i++) next[keys[i]] = attrs[keys[i]];
-    }
-    for (var key in GPU_ATTRS) next[key] = GPU_ATTRS[key];
-    if (!Object.prototype.hasOwnProperty.call(next, 'preserveDrawingBuffer')) next.preserveDrawingBuffer = false;
-    stats.tunedContexts++;
-    return next;
-  }
-  function patch(proto) {
-    if (!proto || typeof proto.getContext !== 'function') return;
-    var original = proto.getContext;
-    proto.getContext = function (type, attrs) {
-      try { attrs = tune(type, attrs); } catch (e) {}
-      return original.call(this, type, attrs);
-    };
-  }
-  patch(window.HTMLCanvasElement && HTMLCanvasElement.prototype);
-  patch(window.OffscreenCanvas && OffscreenCanvas.prototype);
-
-  // Merge the launch options modern EaglercraftX builds already understand.
-  // Context patching above still covers clients that ignore these keys.
-  function tuneOptions(opts) {
-    if (!opts || typeof opts !== 'object') return opts;
-    try {
-      if (webgl2 && opts.forceWebGL1 !== true) opts.forceWebGL2 = true;
-      var rendering = opts.rendering;
-      if (rendering && typeof rendering === 'object' && rendering.contextAttributes && typeof rendering.contextAttributes === 'object') {
-        rendering.contextAttributes.powerPreference = 'high-performance';
-        rendering.contextAttributes.antialias = false;
-        rendering.contextAttributes.failIfMajorPerformanceCaveat = false;
-      }
-    } catch (e) {}
-    return opts;
-  }
-  try {
-    var current = null;
-    Object.defineProperty(window, 'eaglercraftXOpts', {
-      configurable: true,
-      enumerable: true,
-      get: function () { return current; },
-      set: function (value) { current = tuneOptions(value); }
-    });
-  } catch (e) {}
-})();
-<\/script>`;
-
   window.FlashEaglerGPU = Object.freeze({
     isEagler,
     detect,
-    cached: () => cached,
-    inlineScript: () => RUNTIME
+    cached: () => cached
   });
 })();

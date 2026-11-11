@@ -1077,7 +1077,7 @@ function switchSocialView() {
       node.classList.toggle('is-warn', unavailable || software);
       node.title = unavailable
         ? 'This browser did not expose WebGL. Eaglercraft needs it to render.'
-        : `${profile.webgl2 ? 'WebGL 2' : 'WebGL 1'} using ${profile.renderer}. ${software ? 'Your browser appears to be using software rendering.' : 'High-performance GPU mode is requested automatically.'}`;
+        : `${profile.webgl2 ? 'WebGL 2' : 'WebGL 1'} using ${profile.renderer}. ${software ? 'Your browser appears to be using software rendering.' : 'Hardware rendering detected. The client keeps its own renderer settings.'}`;
     };
     const known = window.FlashEaglerGPU?.cached?.();
     if (known) apply(known);
@@ -1515,19 +1515,19 @@ function switchSocialView() {
     if (!eagler) { badge.hidden = true; badge.textContent = ''; return; }
     badge.hidden = false;
     badge.classList.remove('is-warn');
-    badge.innerHTML = `${icon('zap')}<span>GPU boost</span>`;
-    badge.title = 'Detecting the best graphics mode…';
+    badge.innerHTML = `${icon('monitor')}<span>GPU</span>`;
+    badge.title = 'Checking graphics support…';
     refreshIcons(badge);
     const apply = (profile) => {
       if (!badge.isConnected || !document.body.classList.contains('eagler-playing')) return;
       const software = !!profile?.software;
       const unavailable = !profile || !profile.webgl;
-      const label = unavailable ? 'GPU unavailable' : software ? 'Software GPU' : profile.webgl2 ? 'GPU boost · WebGL 2' : 'GPU boost';
+      const label = unavailable ? 'GPU unavailable' : software ? 'Software GPU' : profile.webgl2 ? 'GPU · WebGL 2' : 'GPU';
       badge.classList.toggle('is-warn', unavailable || software);
-      badge.innerHTML = `${icon('zap')}<span>${label}</span>`;
+      badge.innerHTML = `${icon('monitor')}<span>${label}</span>`;
       badge.title = unavailable
         ? 'This browser did not expose WebGL for the game.'
-        : `${profile.webgl2 ? 'WebGL 2' : 'WebGL 1'} using ${profile.renderer}. ${software ? 'Your browser appears to be using software rendering.' : 'High-performance GPU mode is active.'}`;
+        : `${profile.webgl2 ? 'WebGL 2' : 'WebGL 1'} using ${profile.renderer}. ${software ? 'Your browser appears to be using software rendering.' : 'Hardware rendering detected. The game keeps its own renderer settings.'}`;
       refreshIcons(badge);
     };
     const known = window.FlashEaglerGPU?.cached?.();
