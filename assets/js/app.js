@@ -674,7 +674,7 @@
     if (!target.dataset.shell) {
       target.dataset.shell = '1';
       target.innerHTML = `<div class="social-fill">
-        <iframe id="conferFrame" src="./confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen" class="social-frame-active"></iframe>
+        <iframe id="conferFrame" src="./pages/confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen" class="social-frame-active"></iframe>
         <iframe id="discordFrame" src="about:blank" title="Discord" allow="fullscreen" class="social-frame-hidden"></iframe>
         <section id="socialChatView" class="social-chat-view social-frame-hidden" aria-label="Chat"></section>
         <div class="social-pill" role="tablist" aria-label="Social">
@@ -717,7 +717,7 @@ function switchSocialView() {
       conferFrame.classList.remove('social-frame-active');
       conferFrame.classList.add('social-frame-hidden');
       if (discordFrame.src === 'about:blank' || discordFrame.src.includes('about:blank')) {
-        discordFrame.src = './discord.html';
+        discordFrame.src = './pages/discord.html';
       }
     }
     pillBtns.forEach((b) => b.classList.toggle('active', b.dataset.socialView === state.socialView));
@@ -1061,6 +1061,30 @@ function switchSocialView() {
     });
   }
 
+  function egxGpuChip() {
+    return `<span class="egx-gpu-state" data-eg-gpu title="Checking this device's graphics support."><i></i><b>GPU</b><em data-eg-gpu-copy>checking</em></span>`;
+  }
+
+  function paintEaglerGpu(root = document) {
+    const node = root.querySelector?.('[data-eg-gpu]');
+    if (!node) return;
+    const apply = (profile) => {
+      const copy = node.querySelector('[data-eg-gpu-copy]');
+      if (!copy || !node.isConnected) return;
+      const software = !!profile?.software;
+      const unavailable = !profile || !profile.webgl;
+      copy.textContent = unavailable ? 'unavailable' : software ? 'software' : profile.webgl2 ? 'WebGL 2' : 'WebGL';
+      node.classList.toggle('is-warn', unavailable || software);
+      node.title = unavailable
+        ? 'This browser did not expose WebGL. Eaglercraft needs it to render.'
+        : `${profile.webgl2 ? 'WebGL 2' : 'WebGL 1'} using ${profile.renderer}. ${software ? 'Your browser appears to be using software rendering.' : 'High-performance GPU mode is requested automatically.'}`;
+    };
+    const known = window.FlashEaglerGPU?.cached?.();
+    if (known) apply(known);
+    else if (window.FlashEaglerGPU?.detect) window.FlashEaglerGPU.detect().then(apply).catch(() => apply(null));
+    else apply(null);
+  }
+
   function egxWire(target) {
     target.querySelector('#egSearch')?.addEventListener('input', (event) => { egNova.query = event.target.value; egxPaintList(); });
     target.querySelectorAll('[data-eg-filter]').forEach((button) => button.addEventListener('click', () => {
@@ -1090,7 +1114,7 @@ function switchSocialView() {
     const pvp = clients.filter((client) => egFilterOk(client, 'pvp')).length;
     const counts = Object.fromEntries(EG_FILTERS.map(([id]) => [id, clients.filter((client) => egFilterOk(client, id)).length]));
     const filters = EG_FILTERS.map(([id, label, glyph]) => `<button class="egx-filter${egNova.filter === id ? ' active' : ''}" type="button" data-eg-filter="${id}">${icon(glyph)}<span>${label}</span><b>${counts[id]}</b></button>`).join('');
-    target.innerHTML = `<div class="egx-head"><div class="egx-title-wrap"><button class="egx-back" type="button" data-route="home">${icon('arrow-left')}<span>Home</span></button><span class="eyebrow">FLASH+ LAUNCHER</span><h1>Eaglercraft</h1><p>Every client from the All of Eaglercraft archive, in one clean launcher. Pick a build, press play, and your world is ready.</p></div><div class="egx-head-stats"><span><i></i><b>${clients.length}</b> builds</span><span><b>${installed}</b> cached</span><span><b>${pvp}</b> PvP</span><span><b>${wasm}</b> WASM</span></div></div>` +
+    target.innerHTML = `<div class="egx-head"><div class="egx-title-wrap"><button class="egx-back" type="button" data-route="home">${icon('arrow-left')}<span>Home</span></button><span class="eyebrow">FLASH+ LAUNCHER</span><h1>Eaglercraft</h1><p>Every client from the All of Eaglercraft archive, in one clean launcher. Pick a build, press play, and your world is ready.</p></div><div class="egx-head-stats"><span><i></i><b>${clients.length}</b> builds</span><span><b>${installed}</b> cached</span><span><b>${pvp}</b> PvP</span><span><b>${wasm}</b> WASM</span>${egxGpuChip()}</div></div>` +
       `<div class="egx-launcher"><section class="egx-versions"><div class="egx-list-head"><div><span class="eyebrow">INSTALLATIONS</span><h2>Version library</h2><p><span id="egCount">${clients.length} of ${clients.length} builds</span> · <span>${pvp} PvP ready</span></p></div><label class="egx-search">${icon('search')}<input id="egSearch" type="search" placeholder="Search clients…" autocomplete="off" spellcheck="false" value="${esc(egNova.query)}"></label></div>` +
       `<div class="egx-filter-row">${filters}</div><div class="egx-list-tools"><span>${icon('sliders-horizontal')} Refine</span><select id="egSort" aria-label="Sort clients"><option value="featured"${egNova.sort === 'featured' ? ' selected' : ''}>Featured</option><option value="az"${egNova.sort === 'az' ? ' selected' : ''}>A–Z</option><option value="version"${egNova.sort === 'version' ? ' selected' : ''}>Newest version</option></select></div>` +
       `<div class="egx-list" id="egList" role="listbox" aria-label="Eaglercraft versions"></div></section>` +
@@ -1099,6 +1123,7 @@ function switchSocialView() {
     refreshIcons(target);
     egxWire(target);
     egxPaintList();
+    paintEaglerGpu(target);
   }
 
   async function renderEagler() {
@@ -1314,7 +1339,7 @@ function switchSocialView() {
   async function ensureLegalData(force = false) {
     if (legalData && !force) return legalData;
     if (legalLoad && !force) return legalLoad;
-    legalLoad = fetch('./legal.json', { cache: 'no-store' })
+    legalLoad = fetch('./assets/data/legal.json', { cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) throw new Error(`The terms could not be loaded (${response.status}).`);
         const data = await response.json();
@@ -1477,6 +1502,40 @@ function switchSocialView() {
   function openSearch() { const backdrop = $('#searchBackdrop'); if (!backdrop) return; backdrop.hidden = false; state.searchZone = state.searchZone || 'all'; if ($('#searchInput')) $('#searchInput').value = state.query; state.searchIndex = 0; renderSearchResults(); $('#searchInput')?.focus(); }
   async function loadInstalled() { state.installed = await FlashGamesStore.getAllCachedGames(); state.favourites = FlashGamesStore.getFavourites(); }
 
+  function isEaglerGame(game) {
+    try { if (window.FlashEaglerGPU?.isEagler?.(game, game?.rawUrl || game?.url || '')) return true; } catch {}
+    return !!game && (String(game.zone || '').toUpperCase() === 'EAGLERCRAFT'
+      || /eaglercraft|eagler|pixelclient|astraclient|shadownet|tuff[ _-]?client|resent[ _-]?client/i.test(`${game.name || ''} ${game.rawUrl || game.url || ''}`)
+      || /\/offline\/(?:1\.21|26\.2|26\.3)\.html?(?:$|[?#])/i.test(`${game.rawUrl || game.url || ''}`));
+  }
+
+  function paintPlayerGpu(eagler) {
+    const badge = $('#playerGpuBadge');
+    if (!badge) return;
+    if (!eagler) { badge.hidden = true; badge.textContent = ''; return; }
+    badge.hidden = false;
+    badge.classList.remove('is-warn');
+    badge.innerHTML = `${icon('zap')}<span>GPU boost</span>`;
+    badge.title = 'Detecting the best graphics mode…';
+    refreshIcons(badge);
+    const apply = (profile) => {
+      if (!badge.isConnected || !document.body.classList.contains('eagler-playing')) return;
+      const software = !!profile?.software;
+      const unavailable = !profile || !profile.webgl;
+      const label = unavailable ? 'GPU unavailable' : software ? 'Software GPU' : profile.webgl2 ? 'GPU boost · WebGL 2' : 'GPU boost';
+      badge.classList.toggle('is-warn', unavailable || software);
+      badge.innerHTML = `${icon('zap')}<span>${label}</span>`;
+      badge.title = unavailable
+        ? 'This browser did not expose WebGL for the game.'
+        : `${profile.webgl2 ? 'WebGL 2' : 'WebGL 1'} using ${profile.renderer}. ${software ? 'Your browser appears to be using software rendering.' : 'High-performance GPU mode is active.'}`;
+      refreshIcons(badge);
+    };
+    const known = window.FlashEaglerGPU?.cached?.();
+    if (known) apply(known);
+    else if (window.FlashEaglerGPU?.detect) window.FlashEaglerGPU.detect().then(apply).catch(() => apply(null));
+    else apply(null);
+  }
+
   function openPlayer(url, game) {
     const frame = $('#gameFrame');
     const overlay = $('#playerOverlay');
@@ -1500,6 +1559,9 @@ function switchSocialView() {
     }
     state.playerGame = game || null;
     state.playerUrl = url;
+    const eagler = isEaglerGame(game);
+    document.body.classList.toggle('eagler-playing', eagler);
+    paintPlayerGpu(eagler);
     ghBeginGame(game, url);
     frame.src = url;
     frame.setAttribute('data-last-src', url);
@@ -1567,7 +1629,7 @@ function switchSocialView() {
     }
   }
 
-  function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) { frame.removeAttribute('sandbox'); frame.removeAttribute('srcdoc'); frame.src = 'about:blank'; } try { window.FlashBridge?.reset?.(); } catch {} if (overlay) overlay.hidden = true; document.body.classList.remove('player-open');
+  function closePlayer() { const overlay = $('#playerOverlay'), frame = $('#gameFrame'); if (state.gameStartedAt) { state.stats.time += Math.max(0, Date.now() - state.gameStartedAt); state.gameStartedAt = 0; saveStats(); } if (frame) { frame.removeAttribute('sandbox'); frame.removeAttribute('srcdoc'); frame.src = 'about:blank'; } try { window.FlashBridge?.reset?.(); } catch {} if (overlay) overlay.hidden = true; document.body.classList.remove('player-open'); document.body.classList.remove('eagler-playing'); paintPlayerGpu(false);
   const conferWin = document.getElementById('conferWindow'); if (conferWin) conferWin.remove();
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; }
   stopLiveAccessWatch();
@@ -3799,9 +3861,9 @@ function switchSocialView() {
             } catch { return ''; }
           };
           const [html, css, quickqCss, coreJs, adminJs, authJs, extrasJs, quickqJs, appJs] = await Promise.all([
-            readAsset('./index.html'), readAsset('./styles.css'), readAsset('./quickq.css'),
-            readAsset('./core.js'), readAsset('./admin.js'), readAsset('./auth.js'),
-            readAsset('./extras.js'), readAsset('./quickq.js'), readAsset('./app.js')
+            readAsset('./index.html'), readAsset('./assets/css/styles.css'), readAsset('./assets/css/quickq.css'),
+            readAsset('./assets/js/core.js'), readAsset('./assets/js/admin.js'), readAsset('./assets/js/auth.js'),
+            readAsset('./assets/js/extras.js'), readAsset('./assets/js/quickq.js'), readAsset('./assets/js/app.js')
           ]);
           if (!html || !/<html/i.test(html)) { fallback('The app shell could not be read, so this blank window was left empty.'); toast('Cloak unavailable', "The app shell couldn't be read from this location.", 'error'); return; }
           if (!coreJs || !quickqJs || !appJs) { fallback('The app scripts could not be read, so this blank window was left empty.'); toast('Cloak unavailable', 'The app scripts could not be read from this location.', 'error'); return; }
@@ -3811,12 +3873,12 @@ function switchSocialView() {
 
           let shell = html;
           // Local stylesheets → inline styles.
-          shell = shell.replace(/<link[^>]*href=["']\.?\/?styles\.css["'][^>]*>/i, `<style>\n${css}\n</style>`);
-          shell = shell.replace(/<link[^>]*href=["']\.?\/?quickq\.css["'][^>]*>/i, `<style>\n${quickqCss}\n</style>`);
+          shell = shell.replace(/<link[^>]*href=["'](?:\.\/)?assets\/css\/styles\.css["'][^>]*>/i, `<style>\n${css}\n</style>`);
+          shell = shell.replace(/<link[^>]*href=["'](?:\.\/)?assets\/css\/quickq\.css["'][^>]*>/i, `<style>\n${quickqCss}\n</style>`);
           // Local app scripts → inline scripts (external CDNs stay as-is).
           const scriptMap = {
-            './core.js': coreJs, './admin.js': adminJs, './auth.js': authJs,
-            './extras.js': extrasJs, './quickq.js': quickqJs, './app.js': appJs
+            './assets/js/core.js': coreJs, './assets/js/admin.js': adminJs, './assets/js/auth.js': authJs,
+            './assets/js/extras.js': extrasJs, './assets/js/quickq.js': quickqJs, './assets/js/app.js': appJs
           };
           shell = shell.replace(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>\s*<\/script>/gi, (tag, src) => {
             const key = String(src).replace(/^\.\//, './');

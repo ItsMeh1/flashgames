@@ -378,6 +378,10 @@ textarea { background: var(--surface); border: 1px solid var(--line); border-rad
 .player-shell { position: relative; width: min(1120px, 100%); height: min(84vh, 780px); border-radius: 20px; overflow: hidden; background: #000; border: 1px solid var(--line-strong); box-shadow: var(--shadow); }
 .player-shell iframe { width: 100%; height: 100%; border: 0; background: #000; }
 .player-close { position: absolute; top: 14px; right: 14px; z-index: 6; background: rgba(0, 0, 0, .62); color: #fff; border-color: rgba(255,255,255,.16); }
+.player-gpu-badge { position: absolute; top: 14px; left: 14px; z-index: 6; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100vw - 100px); padding: 7px 10px; border: 1px solid rgba(94, 224, 160, .3); border-radius: 8px; background: rgba(5, 14, 10, .74); color: #8ff0c0; font-size: 10px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; pointer-events: none; }
+.player-gpu-badge svg { width: 12px; height: 12px; flex: none; }
+.player-gpu-badge span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-gpu-badge.is-warn { border-color: rgba(242, 184, 75, .38); background: rgba(20, 15, 5, .78); color: #ffd166; }
 /* Ultra Game DevTools — Confer-style floating inspector */
 .gh-window { width: min(780px, 92vw); height: min(720px, 86vh); }
 .gh-window[hidden] { display: none; }
@@ -577,6 +581,13 @@ body.performance-boost .live-pill, body.performance-boost .conn-dot { animation:
 body.player-open * { animation-play-state: paused !important; }
 body.player-open [class*="player-"], body.player-open [class*="player-"] * { animation-play-state: running !important; transition-duration: .2s !important; }
 body.player-open .dl-dock, body.player-open .notif-drop { opacity: .85; }
+/* The game is the only thing that needs the GPU while a player is open. Drop
+ * blur layers on the covered shell instead of re-sampling them every frame. */
+body.player-open .topbar, body.player-open .bottom-dock, body.player-open .side-panel,
+body.player-open .dl-dock, body.player-open .notif-drop, body.player-open .support-modal {
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+body.eagler-playing .player-shell { background: #000; box-shadow: none; }
 
 @media (max-width: 1020px) {
   .desktop-nav { display: none; }
@@ -1044,7 +1055,7 @@ input.color-picker::-webkit-color-swatch { border-radius: 7px; border: none; }
 .player-control.active { background: color-mix(in srgb, var(--accent) 18%, transparent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent-ink); }
 .player-control.close:hover { background: color-mix(in srgb, var(--bad) 22%, transparent); border-color: color-mix(in srgb, var(--bad) 40%, transparent); color: var(--bad); }
 .player-control.busy svg { animation: spin .8s linear infinite; }
-@media (max-width: 640px) { .player-controls { flex-wrap: wrap; max-width: min(92vw, 420px); justify-content: center; } .player-control { padding: 8px 9px; font-size: 11.5px; } }
+@media (max-width: 640px) { .player-controls { flex-wrap: wrap; max-width: min(92vw, 420px); justify-content: center; } .player-control { padding: 8px 9px; font-size: 11.5px; } .player-gpu-badge { top: 60px; max-width: calc(100vw - 28px); } }
 body.player-open .player-controls, body.player-open .player-notch { animation: none !important; }
 
 /* Confer side window (draggable, fullscreenable) */
@@ -1790,6 +1801,9 @@ body.social-route .social-pill { top: 78px; }
 .egx-head-stats span + span { border-left: 1px solid var(--line); }
 .egx-head-stats b { color: var(--text); font-size: 13px; }
 .egx-head-stats i { width: 6px; height: 6px; border-radius: 50%; background: var(--flash-green); box-shadow: 0 0 9px rgba(94, 224, 160, .7); }
+.egx-head-stats .egx-gpu-state em { font-style: normal; color: var(--text); font-weight: 750; }
+.egx-head-stats .egx-gpu-state.is-warn i { background: #f2b84b; box-shadow: 0 0 9px rgba(242, 184, 75, .6); }
+.egx-head-stats .egx-gpu-state.is-warn em { color: #ffd166; }
 .egx-launcher { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px; border: 1px solid var(--line); border-radius: 26px; background: color-mix(in srgb, var(--surface) 78%, transparent); box-shadow: 0 24px 70px rgba(0, 0, 0, .18); }
 .egx-versions { min-width: 0; padding: 15px; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--bg) 40%, var(--surface)); }
 .egx-list-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }

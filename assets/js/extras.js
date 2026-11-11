@@ -124,7 +124,7 @@
         `<div class="confer-window-actions">` +
         `<button class="confer-window-btn" data-win-action="full" aria-label="Fullscreen">${icon('maximize-2')}</button>` +
         `<button class="confer-window-btn" data-win-action="close" aria-label="Close">${icon('x')}</button></div></div>` +
-        `<div class="confer-window-body"><iframe src="./confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen" referrerpolicy="no-referrer"></iframe></div>` +
+        `<div class="confer-window-body"><iframe src="./pages/confer.html" title="Confer" allow="camera; microphone; display-capture; fullscreen" referrerpolicy="no-referrer"></iframe></div>` +
         `<span class="confer-window-grip" aria-hidden="true">${icon('grip-horizontal')}</span>`;
       document.body.appendChild(win);
       icons(win);
@@ -372,7 +372,7 @@
       drow('Lumin SDK', window.Lumin ? 'Loaded' : 'Not loaded')
     ];
     const checks = [
-      { label: 'offline.json reachable', run: async () => { const t0 = performance.now(); const r = await fetch(`./offline.json?v=${Date.now()}`, { cache: 'no-store' }); const list = await r.json(); if (!r.ok || !Array.isArray(list)) throw new Error(`HTTP ${r.status}`); return { level: 'ok', value: `${list.length} entries · ${Math.round(performance.now() - t0)} ms` }; } },
+      { label: 'offline.json reachable', run: async () => { const t0 = performance.now(); const r = await fetch(`./assets/data/offline.json?v=${Date.now()}`, { cache: 'no-store' }); const list = await r.json(); if (!r.ok || !Array.isArray(list)) throw new Error(`HTTP ${r.status}`); return { level: 'ok', value: `${list.length} entries · ${Math.round(performance.now() - t0)} ms` }; } },
       { label: 'Game listing (mirror ladder)', run: async () => { const t0 = performance.now(); const r = await fetch('https://ungh.cc/repos/CoolDude2349/Offline-HTML-Games-Pack/files/master', { cache: 'no-store' }); if (!r.ok) throw new Error(`HTTP ${r.status}`); const data = await r.json(); const n = Array.isArray(data?.files) ? data.files.filter((f) => /^offline\/.*\.html$/i.test(f.path)).length : 0; if (!n) throw new Error('No game files listed.'); return { level: 'ok', value: `${n} games · ${Math.round(performance.now() - t0)} ms` }; } },
       { label: 'GitHub raw reachable', run: async () => { const r = await fetch('https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/README.md', { cache: 'no-store' }); if (!r.ok) throw new Error(`HTTP ${r.status}`); return { level: 'ok', value: `OK · ${r.status}` }; } },
       { label: 'Eaglercraft manifest', run: async () => { const r = await fetch(`./eagler/clients.json?v=${Date.now()}`, { cache: 'no-store' }); const data = await r.json(); const n = Array.isArray(data?.clients) ? data.clients.length : 0; if (!n) throw new Error('Manifest has no clients.'); return { level: 'ok', value: `${n} clients` }; } },

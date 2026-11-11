@@ -12,7 +12,7 @@
   const SESSION_KEY = 'flashgames.offline.session.v1';
   const SOURCE_ROOT = 'https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/offline/';
   const TREE_URL = 'https://api.github.com/repos/CoolDude2349/Offline-HTML-Games-Pack/git/trees/master?recursive=1';
-  const OFFLINE_MANIFEST_URL = './offline.json';
+  const OFFLINE_MANIFEST_URL = './assets/data/offline.json';
 
   const clean = (value) => String(value ?? '').trim();
   const esc = (value) => clean(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -327,7 +327,7 @@
 
   async function loadUpdates() {
     try {
-      const r = await fetch(`./update.json?v=${Date.now()}`, { cache: 'no-store' });
+      const r = await fetch(`./assets/data/update.json?v=${Date.now()}`, { cache: 'no-store' });
       if (!r.ok) throw new Error();
       const data = await r.json();
       const releases = Array.isArray(data) ? data : data.releases || [];
@@ -514,7 +514,7 @@
     if (flashProxyLoader) return flashProxyLoader;
     flashProxyLoader = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = './fp.js';
+      script.src = './assets/js/fp.js';
       script.async = true;
       script.onload = () => (window.Flash && typeof window.Flash.request === 'function')
         ? resolve(window.Flash)
@@ -750,21 +750,31 @@
    * That is what made cached Ruffle pages die before the player even loaded.
    * Keep the provider's URL as the document base, and give Ruffle's player the
    * script-access setting its older portal wrappers assume. */
-  function gameDocumentHtml(html, source) {
+  function gameDocumentHtml(html, source, game) {
     let doc = String(html || '');
     if (!doc) return doc;
     let base = '';
     try { base = new URL(String(source || ''), location.href).href; } catch {}
-    if (base && !/<base\b/i.test(doc)) {
-      const tag = `<base href="${base.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">`;
-      if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + '\n' + tag);
-      else if (/<html(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<html(\s[^>]*)?>/i, (m) => m + '\n' + tag);
-      else doc = tag + '\n' + doc;
+    const boot = [];
+    if (base && !/<base\b/i.test(doc)) boot.push(`<base href="${base.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">`);
+    // Eaglercraft gets a tiny pre-boot shim: WebGL 2 when available, the
+    // high-performance GPU, no MSAA, and an unsynchronised low-latency canvas.
+    try {
+      if (window.FlashEaglerGPU?.isEagler?.(game, source, doc)) {
+        const runtime = window.FlashEaglerGPU.inlineScript?.();
+        if (runtime && !doc.slice(0, 4096).includes('data-flash-eagler-gpu')) boot.push(runtime);
+      }
+    } catch {}
+    if (boot.length) {
+      const block = '\n' + boot.join('\n');
+      if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + block);
+      else if (/<html(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<html(\s[^>]*)?>/i, (m) => m + block);
+      else doc = block + '\n' + doc;
     }
     if (/RufflePlayer|ruffle-rs|\bruffle\b/i.test(doc) && !/allowScriptAccess/i.test(doc)) {
-      const boot = '<script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config=Object.assign({allowScriptAccess:true,autoplay:"on",unmuteOverlay:"hidden"},window.RufflePlayer.config||{});<\/script>';
-      if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + '\n' + boot);
-      else doc = boot + '\n' + doc;
+      const ruffleBoot = '<script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config=Object.assign({allowScriptAccess:true,autoplay:"on",unmuteOverlay:"hidden"},window.RufflePlayer.config||{});<\/script>';
+      if (/<head(\s[^>]*)?>/i.test(doc)) doc = doc.replace(/<head(\s[^>]*)?>/i, (m) => m + '\n' + ruffleBoot);
+      else doc = ruffleBoot + '\n' + doc;
     }
     return doc;
   }
@@ -778,7 +788,7 @@
       const html = await downloadHtml(source, opts);
       cached = await putRecord({ ...(game || {}), rawUrl: source, url: source }, html);
     }
-    const doc = gameDocumentHtml(cached.html, cached.rawUrl || source);
+    const doc = gameDocumentHtml(cached.html, cached.rawUrl || source, game);
     return URL.createObjectURL(new Blob([doc], { type: 'text/html' }));
   }
 
