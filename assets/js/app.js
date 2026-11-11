@@ -1536,6 +1536,18 @@ function switchSocialView() {
     else apply(null);
   }
 
+  function focusPlayerFrame() {
+    const frame = $('#gameFrame');
+    const overlay = $('#playerOverlay');
+    if (!frame || !overlay || overlay.hidden || !document.body.classList.contains('player-open')) return;
+    const active = document.activeElement;
+    if (active && active !== frame && typeof active.blur === 'function') {
+      try { active.blur(); } catch {}
+    }
+    try { frame.focus({ preventScroll: true }); } catch { try { frame.focus(); } catch {} }
+    try { frame.contentWindow?.focus?.(); } catch {}
+  }
+
   function openPlayer(url, game) {
     const frame = $('#gameFrame');
     const overlay = $('#playerOverlay');
@@ -1569,6 +1581,8 @@ function switchSocialView() {
     ghSync();
     overlay.hidden = false;
     document.body.classList.add('player-open');
+    focusPlayerFrame();
+    requestAnimationFrame(focusPlayerFrame);
     watchLiveAccess(state.user);
     checkLiveAccess();
     state.stats.played += 1;
@@ -1634,6 +1648,14 @@ function switchSocialView() {
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = null; }
   stopLiveAccessWatch();
   ghEndGame(); state.playerGame = null; state.playerUrl = ''; ghSync(); }
+
+  // The game is the only thing that should receive keys while it is open.
+  // HUD buttons such as Performance+ used to keep focus, so Space re-triggered
+  // them instead of reaching the game.
+  $('#playerOverlay')?.addEventListener('click', (event) => {
+    const action = event.target.closest('[data-player-action]')?.dataset.playerAction;
+    if (action && ['fullscreen', 'restart', 'perf'].includes(action)) requestAnimationFrame(focusPlayerFrame);
+  });
 
   /* ---------- Ultra Game DevTools ---------- */
   function isUltraUser() { return state.profile?.ultra === true; }
@@ -3009,7 +3031,10 @@ function switchSocialView() {
   }
 
   const gmPlaying = () => document.body.classList.contains('player-open');
-  document.getElementById('gameFrame')?.addEventListener('load', () => gmAttachRelay()); // blob/srcdoc loads swap the window object
+  document.getElementById('gameFrame')?.addEventListener('load', () => {
+    gmAttachRelay(); // blob/srcdoc loads swap the window object
+    if (document.body.classList.contains('player-open')) requestAnimationFrame(focusPlayerFrame);
+  });
 
   function gmLayer() {
     let l = document.getElementById('gmLayer');

@@ -1,5 +1,5 @@
 /* Flash Games service worker — minimal offline shell, no HTML rewriting. */
-const CACHE_NAME = 'flashgames-v40';
+const CACHE_NAME = 'flashgames-v41';
 const APP_SHELL = [
   './', './index.html', './assets/css/styles.css', './assets/css/quickq.css', './assets/css/chat.css',
   './assets/js/eagler-gpu.js', './assets/js/core.js', './assets/js/app.js', './assets/js/admin.js', './assets/js/auth.js', './assets/js/extras.js', './assets/js/quickq.js', './assets/js/social-chat.js',
