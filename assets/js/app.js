@@ -6,6 +6,12 @@
   const esc = (value) => window.FlashData.esc(value);
   const icon = (name) => `<i data-lucide="${name}"></i>`;
 
+  // A copy of this document exactly as the browser parsed it, taken before
+  // init() paints anything into it. The about:blank cloak injects this
+  // in-memory markup instead of loading the page a second time.
+  let shellHtml = '';
+  try { shellHtml = '<!doctype html>\n' + document.documentElement.outerHTML; } catch {}
+
   const state = {
     route: location.hash.replace('#', '') || 'home', games: [], installed: [], favourites: new Set(), onlineGames: [], flashExclusiveGames: Array.isArray(window.FlashExclusiveGames) ? window.FlashExclusiveGames : [], eaglerClients: [], downloads: new Map(), gamesSection: localStorage.getItem('flashgames.section') === 'mine' ? 'mine' : 'store', storeSection: 'all', storeView: 'games',
     user: null, profile: {}, updates: { version: '0.0.0', releases: [] }, articles: [], notifications: [],
@@ -3872,53 +3878,64 @@ function switchSocialView() {
             confirmDialog('Pop-ups are blocked', 'Chrome blocked the blank window. Click the blocked-pop-up icon in the address bar, choose "Always allow", then click Continue to try again. You can also use the about:blank tab option.', () => { try { window.FlashCloak.launch('app'); } catch {} });
             return;
           }
+          // Sever the link back to the tab that opened this one.
+          try { win.opener = null; } catch {}
           try { win.document.write('<!DOCTYPE html><title>Flash Games</title><p style="display:grid;place-items:center;min-height:90vh;margin:0;color:#9aa1b2">Loading cloaked session…</p>'); } catch {}
           const fallback = (note) => { try { win.document.open(); win.document.write(window.FlashCloak.EXIT_PAGE(note)); win.document.close(); } catch {} };
 
-          // Everything ships INTO the blank document: markup, styles and all
-          // five scripts are inlined, so nothing is framed and nothing has to
-          // be re-fetched by the new window. <base> keeps every runtime fetch
-          // (game packs, clients.json, wasm, assets) pointing at this origin.
+          // Everything ships INTO the blank document. The markup is the copy of
+          // this page held in memory, and every local stylesheet and script it
+          // references is injected as text, so the new window runs the app
+          // itself instead of loading the site: no page request, no iframe, and
+          // no leftover <script src> or <link> pointing back home. <base> keeps
+          // the runtime fetches the app genuinely needs (game packs,
+          // clients.json, wasm) resolving against this origin.
           const readAsset = async (path) => {
             try {
               const res = await fetch(path, { cache: 'force-cache' });
               return res.ok ? await res.text() : '';
             } catch { return ''; }
           };
-          const [html, css, quickqCss, coreJs, adminJs, authJs, extrasJs, quickqJs, appJs] = await Promise.all([
-            readAsset('./index.html'), readAsset('./assets/css/styles.css'), readAsset('./assets/css/quickq.css'),
-            readAsset('./assets/js/core.js'), readAsset('./assets/js/admin.js'), readAsset('./assets/js/auth.js'),
-            readAsset('./assets/js/extras.js'), readAsset('./assets/js/quickq.js'), readAsset('./assets/js/app.js')
-          ]);
-          if (!html || !/<html/i.test(html)) { fallback('The app shell could not be read, so this blank window was left empty.'); toast('Cloak unavailable', "The app shell couldn't be read from this location.", 'error'); return; }
-          if (!coreJs || !quickqJs || !appJs) { fallback('The app scripts could not be read, so this blank window was left empty.'); toast('Cloak unavailable', 'The app scripts could not be read from this location.', 'error'); return; }
+          // Fallback read only, for the impossible case where the in-memory
+          // copy came up empty.
+          const source = shellHtml || (await readAsset('./index.html'));
+          if (!source || !/<html/i.test(source)) { fallback('The app shell could not be read, so this blank window was left empty.'); toast('Cloak unavailable', "The app shell couldn't be read from this location.", 'error'); return; }
+
+          const shellDoc = new DOMParser().parseFromString(source, 'text/html');
+          const localUrl = (url) => { try { const u = new URL(url, location.href); return u.origin === location.origin ? u.href : ''; } catch { return ''; } };
+          const assets = [...shellDoc.querySelectorAll('script[src], link[rel="stylesheet"][href]')]
+            .map((el) => ({ el, url: localUrl(el.getAttribute('src') || el.getAttribute('href')) }))
+            .filter((asset) => asset.url);
+          const codes = await Promise.all(assets.map((asset) => readAsset(asset.url)));
+          if (!assets.length || codes.some((code) => !code)) { fallback('The app files could not be read into this window, so it was left empty.'); toast('Cloak unavailable', 'The app files could not be read into this blank window.', 'error'); return; }
 
           const safeJs = (code) => String(code).replace(/<\/script/gi, '<\\/script');
-          const baseHref = String(location.href).replace(/[?#].*$/, '').replace(/[^/]*$/, '').replace(/"/g, '%22');
-
-          let shell = html;
-          // Local stylesheets → inline styles.
-          shell = shell.replace(/<link[^>]*href=["'](?:\.\/)?assets\/css\/styles\.css["'][^>]*>/i, `<style>\n${css}\n</style>`);
-          shell = shell.replace(/<link[^>]*href=["'](?:\.\/)?assets\/css\/quickq\.css["'][^>]*>/i, `<style>\n${quickqCss}\n</style>`);
-          // Local app scripts → inline scripts (external CDNs stay as-is).
-          const scriptMap = {
-            './assets/js/core.js': coreJs, './assets/js/admin.js': adminJs, './assets/js/auth.js': authJs,
-            './assets/js/extras.js': extrasJs, './assets/js/quickq.js': quickqJs, './assets/js/app.js': appJs
-          };
-          shell = shell.replace(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>\s*<\/script>/gi, (tag, src) => {
-            const key = String(src).replace(/^\.\//, './');
-            const code = scriptMap[key] || scriptMap[key.toLowerCase()];
-            return code ? `<script>\n${safeJs(code)}\n</script>` : tag;
+          // Swap the elements themselves, so what lands in the blank window
+          // carries the app's code and styles as text. External CDN tags are
+          // left exactly as they are; nothing local survives as a reference.
+          assets.forEach(({ el }, index) => {
+            if (el.tagName === 'LINK') {
+              const style = shellDoc.createElement('style');
+              style.textContent = codes[index];
+              el.replaceWith(style);
+              return;
+            }
+            const script = shellDoc.createElement('script');
+            const type = el.getAttribute('type');
+            if (type) script.setAttribute('type', type);
+            script.textContent = safeJs(codes[index]);
+            el.replaceWith(script);
           });
 
-          const exitScript = '<script>(function(){var ex=function(){try{document.open();document.write(' + JSON.stringify(window.FlashCloak.EXIT_PAGE()) + ');document.close();}catch(e){window.close();}};window.__flashCloakExit=ex;document.addEventListener("keydown",function(e){if(e.shiftKey&&(e.key==="End"||e.code==="End")){e.preventDefault();ex();}});})()<\/script>';
+          const baseHref = String(location.href).replace(/[?#].*$/, '').replace(/[^/]*$/, '').replace(/"/g, '%22');
           const headInject = `<base href="${baseHref}">\n<script>window.__CLOAKED__ = true;</script>`;
-          shell = shell.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${headInject}`);
-          // Use the LAST </body>: app.js itself embeds "</body>" in its EXIT_PAGE
-          // string, and the first match would inject the exit <script> inside
-          // the inlined app.js block, closing it early and dumping source text.
-          const bodyEnd = shell.toLowerCase().lastIndexOf('</body>');
-          if (bodyEnd !== -1) shell = shell.slice(0, bodyEnd) + exitScript + '\n' + shell.slice(bodyEnd);
+          shellDoc.head.insertAdjacentHTML('afterbegin', headInject);
+
+          const exitScript = '<script>(function(){var ex=function(){try{document.open();document.write(' + JSON.stringify(window.FlashCloak.EXIT_PAGE()) + ');document.close();}catch(e){window.close();}};window.__flashCloakExit=ex;document.addEventListener("keydown",function(e){if(e.shiftKey&&(e.key==="End"||e.code==="End")){e.preventDefault();ex();}});})()<\/script>';
+          // Append at the end of <body> instead of searching for the closing
+          // tag as text: the inlined app.js source itself contains "</body>".
+          shellDoc.body.insertAdjacentHTML('beforeend', exitScript);
+          const shell = '<!doctype html>\n' + shellDoc.documentElement.outerHTML;
 
           try {
             if (appLike) { try { win.resizeTo(W, H); win.moveTo(winLeft, winTop); } catch {} }
